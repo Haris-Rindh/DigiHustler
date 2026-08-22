@@ -1,0 +1,74 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg-dark: #071e26;
+  --surface-bg: #0d2833;
+  --surface-border: #1e4a5d;
+  --accent-teal: #1a7a8c;
+  --accent-sky: #bde0fe;
+  --accent-emerald: #10b981;
+  --accent-amber: #f59e0b;
+  --accent-rose: #f43f5e;
+  --text-main: #ffffff;
+  --text-muted: #94a3b8;
+}
+
+body {
+  background-color: var(--bg-dark);
+  background-image: 
+    linear-gradient(to bottom, rgba(7, 30, 38, 0.95), rgba(7, 30, 38, 1)),
+    radial-gradient(circle at 50% 0%, rgba(26, 122, 140, 0.12) 0%, transparent 60%);
+  background-attachment: fixed;
+  color: #ffffff;
+}
+
+/* Premium Agency Card Styling (Clean, non-AI) */
+.breeze-card {
+  background-color: #0d2833;
+  border: 1px solid #1e4a5d;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+  border-radius: 1rem;
+}
+
+.breeze-card-hover {
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.breeze-card-hover:hover {
+  border-color: #2b657e;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+}
+
+.breeze-btn-primary {
+  background-color: #1a7a8c;
+  color: #ffffff;
+  font-weight: 700;
+  transition: background-color 0.2s ease, transform 0.15s ease;
+}
+
+.breeze-btn-primary:hover {
+  background-color: #156575;
+  transform: translateY(-1px);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #071e26;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1e4a5d;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #1a7a8c;
+}

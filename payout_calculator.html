@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DigiHust Revenue & Payout Split Calculator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #090d16;
+            --card-bg: rgba(18, 26, 43, 0.75);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --accent-cyan: #00f2fe;
+            --accent-blue: #4facfe;
+            --accent-purple: #7f00ff;
+            --accent-emerald: #10b981;
+            --accent-amber: #f59e0b;
+            --accent-rose: #f43f5e;
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --glass-glow: rgba(79, 172, 254, 0.15);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            background-image: 
+                radial-gradient(circle at 15% 15%, rgba(127, 0, 255, 0.15) 0%, transparent 45%),
+                radial-gradient(circle at 85% 85%, rgba(0, 242, 254, 0.12) 0%, transparent 45%);
+            color: var(--text-main);
+            min-height: 100vh;
+            padding: 2rem 1rem;
+            display: flex;
+            justify-content: center;
+        }
+
+        .app-container {
+            max-width: 1200px;
+            width: 100%;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.35rem 1rem;
+            border-radius: 9999px;
+            background: linear-gradient(135deg, rgba(0, 242, 254, 0.15), rgba(127, 0, 255, 0.15));
+            border: 1px solid rgba(0, 242, 254, 0.3);
+            color: var(--accent-cyan);
+            font-size: 0.85rem;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            margin-bottom: 0.75rem;
+        }
+
+        h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2.75rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ffffff 30%, var(--accent-cyan) 70%, var(--accent-purple) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        p.subtitle {
+            color: var(--text-muted);
+            font-size: 1.05rem;
+            max-width: 650px;
+            margin: 0 auto;
+        }
+
+        .grid-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        @media (max-width: 992px) {
+            .grid-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--card-border);
+            border-radius: 1.25rem;
+            padding: 1.75rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            transition: border-color 0.3s ease;
+        }
+
+        .card:hover {
+            border-color: rgba(0, 242, 254, 0.25);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .card-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .val-badge {
+            color: var(--accent-cyan);
+            font-weight: 700;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        input[type="number"], select {
+            width: 100%;
+            background: rgba(10, 15, 26, 0.8);
+            border: 1px solid var(--card-border);
+            border-radius: 0.65rem;
+            padding: 0.75rem 1rem;
+            color: #fff;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        input[type="number"]:focus, select:focus {
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 12px rgba(0, 242, 254, 0.2);
+        }
+
+        .toggle-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+            background: rgba(10, 15, 26, 0.8);
+            padding: 0.3rem;
+            border-radius: 0.75rem;
+            border: 1px solid var(--card-border);
+        }
+
+        .toggle-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            padding: 0.65rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .toggle-btn.active {
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(79, 172, 254, 0.3);
+        }
+
+        input[type="range"] {
+            width: 100%;
+            accent-color: var(--accent-cyan);
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .dynamic-section {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px dashed rgba(255, 255, 255, 0.1);
+            border-radius: 0.85rem;
+            padding: 1rem;
+            margin-top: 1rem;
+        }
+
+        /* Output Summary Cards */
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .summary-card {
+            background: rgba(10, 16, 28, 0.9);
+            border: 1px solid var(--card-border);
+            border-radius: 0.85rem;
+            padding: 1.1rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .summary-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+        }
+
+        .card-lg::before { background: var(--accent-amber); }
+        .card-mgmt::before { background: var(--accent-purple); }
+        .card-ldr::before { background: var(--accent-cyan); }
+        .card-fl::before { background: var(--accent-emerald); }
+
+        .summary-card .label {
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            margin-bottom: 0.35rem;
+        }
+
+        .summary-card .amount {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.65rem;
+            font-weight: 800;
+            color: #fff;
+        }
+
+        .summary-card .share-pct {
+            font-size: 0.8rem;
+            color: var(--accent-cyan);
+            margin-top: 0.2rem;
+        }
+
+        /* Results Table */
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        .results-table th, .results-table td {
+            padding: 0.85rem 1rem;
+            text-align: left;
+            font-size: 0.9rem;
+        }
+
+        .results-table th {
+            background: rgba(255, 255, 255, 0.03);
+            color: var(--text-muted);
+            font-weight: 600;
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        .results-table td {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .results-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .pill {
+            display: inline-block;
+            padding: 0.2rem 0.6rem;
+            border-radius: 0.4rem;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .pill-lg { background: rgba(245, 158, 11, 0.15); color: var(--accent-amber); }
+        .pill-mgmt { background: rgba(127, 0, 255, 0.15); color: var(--accent-purple); }
+        .pill-ldr { background: rgba(0, 242, 254, 0.15); color: var(--accent-cyan); }
+        .pill-fl { background: rgba(16, 185, 129, 0.15); color: var(--accent-emerald); }
+
+        /* Progress Bar Split */
+        .distribution-bar {
+            height: 14px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 7px;
+            display: flex;
+            overflow: hidden;
+            margin: 1.5rem 0;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .bar-segment {
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+
+        .bar-lg { background: var(--accent-amber); }
+        .bar-mgmt { background: var(--accent-purple); }
+        .bar-ldr { background: var(--accent-cyan); }
+        .bar-fl { background: var(--accent-emerald); }
+
+        .action-btn {
+            width: 100%;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            color: #fff;
+            border: none;
+            padding: 0.9rem;
+            border-radius: 0.75rem;
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            margin-top: 1.25rem;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(79, 172, 254, 0.3);
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <header>
+        <span class="badge">DigiHust Financial Architecture</span>
+        <h1>Project Revenue Payout Engine</h1>
+        <p class="subtitle">Flexible percentage calculator supporting independent lead gens, management absorption, and cross-departmental multi-leader splits.</p>
+    </header>
+
+    <div class="grid-layout">
+        <!-- Input Parameters Card -->
+        <div class="card">
+            <div class="card-header">
+                <span style="font-size: 1.5rem;">⚙️</span>
+                <h2 class="card-title">Project & Split Parameters</h2>
+            </div>
+
+            <div class="form-group">
+                <label>Gross Project Revenue ($) <span class="val-badge" id="gross-display">$2,000</span></label>
+                <input type="number" id="gross-revenue" value="2000" min="50" step="50">
+            </div>
+
+            <div class="form-group">
+                <label>External Transaction / Payment Fees ($) <span class="val-badge" id="fee-display">$0</span></label>
+                <input type="number" id="external-fee" value="0" min="0" step="10">
+            </div>
+
+            <!-- Lead Generator Sourcing -->
+            <div class="form-group">
+                <label>Lead Generator Origin</label>
+                <div class="toggle-group">
+                    <button class="toggle-btn active" id="btn-lg-indep" onclick="setLeadGenSource('independent')">Independent Member</button>
+                    <button class="toggle-btn" id="btn-lg-mgmt" onclick="setLeadGenSource('management')">Management Sourced</button>
+                </div>
+            </div>
+
+            <div class="form-group" id="lg-slider-group">
+                <label>Lead Generator Cut % <span class="val-badge" id="lg-pct-val">15%</span></label>
+                <input type="range" id="lg-pct" min="10" max="20" value="15" step="1" oninput="calculate()">
+            </div>
+
+            <!-- Management Base Split -->
+            <div class="form-group">
+                <label>Management Cut % <span class="val-badge" id="mgmt-pct-val">20%</span></label>
+                <input type="range" id="mgmt-pct" min="20" max="25" value="20" step="1" oninput="calculate()">
+            </div>
+
+            <!-- Department Leader Split -->
+            <div class="form-group">
+                <label>Group Leader Cut % <span class="val-badge" id="ldr-pct-val">10%</span></label>
+                <input type="range" id="ldr-pct" min="5" max="10" value="10" step="1" oninput="calculate()">
+            </div>
+
+            <!-- Project Type (Cross-Departmental) -->
+            <div class="form-group">
+                <label>Project Structure</label>
+                <div class="toggle-group">
+                    <button class="toggle-btn active" id="btn-single-dept" onclick="setDeptStructure('single')">Single Niche</button>
+                    <button class="toggle-btn" id="btn-multi-dept" onclick="setDeptStructure('multi')">Cross-Departmental</button>
+                </div>
+            </div>
+
+            <!-- Dynamic Multi-Dept Settings -->
+            <div class="dynamic-section" id="multi-dept-box" style="display: none;">
+                <label style="color: var(--accent-cyan); margin-bottom: 0.75rem;">Multi-Leader Revenue Weights</label>
+                <div class="form-group">
+                    <label>Dept 1 (e.g. Technology) Weight % <span class="val-badge" id="d1-weight-val">60%</span></label>
+                    <input type="range" id="d1-weight" min="10" max="90" value="60" step="5" oninput="calculate()">
+                </div>
+                <div class="form-group">
+                    <label>Dept 2 (e.g. Creative/Design) Weight: <span class="val-badge" id="d2-weight-val">40%</span></label>
+                </div>
+            </div>
+
+            <!-- Freelancer Group Setup -->
+            <div class="form-group">
+                <label>Execution Team Model</label>
+                <div class="toggle-group">
+                    <button class="toggle-btn active" id="btn-team-solo" onclick="setTeamModel('solo')">Single Freelancer</button>
+                    <button class="toggle-btn" id="btn-team-group" onclick="setTeamModel('group')">Freelancer Group (Lead Bonus)</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Output Calculation Summary Card -->
+        <div class="card">
+            <div class="card-header">
+                <span style="font-size: 1.5rem;">📊</span>
+                <h2 class="card-title">Live Payout Disbursement</h2>
+            </div>
+
+            <div class="summary-cards">
+                <div class="summary-card card-lg">
+                    <div class="label">Lead Generator</div>
+                    <div class="amount" id="out-lg-amount">$300</div>
+                    <div class="share-pct" id="out-lg-share">15.0% of Net</div>
+                </div>
+                <div class="summary-card card-mgmt">
+                    <div class="label">Management</div>
+                    <div class="amount" id="out-mgmt-amount">$400</div>
+                    <div class="share-pct" id="out-mgmt-share">20.0% of Net</div>
+                </div>
+                <div class="summary-card card-ldr">
+                    <div class="label">Group Leader(s)</div>
+                    <div class="amount" id="out-ldr-amount">$200</div>
+                    <div class="share-pct" id="out-ldr-share">10.0% of Net</div>
+                </div>
+                <div class="summary-card card-fl">
+                    <div class="label">Freelancer Pool</div>
+                    <div class="amount" id="out-fl-amount">$1,100</div>
+                    <div class="share-pct" id="out-fl-share">55.0% of Net</div>
+                </div>
+            </div>
+
+            <label>Revenue Share Distribution Visualizer</label>
+            <div class="distribution-bar">
+                <div class="bar-segment bar-lg" id="bar-lg" style="width: 15%;"></div>
+                <div class="bar-segment bar-mgmt" id="bar-mgmt" style="width: 20%;"></div>
+                <div class="bar-segment bar-ldr" id="bar-ldr" style="width: 10%;"></div>
+                <div class="bar-segment bar-fl" id="bar-fl" style="width: 55%;"></div>
+            </div>
+
+            <label>Itemized Stakeholder Ledger</label>
+            <table class="results-table">
+                <thead>
+                    <tr>
+                        <th>Role / Recipient</th>
+                        <th>Type</th>
+                        <th>Payout Amount</th>
+                    </tr>
+                </thead>
+                <tbody id="ledger-rows">
+                    <!-- Dynamic rows inserted via JavaScript -->
+                </tbody>
+            </table>
+
+            <button class="action-btn" onclick="copySummaryText()">📋 Copy Financial Breakdown Summary</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    let config = {
+        lgSource: 'independent', // 'independent' or 'management'
+        deptStructure: 'single', // 'single' or 'multi'
+        teamModel: 'solo'       // 'solo' or 'group'
+    };
+
+    function setLeadGenSource(source) {
+        config.lgSource = source;
+        document.getElementById('btn-lg-indep').classList.toggle('active', source === 'independent');
+        document.getElementById('btn-lg-mgmt').classList.toggle('active', source === 'management');
+        document.getElementById('lg-slider-group').style.opacity = source === 'independent' ? '1' : '0.4';
+        document.getElementById('lg-pct').disabled = source === 'management';
+        calculate();
+    }
+
+    function setDeptStructure(type) {
+        config.deptStructure = type;
+        document.getElementById('btn-single-dept').classList.toggle('active', type === 'single');
+        document.getElementById('btn-multi-dept').classList.toggle('active', type === 'multi');
+        document.getElementById('multi-dept-box').style.display = type === 'multi' ? 'block' : 'none';
+        calculate();
+    }
+
+    function setTeamModel(model) {
+        config.teamModel = model;
+        document.getElementById('btn-team-solo').classList.toggle('active', model === 'solo');
+        document.getElementById('btn-team-group').classList.toggle('active', model === 'group');
+        calculate();
+    }
+
+    function calculate() {
+        const gross = parseFloat(document.getElementById('gross-revenue').value) || 0;
+        const fee = parseFloat(document.getElementById('external-fee').value) || 0;
+        const net = Math.max(0, gross - fee);
+
+        let lgPct = parseFloat(document.getElementById('lg-pct').value);
+        let mgmtBasePct = parseFloat(document.getElementById('mgmt-pct').value);
+        let ldrPct = parseFloat(document.getElementById('ldr-pct').value);
+        let d1Weight = parseFloat(document.getElementById('d1-weight').value) / 100;
+        let d2Weight = 1 - d1Weight;
+
+        // UI Label Updates
+        document.getElementById('gross-display').innerText = '$' + gross.toLocaleString();
+        document.getElementById('fee-display').innerText = '$' + fee.toLocaleString();
+        document.getElementById('lg-pct-val').innerText = lgPct + '%';
+        document.getElementById('mgmt-pct-val').innerText = mgmtBasePct + '%';
+        document.getElementById('ldr-pct-val').innerText = ldrPct + '%';
+        document.getElementById('d1-weight-val').innerText = Math.round(d1Weight * 100) + '%';
+        document.getElementById('d2-weight-val').innerText = Math.round(d2Weight * 100) + '%';
+
+        // Calculation Logic
+        let lgPayout = 0;
+        let effectiveMgmtPct = mgmtBasePct;
+
+        if (config.lgSource === 'independent') {
+            lgPayout = net * (lgPct / 100);
+        } else {
+            lgPayout = 0;
+            effectiveMgmtPct += lgPct; // Management absorbs lead gen cut
+        }
+
+        let mgmtPayout = net * (effectiveMgmtPct / 100);
+        let totalLdrPayout = net * (ldrPct / 100);
+        let flPoolPayout = net - (lgPayout + mgmtPayout + totalLdrPayout);
+
+        // Update Summary Cards
+        document.getElementById('out-lg-amount').innerText = '$' + Math.round(lgPayout).toLocaleString();
+        document.getElementById('out-lg-share').innerText = config.lgSource === 'independent' ? lgPct.toFixed(1) + '% of Net' : '0.0% (Absorbed)';
+        
+        document.getElementById('out-mgmt-amount').innerText = '$' + Math.round(mgmtPayout).toLocaleString();
+        document.getElementById('out-mgmt-share').innerText = effectiveMgmtPct.toFixed(1) + '% of Net';
+        
+        document.getElementById('out-ldr-amount').innerText = '$' + Math.round(totalLdrPayout).toLocaleString();
+        document.getElementById('out-ldr-share').innerText = ldrPct.toFixed(1) + '% of Net';
+        
+        document.getElementById('out-fl-amount').innerText = '$' + Math.round(flPoolPayout).toLocaleString();
+        document.getElementById('out-fl-share').innerText = ((flPoolPayout / net) * 100).toFixed(1) + '% of Net';
+
+        // Update Distribution Bar
+        const lgBarPct = (lgPayout / net) * 100;
+        const mgmtBarPct = (mgmtPayout / net) * 100;
+        const ldrBarPct = (totalLdrPayout / net) * 100;
+        const flBarPct = (flPoolPayout / net) * 100;
+
+        document.getElementById('bar-lg').style.width = lgBarPct + '%';
+        document.getElementById('bar-mgmt').style.width = mgmtBarPct + '%';
+        document.getElementById('bar-ldr').style.width = ldrBarPct + '%';
+        document.getElementById('bar-fl').style.width = flBarPct + '%';
+
+        // Populate Itemized Table
+        const tableBody = document.getElementById('ledger-rows');
+        tableBody.innerHTML = '';
+
+        if (config.lgSource === 'independent') {
+            addRow('Lead Generator', 'Independent Member', lgPayout, 'pill-lg');
+        } else {
+            addRow('Lead Generator', 'Management Absorbed', 0, 'pill-lg');
+        }
+
+        addRow('Founding Management', 'Core Operations', mgmtPayout, 'pill-mgmt');
+
+        if (config.deptStructure === 'single') {
+            addRow('Group Leader', 'Primary Niche Leader', totalLdrPayout, 'pill-ldr');
+        } else {
+            addRow('Tech Department Leader', `Leader Split (${Math.round(d1Weight * 100)}%)`, totalLdrPayout * d1Weight, 'pill-ldr');
+            addRow('Creative Department Leader', `Leader Split (${Math.round(d2Weight * 100)}%)`, totalLdrPayout * d2Weight, 'pill-ldr');
+        }
+
+        if (config.teamModel === 'solo') {
+            addRow('Primary Freelancer', 'Solo Execution', flPoolPayout, 'pill-fl');
+        } else {
+            const leadBonus = flPoolPayout * 0.15;
+            const remainingFl = flPoolPayout - leadBonus;
+            addRow('Lead Freelancer', 'Architect + Lead Bonus (15%)', leadBonus + (remainingFl * 0.45), 'pill-fl');
+            addRow('Specialist Freelancer(s)', 'Execution Pool (85%)', remainingFl * 0.55, 'pill-fl');
+        }
+    }
+
+    function addRow(role, type, amount, pillClass) {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td style="font-weight: 600; color: #fff;">${role}</td>
+            <td><span class="pill ${pillClass}">${type}</span></td>
+            <td style="font-weight: 700; color: var(--accent-cyan);">$${Math.round(amount).toLocaleString()}</td>
+        `;
+        document.getElementById('ledger-rows').appendChild(row);
+    }
+
+    function copySummaryText() {
+        const gross = document.getElementById('gross-display').innerText;
+        const lg = document.getElementById('out-lg-amount').innerText;
+        const mgmt = document.getElementById('out-mgmt-amount').innerText;
+        const ldr = document.getElementById('out-ldr-amount').innerText;
+        const fl = document.getElementById('out-fl-amount').innerText;
+
+        const summary = `📌 DIGIHUST PROJECT FINANCIAL BREAKDOWN
+Gross Project Revenue: ${gross}
+- Lead Generator: ${lg}
+- Management Cut: ${mgmt}
+- Leader(s) Cut: ${ldr}
+- Freelancer Pool: ${fl}
+Generated via DigiHust Financial Architecture.`;
+
+        navigator.clipboard.writeText(summary);
+        alert('Financial breakdown copied to clipboard!');
+    }
+
+    // Initial calculation on page load
+    document.getElementById('gross-revenue').addEventListener('input', calculate);
+    document.getElementById('external-fee').addEventListener('input', calculate);
+    calculate();
+</script>
+
+</body>
+</html>
