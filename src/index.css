@@ -2,196 +2,73 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ─── CSS Custom Property for border-spin animation ─────────────────────────── */
-@property --angle {
-  syntax: '<angle>';
-  initial-value: 0deg;
-  inherits: false;
+:root {
+  --bg-dark: #071e26;
+  --surface-bg: #0d2833;
+  --surface-border: #1e4a5d;
+  --accent-teal: #1a7a8c;
+  --accent-sky: #bde0fe;
+  --accent-emerald: #10b981;
+  --accent-amber: #f59e0b;
+  --accent-rose: #f43f5e;
+  --text-main: #ffffff;
+  --text-muted: #94a3b8;
 }
 
-/* ─── Global Base ────────────────────────────────────────────────────────────── */
-@layer base {
-  html {
-    scroll-behavior: smooth;
-  }
-  body {
-    background-color: #071e26;
-    color: #f1f5f9;
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-  }
-  ::selection {
-    background-color: #1a7a8c;
-    color: #ffffff;
-  }
-  * {
-    scrollbar-width: thin;
-    scrollbar-color: #1e4a5d #071e26;
-  }
-  *::-webkit-scrollbar { width: 6px; }
-  *::-webkit-scrollbar-track { background: #071e26; }
-  *::-webkit-scrollbar-thumb { background: #1e4a5d; border-radius: 3px; }
+body {
+  background-color: var(--bg-dark);
+  background-image: 
+    linear-gradient(to bottom, rgba(7, 30, 38, 0.95), rgba(7, 30, 38, 1)),
+    radial-gradient(circle at 50% 0%, rgba(26, 122, 140, 0.12) 0%, transparent 60%);
+  background-attachment: fixed;
+  color: #ffffff;
 }
 
-/* ─── Utility Classes ────────────────────────────────────────────────────────── */
-@layer utilities {
+/* Premium Agency Card Styling (Clean, non-AI) */
+.breeze-card {
+  background-color: #0d2833;
+  border: 1px solid #1e4a5d;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+  border-radius: 1rem;
+}
 
-  /* Breeze card */
-  .breeze-card {
-    @apply bg-[#0d2833] border border-[#1e4a5d] rounded-2xl;
-  }
-  .breeze-card-hover {
-    @apply breeze-card hover:border-[#1a7a8c]/60 hover:bg-[#113240] transition-all duration-300;
-  }
-  .breeze-btn-primary {
-    @apply inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl
-           bg-[#1a7a8c] hover:bg-[#156575] text-white font-bold transition-all duration-200 shadow-md;
-  }
+.breeze-card-hover {
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
 
-  /* ── Parlo-style animated border button ── */
-  .btn-glow {
-    position: relative;
-    z-index: 0;
-    border-radius: 9999px;
-    padding: 0;
-    overflow: hidden;
-    isolation: isolate;
-  }
-  .btn-glow::before {
-    content: '';
-    position: absolute;
-    inset: -2px;
-    border-radius: inherit;
-    background: conic-gradient(
-      from var(--angle),
-      transparent 0%,
-      transparent 60%,
-      #bde0fe 75%,
-      #1a7a8c 85%,
-      #bde0fe 90%,
-      transparent 100%
-    );
-    animation: border-spin 3s linear infinite;
-    z-index: -1;
-  }
-  .btn-glow-inner {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 8px 20px;
-    border-radius: inherit;
-    background: #071e26;
-    font-weight: 700;
-    font-size: 0.875rem;
-    color: #ffffff;
-    position: relative;
-    z-index: 1;
-    white-space: nowrap;
-  }
+.breeze-card-hover:hover {
+  border-color: #2b657e;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+}
 
-  /* ── Perspective 3D Grid ── */
-  .perspective-grid-wrap {
-    perspective: 1000px;
-    perspective-origin: center center;
-    transform-style: preserve-3d;
-    width: 100%;
-    height: 100%;
-    position: absolute;
-    inset: 0;
-    overflow: hidden;
-  }
-  .perspective-grid-inner {
-    transform: translate(-50%, -50%) rotateX(52deg);
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform-origin: center center;
-    display: flex;
-    flex-direction: column;
-  }
-  .perspective-grid-row {
-    display: flex;
-    border-left: 1px solid #1e4a5d;
-  }
-  .perspective-grid-cell {
-    width: 90px;
-    height: 90px;
-    flex-shrink: 0;
-    box-sizing: border-box;
-    border-right: 1px solid #1e4a5d;
-    border-top: 1px solid #1e4a5d;
-  }
+.breeze-btn-primary {
+  background-color: #1a7a8c;
+  color: #ffffff;
+  font-weight: 700;
+  transition: background-color 0.2s ease, transform 0.15s ease;
+}
 
-  /* ── Top glow bloom ── */
-  .hero-glow-bloom {
-    position: absolute;
-    top: -60px;
-    left: 50%;
-    width: 180%;
-    height: 380px;
-    transform: translateX(-50%);
-    background: radial-gradient(ellipse at 50% 0%, #1a7a8c 0%, #071e26 65%);
-    opacity: 0.35;
-    filter: blur(60px);
-    pointer-events: none;
-    z-index: 0;
-    animation: glow-pulse 4s ease-in-out infinite;
-  }
-  .hero-glow-mid {
-    position: absolute;
-    top: 200px;
-    left: 50%;
-    width: 600px;
-    height: 300px;
-    transform: translateX(-50%);
-    background: radial-gradient(ellipse at center, #1a7a8c 0%, transparent 70%);
-    opacity: 0.18;
-    filter: blur(40px);
-    pointer-events: none;
-    z-index: 0;
-  }
+.breeze-btn-primary:hover {
+  background-color: #156575;
+  transform: translateY(-1px);
+}
 
-  /* ── Marquee ── */
-  .marquee-container {
-    overflow: hidden;
-    width: 100%;
-    mask-image: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%);
-    -webkit-mask-image: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%);
-  }
-  .marquee-track {
-    display: flex;
-    width: max-content;
-    animation: marquee 28s linear infinite;
-  }
-  .marquee-track:hover {
-    animation-play-state: paused;
-  }
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
 
-  /* ── Side border lines (Parlo signature) ── */
-  .side-borders::before,
-  .side-borders::after {
-    content: '';
-    position: fixed;
-    top: 0;
-    bottom: 0;
-    width: 1px;
-    background-color: #1e4a5d;
-    z-index: 60;
-    pointer-events: none;
-  }
-  .side-borders::before { left: 28px; }
-  .side-borders::after  { right: 28px; }
+::-webkit-scrollbar-track {
+  background: #071e26;
+}
 
-  /* ── Accordion ── */
-  .faq-answer {
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.35s ease, opacity 0.3s ease;
-    opacity: 0;
-  }
-  .faq-answer.open {
-    max-height: 500px;
-    opacity: 1;
-  }
+::-webkit-scrollbar-thumb {
+  background: #1e4a5d;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #1a7a8c;
 }
