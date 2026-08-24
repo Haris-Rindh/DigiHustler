@@ -12,6 +12,7 @@ import { HowItWorks } from './components/public/HowItWorks';
 import { About } from './components/public/About';
 import { Team } from './components/public/Team';
 import { Contact } from './components/public/Contact';
+import { DemoOne } from '@/components/ui/demo';
 
 // Internal platform pages (Client Portal)
 import { KanbanPipeline } from './components/dashboard/KanbanPipeline';
@@ -35,6 +36,7 @@ export const App: React.FC = () => {
               <Route path="/about" element={<About />} />
               <Route path="/team" element={<Team />} />
               <Route path="/contact" element={<Contact />} />
+              <Route path="/demo" element={<DemoOne />} />
 
               {/* ── Internal Client Portal Routes ── */}
               <Route path="/dashboard" element={<KanbanPipeline />} />
