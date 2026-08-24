@@ -1,0 +1,28 @@
+# DigiHust
+
+> Digital Services Handled by Specialized Talent. One Company. One Point of Contact.
+
+DigiHust is a modern digital agency and talent-powered solution company headquartered in Pakistan. Instead of requiring clients to hire and coordinate isolated freelancers, DigiHust provides single-contract, fully managed delivery across specialized multi-disciplinary teams sourced and verified through Digiskill.
+
+## Core Capabilities
+- **Web & Full-Stack Development**: Custom web applications, React, Next.js, Node.js, API architecture, database optimization, and cloud deployments.
+- **Creative & UI/UX Design**: Brand identity systems, design systems, Figma UI/UX prototyping, vector graphics, motion design, and video editing.
+- **AI & Workflow Automation**: Custom OpenAI / LLM integrations, chatbot assistants, workflow automations (n8n, Zapier, Make), and intelligent data extractors.
+- **Digital Marketing & Growth**: SEO audit & execution, PPC advertising (Google Ads, Meta Ads), content marketing, and B2B cold outreach strategies.
+- **Cybersecurity & Cloud**: Web application penetration testing, vulnerability assessments, OWASP compliance, and security policy architecture.
+- **Business Intelligence & Data**: PowerBI dashboard development, ETL pipelines, SQL reporting, and administrative digital assistance.
+
+## Operating Model
+1. **Intake & Scope**: Client provides project brief via `/contact` or proposal intake.
+2. **Team Assembly**: DigiHust management matches verified domain specialists to the exact project requirements.
+3. **Execution**: Transparent iterative sprint execution with structured milestone reviews and QA.
+4. **Delivery**: Production deployment, comprehensive documentation handover, and post-launch support.
+
+## Key Links
+- Primary Website: https://digihust.com/
+- Services Breakdown: https://digihust.com/services
+- Selected Case Studies: https://digihust.com/work
+- Process & Methodology: https://digihust.com/how-it-works
+- Company Story & Vision: https://digihust.com/about
+- Team & Domain Leads: https://digihust.com/team
+- Get a Scoped Quote: https://digihust.com/contact

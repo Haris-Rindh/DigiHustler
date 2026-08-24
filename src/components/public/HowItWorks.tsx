@@ -1,165 +1,290 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ArrowRight, CheckCircle2, ChevronDown, HelpCircle, ShieldCheck } from 'lucide-react';
+import { SEOHead } from '../seo/SEOHead';
 
 const STEPS = [
   {
     num: '01',
-    title: 'Tell Us What You Need',
-    detail: 'Submit your project through the Get a Quote form. Tell us your idea, problem, or goal. Be as detailed or brief as you like — we will clarify together in our first conversation.',
+    title: 'Requirement Intake & Scoping',
+    detail: 'Submit your requirements via our quote portal. We schedule a 20-minute discovery session to define technical architecture, deliverables, timeline constraints, and success criteria.',
     points: [
-      'What do you want to build or fix?',
-      'Who is the audience or end user?',
-      'What does success look like?',
-      'Do you have existing materials, branding, or code?',
+      'Comprehensive functional specifications review',
+      'Target user persona and performance metrics alignment',
+      'Tech stack and infrastructure evaluation',
+      'Fixed scope proposal with milestone breakdown',
     ],
   },
   {
     num: '02',
-    title: 'We Build the Right Team',
-    detail: "DigiHust's management team reviews your project brief and identifies which combination of skills it needs. We then assemble a specialized team from our talent network — precisely matched to your project.",
+    title: 'Specialized Squad Assembly',
+    detail: "DigiHust's management architects the project team, assigning domain-verified Digiskill specialists under a single accountable lead. You get specialists, not generalists.",
     points: [
-      'Single point of contact assigned to you',
-      'No irrelevant people on your project',
-      'Team selected from verified Digiskill professionals',
-      'You\'re briefed on who is working and why',
+      'Single lead point of contact assigned to your project',
+      'Engineers, UI/UX designers, and QA matched to requirements',
+      'Direct oversight and sprint tracking by management',
+      'Clear NDA and IP assignment signed upfront',
     ],
   },
   {
     num: '03',
-    title: 'We Create',
-    detail: 'The team goes to work with clear milestones and deliverables. You receive regular progress updates. Feedback rounds are built in so nothing gets delivered as a surprise.',
+    title: 'Sprint Execution & Live Previews',
+    detail: 'We build in transparent weekly sprints. You receive staging preview links, regular progress updates, and structured feedback milestones so there are zero surprises.',
     points: [
-      'Structured milestones and delivery dates',
-      'Shared project workspace and regular check-ins',
-      'Revision rounds built in to every scope',
-      'Final QA before handover',
+      'Structured weekly milestone delivery checkpoints',
+      'Private staging environments to review live progress',
+      'Included revision rounds on all UI and logic scopes',
+      'Comprehensive automated and manual QA passes',
     ],
   },
   {
     num: '04',
-    title: 'We Deliver',
-    detail: "You receive the final deliverables — complete, documented, and production-ready. We don't just hand over files; we walk you through what was built and make sure you can use it confidently.",
+    title: 'Production Handover & Support',
+    detail: "We deploy to your live production infrastructure, hand over 100% of source code and assets, provide documentation, and initiate your post-launch support window.",
     points: [
-      'Full file and code handover',
-      'Delivery documentation and usage notes',
-      'Post-delivery support window',
-      'Option for ongoing retainer if needed',
+      'Complete Git repository and asset ownership transfer',
+      'Architecture diagrams and developer documentation',
+      'Dedicated post-launch warranty and bug-fix window',
+      'Optional ongoing retainer or continuous feature squad',
     ],
   },
 ];
 
+const FAQS = [
+  {
+    q: 'How does working with DigiHust differ from hiring freelancers on Upwork or Fiverr?',
+    a: 'On freelancer marketplaces, you bear 100% of the burden of vetting, coordinating, and managing multiple disparate freelancers. If one drops out or writes buggy code, the project stalls. With DigiHust, you contract with a single company that guarantees delivery, enforces quality standards, and manages the entire team internally.',
+  },
+  {
+    q: 'Who owns the intellectual property (IP) and source code?',
+    a: 'You do. Upon project completion and milestone settlement, 100% of source code, vector design assets, databases, and deployment keys are transferred directly to your organization with complete IP ownership.',
+  },
+  {
+    q: 'What is the typical project turnaround time?',
+    a: 'Landing pages and brand identity kits typically take 1–2 weeks. Full-stack web applications and AI automations range between 3–8 weeks depending on complexity. We establish fixed milestone dates before contract signing.',
+  },
+  {
+    q: 'How are project quotes and milestones structured?',
+    a: 'We work on milestone-based fixed pricing or structured sprint retainers. You only approve payments as verified deliverables are demonstrated on staging environments.',
+  },
+  {
+    q: 'Can DigiHust handle ongoing maintenance after launch?',
+    a: 'Yes. We offer monthly maintenance, server monitoring, security patching, and ongoing feature development squads.',
+  },
+];
+
 export const HowItWorks: React.FC = () => {
+  const [openFaq, setOpenFaq] = useState<number | null>(0);
+
+  const faqSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: FAQS.map((f) => ({
+      '@type': 'Question',
+      name: f.q,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: f.a,
+      },
+    })),
+  };
+
   return (
     <div className="pt-16">
+      <SEOHead
+        title="How It Works & Project Methodology — DigiHust"
+        description="Learn about DigiHust's structured 4-step process: Intake & Scoping, Specialist Squad Assembly, Sprint Execution, and Production Handover."
+        schema={faqSchema}
+      />
 
       {/* Header */}
-      <div className="bg-[#071e26] py-20 px-6 lg:px-8 border-b border-[#1e4a5d]">
+      <section className="bg-[#071e26] py-20 px-6 lg:px-8 border-b border-[#1e4a5d]">
         <div className="max-w-7xl mx-auto">
-          <p className="text-xs font-extrabold text-[#1a7a8c] uppercase tracking-widest mb-4">The Process</p>
-          <h1 className="font-display font-extrabold text-5xl text-white mb-5">How DigiHust Works</h1>
-          <p className="text-lg text-slate-300 max-w-xl">
-            A simple, professional process from your first message to your final delivered product.
-          </p>
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+          >
+            <p className="text-xs font-extrabold text-[#1a7a8c] uppercase tracking-widest mb-3">
+              Delivery Methodology
+            </p>
+            <h1 className="font-display font-extrabold text-4xl sm:text-5xl lg:text-6xl text-white mb-5">
+              How DigiHust Works.
+            </h1>
+            <p className="text-lg text-slate-300 max-w-2xl leading-relaxed">
+              A disciplined, 4-step process transforming ideas into production-ready digital products with zero guesswork.
+            </p>
+          </motion.div>
         </div>
-      </div>
+      </section>
 
-      {/* Model Explainer Banner */}
-      <div className="bg-[#0d2833] border-b border-[#1e4a5d] py-10 px-6 lg:px-8">
-        <div className="max-w-5xl mx-auto">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-            {['CLIENT', 'DIGIHUST', 'SPECIALIST TEAM', 'DELIVERED SOLUTION'].map((label, i) => (
-              <React.Fragment key={label}>
-                <div className={`text-center px-6 py-4 rounded-xl border ${i === 1 ? 'border-[#1a7a8c] bg-[#1a7a8c]/20' : 'border-[#1e4a5d] bg-[#071e26]'}`}>
-                  <p className={`text-sm font-extrabold uppercase tracking-widest ${i === 1 ? 'text-[#bde0fe]' : 'text-slate-300'}`}>{label}</p>
-                </div>
-                {i < 3 && (
-                  <div className="hidden md:block">
-                    <ArrowRight className="w-5 h-5 text-[#1a7a8c]" />
-                  </div>
-                )}
-              </React.Fragment>
-            ))}
-          </div>
-          <p className="text-center text-xs text-slate-500 mt-6 max-w-xl mx-auto">
-            Instead of managing multiple freelancers directly, you work with DigiHust as one professional entity. We handle the team, the workflow, and the delivery.
-          </p>
-        </div>
-      </div>
-
-      {/* Steps */}
-      <div className="bg-white py-20 px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto space-y-0">
+      {/* Process Steps */}
+      <section className="bg-white py-20 px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto space-y-12">
           {STEPS.map((step, i) => (
-            <div key={step.num} className={`flex flex-col lg:flex-row gap-0 items-stretch ${i % 2 === 1 ? 'lg:flex-row-reverse' : ''}`}>
-
-              {/* Number Column */}
-              <div className={`lg:w-1/3 flex flex-col items-center justify-center py-16 px-8 ${i % 2 === 0 ? 'bg-[#071e26]' : 'bg-[#0d2833]'}`}>
-                <div className="text-7xl lg:text-9xl font-display font-extrabold text-[#1e4a5d] leading-none mb-4 select-none">{step.num}</div>
-                <h2 className="font-display font-extrabold text-2xl text-white text-center">{step.title}</h2>
+            <motion.div
+              key={step.num}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.4 }}
+              className={`flex flex-col lg:flex-row items-stretch rounded-3xl border border-gray-200 overflow-hidden shadow-sm hover:shadow-md transition-shadow ${
+                i % 2 === 1 ? 'lg:flex-row-reverse' : ''
+              }`}
+            >
+              {/* Step Number Sidebar */}
+              <div
+                className={`lg:w-1/3 p-10 flex flex-col justify-between text-white ${
+                  i % 2 === 0 ? 'bg-[#071e26]' : 'bg-[#0d2833]'
+                }`}
+              >
+                <div>
+                  <span className="text-xs font-extrabold text-[#1a7a8c] uppercase tracking-widest">
+                    Phase {step.num}
+                  </span>
+                  <div className="text-7xl lg:text-8xl font-display font-black text-[#1e4a5d]/60 select-none my-2">
+                    {step.num}
+                  </div>
+                </div>
+                <h2 className="font-display font-extrabold text-2xl sm:text-3xl text-white">
+                  {step.title}
+                </h2>
               </div>
 
-              {/* Detail Column */}
-              <div className="lg:w-2/3 py-16 px-8 lg:px-12 bg-white border-l border-gray-100">
-                <p className="text-base text-gray-600 leading-relaxed mb-8 max-w-lg">{step.detail}</p>
-                <ul className="space-y-3">
-                  {step.points.map(pt => (
-                    <li key={pt} className="flex items-start space-x-3">
-                      <span className="w-5 h-5 rounded-full bg-[#1a7a8c]/10 border border-[#1a7a8c]/30 text-[#1a7a8c] flex items-center justify-center text-[10px] font-black mt-0.5">✓</span>
-                      <span className="text-sm text-gray-700">{pt}</span>
-                    </li>
+              {/* Step Description & Checklist */}
+              <div className="lg:w-2/3 p-8 sm:p-12 bg-white flex flex-col justify-center">
+                <p className="text-base text-gray-700 leading-relaxed mb-8">
+                  {step.detail}
+                </p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                  {step.points.map((pt) => (
+                    <div key={pt} className="flex items-start space-x-2.5">
+                      <CheckCircle2 className="w-4 h-4 text-[#1a7a8c] flex-shrink-0 mt-0.5" />
+                      <span className="text-xs sm:text-sm text-gray-600 font-medium">{pt}</span>
+                    </div>
                   ))}
-                </ul>
+                </div>
               </div>
-
-            </div>
+            </motion.div>
           ))}
         </div>
-      </div>
+      </section>
 
-      {/* FAQ */}
-      <div className="bg-gray-50 py-20 px-6 lg:px-8 border-t border-gray-100">
-        <div className="max-w-3xl mx-auto">
-          <h2 className="font-display font-extrabold text-3xl text-gray-900 mb-10 text-center">Common Questions</h2>
-          <div className="space-y-6">
-            {[
-              {
-                q: 'Do you work with small businesses and startups?',
-                a: 'Yes. We work with businesses of every size — from solo founders launching their first product to established companies that need ongoing digital support.',
-              },
-              {
-                q: 'How long does a project typically take?',
-                a: 'It depends on scope. Simple websites typically take 1–3 weeks. Complex apps, branding systems, or multi-channel campaigns may take 4–12 weeks. We\'ll give you a timeline estimate before any work begins.',
-              },
-              {
-                q: 'What information do I need to provide?',
-                a: 'As much or as little as you have. If you have a detailed spec, great. If you have a rough idea on a napkin, that\'s fine too. Our intake call will help clarify everything.',
-              },
-              {
-                q: 'Can I get a quote before committing?',
-                a: 'Absolutely. Use our Get a Quote form and we\'ll come back to you within 24 hours with a detailed scope and pricing estimate. No commitment required.',
-              },
-            ].map(faq => (
-              <div key={faq.q} className="bg-white rounded-xl border border-gray-200 p-6">
-                <p className="font-bold text-gray-900 mb-2">{faq.q}</p>
-                <p className="text-sm text-gray-500 leading-relaxed">{faq.a}</p>
-              </div>
-            ))}
+      {/* Model Comparison Table */}
+      <section className="bg-[#0d2833] py-20 px-6 lg:px-8 border-y border-[#1e4a5d]">
+        <div className="max-w-5xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="font-display font-extrabold text-3xl text-white mb-3">
+              Why DigiHust vs. Freelance Marketplaces
+            </h2>
+            <p className="text-slate-400 text-sm max-w-lg mx-auto">
+              How managed team delivery compares to individual freelance contracting.
+            </p>
+          </div>
+
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-sm text-slate-300 border-collapse border border-[#1e4a5d] rounded-2xl overflow-hidden">
+              <thead>
+                <tr className="bg-[#071e26] text-xs uppercase tracking-wider text-slate-400 border-b border-[#1e4a5d]">
+                  <th className="p-4 sm:p-5">Comparison Metric</th>
+                  <th className="p-4 sm:p-5 text-[#bde0fe]">DigiHust Managed Model</th>
+                  <th className="p-4 sm:p-5 text-slate-500">Individual Freelancers</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-[#1e4a5d] text-xs sm:text-sm">
+                {[
+                  ['Point of Contact', 'Single accountable lead manager', 'You manage 3–6 separate people'],
+                  ['Accountability', 'Guaranteed company SLA & backup talent', 'High risk of ghosting or delays'],
+                  ['Talent Verification', 'Strictly verified Digiskill domain leads', 'Self-reported marketplace ratings'],
+                  ['Quality Assurance', 'Internal pre-handover QA & code review', 'You must QA everything yourself'],
+                  ['Billing & Contracts', 'Single consolidated contract & invoices', 'Multiple separate invoices & fees'],
+                ].map(([metric, digi, free]) => (
+                  <tr key={metric} className="hover:bg-white/5 transition-colors">
+                    <td className="p-4 sm:p-5 font-bold text-white">{metric}</td>
+                    <td className="p-4 sm:p-5 font-semibold text-emerald-400 flex items-center space-x-1.5">
+                      <CheckCircle2 className="w-4 h-4 flex-shrink-0" />
+                      <span>{digi}</span>
+                    </td>
+                    <td className="p-4 sm:p-5 text-slate-400">{free}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
-      </div>
+      </section>
+
+      {/* FAQ Section */}
+      <section className="bg-white py-20 px-6 lg:px-8">
+        <div className="max-w-3xl mx-auto">
+          <div className="text-center mb-12">
+            <p className="text-xs font-extrabold text-[#1a7a8c] uppercase tracking-widest mb-2 flex items-center justify-center space-x-1">
+              <HelpCircle className="w-4 h-4" />
+              <span>Clarity & Transparency</span>
+            </p>
+            <h2 className="font-display font-extrabold text-3xl sm:text-4xl text-gray-900">
+              Frequently Asked Questions
+            </h2>
+          </div>
+
+          <div className="space-y-4">
+            {FAQS.map((faq, idx) => {
+              const isOpen = openFaq === idx;
+
+              return (
+                <div
+                  key={faq.q}
+                  className="border border-gray-200 rounded-2xl overflow-hidden transition-all bg-white"
+                >
+                  <button
+                    onClick={() => setOpenFaq(isOpen ? null : idx)}
+                    className="w-full text-left p-5 sm:p-6 flex items-center justify-between gap-4 font-display font-bold text-base sm:text-lg text-gray-900 hover:text-[#1a7a8c] transition-colors"
+                  >
+                    <span>{faq.q}</span>
+                    <ChevronDown
+                      className={`w-5 h-5 text-gray-400 flex-shrink-0 transition-transform duration-300 ${
+                        isOpen ? 'rotate-180 text-[#1a7a8c]' : ''
+                      }`}
+                    />
+                  </button>
+
+                  <AnimatePresence>
+                    {isOpen && (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        exit={{ opacity: 0, height: 0 }}
+                        transition={{ duration: 0.25 }}
+                        className="px-5 sm:px-6 pb-6 pt-1 text-sm text-gray-600 leading-relaxed border-t border-gray-100 bg-gray-50/50"
+                      >
+                        {faq.a}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
 
       {/* CTA */}
-      <div className="bg-[#071e26] py-20 px-6 lg:px-8 text-center border-t border-[#1e4a5d]">
-        <h2 className="font-display font-extrabold text-3xl text-white mb-4">Ready to start?</h2>
-        <p className="text-slate-400 mb-8 max-w-md mx-auto">Tell us what you need. We'll take it from there.</p>
-        <Link to="/contact"
-          className="inline-flex items-center space-x-2 px-8 py-4 rounded-xl bg-[#1a7a8c] hover:bg-[#156575] text-white font-bold shadow-lg transition-all">
+      <section className="bg-[#071e26] py-20 px-6 lg:px-8 text-center border-t border-[#1e4a5d]">
+        <h2 className="font-display font-extrabold text-3xl text-white mb-4">
+          Ready to Start Your Project?
+        </h2>
+        <p className="text-slate-300 mb-8 max-w-md mx-auto">
+          Submit your scope to receive a formal proposal and timeline within 24 hours.
+        </p>
+        <Link
+          to="/contact"
+          className="inline-flex items-center space-x-2 px-8 py-4 rounded-xl bg-[#1a7a8c] hover:bg-[#156575] text-white font-bold shadow-lg transition-all"
+        >
           <span>Get a Quote</span>
           <ArrowRight className="w-4 h-4" />
         </Link>
-      </div>
-
+      </section>
     </div>
   );
 };

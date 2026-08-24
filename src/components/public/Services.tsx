@@ -1,206 +1,304 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Code, Palette, Cpu, TrendingUp, Shield, Database, ChevronRight } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import {
+  ArrowRight,
+  Code,
+  Palette,
+  Cpu,
+  TrendingUp,
+  Shield,
+  Database,
+  ChevronDown,
+  CheckCircle2,
+  Sparkles,
+} from 'lucide-react';
+import { SEOHead } from '../seo/SEOHead';
 
 const SERVICES = [
   {
+    id: 'development',
     icon: <Code className="w-7 h-7" />,
-    title: 'Development',
-    headline: 'Websites · Web Apps · Frontend · Backend',
-    description: 'We build digital products that are fast, scalable, and maintainable — from simple landing pages to full enterprise web applications.',
+    title: 'Web & App Development',
+    headline: 'Websites · React/Next.js Apps · Backend APIs · DevOps',
+    description: 'We build responsive, robust digital platforms engineered for performance, clean codebase architecture, and seamless scalability.',
     offerings: [
-      'Custom Website Design & Development',
-      'React & Next.js Web Applications',
-      'Backend API & Database Architecture',
-      'Mobile-Responsive Builds',
-      'E-Commerce Platforms',
-      'Maintenance & Ongoing Support',
+      'Custom Responsive Websites & Landing Pages',
+      'Full-Stack React & Next.js Web Applications',
+      'Node.js / Python REST & GraphQL APIs',
+      'E-Commerce & Payment Gateway Integration',
+      'Database Architecture (PostgreSQL, MongoDB, Redis)',
+      'CI/CD Pipelines, Docker, & Cloud Deployment',
     ],
-    tags: ['React', 'Next.js', 'Node.js', 'TypeScript', 'Python', 'Mobile Apps'],
+    tags: ['React', 'Next.js', 'Node.js', 'TypeScript', 'Tailwind CSS', 'AWS', 'PostgreSQL'],
     color: '#1a7a8c',
-    bg: 'bg-[#1a7a8c]/10',
+    bgLight: 'bg-[#1a7a8c]/5',
   },
   {
+    id: 'creative',
     icon: <Palette className="w-7 h-7" />,
-    title: 'Creative & Design',
-    headline: 'Graphic Design · UI/UX · Branding · Social Media Design',
-    description: 'We design visual identities and interfaces that make your brand memorable and your product intuitive to use.',
+    title: 'Creative & UI/UX Design',
+    headline: 'Brand Systems · UI/UX · Figma Prototypes · Motion Graphics',
+    description: 'We craft distinctive visual brand identities and user experiences that captivate attention and communicate trust.',
     offerings: [
-      'Brand Identity & Logo Design',
-      'UI/UX Design & Prototyping',
-      'Social Media Visual Content',
-      'Video Editing & Motion Graphics',
-      'Pitch Deck & Presentation Design',
-      'Print & Marketing Materials',
+      'Complete Brand Identity & Logo Systems',
+      'Figma Web & Mobile UI/UX Prototyping',
+      'Design Systems & Component Libraries',
+      '3D Visuals & After Effects Motion Graphics',
+      'Social Media Creative & Ad Kits',
+      'Investor Pitch Decks & Marketing Collateral',
     ],
-    tags: ['Figma', 'Adobe Suite', 'Branding', 'Motion', '3D Design'],
+    tags: ['Figma', 'Adobe Suite', 'After Effects', 'UI/UX', 'Brand Strategy', 'Motion Design'],
     color: '#8b5cf6',
-    bg: 'bg-purple-500/10',
+    bgLight: 'bg-purple-500/5',
   },
   {
+    id: 'ai-automation',
     icon: <Cpu className="w-7 h-7" />,
-    title: 'AI & Automation',
-    headline: 'AI Solutions · Chatbots · Automation · AI Integration',
-    description: 'We integrate AI tools, automate repetitive workflows, and build intelligent systems that save your team significant time.',
+    title: 'AI Solutions & Automation',
+    headline: 'OpenAI Integrations · Custom Chatbots · Workflow Automation',
+    description: 'We deploy customized AI systems and end-to-end workflow automations that eliminate manual bottlenecks and scale operations.',
     offerings: [
-      'Custom AI Chatbot Development',
-      'Business Process Automation',
-      'OpenAI / LLM Integration',
-      'Workflow Automation (n8n, Zapier, Make)',
-      'AI-Powered Data Processing',
-      'Intelligent Reporting Systems',
+      'Custom LLM & OpenAI Assistant Integrations',
+      'Automated Customer Service AI Chatbots',
+      'Workflow Automation (n8n, Zapier, Make.com)',
+      'Intelligent Document & Data Processing Pipelines',
+      'AI-Powered Content & Lead Generation Bots',
+      'Custom Python ETL & Scraping Scripts',
     ],
-    tags: ['OpenAI', 'Python', 'n8n', 'Zapier', 'LangChain', 'APIs'],
+    tags: ['OpenAI', 'Python', 'n8n', 'Zapier', 'LangChain', 'Automated APIs'],
     color: '#0ea5e9',
-    bg: 'bg-sky-500/10',
+    bgLight: 'bg-sky-500/5',
   },
   {
+    id: 'marketing',
     icon: <TrendingUp className="w-7 h-7" />,
-    title: 'Marketing',
-    headline: 'Social Media · Content · SEO · Digital Marketing',
-    description: 'We grow your online presence through targeted digital strategies, content creation, and data-driven campaign management.',
+    title: 'Digital Marketing & SEO',
+    headline: 'Search Optimization · Google/Meta Ads · B2B Outreach',
+    description: 'Data-driven marketing and technical search engine optimization that place your brand in front of high-intent buyers.',
     offerings: [
-      'Social Media Management & Strategy',
-      'SEO & Content Marketing',
-      'PPC / Google Ads Campaigns',
-      'Email Marketing Sequences',
-      'Copywriting & Brand Voice',
-      'Analytics & Reporting',
+      'Comprehensive Technical & On-Page SEO Audits',
+      'High-ROI Google Ads & Meta PPC Campaigns',
+      'B2B Cold Email Infrastructure & Lead Lists',
+      'Conversion Rate Optimization (CRO)',
+      'SEO Content Writing & Keyword Strategy',
+      'Performance Analytics & GA4 Tracking Setup',
     ],
-    tags: ['SEO', 'Google Ads', 'Meta Ads', 'Content', 'Email', 'Analytics'],
+    tags: ['Technical SEO', 'Google Ads', 'Meta Ads', 'B2B Sales', 'GA4', 'Content Strategy'],
     color: '#f59e0b',
-    bg: 'bg-amber-500/10',
+    bgLight: 'bg-amber-500/5',
   },
   {
+    id: 'cybersecurity',
     icon: <Shield className="w-7 h-7" />,
-    title: 'Cybersecurity',
-    headline: 'Security Assessment · Web Security · Security Solutions',
-    description: 'We protect your digital assets through thorough security audits, vulnerability testing, and practical security implementation.',
+    title: 'Cybersecurity & Auditing',
+    headline: 'Penetration Testing · Web Security Audits · OWASP Hardening',
+    description: 'We safeguard your digital assets, infrastructure, and user data through systematic penetration testing and vulnerability auditing.',
     offerings: [
-      'Penetration Testing',
-      'Web Application Security Audit',
-      'Vulnerability Assessment',
-      'Security Policy & Compliance',
-      'Data Protection Advisory',
-      'Incident Response Planning',
+      'Web Application Penetration Testing',
+      'OWASP Top 10 Vulnerability Assessments',
+      'Server & Cloud Security Hardening',
+      'API Security Testing & Authentication Review',
+      'Data Protection & Compliance Advisory',
+      'Security Incident Response Planning',
     ],
-    tags: ['Pen Testing', 'OWASP', 'Network Security', 'Compliance', 'Audit'],
+    tags: ['Pen Testing', 'OWASP', 'Vulnerability Assessment', 'API Security', 'Compliance'],
     color: '#ef4444',
-    bg: 'bg-red-500/10',
+    bgLight: 'bg-red-500/5',
   },
   {
+    id: 'data-solutions',
     icon: <Database className="w-7 h-7" />,
-    title: 'Digital Solutions',
-    headline: 'Data · Virtual Assistance · Specialized Services',
-    description: 'From data analytics and business intelligence to virtual assistance — we handle the specialized digital work your business needs.',
+    title: 'Data Intelligence & BI',
+    headline: 'PowerBI Dashboards · SQL Reporting · Virtual Support',
+    description: 'Transforming disparate data points into dynamic executive intelligence dashboards and automated reporting suites.',
     offerings: [
-      'Data Analytics & Business Intelligence',
-      'PowerBI Dashboard Development',
-      'Virtual Assistance & Admin Support',
-      'Lead Research & List Building',
-      'CRM Setup & Management',
-      'Technical Documentation',
+      'PowerBI & Looker Executive Dashboard Builds',
+      'Database Modeling & SQL Query Optimization',
+      'Automated Excel & Email Reporting Suites',
+      'Lead Scraping & Market Research Reports',
+      'CRM System Setup & Data Migration',
+      'Specialized Virtual Technical Assistance',
     ],
-    tags: ['PowerBI', 'Excel', 'SQL', 'Data Analysis', 'CRM', 'VA'],
+    tags: ['PowerBI', 'SQL', 'Data Analytics', 'Excel Automation', 'BI Reporting'],
     color: '#10b981',
-    bg: 'bg-emerald-500/10',
+    bgLight: 'bg-emerald-500/5',
   },
 ];
 
 export const Services: React.FC = () => {
-  const [active, setActive] = useState<string | null>(null);
+  const [expandedId, setExpandedId] = useState<string | null>('development');
 
   return (
     <div className="pt-16">
+      <SEOHead
+        title="Digital Services & Capabilities — DigiHust"
+        description="Explore DigiHust's full suite of capabilities: Full-Stack Web Development, UI/UX Design, AI Automation, Digital Marketing, Cybersecurity, and Business Intelligence."
+      />
 
-      {/* Header */}
-      <div className="bg-[#071e26] py-20 px-6 lg:px-8 border-b border-[#1e4a5d]">
+      {/* Header Banner */}
+      <section className="bg-[#071e26] py-20 px-6 lg:px-8 border-b border-[#1e4a5d]">
         <div className="max-w-7xl mx-auto">
-          <p className="text-xs font-extrabold text-[#1a7a8c] uppercase tracking-widest mb-4">What We Do</p>
-          <h1 className="font-display font-extrabold text-5xl text-white mb-5">Our Services</h1>
-          <p className="text-lg text-slate-300 max-w-xl">
-            Six core digital capabilities — all under one professional relationship. No vendor juggling.
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+          >
+            <p className="text-xs font-extrabold text-[#1a7a8c] uppercase tracking-widest mb-3">
+              Full-Spectrum Capabilities
+            </p>
+            <h1 className="font-display font-extrabold text-4xl sm:text-5xl lg:text-6xl text-white mb-5">
+              Services Built for Execution.
+            </h1>
+            <p className="text-lg text-slate-300 max-w-2xl leading-relaxed">
+              Six specialized domains — delivered as one cohesive digital engine. Click any capability below to review included deliverables and technologies.
+            </p>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Interactive Services List */}
+      <section className="bg-white py-20 px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto space-y-6">
+          {SERVICES.map((svc) => {
+            const isExpanded = expandedId === svc.id;
+
+            return (
+              <motion.div
+                key={svc.id}
+                initial={{ opacity: 0, y: 15 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                className={`border rounded-2xl overflow-hidden transition-all ${
+                  isExpanded
+                    ? 'border-[#1a7a8c]/50 shadow-xl bg-white ring-1 ring-[#1a7a8c]/20'
+                    : 'border-gray-200 hover:border-gray-300 hover:shadow-md bg-white'
+                }`}
+              >
+                {/* Trigger button */}
+                <button
+                  onClick={() => setExpandedId(isExpanded ? null : svc.id)}
+                  className="w-full text-left p-6 sm:p-8 flex items-center justify-between gap-6 cursor-pointer"
+                  aria-expanded={isExpanded}
+                >
+                  <div className="flex items-start sm:items-center gap-5">
+                    <div
+                      className="w-14 h-14 rounded-2xl flex items-center justify-center text-white flex-shrink-0 shadow-md"
+                      style={{ backgroundColor: svc.color }}
+                    >
+                      {svc.icon}
+                    </div>
+                    <div>
+                      <div className="flex flex-wrap items-center gap-2 mb-1">
+                        <h2 className="font-display font-extrabold text-2xl text-gray-900">{svc.title}</h2>
+                      </div>
+                      <p className="text-xs font-bold text-gray-400 uppercase tracking-wide mb-1">
+                        {svc.headline}
+                      </p>
+                      <p className="text-sm text-gray-600 max-w-2xl hidden sm:block">
+                        {svc.description}
+                      </p>
+                    </div>
+                  </div>
+                  <div
+                    className={`w-10 h-10 rounded-xl flex items-center justify-center border border-gray-200 text-gray-500 flex-shrink-0 transition-transform duration-300 ${
+                      isExpanded ? 'rotate-180 bg-gray-50' : ''
+                    }`}
+                  >
+                    <ChevronDown className="w-5 h-5" />
+                  </div>
+                </button>
+
+                {/* Expanded Accordion Body */}
+                <AnimatePresence>
+                  {isExpanded && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      exit={{ opacity: 0, height: 0 }}
+                      transition={{ duration: 0.35, ease: 'easeInOut' }}
+                      className={`px-6 sm:px-8 pb-8 pt-2 border-t border-gray-100 ${svc.bgLight}`}
+                    >
+                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 pt-4">
+                        {/* Scope Checklist */}
+                        <div>
+                          <h3
+                            className="text-xs font-black uppercase tracking-widest mb-4 flex items-center space-x-1.5"
+                            style={{ color: svc.color }}
+                          >
+                            <Sparkles className="w-4 h-4" />
+                            <span>Included Deliverables & Scope</span>
+                          </h3>
+                          <ul className="space-y-2.5">
+                            {svc.offerings.map((offering) => (
+                              <li key={offering} className="flex items-start space-x-3 text-sm text-gray-700">
+                                <CheckCircle2
+                                  className="w-4 h-4 flex-shrink-0 mt-0.5"
+                                  style={{ color: svc.color }}
+                                />
+                                <span>{offering}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+
+                        {/* Tech Stack & Action */}
+                        <div className="flex flex-col justify-between">
+                          <div>
+                            <h3 className="text-xs font-black uppercase tracking-widest text-gray-500 mb-4">
+                              Technologies & Frameworks
+                            </h3>
+                            <div className="flex flex-wrap gap-2 mb-6">
+                              {svc.tags.map((t) => (
+                                <span
+                                  key={t}
+                                  className="text-xs px-3 py-1.5 rounded-xl bg-white text-gray-700 border border-gray-200 font-semibold shadow-sm"
+                                >
+                                  {t}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+
+                          <div className="pt-4 border-t border-gray-200/60">
+                            <Link
+                              to="/contact"
+                              className="inline-flex items-center space-x-2 px-6 py-3.5 rounded-xl text-white font-bold text-sm shadow-md transition-all hover:opacity-90"
+                              style={{ backgroundColor: svc.color }}
+                            >
+                              <span>Request Proposal for {svc.title}</span>
+                              <ArrowRight className="w-4 h-4" />
+                            </Link>
+                          </div>
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.div>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* Bottom CTA Banner */}
+      <section className="bg-[#071e26] py-20 px-6 lg:px-8 border-t border-[#1e4a5d] text-center">
+        <div className="max-w-2xl mx-auto">
+          <h2 className="font-display font-extrabold text-3xl sm:text-4xl text-white mb-4">
+            Need a Multi-Disciplinary Squad?
+          </h2>
+          <p className="text-slate-300 mb-8 leading-relaxed">
+            Most projects require a combination of engineering, branding, and automation. We combine these disciplines seamlessly into one scope.
           </p>
+          <Link
+            to="/contact"
+            className="inline-flex items-center space-x-2 px-8 py-4 rounded-xl bg-[#1a7a8c] hover:bg-[#156575] text-white font-bold shadow-lg transition-all"
+          >
+            <span>Start a Combined Scope</span>
+            <ArrowRight className="w-4 h-4" />
+          </Link>
         </div>
-      </div>
-
-      {/* Service Cards */}
-      <div className="bg-white py-20 px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto space-y-8">
-          {SERVICES.map((svc, i) => (
-            <div key={svc.title}
-              className={`border border-gray-100 rounded-2xl overflow-hidden transition-all ${active === svc.title ? 'shadow-xl border-[#1a7a8c]/20' : 'hover:shadow-md hover:border-gray-200'}`}>
-              {/* Card Header — always visible */}
-              <button
-                onClick={() => setActive(active === svc.title ? null : svc.title)}
-                className="w-full text-left px-8 py-7 flex items-center justify-between gap-4">
-                <div className="flex items-center gap-5">
-                  <div className="w-14 h-14 rounded-xl flex items-center justify-center text-white flex-shrink-0"
-                    style={{ backgroundColor: svc.color }}>
-                    {svc.icon}
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-3 flex-wrap">
-                      <h2 className="font-display font-extrabold text-2xl text-gray-900">{svc.title}</h2>
-                      <span className="text-xs font-semibold text-gray-400 uppercase tracking-wide">{svc.headline}</span>
-                    </div>
-                    <p className="text-sm text-gray-500 mt-1 max-w-2xl">{svc.description}</p>
-                  </div>
-                </div>
-                <ChevronRight className={`w-5 h-5 text-gray-300 flex-shrink-0 transition-transform ${active === svc.title ? 'rotate-90' : ''}`} />
-              </button>
-
-              {/* Expanded Detail */}
-              {active === svc.title && (
-                <div className={`px-8 pb-8 ${svc.bg} border-t border-gray-100`}>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-6">
-                    <div>
-                      <h4 className="text-xs font-extrabold uppercase tracking-widest mb-4" style={{ color: svc.color }}>What's Included</h4>
-                      <ul className="space-y-2">
-                        {svc.offerings.map(o => (
-                          <li key={o} className="flex items-start space-x-3 text-sm text-gray-700">
-                            <span className="mt-1 w-4 h-4 rounded-full border-2 flex-shrink-0 flex items-center justify-center text-[9px] font-black text-white"
-                              style={{ backgroundColor: svc.color, borderColor: svc.color }}>✓</span>
-                            <span>{o}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                    <div>
-                      <h4 className="text-xs font-extrabold uppercase tracking-widest text-gray-400 mb-4">Tech & Tools</h4>
-                      <div className="flex flex-wrap gap-2">
-                        {svc.tags.map(t => (
-                          <span key={t} className="text-xs px-3 py-1.5 rounded-lg bg-white text-gray-600 border border-gray-200 font-medium">{t}</span>
-                        ))}
-                      </div>
-                      <div className="mt-8">
-                        <Link to="/contact"
-                          className="inline-flex items-center space-x-2 px-6 py-3 rounded-xl text-white font-bold text-sm shadow"
-                          style={{ backgroundColor: svc.color }}>
-                          <span>Get a Quote for {svc.title}</span>
-                          <ArrowRight className="w-4 h-4" />
-                        </Link>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* CTA */}
-      <div className="bg-[#071e26] py-20 px-6 lg:px-8 border-t border-[#1e4a5d] text-center">
-        <h2 className="font-display font-extrabold text-3xl text-white mb-4">Not sure which service you need?</h2>
-        <p className="text-slate-400 mb-8 max-w-md mx-auto">Tell us about your project and we'll figure out the right approach together.</p>
-        <Link to="/contact"
-          className="inline-flex items-center space-x-2 px-8 py-4 rounded-xl bg-[#1a7a8c] hover:bg-[#156575] text-white font-bold shadow-lg transition-all">
-          <span>Start a Conversation</span>
-          <ArrowRight className="w-4 h-4" />
-        </Link>
-      </div>
-
+      </section>
     </div>
   );
 };
