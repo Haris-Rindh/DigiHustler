@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { AppProvider } from './context/AppContext';
 import { ThemeProvider } from './context/ThemeContext';
+import { LanguageProvider } from './context/LanguageContext';
 import { Navbar } from './components/layout/Navbar';
 import { Footer } from './components/layout/Footer';
 import { OfflineBanner } from './components/ui/OfflineBanner';
@@ -51,7 +52,8 @@ export const App: React.FC = () => {
   return (
     <AppProvider>
       <ThemeProvider>
-        <Router>
+        <LanguageProvider>
+          <Router>
           <ScrollToTop />
           <CustomCursor />
           <ScrollProgress />
@@ -100,6 +102,7 @@ export const App: React.FC = () => {
             <Footer />
           </div>
         </Router>
+        </LanguageProvider>
       </ThemeProvider>
     </AppProvider>
   );

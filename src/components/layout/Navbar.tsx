@@ -4,9 +4,11 @@ import { Menu, X, ArrowRight, Shield } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { LanguageSelector } from '../ui/LanguageSelector';
 import { ThemeToggle } from '../ui/ThemeToggle';
+import { useLanguage } from '../../context/LanguageContext';
 
 export const Navbar: React.FC = () => {
   const location = useLocation();
+  const { t } = useLanguage();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -19,13 +21,13 @@ export const Navbar: React.FC = () => {
   }, []);
 
   const navLinks = [
-    { label: 'Services', href: '/services' },
-    { label: 'Work', href: '/work' },
-    { label: 'How It Works', href: '/how-it-works' },
-    { label: 'About', href: '/about' },
-    { label: 'Team', href: '/team' },
-    { label: 'Blog', href: '/blog' },
-    { label: 'Contact', href: '/contact' },
+    { label: t('nav_services'), href: '/services' },
+    { label: t('nav_work'), href: '/work' },
+    { label: t('nav_how_it_works'), href: '/how-it-works' },
+    { label: t('nav_about'), href: '/about' },
+    { label: t('nav_team'), href: '/team' },
+    { label: t('nav_blog'), href: '/blog' },
+    { label: t('nav_contact'), href: '/contact' },
   ];
 
   const isActive = (href: string) => location.pathname === href;
@@ -94,7 +96,7 @@ export const Navbar: React.FC = () => {
               to="/contact"
               className="flex items-center space-x-2 px-5 py-2.5 rounded-xl bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-white text-sm font-bold shadow-md transition-colors"
             >
-              <span>Get a Quote</span>
+              <span>{t('btn_get_quote')}</span>
               <ArrowRight className="w-4 h-4" />
             </Link>
           </motion.div>
@@ -135,7 +137,7 @@ export const Navbar: React.FC = () => {
               </Link>
             ))}
             <div className="flex items-center justify-between pt-3 pb-1 px-1 border-t border-[var(--border-subtle)]">
-              <span className="text-xs font-bold text-[var(--text-muted)]">Preferences:</span>
+              <span className="text-xs font-bold text-[var(--text-muted)]">{t('preferences')}</span>
               <div className="flex items-center space-x-2">
                 <LanguageSelector />
                 <ThemeToggle />
@@ -146,7 +148,7 @@ export const Navbar: React.FC = () => {
               onClick={() => setMobileOpen(false)}
               className="flex items-center justify-center space-x-2 px-4 py-3.5 rounded-xl bg-[var(--brand-teal)] text-white text-sm font-bold mt-3 shadow-md"
             >
-              <span>Get a Quote</span>
+              <span>{t('btn_get_quote')}</span>
               <ArrowRight className="w-4 h-4" />
             </Link>
           </motion.div>
@@ -164,6 +166,7 @@ import { NewLeadModal } from '../dashboard/NewLeadModal';
 
 const InternalNavbar: React.FC = () => {
   const { currentUser, users, switchRole } = useApp();
+  const { t } = useLanguage();
   const [showRoleDropdown, setShowRoleDropdown] = useState(false);
   const [isCalcOpen, setIsCalcOpen] = useState(false);
   const [isLeadOpen, setIsLeadOpen] = useState(false);
@@ -180,7 +183,7 @@ const InternalNavbar: React.FC = () => {
               </div>
               <span className="font-display font-extrabold text-lg text-[var(--text-heading)]">DigiHust</span>
               <span className="text-[9px] uppercase font-bold px-2 py-0.5 rounded-full bg-[var(--brand-teal-subtle)] text-[var(--brand-teal)] border border-[var(--border-subtle)] ml-1">
-                Portal
+                {t('portal_text')}
               </span>
             </Link>
             <div className="hidden md:flex items-center space-x-1 pl-4 border-l border-[var(--border-subtle)]">
@@ -218,17 +221,18 @@ const InternalNavbar: React.FC = () => {
             </div>
           </div>
           <div className="flex items-center space-x-3">
+            <LanguageSelector />
             <ThemeToggle />
             <button
               onClick={() => setIsCalcOpen(true)}
-              className="hidden sm:flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-[var(--bg-surface)] border border-[var(--border-subtle)] hover:border-[var(--brand-teal)] text-xs font-semibold text-[var(--text-heading)] transition-colors"
+              className="hidden sm:flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-[var(--bg-surface)] border border-[var(--border-subtle)] hover:border-[var(--brand-teal)] text-xs font-semibold text-[var(--text-heading)] transition-colors cursor-pointer"
             >
               <Calculator className="w-3.5 h-3.5 text-[var(--brand-teal)]" />
               <span>Split Calc</span>
             </button>
             <button
               onClick={() => setIsLeadOpen(true)}
-              className="flex items-center space-x-1.5 px-3.5 py-1.5 rounded-lg bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-xs font-bold text-white shadow transition-colors"
+              className="flex items-center space-x-1.5 px-3.5 py-1.5 rounded-lg bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-xs font-bold text-white shadow transition-colors cursor-pointer"
             >
               <PlusCircle className="w-4 h-4" />
               <span>Submit Lead</span>
@@ -236,7 +240,7 @@ const InternalNavbar: React.FC = () => {
             <div className="relative">
               <button
                 onClick={() => setShowRoleDropdown(!showRoleDropdown)}
-                className="flex items-center space-x-2 p-1.5 pl-3 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] hover:border-[var(--brand-teal)] transition-colors"
+                className="flex items-center space-x-2 p-1.5 pl-3 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] hover:border-[var(--brand-teal)] transition-colors cursor-pointer"
               >
                 <img src={currentUser.avatarUrl} alt={currentUser.name} className="w-7 h-7 rounded-full object-cover ring-2 ring-[var(--brand-teal)]/40" />
                 <div className="hidden xl:block text-left">
@@ -258,7 +262,7 @@ const InternalNavbar: React.FC = () => {
                           switchRole(u.id);
                           setShowRoleDropdown(false);
                         }}
-                        className={`w-full flex items-center justify-between p-2 rounded-xl text-left transition-colors ${
+                        className={`w-full flex items-center justify-between p-2 rounded-xl text-left transition-colors cursor-pointer ${
                           u.id === currentUser.id ? 'bg-[var(--brand-teal-subtle)] border border-[var(--brand-teal)]/40' : 'hover:bg-[var(--bg-subtle)]'
                         }`}
                       >

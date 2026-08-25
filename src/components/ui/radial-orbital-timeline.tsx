@@ -157,6 +157,7 @@ export default function RadialOrbitalTimeline({
   });
   const [activeNodeId, setActiveNodeId] = useState<number | null>(null);
   const [isLight, setIsLight] = useState<boolean>(false);
+  const [isAnimatingRotation, setIsAnimatingRotation] = useState<boolean>(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const orbitRef = useRef<HTMLDivElement>(null);
   const nodeRefs = useRef<Record<number, HTMLDivElement | null>>({});
@@ -183,38 +184,84 @@ export default function RadialOrbitalTimeline({
     }
   };
 
-  const toggleItem = (id: number) => {
-    setExpandedItems((prev) => {
-      const newState = { ...prev, [id]: !prev[id] };
-      Object.keys(newState).forEach((key) => {
-        if (Number(key) !== id) {
-          newState[Number(key)] = false;
-        }
-      });
-      return newState;
-    });
+  // Smoothly rotate the selected node to the top (apex)
+  const animateRotationToNode = (index: number, totalNodes: number, onComplete?: () => void) => {
+    setIsAnimatingRotation(true);
+    const targetDeg = -90 - index * (360 / totalNodes);
 
-    setActiveNodeId((prev) => (prev === id ? null : id));
+    let currentDeg = rotationAngle;
+    let diff = (targetDeg - currentDeg) % 360;
+    if (diff > 180) diff -= 360;
+    if (diff < -180) diff += 360;
+
+    const startAngle = currentDeg;
+    const finalAngle = currentDeg + diff;
+    const duration = 450;
+    const startTime = performance.now();
+
+    const step = (currentTime: number) => {
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      // Ease out cubic
+      const ease = 1 - Math.pow(1 - progress, 3);
+      setRotationAngle(startAngle + diff * ease);
+
+      if (progress < 1) {
+        requestAnimationFrame(step);
+      } else {
+        setRotationAngle(finalAngle % 360);
+        setIsAnimatingRotation(false);
+        if (onComplete) onComplete();
+      }
+    };
+
+    requestAnimationFrame(step);
+  };
+
+  const toggleItem = (id: number) => {
+    const isAlreadyOpen = expandedItems[id];
+
+    if (isAlreadyOpen) {
+      // Close and resume
+      setExpandedItems({});
+      setActiveNodeId(null);
+      setAutoRotate(true);
+      return;
+    }
+
+    // Stop auto-rotate immediately
     setAutoRotate(false);
 
-    setPulseEffect((prev) => ({ ...prev, [id]: true }));
-    setTimeout(() => {
-      setPulseEffect((prev) => ({ ...prev, [id]: false }));
-    }, 600);
+    // Find node index
+    const nodeIndex = timelineData.findIndex((item) => item.id === id);
+    if (nodeIndex !== -1) {
+      // First rotate the node to the top, then open the card
+      animateRotationToNode(nodeIndex, timelineData.length, () => {
+        setExpandedItems({ [id]: true });
+        setActiveNodeId(id);
+        setPulseEffect({ [id]: true });
+        setTimeout(() => {
+          setPulseEffect((prev) => ({ ...prev, [id]: false }));
+        }, 600);
+      });
+    } else {
+      setExpandedItems({ [id]: true });
+      setActiveNodeId(id);
+    }
   };
 
   useEffect(() => {
-    if (!autoRotate) return;
+    if (!autoRotate || isAnimatingRotation) return;
     const interval = setInterval(() => {
       setRotationAngle((prev) => (prev + 0.35) % 360);
     }, 50);
     return () => clearInterval(interval);
-  }, [autoRotate]);
+  }, [autoRotate, isAnimatingRotation]);
 
   const calculateNodePosition = (index: number, totalNodes: number) => {
     const angleStep = (2 * Math.PI) / totalNodes;
     const currentAngle = angleStep * index + (rotationAngle * Math.PI) / 180;
-    const radius = embedded ? 150 : 190;
+    const radius = embedded ? 145 : 185;
     const x = radius * Math.cos(currentAngle);
     const y = radius * Math.sin(currentAngle);
     const zIndex = Math.round(100 + 50 * Math.sin(currentAngle));
@@ -233,7 +280,7 @@ export default function RadialOrbitalTimeline({
     <div
       ref={containerRef}
       className={`relative w-full overflow-hidden flex items-center justify-center select-none ${
-        embedded ? "h-[420px] sm:h-[460px]" : "h-[540px] sm:h-[620px]"
+        embedded ? "h-[450px] sm:h-[490px]" : "h-[540px] sm:h-[620px]"
       } ${className}`}
       onClick={handleContainerClick}
       aria-label="Interactive Radial Orbital Timeline for DigiHust Capabilities"
@@ -261,13 +308,13 @@ export default function RadialOrbitalTimeline({
           {/* Primary Orbit Rings */}
           <div
             className={`absolute rounded-full border pointer-events-none transition-colors ${
-              embedded ? "w-[300px] h-[300px]" : "w-[380px] h-[380px]"
+              embedded ? "w-[290px] h-[290px]" : "w-[370px] h-[370px]"
             }`}
             style={{ borderColor: "var(--orbit-ring)" }}
           />
           <div
             className={`absolute rounded-full border border-dashed pointer-events-none transition-colors ${
-              embedded ? "w-[330px] h-[330px]" : "w-[420px] h-[420px]"
+              embedded ? "w-[325px] h-[325px]" : "w-[410px] h-[410px]"
             }`}
             style={{ borderColor: "var(--orbit-ring-dashed)" }}
           />
@@ -305,7 +352,7 @@ export default function RadialOrbitalTimeline({
                 role="button"
                 aria-label={`${item.title} capability node - ${item.energy}%`}
                 aria-expanded={isExpanded}
-                className="absolute transition-all duration-700 cursor-pointer focus:outline-none rounded-2xl group"
+                className="absolute transition-all duration-300 cursor-pointer focus:outline-none rounded-2xl group"
                 style={nodeStyle}
                 onKeyDown={(e) => {
                   if (e.key === "Enter" || e.key === " ") {
@@ -351,9 +398,9 @@ export default function RadialOrbitalTimeline({
                   {item.title}
                 </div>
 
-                {/* Expanded Details Card */}
+                {/* Expanded Details Card anchored at the apex */}
                 {isExpanded && (
-                  <Card className="absolute top-22 left-1/2 -translate-x-1/2 w-72 bg-[var(--bg-surface)] border-2 shadow-2xl z-[300] overflow-visible text-[var(--text-heading)]"
+                  <Card className="absolute top-20 left-1/2 -translate-x-1/2 w-72 bg-[var(--bg-surface)] border-2 shadow-2xl z-[300] overflow-visible text-[var(--text-heading)] animate-in fade-in zoom-in-95 duration-200"
                     style={{ borderColor: iconColor }}
                   >
                     <div
@@ -419,7 +466,7 @@ export default function RadialOrbitalTimeline({
                                   key={relatedId}
                                   variant="outline"
                                   size="sm"
-                                  className="flex items-center h-6 px-2 py-0 text-[10px] rounded-lg border-[var(--border-subtle)] bg-[var(--bg-surface)] hover:bg-[var(--bg-subtle)] text-[var(--text-heading)] transition-all font-semibold"
+                                  className="flex items-center h-6 px-2 py-0 text-[10px] rounded-lg border-[var(--border-subtle)] bg-[var(--bg-surface)] hover:bg-[var(--bg-subtle)] text-[var(--text-heading)] transition-all font-semibold cursor-pointer"
                                   onClick={(e) => {
                                     e.stopPropagation();
                                     toggleItem(relatedId);
