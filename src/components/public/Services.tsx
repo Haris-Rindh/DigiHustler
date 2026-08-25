@@ -252,7 +252,7 @@ export const Services: React.FC = () => {
                               {svc.tags.map((t) => (
                                 <span
                                   key={t}
-                                  className="text-xs px-3 py-1.5 rounded-xl bg-white text-[var(--text-body)] border border-[var(--border-subtle)] font-semibold shadow-sm"
+                                  className="text-xs px-3 py-1.5 rounded-xl bg-[var(--bg-surface)] text-[var(--text-body)] border border-[var(--border-subtle)] font-semibold shadow-sm"
                                 >
                                   {t}
                                 </span>

@@ -82,7 +82,7 @@ export const About: React.FC = () => {
             ].map((s) => (
               <div
                 key={s.title}
-                className="p-6 rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] hover:bg-white hover:shadow-md transition-all flex items-start space-x-5"
+                className="p-6 rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] hover:bg-[var(--bg-subtle)] hover:shadow-md transition-all flex items-start space-x-5"
               >
                 <div className="font-display font-black text-3xl sm:text-4xl text-[var(--brand-teal)] flex-shrink-0">
                   {s.stat}
@@ -196,7 +196,7 @@ export const About: React.FC = () => {
                 viewport={{ once: true }}
                 whileHover={{ y: -4 }}
                 transition={{ duration: 0.3 }}
-                className="p-8 rounded-3xl border border-[var(--border-subtle)] bg-white hover:shadow-xl hover:border-[var(--brand-teal)]/40 transition-all"
+                className="p-8 rounded-3xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] hover:shadow-xl hover:border-[var(--brand-teal)]/40 transition-all"
               >
                 <span className="text-xs font-bold text-[var(--brand-teal)] uppercase tracking-wider">
                   {val.tag}

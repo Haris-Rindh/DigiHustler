@@ -147,17 +147,11 @@ export default function RadialOrbitalTimeline({
   embedded = false,
 }: RadialOrbitalTimelineProps) {
   const [expandedItems, setExpandedItems] = useState<Record<number, boolean>>({});
-  const [viewMode] = useState<"orbital">("orbital");
   const [rotationAngle, setRotationAngle] = useState<number>(0);
   const [autoRotate, setAutoRotate] = useState<boolean>(true);
   const [pulseEffect, setPulseEffect] = useState<Record<number, boolean>>({});
-  const [centerOffset] = useState<{ x: number; y: number }>({
-    x: 0,
-    y: 0,
-  });
   const [activeNodeId, setActiveNodeId] = useState<number | null>(null);
   const [isLight, setIsLight] = useState<boolean>(false);
-  const [isAnimatingRotation, setIsAnimatingRotation] = useState<boolean>(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const orbitRef = useRef<HTMLDivElement>(null);
   const nodeRefs = useRef<Record<number, HTMLDivElement | null>>({});
@@ -184,88 +178,56 @@ export default function RadialOrbitalTimeline({
     }
   };
 
-  // Smoothly rotate the selected node to the top (apex)
-  const animateRotationToNode = (index: number, totalNodes: number, onComplete?: () => void) => {
-    setIsAnimatingRotation(true);
-    const targetDeg = -90 - index * (360 / totalNodes);
-
-    let currentDeg = rotationAngle;
-    let diff = (targetDeg - currentDeg) % 360;
-    if (diff > 180) diff -= 360;
-    if (diff < -180) diff += 360;
-
-    const startAngle = currentDeg;
-    const finalAngle = currentDeg + diff;
-    const duration = 450;
-    const startTime = performance.now();
-
-    const step = (currentTime: number) => {
-      const elapsed = currentTime - startTime;
-      const progress = Math.min(elapsed / duration, 1);
-      // Ease out cubic
-      const ease = 1 - Math.pow(1 - progress, 3);
-      setRotationAngle(startAngle + diff * ease);
-
-      if (progress < 1) {
-        requestAnimationFrame(step);
-      } else {
-        setRotationAngle(finalAngle % 360);
-        setIsAnimatingRotation(false);
-        if (onComplete) onComplete();
-      }
-    };
-
-    requestAnimationFrame(step);
-  };
-
   const toggleItem = (id: number) => {
-    const isAlreadyOpen = expandedItems[id];
+    const isCurrentlyOpen = expandedItems[id];
 
-    if (isAlreadyOpen) {
-      // Close and resume
+    if (isCurrentlyOpen) {
       setExpandedItems({});
       setActiveNodeId(null);
       setAutoRotate(true);
       return;
     }
 
-    // Stop auto-rotate immediately
+    // Stop auto rotation
     setAutoRotate(false);
 
-    // Find node index
+    // Calculate target angle to bring the selected node smoothly to the apex (top position at -90 deg)
     const nodeIndex = timelineData.findIndex((item) => item.id === id);
     if (nodeIndex !== -1) {
-      // First rotate the node to the top, then open the card
-      animateRotationToNode(nodeIndex, timelineData.length, () => {
-        setExpandedItems({ [id]: true });
-        setActiveNodeId(id);
-        setPulseEffect({ [id]: true });
-        setTimeout(() => {
-          setPulseEffect((prev) => ({ ...prev, [id]: false }));
-        }, 600);
-      });
-    } else {
-      setExpandedItems({ [id]: true });
-      setActiveNodeId(id);
+      const targetDeg = -90 - nodeIndex * (360 / timelineData.length);
+      let diff = (targetDeg - rotationAngle) % 360;
+      if (diff > 180) diff -= 360;
+      if (diff < -180) diff += 360;
+
+      // Update rotation angle cleanly; CSS transition on orbit nodes handles hardware-accelerated glide
+      setRotationAngle((prev) => prev + diff);
     }
+
+    setExpandedItems({ [id]: true });
+    setActiveNodeId(id);
+
+    setPulseEffect({ [id]: true });
+    setTimeout(() => {
+      setPulseEffect((prev) => ({ ...prev, [id]: false }));
+    }, 700);
   };
 
   useEffect(() => {
-    if (!autoRotate || isAnimatingRotation) return;
+    if (!autoRotate) return;
     const interval = setInterval(() => {
       setRotationAngle((prev) => (prev + 0.35) % 360);
     }, 50);
     return () => clearInterval(interval);
-  }, [autoRotate, isAnimatingRotation]);
+  }, [autoRotate]);
 
   const calculateNodePosition = (index: number, totalNodes: number) => {
     const angleStep = (2 * Math.PI) / totalNodes;
     const currentAngle = angleStep * index + (rotationAngle * Math.PI) / 180;
-    const radius = embedded ? 145 : 185;
+    const radius = embedded ? 125 : 170;
     const x = radius * Math.cos(currentAngle);
     const y = radius * Math.sin(currentAngle);
     const zIndex = Math.round(100 + 50 * Math.sin(currentAngle));
-    const opacity = 0.85 + 0.15 * Math.sin(currentAngle);
+    const opacity = 0.88 + 0.12 * Math.sin(currentAngle);
 
     return { x, y, zIndex, opacity };
   };
@@ -280,7 +242,7 @@ export default function RadialOrbitalTimeline({
     <div
       ref={containerRef}
       className={`relative w-full overflow-hidden flex items-center justify-center select-none ${
-        embedded ? "h-[450px] sm:h-[490px]" : "h-[540px] sm:h-[620px]"
+        embedded ? "h-[330px] sm:h-[360px] lg:h-[380px]" : "h-[480px] sm:h-[540px]"
       } ${className}`}
       onClick={handleContainerClick}
       aria-label="Interactive Radial Orbital Timeline for DigiHust Capabilities"
@@ -291,16 +253,19 @@ export default function RadialOrbitalTimeline({
           ref={orbitRef}
           style={{
             perspective: "1000px",
-            transform: `translate(${centerOffset.x}px, ${centerOffset.y}px)`,
           }}
         >
           {/* Central Hub Core */}
           <div
-            className="absolute w-16 h-16 rounded-full bg-gradient-to-br from-[#022B3A] via-[#1F7A8C] to-[#E1E5F2] border-2 border-[var(--border-subtle)] shadow-xl flex items-center justify-center z-10 cursor-pointer transition-transform hover:scale-105"
+            className={`absolute rounded-full bg-gradient-to-br from-[#022B3A] via-[#1F7A8C] to-[#E1E5F2] border-2 border-[var(--border-subtle)] shadow-xl flex items-center justify-center z-10 cursor-pointer transition-transform hover:scale-105 ${
+              embedded ? "w-13 h-13" : "w-16 h-16"
+            }`}
             onClick={() => setAutoRotate(!autoRotate)}
             title={autoRotate ? "Click to pause rotation" : "Click to auto-rotate"}
           >
-            <div className="w-9 h-9 rounded-full bg-[var(--bg-surface)] flex items-center justify-center text-[var(--text-heading)] font-extrabold text-[10px] tracking-tight shadow-inner">
+            <div className={`rounded-full bg-[var(--bg-surface)] flex items-center justify-center text-[var(--text-heading)] font-extrabold tracking-tight shadow-inner ${
+              embedded ? "w-8 h-8 text-[9px]" : "w-9 h-9 text-[10px]"
+            }`}>
               DIGI
             </div>
           </div>
@@ -308,13 +273,13 @@ export default function RadialOrbitalTimeline({
           {/* Primary Orbit Rings */}
           <div
             className={`absolute rounded-full border pointer-events-none transition-colors ${
-              embedded ? "w-[290px] h-[290px]" : "w-[370px] h-[370px]"
+              embedded ? "w-[250px] h-[250px]" : "w-[340px] h-[340px]"
             }`}
             style={{ borderColor: "var(--orbit-ring)" }}
           />
           <div
             className={`absolute rounded-full border border-dashed pointer-events-none transition-colors ${
-              embedded ? "w-[325px] h-[325px]" : "w-[410px] h-[410px]"
+              embedded ? "w-[280px] h-[280px]" : "w-[380px] h-[380px]"
             }`}
             style={{ borderColor: "var(--orbit-ring-dashed)" }}
           />
@@ -324,6 +289,7 @@ export default function RadialOrbitalTimeline({
             const position = calculateNodePosition(index, timelineData.length);
             const isExpanded = expandedItems[item.id];
             const isRelated = isRelatedToActive(item.id);
+            const isPulsing = pulseEffect[item.id];
             const Icon = item.icon;
 
             const iconColor = isLight ? item.colorLight : item.colorDark;
@@ -350,9 +316,9 @@ export default function RadialOrbitalTimeline({
                 ref={(el) => (nodeRefs.current[item.id] = el)}
                 tabIndex={0}
                 role="button"
-                aria-label={`${item.title} capability node - ${item.energy}%`}
+                aria-label={`${item.title} capability node`}
                 aria-expanded={isExpanded}
-                className="absolute transition-all duration-300 cursor-pointer focus:outline-none rounded-2xl group"
+                className="absolute cursor-pointer focus:outline-none rounded-2xl group transition-all duration-700 ease-out"
                 style={nodeStyle}
                 onKeyDown={(e) => {
                   if (e.key === "Enter" || e.key === " ") {
@@ -365,10 +331,22 @@ export default function RadialOrbitalTimeline({
                   toggleItem(item.id);
                 }}
               >
-                {/* Node Icon Circle with Individual Color Signature */}
+                {/* Radial Glow Halo */}
+                {isPulsing && (
+                  <div
+                    className="absolute rounded-full -inset-1 animate-ping pointer-events-none opacity-40"
+                    style={{
+                      backgroundColor: iconColor,
+                    }}
+                  />
+                )}
+
+                {/* Node Icon Circle */}
                 <div
-                  className={`w-11 h-11 sm:w-12 sm:h-12 rounded-2xl flex items-center justify-center shadow-lg transition-all duration-300 transform ${
-                    isExpanded ? "scale-120 shadow-2xl" : "hover:scale-110"
+                  className={`flex items-center justify-center shadow-lg transition-all duration-300 transform ${
+                    embedded ? "w-9 h-9 sm:w-10 sm:h-10 rounded-xl" : "w-11 h-11 sm:w-12 sm:h-12 rounded-2xl"
+                  } ${
+                    isExpanded ? "scale-115 shadow-2xl" : "hover:scale-110"
                   }`}
                   style={{
                     backgroundColor: nodeBg,
@@ -377,16 +355,18 @@ export default function RadialOrbitalTimeline({
                     borderColor: nodeBorder,
                     color: isExpanded ? "#FFFFFF" : iconColor,
                     boxShadow: isExpanded
-                      ? `0 0 25px ${item.glowColor}`
-                      : `0 4px 15px ${item.glowColor}`,
+                      ? `0 0 20px ${item.glowColor}`
+                      : `0 3px 12px ${item.glowColor}`,
                   }}
                 >
-                  <Icon size={20} style={{ color: isExpanded ? "#FFFFFF" : iconColor }} strokeWidth={2.2} />
+                  <Icon size={embedded ? 17 : 20} style={{ color: isExpanded ? "#FFFFFF" : iconColor }} strokeWidth={2.2} />
                 </div>
 
                 {/* Node Title Label */}
                 <div
-                  className={`absolute top-13 left-1/2 -translate-x-1/2 whitespace-nowrap text-[11px] font-bold tracking-tight px-2.5 py-0.5 rounded-lg transition-all duration-300 shadow-sm ${
+                  className={`absolute left-1/2 -translate-x-1/2 whitespace-nowrap text-[10px] font-bold tracking-tight px-2 py-0.5 rounded-lg transition-all duration-300 shadow-sm ${
+                    embedded ? "top-11" : "top-13"
+                  } ${
                     isExpanded
                       ? "text-white scale-105 font-black"
                       : "text-[var(--text-heading)] bg-[var(--bg-surface)]/95 border border-[var(--border-subtle)] group-hover:border-[var(--border-hover)]"
@@ -398,19 +378,19 @@ export default function RadialOrbitalTimeline({
                   {item.title}
                 </div>
 
-                {/* Expanded Details Card anchored at the apex */}
+                {/* Expanded Details Card */}
                 {isExpanded && (
-                  <Card className="absolute top-20 left-1/2 -translate-x-1/2 w-72 bg-[var(--bg-surface)] border-2 shadow-2xl z-[300] overflow-visible text-[var(--text-heading)] animate-in fade-in zoom-in-95 duration-200"
+                  <Card className="absolute top-18 left-1/2 -translate-x-1/2 w-64 sm:w-72 bg-[var(--bg-surface)] border-2 shadow-2xl z-[300] overflow-visible text-[var(--text-heading)] animate-in fade-in zoom-in-95 duration-200"
                     style={{ borderColor: iconColor }}
                   >
                     <div
                       className="absolute -top-3 left-1/2 -translate-x-1/2 w-px h-3"
                       style={{ backgroundColor: iconColor }}
                     />
-                    <CardHeader className="pb-2 pt-4 px-4">
+                    <CardHeader className="pb-2 pt-3 px-3.5 sm:px-4">
                       <div className="flex justify-between items-center">
                         <Badge
-                          className="px-2.5 py-0.5 text-[10px] font-bold border"
+                          className="px-2 py-0.5 text-[9px] font-bold border"
                           style={{
                             backgroundColor: isLight ? item.bgLight : item.bgDark,
                             borderColor: isLight ? item.borderLight : item.borderDark,
@@ -419,27 +399,27 @@ export default function RadialOrbitalTimeline({
                         >
                           {item.category.toUpperCase()}
                         </Badge>
-                        <span className="text-[10px] font-mono text-[var(--text-muted)]">
+                        <span className="text-[9px] font-mono text-[var(--text-muted)]">
                           {item.date}
                         </span>
                       </div>
-                      <CardTitle className="text-sm font-extrabold text-[var(--text-heading)] mt-1.5 flex items-center gap-1.5">
-                        <Icon size={16} style={{ color: iconColor }} />
+                      <CardTitle className="text-xs sm:text-sm font-extrabold text-[var(--text-heading)] mt-1 flex items-center gap-1.5">
+                        <Icon size={14} style={{ color: iconColor }} />
                         <span>{item.title}</span>
                       </CardTitle>
                     </CardHeader>
-                    <CardContent className="text-xs text-[var(--text-body)] px-4 pb-4">
+                    <CardContent className="text-[11px] sm:text-xs text-[var(--text-body)] px-3.5 sm:px-4 pb-3.5">
                       <p className="leading-relaxed">{item.content}</p>
 
-                      <div className="mt-3 pt-3 border-t border-[var(--border-subtle)]">
-                        <div className="flex justify-between items-center text-[10px] mb-1 font-bold text-[var(--text-muted)]">
+                      <div className="mt-2.5 pt-2.5 border-t border-[var(--border-subtle)]">
+                        <div className="flex justify-between items-center text-[9px] mb-1 font-bold text-[var(--text-muted)]">
                           <span className="flex items-center text-[var(--text-heading)]">
-                            <Zap size={11} className="mr-1" style={{ color: iconColor }} />
+                            <Zap size={10} className="mr-1" style={{ color: iconColor }} />
                             Squad Capability Level
                           </span>
                           <span className="font-mono text-[var(--text-heading)]">{item.energy}%</span>
                         </div>
-                        <div className="w-full h-1.5 bg-[var(--bg-subtle)] rounded-full overflow-hidden border border-[var(--border-subtle)]">
+                        <div className="w-full h-1 bg-[var(--bg-subtle)] rounded-full overflow-hidden border border-[var(--border-subtle)]">
                           <div
                             className="h-full rounded-full transition-all duration-500"
                             style={{
@@ -451,10 +431,10 @@ export default function RadialOrbitalTimeline({
                       </div>
 
                       {item.relatedIds.length > 0 && (
-                        <div className="mt-3 pt-3 border-t border-[var(--border-subtle)]">
-                          <div className="flex items-center mb-1.5">
-                            <LinkIcon size={10} className="text-[var(--text-muted)] mr-1" />
-                            <h4 className="text-[10px] uppercase tracking-wider font-extrabold text-[var(--text-muted)]">
+                        <div className="mt-2.5 pt-2.5 border-t border-[var(--border-subtle)]">
+                          <div className="flex items-center mb-1">
+                            <LinkIcon size={9} className="text-[var(--text-muted)] mr-1" />
+                            <h4 className="text-[9px] uppercase tracking-wider font-extrabold text-[var(--text-muted)]">
                               Connected Squads
                             </h4>
                           </div>
@@ -466,14 +446,14 @@ export default function RadialOrbitalTimeline({
                                   key={relatedId}
                                   variant="outline"
                                   size="sm"
-                                  className="flex items-center h-6 px-2 py-0 text-[10px] rounded-lg border-[var(--border-subtle)] bg-[var(--bg-surface)] hover:bg-[var(--bg-subtle)] text-[var(--text-heading)] transition-all font-semibold cursor-pointer"
+                                  className="flex items-center h-5 px-1.5 py-0 text-[9px] rounded border-[var(--border-subtle)] bg-[var(--bg-surface)] hover:bg-[var(--bg-subtle)] text-[var(--text-heading)] transition-all font-semibold cursor-pointer"
                                   onClick={(e) => {
                                     e.stopPropagation();
                                     toggleItem(relatedId);
                                   }}
                                 >
                                   {relatedItem?.title}
-                                  <ArrowRight size={8} className="ml-1 text-[var(--text-muted)]" />
+                                  <ArrowRight size={7} className="ml-0.5 text-[var(--text-muted)]" />
                                 </Button>
                               );
                             })}

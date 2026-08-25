@@ -205,7 +205,7 @@ export const Work: React.FC = () => {
                   transition={{ duration: 0.3 }}
                   whileHover={{ y: -4 }}
                   onClick={() => setSelectedProject(project)}
-                  className="group border border-[var(--border-subtle)] rounded-2xl overflow-hidden hover:shadow-xl hover:border-[var(--brand-teal)]/40 transition-all cursor-pointer bg-white flex flex-col justify-between"
+                  className="group border border-[var(--border-subtle)] rounded-2xl overflow-hidden hover:shadow-xl hover:border-[var(--brand-teal)]/40 transition-all cursor-pointer bg-[var(--bg-surface)] flex flex-col justify-between"
                 >
                   <div>
                     <div className="aspect-video overflow-hidden bg-[var(--bg-subtle)] relative">

@@ -168,7 +168,7 @@ export const Team: React.FC = () => {
                   exit={{ opacity: 0, scale: 0.95 }}
                   transition={{ duration: 0.3 }}
                   whileHover={{ y: -4 }}
-                  className="group border border-[var(--border-subtle)] rounded-2xl p-6 bg-white hover:shadow-xl hover:border-[var(--brand-teal)]/40 transition-all flex flex-col justify-between"
+                  className="group border border-[var(--border-subtle)] rounded-2xl p-6 bg-[var(--bg-surface)] hover:shadow-xl hover:border-[var(--brand-teal)]/40 transition-all flex flex-col justify-between"
                 >
                   <div>
                     <div className="flex items-start space-x-4 mb-4">
@@ -231,7 +231,7 @@ export const Team: React.FC = () => {
       {/* Talent Assembly Info */}
       <section className="bg-[var(--bg-subtle)] py-16 px-6 lg:px-8 border-t border-[var(--border-subtle)]/70 text-center">
         <div className="max-w-3xl mx-auto">
-          <div className="inline-flex p-3 rounded-2xl bg-white border border-[var(--border-subtle)] shadow-sm mb-4">
+          <div className="inline-flex p-3 rounded-2xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] shadow-sm mb-4">
             <ShieldCheck className="w-6 h-6 text-[var(--brand-teal)]" />
           </div>
           <h3 className="font-display font-extrabold text-2xl text-[var(--text-heading)] mb-3">

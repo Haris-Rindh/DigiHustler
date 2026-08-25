@@ -131,7 +131,7 @@ export const ProjectDetailModal: React.FC<Props> = ({ project, onClose }) => {
             </div>
             <h2 className="font-display font-extrabold text-2xl text-[var(--text-heading)] mt-1">{project.title}</h2>
           </div>
-          <button onClick={onClose} className="p-2 rounded-xl bg-[var(--bg-subtle)] hover:bg-[var(--bg-subtle)] text-[var(--text-muted)] hover:text-white">
+          <button onClick={onClose} className="p-2 rounded-xl bg-[var(--bg-subtle)] hover:bg-[var(--bg-subtle)] text-[var(--text-muted)] hover:text-[var(--text-heading)]">
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -140,25 +140,25 @@ export const ProjectDetailModal: React.FC<Props> = ({ project, onClose }) => {
         <div className="flex space-x-2 border-b border-[var(--border-subtle)] pb-3 mb-6">
           <button 
             onClick={() => setActiveTab('overview')} 
-            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${activeTab === 'overview' ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/30' : 'text-[var(--text-muted)] hover:text-white hover:bg-[var(--bg-subtle)]'}`}
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${activeTab === 'overview' ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/30' : 'text-[var(--text-muted)] hover:text-[var(--text-heading)] hover:bg-[var(--bg-subtle)]'}`}
           >
             Brief & Financial Split
           </button>
           <button 
             onClick={() => setActiveTab('team')} 
-            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${activeTab === 'team' ? 'bg-purple-500/20 text-purple-400 border border-purple-500/30' : 'text-[var(--text-muted)] hover:text-white hover:bg-[var(--bg-subtle)]'}`}
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${activeTab === 'team' ? 'bg-purple-500/20 text-purple-400 border border-purple-500/30' : 'text-[var(--text-muted)] hover:text-[var(--text-heading)] hover:bg-[var(--bg-subtle)]'}`}
           >
             Team Assignment ({project.assignments.length})
           </button>
           <button 
             onClick={() => setActiveTab('deliverables')} 
-            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${activeTab === 'deliverables' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'text-[var(--text-muted)] hover:text-white hover:bg-[var(--bg-subtle)]'}`}
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${activeTab === 'deliverables' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'text-[var(--text-muted)] hover:text-[var(--text-heading)] hover:bg-[var(--bg-subtle)]'}`}
           >
             Deliverables ({project.deliverables.length})
           </button>
           <button 
             onClick={() => setActiveTab('comments')} 
-            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${activeTab === 'comments' ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' : 'text-[var(--text-muted)] hover:text-white hover:bg-[var(--bg-subtle)]'}`}
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${activeTab === 'comments' ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' : 'text-[var(--text-muted)] hover:text-[var(--text-heading)] hover:bg-[var(--bg-subtle)]'}`}
           >
             Team Discussion ({project.comments.length})
           </button>
@@ -216,7 +216,7 @@ export const ProjectDetailModal: React.FC<Props> = ({ project, onClose }) => {
                         type="number" 
                         value={totalVal}
                         onChange={(e) => setTotalVal(parseFloat(e.target.value) || 0)}
-                        className="w-full bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl px-3 py-1.5 text-sm text-white focus:border-cyan-400 focus:outline-none"
+                        className="w-full bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl px-3 py-1.5 text-sm text-[var(--text-heading)] focus:border-cyan-400 focus:outline-none"
                       />
                     </div>
                     <div>
@@ -224,7 +224,7 @@ export const ProjectDetailModal: React.FC<Props> = ({ project, onClose }) => {
                       <select
                         value={selectedLeaderId}
                         onChange={(e) => setSelectedLeaderId(e.target.value)}
-                        className="w-full bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl px-3 py-1.5 text-sm text-white focus:border-cyan-400 focus:outline-none"
+                        className="w-full bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl px-3 py-1.5 text-sm text-[var(--text-heading)] focus:border-cyan-400 focus:outline-none"
                       >
                         {groupLeaders.map(l => (
                           <option key={l.id} value={l.id}>{l.name} ({l.title})</option>
@@ -379,7 +379,7 @@ export const ProjectDetailModal: React.FC<Props> = ({ project, onClose }) => {
                         updated[index].freelancerName = sel ? sel.name : 'Specialist';
                         setAssignments(updated);
                       }}
-                      className="w-full bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-sm text-white focus:border-cyan-400 focus:outline-none"
+                      className="w-full bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-sm text-[var(--text-heading)] focus:border-cyan-400 focus:outline-none"
                     >
                       {groupFreelancers.map(f => (
                         <option key={f.id} value={f.id}>{f.name} — {f.title}</option>
@@ -397,7 +397,7 @@ export const ProjectDetailModal: React.FC<Props> = ({ project, onClose }) => {
                         updated[index].roleTitle = e.target.value;
                         setAssignments(updated);
                       }}
-                      className="w-full bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-sm text-white focus:border-cyan-400 focus:outline-none"
+                      className="w-full bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-sm text-[var(--text-heading)] focus:border-cyan-400 focus:outline-none"
                     />
                   </div>
 
@@ -413,7 +413,7 @@ export const ProjectDetailModal: React.FC<Props> = ({ project, onClose }) => {
                         updated[index].sharePct = parseFloat(e.target.value) || 0;
                         setAssignments(updated);
                       }}
-                      className="w-full bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-sm text-white text-center focus:border-cyan-400 focus:outline-none font-bold"
+                      className="w-full bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-sm text-[var(--text-heading)] text-center focus:border-cyan-400 focus:outline-none font-bold"
                     />
                   </div>
                 </div>
@@ -486,14 +486,14 @@ export const ProjectDetailModal: React.FC<Props> = ({ project, onClose }) => {
                   placeholder="Deliverable Title (e.g. Final Figma Prototype)"
                   value={delivTitle}
                   onChange={(e) => setDelivTitle(e.target.value)}
-                  className="bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-400"
+                  className="bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs text-[var(--text-heading)] focus:outline-none focus:border-cyan-400"
                 />
                 <input 
                   type="url"
                   placeholder="Asset URL (GitHub / Figma / Google Drive)"
                   value={delivUrl}
                   onChange={(e) => setDelivUrl(e.target.value)}
-                  className="bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-400"
+                  className="bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs text-[var(--text-heading)] focus:outline-none focus:border-cyan-400"
                 />
               </div>
               <textarea 
@@ -501,7 +501,7 @@ export const ProjectDetailModal: React.FC<Props> = ({ project, onClose }) => {
                 rows={2}
                 value={delivNotes}
                 onChange={(e) => setDelivNotes(e.target.value)}
-                className="w-full bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl p-2 text-xs text-white focus:outline-none focus:border-cyan-400"
+                className="w-full bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl p-2 text-xs text-[var(--text-heading)] focus:outline-none focus:border-cyan-400"
               />
               <button 
                 type="submit"
@@ -546,7 +546,7 @@ export const ProjectDetailModal: React.FC<Props> = ({ project, onClose }) => {
                 placeholder="Write a message to team members..."
                 value={commentText}
                 onChange={(e) => setCommentText(e.target.value)}
-                className="flex-1 bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl px-4 py-2 text-xs text-white focus:outline-none focus:border-cyan-400"
+                className="flex-1 bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl px-4 py-2 text-xs text-[var(--text-heading)] focus:outline-none focus:border-cyan-400"
               />
               <button 
                 type="submit"

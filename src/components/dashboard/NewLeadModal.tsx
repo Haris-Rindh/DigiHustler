@@ -43,14 +43,14 @@ export const NewLeadModal: React.FC<Props> = ({ onClose }) => {
         <div className="flex items-center justify-between border-b border-[var(--border-subtle)] pb-4 mb-6">
           <div className="flex items-center space-x-3">
             <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 to-orange-600 flex items-center justify-center">
-              <PlusCircle className="w-5 h-5 text-white" />
+              <PlusCircle className="w-5 h-5 text-[var(--text-heading)]" />
             </div>
             <div>
               <h2 className="font-display font-extrabold text-xl text-[var(--text-heading)]">Capture New Client Lead</h2>
               <p className="text-xs text-[var(--text-muted)]">Step 1 in DigiHust workflow: Submit lead for Management Review</p>
             </div>
           </div>
-          <button onClick={onClose} className="p-2 rounded-xl bg-[var(--bg-subtle)] hover:bg-[var(--bg-subtle)] text-[var(--text-muted)] hover:text-white">
+          <button onClick={onClose} className="p-2 rounded-xl bg-[var(--bg-subtle)] hover:bg-[var(--bg-subtle)] text-[var(--text-muted)] hover:text-[var(--text-heading)]">
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -67,7 +67,7 @@ export const NewLeadModal: React.FC<Props> = ({ onClose }) => {
                 placeholder="e.g. E-Commerce Redesign & Mobile App"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                className="w-full bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl pl-9 pr-3 py-2 text-sm text-white focus:border-cyan-400 focus:outline-none"
+                className="w-full bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl pl-9 pr-3 py-2 text-sm text-[var(--text-heading)] focus:border-cyan-400 focus:outline-none"
               />
             </div>
           </div>
@@ -83,7 +83,7 @@ export const NewLeadModal: React.FC<Props> = ({ onClose }) => {
                   placeholder="John Smith"
                   value={clientName}
                   onChange={(e) => setClientName(e.target.value)}
-                  className="w-full bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl pl-9 pr-3 py-2 text-sm text-white focus:border-cyan-400 focus:outline-none"
+                  className="w-full bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl pl-9 pr-3 py-2 text-sm text-[var(--text-heading)] focus:border-cyan-400 focus:outline-none"
                 />
               </div>
             </div>
@@ -97,7 +97,7 @@ export const NewLeadModal: React.FC<Props> = ({ onClose }) => {
                   placeholder="Apex Global Ltd."
                   value={clientCompany}
                   onChange={(e) => setClientCompany(e.target.value)}
-                  className="w-full bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl pl-9 pr-3 py-2 text-sm text-white focus:border-cyan-400 focus:outline-none"
+                  className="w-full bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl pl-9 pr-3 py-2 text-sm text-[var(--text-heading)] focus:border-cyan-400 focus:outline-none"
                 />
               </div>
             </div>
@@ -114,7 +114,7 @@ export const NewLeadModal: React.FC<Props> = ({ onClose }) => {
                   placeholder="client@company.com"
                   value={clientEmail}
                   onChange={(e) => setClientEmail(e.target.value)}
-                  className="w-full bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl pl-9 pr-3 py-2 text-sm text-white focus:border-cyan-400 focus:outline-none"
+                  className="w-full bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl pl-9 pr-3 py-2 text-sm text-[var(--text-heading)] focus:border-cyan-400 focus:outline-none"
                 />
               </div>
             </div>
@@ -130,7 +130,7 @@ export const NewLeadModal: React.FC<Props> = ({ onClose }) => {
                   step="50"
                   value={budgetEstimate}
                   onChange={(e) => setBudgetEstimate(parseFloat(e.target.value) || 0)}
-                  className="w-full bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl pl-9 pr-3 py-2 text-sm text-white focus:border-cyan-400 focus:outline-none"
+                  className="w-full bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl pl-9 pr-3 py-2 text-sm text-[var(--text-heading)] focus:border-cyan-400 focus:outline-none"
                 />
               </div>
             </div>
@@ -143,7 +143,7 @@ export const NewLeadModal: React.FC<Props> = ({ onClose }) => {
               <select
                 value={suggestedGroupId}
                 onChange={(e) => setSuggestedGroupId(e.target.value as GroupId)}
-                className="w-full bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl pl-9 pr-3 py-2 text-sm text-white focus:border-cyan-400 focus:outline-none"
+                className="w-full bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl pl-9 pr-3 py-2 text-sm text-[var(--text-heading)] focus:border-cyan-400 focus:outline-none"
               >
                 {groups.map(g => (
                   <option key={g.id} value={g.id}>{g.name}</option>
@@ -160,7 +160,7 @@ export const NewLeadModal: React.FC<Props> = ({ onClose }) => {
               placeholder="Describe deliverables, key requirements, tech stack or design preferences..."
               value={brief}
               onChange={(e) => setBrief(e.target.value)}
-              className="w-full bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl p-3 text-sm text-white focus:border-cyan-400 focus:outline-none"
+              className="w-full bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl p-3 text-sm text-[var(--text-heading)] focus:border-cyan-400 focus:outline-none"
             />
           </div>
 

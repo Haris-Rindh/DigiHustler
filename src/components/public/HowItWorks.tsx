@@ -135,7 +135,7 @@ export const HowItWorks: React.FC = () => {
             >
               {/* Step Number Sidebar */}
               <div
-                className={`lg:w-1/3 p-10 flex flex-col justify-between text-white ${
+                className={`lg:w-1/3 p-10 flex flex-col justify-between text-[var(--text-heading)] ${
                   i % 2 === 0 ? 'bg-[var(--bg-page)]' : 'bg-[var(--bg-surface)]'
                 }`}
               >
@@ -143,7 +143,7 @@ export const HowItWorks: React.FC = () => {
                   <span className="text-xs font-extrabold text-[var(--brand-teal)] uppercase tracking-widest">
                     Phase {step.num}
                   </span>
-                  <div className="text-7xl lg:text-8xl font-display font-black text-[#1e4a5d]/60 select-none my-2">
+                  <div className="text-7xl lg:text-8xl font-display font-black text-[var(--brand-teal)]/25 select-none my-2">
                     {step.num}
                   </div>
                 </div>
@@ -153,7 +153,7 @@ export const HowItWorks: React.FC = () => {
               </div>
 
               {/* Step Description & Checklist */}
-              <div className="lg:w-2/3 p-8 sm:p-12 bg-white flex flex-col justify-center">
+              <div className="lg:w-2/3 p-8 sm:p-12 bg-[var(--bg-surface)] flex flex-col justify-center">
                 <p className="text-base text-[var(--text-body)] leading-relaxed mb-8">
                   {step.detail}
                 </p>
@@ -235,7 +235,7 @@ export const HowItWorks: React.FC = () => {
               return (
                 <div
                   key={faq.q}
-                  className="border border-[var(--border-subtle)] rounded-2xl overflow-hidden transition-all bg-white"
+                  className="border border-[var(--border-subtle)] rounded-2xl overflow-hidden transition-all bg-[var(--bg-surface)]"
                 >
                   <button
                     onClick={() => setOpenFaq(isOpen ? null : idx)}

@@ -108,7 +108,7 @@ export const PayoutLedger: React.FC = () => {
             placeholder="Search by recipient, project title, or group..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl pl-9 pr-3 py-2 text-xs text-white focus:outline-none focus:border-[var(--brand-teal)]"
+            className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl pl-9 pr-3 py-2 text-xs text-[var(--text-heading)] focus:outline-none focus:border-[var(--brand-teal)]"
           />
         </div>
 
@@ -116,25 +116,25 @@ export const PayoutLedger: React.FC = () => {
           <Filter className="w-3.5 h-3.5 text-[var(--text-muted)] ml-2" />
           <button 
             onClick={() => setRoleFilter('all')}
-            className={`px-3 py-1.5 rounded-lg font-semibold transition-all ${roleFilter === 'all' ? 'bg-[var(--brand-teal)] text-white font-bold' : 'text-[var(--text-muted)] hover:text-white'}`}
+            className={`px-3 py-1.5 rounded-lg font-semibold transition-all ${roleFilter === 'all' ? 'bg-[var(--brand-teal)] text-white font-bold' : 'text-[var(--text-muted)] hover:text-[var(--text-heading)]'}`}
           >
             All Roles
           </button>
           <button 
             onClick={() => setRoleFilter('management')}
-            className={`px-3 py-1.5 rounded-lg font-semibold transition-all ${roleFilter === 'management' ? 'bg-purple-600 text-white font-bold' : 'text-[var(--text-muted)] hover:text-white'}`}
+            className={`px-3 py-1.5 rounded-lg font-semibold transition-all ${roleFilter === 'management' ? 'bg-purple-600 text-white font-bold' : 'text-[var(--text-muted)] hover:text-[var(--text-heading)]'}`}
           >
             Management
           </button>
           <button 
             onClick={() => setRoleFilter('group_leader')}
-            className={`px-3 py-1.5 rounded-lg font-semibold transition-all ${roleFilter === 'group_leader' ? 'bg-[var(--brand-teal)] text-white font-bold' : 'text-[var(--text-muted)] hover:text-white'}`}
+            className={`px-3 py-1.5 rounded-lg font-semibold transition-all ${roleFilter === 'group_leader' ? 'bg-[var(--brand-teal)] text-white font-bold' : 'text-[var(--text-muted)] hover:text-[var(--text-heading)]'}`}
           >
             Leaders
           </button>
           <button 
             onClick={() => setRoleFilter('freelancer')}
-            className={`px-3 py-1.5 rounded-lg font-semibold transition-all ${roleFilter === 'freelancer' ? 'bg-emerald-600 text-white font-bold' : 'text-[var(--text-muted)] hover:text-white'}`}
+            className={`px-3 py-1.5 rounded-lg font-semibold transition-all ${roleFilter === 'freelancer' ? 'bg-emerald-600 text-white font-bold' : 'text-[var(--text-muted)] hover:text-[var(--text-heading)]'}`}
           >
             Freelancers
           </button>
@@ -165,7 +165,7 @@ export const PayoutLedger: React.FC = () => {
               ) : (
                 filteredPayouts.map(p => (
                   <tr key={p.id} className="hover:bg-[var(--bg-subtle)] transition-colors">
-                    <td className="py-3.5 px-4 font-bold text-white">
+                    <td className="py-3.5 px-4 font-bold text-[var(--text-heading)]">
                       {p.userName}
                     </td>
                     <td className="py-3.5 px-4">

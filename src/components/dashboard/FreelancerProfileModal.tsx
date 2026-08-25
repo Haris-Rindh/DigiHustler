@@ -15,7 +15,7 @@ export const FreelancerProfileModal: React.FC<Props> = ({ user, onClose }) => {
         {/* Close Button */}
         <button 
           onClick={onClose} 
-          className="absolute right-4 top-4 p-2 rounded-xl bg-[var(--bg-subtle)] hover:bg-[var(--bg-subtle)] text-[var(--text-muted)] hover:text-white"
+          className="absolute right-4 top-4 p-2 rounded-xl bg-[var(--bg-subtle)] hover:bg-[var(--bg-subtle)] text-[var(--text-muted)] hover:text-[var(--text-heading)]"
         >
           <X className="w-5 h-5" />
         </button>
@@ -87,7 +87,7 @@ export const FreelancerProfileModal: React.FC<Props> = ({ user, onClose }) => {
         <div className="mt-6 pt-4 border-t border-[var(--border-subtle)] flex justify-end">
           <button 
             onClick={onClose}
-            className="px-4 py-2 rounded-xl bg-[var(--bg-subtle)] hover:bg-white/20 text-xs font-bold text-white"
+            className="px-4 py-2 rounded-xl bg-[var(--bg-subtle)] hover:bg-[var(--bg-subtle)]/20 text-xs font-bold text-[var(--text-heading)]"
           >
             Close Profile
           </button>

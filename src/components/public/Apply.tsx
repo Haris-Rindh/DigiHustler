@@ -62,7 +62,7 @@ export const Apply: React.FC = () => {
           </p>
           <button 
             onClick={() => setSubmitted(false)}
-            className="px-6 py-2.5 rounded-xl bg-[var(--bg-subtle)] text-white font-bold text-xs hover:bg-white/20"
+            className="px-6 py-2.5 rounded-xl bg-[var(--bg-subtle)] text-white font-bold text-xs hover:bg-[var(--bg-subtle)]/20"
           >
             Submit Another Application
           </button>

@@ -207,16 +207,16 @@ export const Home: React.FC = () => {
         description="One company. Coordinated specialized talent. DigiHust delivers web engineering, design systems, AI automations, and cybersecurity under one managed roof."
       />
 
-      {/* ── SECTION 1: FULL-SCREEN HERO (100dvh + 100vh fallback + Scroll Cue) ── */}
-      <section className="relative min-h-screen min-h-[100dvh] min-h-[640px] flex flex-col justify-center px-6 lg:px-8 border-b border-[var(--border-subtle)] overflow-hidden pt-20 lg:pt-24 pb-8 safe-top bg-[var(--bg-page)]">
+      {/* ── SECTION 1: COMPACT FULL-VIEWPORT HERO (Optimized for laptops, taskbars & browser chrome) ── */}
+      <section className="relative min-h-[calc(100svh-4rem)] lg:min-h-[calc(100dvh-4rem)] max-h-[860px] flex flex-col justify-between px-4 sm:px-6 lg:px-8 border-b border-[var(--border-subtle)] overflow-hidden pt-16 lg:pt-18 pb-2 safe-top bg-[var(--bg-page)]">
         {/* Interactive Canvas Background with high-clarity 3D particles */}
-        <InteractiveCanvas particleCount={55} className="absolute inset-0 pointer-events-none opacity-90" />
+        <InteractiveCanvas particleCount={50} className="absolute inset-0 pointer-events-none opacity-90" />
 
         {/* Ambient celestial glow for depth */}
-        <div className="absolute top-1/3 left-1/3 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-gradient-to-br from-[var(--brand-teal)]/15 to-transparent rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute top-1/3 left-1/3 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-br from-[var(--brand-teal)]/15 to-transparent rounded-full blur-3xl pointer-events-none" />
 
-        <div className="max-w-7xl mx-auto w-full my-auto py-8 relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8 items-center">
+        <div className="max-w-7xl mx-auto w-full my-auto py-2 relative z-10">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-center">
             
             {/* Left Column: Headlines & Pitch */}
             <motion.div
@@ -226,7 +226,7 @@ export const Home: React.FC = () => {
               className="lg:col-span-6 xl:col-span-7"
             >
               {/* Trust Pill */}
-              <motion.div variants={itemVariants} className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full border border-[var(--border-subtle)] bg-[var(--bg-surface)] text-[var(--brand-teal)] text-xs font-semibold uppercase tracking-wider mb-6 shadow-sm">
+              <motion.div variants={itemVariants} className="inline-flex items-center space-x-2 px-3 py-1 rounded-full border border-[var(--border-subtle)] bg-[var(--bg-surface)] text-[var(--brand-teal)] text-[11px] font-semibold uppercase tracking-wider mb-3 shadow-sm">
                 <span className="w-2 h-2 rounded-full bg-[var(--brand-teal)] animate-pulse" />
                 <span>{t('hero_trust_pill')}</span>
               </motion.div>
@@ -234,7 +234,7 @@ export const Home: React.FC = () => {
               {/* Headline */}
               <motion.h1
                 variants={itemVariants}
-                className="font-display font-extrabold text-4xl sm:text-5xl lg:text-6xl text-[var(--text-heading)] leading-[1.08] tracking-tight mb-5"
+                className="font-display font-extrabold text-3xl sm:text-4xl lg:text-5xl text-[var(--text-heading)] leading-[1.12] tracking-tight mb-3"
               >
                 {t('hero_headline_1')}<br />
                 <span className="text-[var(--brand-teal)]">
@@ -245,7 +245,7 @@ export const Home: React.FC = () => {
               {/* Subtitle */}
               <motion.p
                 variants={itemVariants}
-                className="text-base sm:text-lg text-[var(--text-body)] max-w-xl leading-relaxed mb-8"
+                className="text-sm sm:text-base text-[var(--text-body)] max-w-lg leading-relaxed mb-5"
               >
                 {t('hero_sub')}
               </motion.p>
@@ -253,12 +253,12 @@ export const Home: React.FC = () => {
               {/* Action Buttons */}
               <motion.div
                 variants={itemVariants}
-                className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-10"
+                className="flex flex-col sm:flex-row items-start sm:items-center gap-3 mb-5"
               >
                 <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                   <Link
                     to="/contact"
-                    className="flex items-center space-x-2.5 px-7 py-3.5 rounded-xl bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-white font-bold text-sm sm:text-base shadow-md transition-colors"
+                    className="flex items-center space-x-2 px-6 py-3 rounded-xl bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-white font-bold text-xs sm:text-sm shadow-md transition-colors"
                   >
                     <span>{t('btn_scoped_quote')}</span>
                     <ArrowRight className="w-4 h-4" />
@@ -267,7 +267,7 @@ export const Home: React.FC = () => {
                 <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                   <Link
                     to="/services"
-                    className="flex items-center space-x-2 px-7 py-3.5 rounded-xl border border-[var(--border-subtle)] hover:border-[var(--brand-teal)] text-[var(--text-heading)] font-bold text-sm sm:text-base bg-[var(--bg-surface)] hover:bg-[var(--bg-subtle)] transition-all"
+                    className="flex items-center space-x-2 px-6 py-3 rounded-xl border border-[var(--border-subtle)] hover:border-[var(--brand-teal)] text-[var(--text-heading)] font-bold text-xs sm:text-sm bg-[var(--bg-surface)] hover:bg-[var(--bg-subtle)] transition-all"
                   >
                     <span>{t('btn_explore_capabilities')}</span>
                   </Link>
@@ -277,7 +277,7 @@ export const Home: React.FC = () => {
               {/* Service tags strip */}
               <motion.div
                 variants={itemVariants}
-                className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs font-semibold text-[var(--text-muted)]"
+                className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-[11px] font-semibold text-[var(--text-muted)]"
               >
                 <span className="text-[var(--brand-teal)] flex items-center gap-1 font-bold">
                   <Orbit className="w-3.5 h-3.5 text-[var(--brand-teal)]" />
@@ -300,15 +300,15 @@ export const Home: React.FC = () => {
               data-cursor="orbit"
               className="lg:col-span-6 xl:col-span-5 relative flex flex-col items-center justify-center"
             >
-              <div className="w-full relative rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] backdrop-blur-sm p-2 sm:p-4 shadow-xl">
+              <div className="w-full relative rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] backdrop-blur-sm p-2 shadow-xl">
                 <RadialOrbitalTimeline
                   timelineData={defaultServicesTimelineData}
                   embedded={true}
                   className="w-full"
                 />
                 
-                <div className="text-center pt-2 pb-1">
-                  <p className="text-[11px] font-bold text-[var(--text-muted)] flex items-center justify-center gap-1.5">
+                <div className="text-center pt-1 pb-0.5">
+                  <p className="text-[10px] font-bold text-[var(--text-muted)] flex items-center justify-center gap-1.5">
                     <span className="w-1.5 h-1.5 rounded-full bg-[var(--brand-teal)] animate-ping" />
                     <span>{t('hero_orbit_instruction')}</span>
                   </p>
@@ -321,24 +321,24 @@ export const Home: React.FC = () => {
 
         {/* Animated Floating Scroll Cue */}
         <motion.div
-          initial={{ opacity: 0, y: -8 }}
+          initial={{ opacity: 0, y: -4 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.9, duration: 0.5 }}
-          className="w-full flex flex-col items-center justify-center pt-4 pb-2 relative z-20 scroll-cue"
+          className="w-full flex flex-col items-center justify-center pt-1 pb-1 relative z-20 scroll-cue"
         >
           <a
             href="#capabilities"
             aria-label="Scroll to core capabilities"
-            className="flex flex-col items-center space-y-1.5 text-xs text-[var(--text-muted)] hover:text-[var(--brand-teal)] transition-colors group cursor-pointer"
+            className="flex flex-col items-center space-y-1 text-xs text-[var(--text-muted)] hover:text-[var(--brand-teal)] transition-colors group cursor-pointer"
           >
-            <div className="w-5 h-8 rounded-full border-2 border-[var(--border-subtle)] group-hover:border-[var(--brand-teal)] flex items-start justify-center p-1 transition-colors shadow-sm">
+            <div className="w-4 h-7 rounded-full border-2 border-[var(--border-subtle)] group-hover:border-[var(--brand-teal)] flex items-start justify-center p-0.5 transition-colors shadow-sm">
               <motion.div
-                animate={{ y: [0, 10, 0] }}
+                animate={{ y: [0, 8, 0] }}
                 transition={{ duration: 1.6, repeat: Infinity, ease: 'easeInOut' }}
-                className="w-1 h-2 rounded-full bg-[var(--brand-teal)]"
+                className="w-1 h-1.5 rounded-full bg-[var(--brand-teal)]"
               />
             </div>
-            <span className="text-[10px] font-bold uppercase tracking-widest opacity-70 group-hover:opacity-100 transition-opacity">
+            <span className="text-[9px] font-bold uppercase tracking-widest opacity-70 group-hover:opacity-100 transition-opacity">
               {t('scroll_down')}
             </span>
           </a>

@@ -80,7 +80,7 @@ export const KanbanPipeline: React.FC = () => {
             <Filter className="w-3.5 h-3.5 text-[var(--text-muted)] ml-2" />
             <button
               onClick={() => setSelectedGroupFilter('all')}
-              className={`px-3 py-1.5 rounded-lg font-semibold transition-all ${selectedGroupFilter === 'all' ? 'bg-[var(--brand-teal)] text-white font-bold' : 'text-[var(--text-muted)] hover:text-white'}`}
+              className={`px-3 py-1.5 rounded-lg font-semibold transition-all ${selectedGroupFilter === 'all' ? 'bg-[var(--brand-teal)] text-white font-bold' : 'text-[var(--text-muted)] hover:text-[var(--text-heading)]'}`}
             >
               All Groups
             </button>
@@ -88,7 +88,7 @@ export const KanbanPipeline: React.FC = () => {
               <button
                 key={g.id}
                 onClick={() => setSelectedGroupFilter(g.id)}
-                className={`px-2.5 py-1.5 rounded-lg font-semibold transition-all ${selectedGroupFilter === g.id ? 'bg-[var(--brand-teal)] text-white font-bold' : 'text-[var(--text-muted)] hover:text-white'}`}
+                className={`px-2.5 py-1.5 rounded-lg font-semibold transition-all ${selectedGroupFilter === g.id ? 'bg-[var(--brand-teal)] text-white font-bold' : 'text-[var(--text-muted)] hover:text-[var(--text-heading)]'}`}
               >
                 {g.id.toUpperCase()}
               </button>

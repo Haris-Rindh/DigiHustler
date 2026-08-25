@@ -56,7 +56,7 @@ Generated via DigiHust Financial Architecture.`;
               <p className="text-xs text-[var(--text-muted)]">Interactive financial calculator matching baseline community percentage rules</p>
             </div>
           </div>
-          <button onClick={onClose} className="p-2 rounded-xl bg-[var(--bg-surface)] hover:bg-[var(--bg-subtle)] text-[var(--text-muted)] hover:text-white">
+          <button onClick={onClose} className="p-2 rounded-xl bg-[var(--bg-surface)] hover:bg-[var(--bg-subtle)] text-[var(--text-muted)] hover:text-[var(--text-heading)]">
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -79,7 +79,7 @@ Generated via DigiHust Financial Architecture.`;
                 type="number" 
                 value={gross} 
                 onChange={(e) => setGross(parseFloat(e.target.value) || 0)} 
-                className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-white text-sm focus:border-[var(--brand-teal)] focus:outline-none"
+                className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-[var(--text-heading)] text-sm focus:border-[var(--brand-teal)] focus:outline-none"
               />
             </div>
 
@@ -92,7 +92,7 @@ Generated via DigiHust Financial Architecture.`;
                 type="number" 
                 value={fee} 
                 onChange={(e) => setFee(parseFloat(e.target.value) || 0)} 
-                className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-white text-sm focus:border-[var(--brand-teal)] focus:outline-none"
+                className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-[var(--text-heading)] text-sm focus:border-[var(--brand-teal)] focus:outline-none"
               />
             </div>
 
@@ -103,14 +103,14 @@ Generated via DigiHust Financial Architecture.`;
                 <button 
                   type="button" 
                   onClick={() => setLgSource('independent')}
-                  className={`py-1.5 rounded-lg text-xs font-bold transition-all ${lgSource === 'independent' ? 'bg-[var(--brand-teal)] text-white shadow' : 'text-[var(--text-muted)] hover:text-white'}`}
+                  className={`py-1.5 rounded-lg text-xs font-bold transition-all ${lgSource === 'independent' ? 'bg-[var(--brand-teal)] text-white shadow' : 'text-[var(--text-muted)] hover:text-[var(--text-heading)]'}`}
                 >
                   Independent Member
                 </button>
                 <button 
                   type="button" 
                   onClick={() => setLgSource('management')}
-                  className={`py-1.5 rounded-lg text-xs font-bold transition-all ${lgSource === 'management' ? 'bg-purple-600 text-white shadow' : 'text-[var(--text-muted)] hover:text-white'}`}
+                  className={`py-1.5 rounded-lg text-xs font-bold transition-all ${lgSource === 'management' ? 'bg-purple-600 text-white shadow' : 'text-[var(--text-muted)] hover:text-[var(--text-heading)]'}`}
                 >
                   Management Sourced
                 </button>
@@ -173,14 +173,14 @@ Generated via DigiHust Financial Architecture.`;
                 <button 
                   type="button" 
                   onClick={() => setDeptStructure('single')}
-                  className={`py-1.5 rounded-lg text-xs font-bold transition-all ${deptStructure === 'single' ? 'bg-[var(--brand-teal)] text-white shadow' : 'text-[var(--text-muted)] hover:text-white'}`}
+                  className={`py-1.5 rounded-lg text-xs font-bold transition-all ${deptStructure === 'single' ? 'bg-[var(--brand-teal)] text-white shadow' : 'text-[var(--text-muted)] hover:text-[var(--text-heading)]'}`}
                 >
                   Single Group
                 </button>
                 <button 
                   type="button" 
                   onClick={() => setDeptStructure('multi')}
-                  className={`py-1.5 rounded-lg text-xs font-bold transition-all ${deptStructure === 'multi' ? 'bg-indigo-600 text-white shadow' : 'text-[var(--text-muted)] hover:text-white'}`}
+                  className={`py-1.5 rounded-lg text-xs font-bold transition-all ${deptStructure === 'multi' ? 'bg-indigo-600 text-white shadow' : 'text-[var(--text-muted)] hover:text-[var(--text-heading)]'}`}
                 >
                   Cross-Departmental
                 </button>
@@ -212,14 +212,14 @@ Generated via DigiHust Financial Architecture.`;
                 <button 
                   type="button" 
                   onClick={() => setTeamModel('solo')}
-                  className={`py-1.5 rounded-lg text-xs font-bold transition-all ${teamModel === 'solo' ? 'bg-emerald-600 text-white shadow' : 'text-[var(--text-muted)] hover:text-white'}`}
+                  className={`py-1.5 rounded-lg text-xs font-bold transition-all ${teamModel === 'solo' ? 'bg-emerald-600 text-white shadow' : 'text-[var(--text-muted)] hover:text-[var(--text-heading)]'}`}
                 >
                   Solo Freelancer
                 </button>
                 <button 
                   type="button" 
                   onClick={() => setTeamModel('group')}
-                  className={`py-1.5 rounded-lg text-xs font-bold transition-all ${teamModel === 'group' ? 'bg-emerald-600 text-white shadow' : 'text-[var(--text-muted)] hover:text-white'}`}
+                  className={`py-1.5 rounded-lg text-xs font-bold transition-all ${teamModel === 'group' ? 'bg-emerald-600 text-white shadow' : 'text-[var(--text-muted)] hover:text-[var(--text-heading)]'}`}
                 >
                   Multi-Freelancer Team
                 </button>
