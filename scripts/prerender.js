@@ -167,7 +167,8 @@ routes.forEach((route) => {
   );
 
   // Add Canonical link & OpenGraph tags in head
-  const canonicalUrl = `https://digihust.com${route.path === '/' ? '' : route.path}`;
+  const baseUrl = process.env.VITE_SITE_URL || '';
+  const canonicalUrl = `${baseUrl}${route.path === '/' ? '/' : route.path}`;
   const headInjection = `
     <link rel="canonical" href="${canonicalUrl}" />
     <meta property="og:title" content="${route.title}" />

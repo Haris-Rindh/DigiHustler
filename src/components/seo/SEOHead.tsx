@@ -13,17 +13,20 @@ export interface SEOProps {
 const DEFAULT_TITLE = 'DigiHust — Digital Services Handled by Specialized Talent';
 const DEFAULT_DESC = 'DigiHust delivers web development, design, AI & automation, digital marketing, and cybersecurity through verified specialized teams under one professional brand.';
 const DEFAULT_IMAGE = 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1200&q=80';
-const SITE_URL = 'https://digihust.com';
 
 export const SEOHead: React.FC<SEOProps> = ({
   title = DEFAULT_TITLE,
   description = DEFAULT_DESC,
   keywords = 'digital agency, web development, graphic design, AI automation, cybersecurity, digital marketing, Pakistan Digiskill talent, bespoke software',
-  canonical = SITE_URL,
+  canonical,
   ogType = 'website',
   ogImage = DEFAULT_IMAGE,
   schema,
 }) => {
+  const currentOrigin = typeof window !== 'undefined' ? window.location.origin : '';
+  const currentUrl = typeof window !== 'undefined' ? window.location.href : '';
+  const effectiveCanonical = canonical || currentUrl;
+
   useEffect(() => {
     // 1. Update Title
     document.title = title.includes('DigiHust') ? title : `${title} | DigiHust`;
@@ -54,7 +57,7 @@ export const SEOHead: React.FC<SEOProps> = ({
     setMetaTag('og:description', description, true);
     setMetaTag('og:type', ogType, true);
     setMetaTag('og:image', ogImage, true);
-    setMetaTag('og:url', canonical, true);
+    setMetaTag('og:url', effectiveCanonical, true);
     setMetaTag('og:site_name', 'DigiHust', true);
 
     // Twitter Card Metas
@@ -70,7 +73,7 @@ export const SEOHead: React.FC<SEOProps> = ({
       canonicalLink.setAttribute('rel', 'canonical');
       document.head.appendChild(canonicalLink);
     }
-    canonicalLink.setAttribute('href', canonical);
+    canonicalLink.setAttribute('href', effectiveCanonical);
 
     // Structured Data (JSON-LD)
     const existingSchema = document.getElementById('seo-jsonld');
@@ -82,8 +85,8 @@ export const SEOHead: React.FC<SEOProps> = ({
       '@context': 'https://schema.org',
       '@type': 'ProfessionalService',
       name: 'DigiHust',
-      url: SITE_URL,
-      logo: `${SITE_URL}/favicon.svg`,
+      url: currentOrigin || 'https://digihust.com',
+      logo: `${currentOrigin || 'https://digihust.com'}/favicon.svg`,
       image: ogImage,
       description: description,
       address: {
@@ -114,7 +117,7 @@ export const SEOHead: React.FC<SEOProps> = ({
       const s = document.getElementById('seo-jsonld');
       if (s) s.remove();
     };
-  }, [title, description, keywords, canonical, ogType, ogImage, schema]);
+  }, [title, description, keywords, effectiveCanonical, ogType, ogImage, schema, currentOrigin]);
 
   return null;
 };

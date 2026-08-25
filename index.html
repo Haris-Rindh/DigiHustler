@@ -18,19 +18,19 @@
       (function() {
         try {
           var saved = localStorage.getItem('digihust_theme_preference');
-          var theme = saved || (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+          var theme = saved || 'light';
           var root = document.documentElement;
           root.setAttribute('data-theme', theme);
-          if (theme === 'light') {
-            root.classList.remove('dark');
-            root.classList.add('light');
-            var meta = document.getElementById('theme-color-meta');
-            if (meta) meta.setAttribute('content', '#EFF1F5');
-          } else {
+          if (theme === 'dark') {
             root.classList.remove('light');
             root.classList.add('dark');
             var meta = document.getElementById('theme-color-meta');
             if (meta) meta.setAttribute('content', '#022B3A');
+          } else {
+            root.classList.remove('dark');
+            root.classList.add('light');
+            var meta = document.getElementById('theme-color-meta');
+            if (meta) meta.setAttribute('content', '#EFF1F5');
           }
         } catch (e) {}
       })();

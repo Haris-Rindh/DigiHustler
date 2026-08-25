@@ -541,7 +541,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       id: uuidToken,
       issuedDate: new Date().toISOString().split('T')[0],
       status: 'valid',
-      qrCodeUrl: `https://verify.digihust.com/cert/${uuidToken}`
+      qrCodeUrl: `/verify/${uuidToken}`
     };
     setCertificates(prev => [newCert, ...prev]);
     return newCert;

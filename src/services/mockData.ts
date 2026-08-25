@@ -499,7 +499,7 @@ export const INITIAL_CERTIFICATES: Certificate[] = [
     clientName: 'Estates Direct UK & Veloce Motors',
     projectDetails: 'Spearheaded full-stack React / TypeScript application engineering, delivering 140% conversion gains and sub-second page performance across production deployments.',
     issuedBy: 'Haris Asad, CEO',
-    qrCodeUrl: 'https://verify.digihust.com/cert/cert-exp-8f7a2c1e-9b4d'
+    qrCodeUrl: '/verify/cert-exp-8f7a2c1e-9b4d'
   },
   {
     id: 'cert-off-3e1a7d8c-5a2f',
@@ -514,7 +514,7 @@ export const INITIAL_CERTIFICATES: Certificate[] = [
     clientName: 'DigiHust Technology Squad',
     projectDetails: 'Selected as Core Backend Engineer responsible for REST architecture, PostgreSQL schema design, and OWASP Top 10 security compliance.',
     issuedBy: 'Haris Asad, CEO',
-    qrCodeUrl: 'https://verify.digihust.com/cert/cert-off-3e1a7d8c-5a2f'
+    qrCodeUrl: '/verify/cert-off-3e1a7d8c-5a2f'
   }
 ];
 
