@@ -16,6 +16,10 @@ import {
   Layers,
   Users2,
   Orbit,
+  Star,
+  Quote,
+  Building,
+  Check,
 } from 'lucide-react';
 import { SEOHead } from '../seo/SEOHead';
 import { InteractiveCanvas } from '../ui/InteractiveCanvas';
@@ -104,6 +108,7 @@ const STEPS = [
 // ── Portfolio previews ──────────────────────────────────────────────────────
 const WORK_PREVIEWS = [
   {
+    slug: 'real-estate-marketplace-portal',
     category: 'Web Development',
     title: 'Real-Estate Marketplace Portal',
     tags: ['React', 'Node.js', 'PostgreSQL', 'Tailwind CSS'],
@@ -111,6 +116,7 @@ const WORK_PREVIEWS = [
     stat: '+140% Conversion Rate',
   },
   {
+    slug: 'automotive-brand-identity',
     category: 'Creative & Branding',
     title: 'Automotive Brand Identity & Motion Ads',
     tags: ['Brand Identity', 'After Effects', '3D Animation'],
@@ -118,6 +124,7 @@ const WORK_PREVIEWS = [
     stat: 'Complete 3D Ad Suite',
   },
   {
+    slug: 'hospital-bi-dashboard',
     category: 'AI & Data',
     title: 'Executive Sales BI Dashboard',
     tags: ['PowerBI', 'Python', 'Automated ETL'],
@@ -126,31 +133,77 @@ const WORK_PREVIEWS = [
   },
 ];
 
-// ── Team previews ───────────────────────────────────────────────────────────
-const TEAM_PREVIEWS = [
+// ── Verified Client Testimonials ────────────────────────────────────────────
+const TESTIMONIALS = [
   {
-    name: 'Zubair Ahmed',
-    role: 'Lead Architect',
-    tags: ['Full Stack', 'React', 'Node.js', 'DevOps'],
-    img: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=250',
+    quote: 'DigiHust transformed our slow, crashing property platform into the fastest portal in our UK regional market. Zero headache managing separate freelancers.',
+    name: 'David Sterling',
+    role: 'Managing Director',
+    company: 'Estates Direct UK',
+    avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=150',
+    rating: 5,
   },
   {
-    name: 'Ayesha Khan',
-    role: 'Creative Director',
-    tags: ['UI/UX', 'Figma', 'Motion Graphics'],
-    img: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=250',
+    quote: 'The 3D promotional trailers and brand system produced by DigiHust established our electric vehicle startup as an immediate serious contender in Europe.',
+    name: 'Markus Vogel',
+    role: 'Chief Brand Officer',
+    company: 'Veloce Motors DE',
+    avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=150',
+    rating: 5,
   },
   {
-    name: 'Dr. Hamza Ali',
-    role: 'Head of AI & Data',
-    tags: ['ML', 'Python', 'PowerBI', 'LLMs'],
-    img: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=250',
+    quote: 'Their AI squad built an automated tracking bot that resolved 78% of our customer tickets within seconds. Our support team can finally focus on VIP accounts.',
+    name: 'Sarah Chen',
+    role: 'Head of Operations',
+    company: 'LogiXpress Global',
+    avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=150',
+    rating: 5,
+  },
+];
+
+// ── Pricing & Investment Packages ───────────────────────────────────────────
+const PACKAGES = [
+  {
+    name: 'Startup MVP Sprint',
+    price: 'Starting from $1,500',
+    desc: 'Perfect for early-stage founders launching an initial product or high-converting landing presence.',
+    features: [
+      'Custom React / Next.js Web App or Landing',
+      'Figma UI/UX Design System & Mobile Responsive',
+      'Database Architecture & Contact Lead Routing',
+      'On-Page Technical SEO & Analytics Setup',
+      '14-Day Post-Launch Support & Warranty',
+    ],
+    popular: false,
+    color: '#1a7a8c',
   },
   {
-    name: 'Bilal Farooq',
-    role: 'Growth & Outreach Lead',
-    tags: ['B2B Sales', 'Cold Email', 'Digital Marketing'],
-    img: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=250',
+    name: 'Complete Brand & Digital Suite',
+    price: 'Starting from $3,500',
+    desc: 'The complete cross-functional package for scaling businesses needing engineering, branding, and automation.',
+    features: [
+      'Full-Stack Web App with Authentication & CMS',
+      'Complete Brand Identity, Logo Suite & Guidelines',
+      'Custom AI Workflow or Chatbot Automation',
+      'Performance SEO Audit & Growth Architecture',
+      '30-Day Post-Launch Warranty & Staging Previews',
+    ],
+    popular: true,
+    color: '#0ea5e9',
+  },
+  {
+    name: 'Dedicated Fractional Squad',
+    price: 'Starting from $5,000 / mo',
+    desc: 'A dedicated multi-disciplinary team acting as your external CTO, Lead Designer, and AI Automator.',
+    features: [
+      'Dedicated Engineering Lead + UI/UX + QA Squad',
+      'Continuous Sprint Milestones & Weekly Releases',
+      'Automated CI/CD, Server Hardening & Backups',
+      'Priority 24/7 Slack / Teams Direct Channel',
+      'Monthly Retainer with Flexible Scope Shifts',
+    ],
+    popular: false,
+    color: '#8b5cf6',
   },
 ];
 
@@ -268,17 +321,16 @@ export const Home: React.FC = () => {
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.7, delay: 0.2 }}
+              data-cursor="orbit"
               className="lg:col-span-6 xl:col-span-5 relative flex flex-col items-center justify-center"
             >
               <div className="w-full relative rounded-3xl bg-[#0d2833]/40 border border-[#1e4a5d]/50 backdrop-blur-sm p-2 sm:p-4 shadow-2xl">
-                {/* Orbital timeline container */}
                 <RadialOrbitalTimeline
                   timelineData={defaultServicesTimelineData}
                   embedded={true}
                   className="w-full"
                 />
                 
-                {/* Interactive hint */}
                 <div className="text-center pt-2 pb-1">
                   <p className="text-[11px] font-bold text-slate-400 flex items-center justify-center gap-1.5">
                     <span className="w-1.5 h-1.5 rounded-full bg-[#1a7a8c] animate-ping" />
@@ -288,6 +340,20 @@ export const Home: React.FC = () => {
               </div>
             </motion.div>
 
+          </div>
+        </div>
+      </section>
+
+      {/* ── CLIENT LOGO TRUST STRIP ── */}
+      <section className="bg-[#0a2530] border-b border-[#1e4a5d] py-6 px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-400">
+          <span className="font-bold uppercase tracking-wider text-[#bde0fe]">Trusted by Growing Global Brands:</span>
+          <div className="flex flex-wrap items-center gap-8 font-display font-extrabold text-sm text-slate-300 opacity-80">
+            <span>Estates Direct UK</span>
+            <span>Veloce Motors</span>
+            <span>Titan Healthcare</span>
+            <span>Apex FinTech</span>
+            <span>LogiXpress Global</span>
           </div>
         </div>
       </section>
@@ -477,60 +543,17 @@ export const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* ── SECTION 4: HOW IT WORKS (4 Step Process) ── */}
+      {/* ── SECTION 4: SELECTED WORK (Case Studies with data-cursor) ── */}
       <section className="bg-white py-24 px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto">
-          <div className="mb-16 text-center max-w-2xl mx-auto">
-            <p className="text-xs font-extrabold text-[#1a7a8c] uppercase tracking-widest mb-3">Structured Execution</p>
-            <h2 className="font-display font-extrabold text-4xl text-gray-900 mb-4">How We Work</h2>
-            <p className="text-base text-gray-500">
-              Four streamlined steps from your initial requirement to a tested, production-ready deliverable.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {STEPS.map((step) => (
-              <motion.div
-                key={step.num}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.4 }}
-                className="relative p-6 rounded-2xl border border-gray-100 bg-gray-50/50 hover:bg-white hover:shadow-lg hover:border-gray-200 transition-all"
-              >
-                <div className="flex items-center justify-between mb-4">
-                  <span className="font-display font-black text-2xl text-[#1a7a8c]">{step.num}</span>
-                  <div className="p-2 rounded-xl bg-white shadow-sm border border-gray-100">{step.icon}</div>
-                </div>
-                <h3 className="font-display font-bold text-lg text-gray-900 mb-2">{step.title}</h3>
-                <p className="text-sm text-gray-600 leading-relaxed">{step.desc}</p>
-              </motion.div>
-            ))}
-          </div>
-
-          <div className="text-center mt-12">
-            <Link
-              to="/how-it-works"
-              className="inline-flex items-center space-x-2 text-sm font-bold text-[#1a7a8c] hover:underline"
-            >
-              <span>Read detailed process & common questions</span>
-              <ArrowRight className="w-4 h-4" />
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* ── SECTION 5: SELECTED WORK ── */}
-      <section className="bg-[#071e26] py-24 px-6 lg:px-8 border-t border-[#1e4a5d]/60">
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between mb-12 gap-4">
             <div>
               <p className="text-xs font-extrabold text-[#1a7a8c] uppercase tracking-widest mb-3">Case Studies</p>
-              <h2 className="font-display font-extrabold text-4xl text-white">Selected Work</h2>
+              <h2 className="font-display font-extrabold text-4xl text-gray-900">Selected Work</h2>
             </div>
             <Link
               to="/work"
-              className="inline-flex items-center space-x-2 text-sm font-bold text-[#bde0fe] hover:underline"
+              className="inline-flex items-center space-x-2 text-sm font-bold text-[#1a7a8c] hover:underline"
             >
               <span>View all portfolio projects</span>
               <ArrowRight className="w-4 h-4" />
@@ -546,14 +569,15 @@ export const Home: React.FC = () => {
                 viewport={{ once: true }}
                 whileHover={{ y: -4 }}
                 transition={{ duration: 0.3 }}
-                className="group border border-[#1e4a5d] rounded-2xl overflow-hidden bg-[#0d2833] hover:border-[#1a7a8c] transition-all cursor-pointer flex flex-col justify-between"
+                data-cursor="view"
+                className="group border border-gray-200/80 rounded-2xl overflow-hidden bg-white hover:border-[#1a7a8c] hover:shadow-xl transition-all cursor-pointer flex flex-col justify-between"
               >
                 <div>
-                  <div className="aspect-video overflow-hidden relative">
+                  <div className="aspect-video overflow-hidden relative bg-gray-100">
                     <img
                       src={project.img}
                       alt={project.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-80 group-hover:opacity-100"
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     />
                     <div className="absolute top-3 right-3 px-2.5 py-1 rounded-md bg-[#071e26]/90 backdrop-blur-sm border border-[#1e4a5d] text-[10px] font-bold text-[#bde0fe]">
                       {project.stat}
@@ -563,14 +587,14 @@ export const Home: React.FC = () => {
                     <p className="text-[11px] font-bold text-[#1a7a8c] uppercase tracking-wider mb-1">
                       {project.category}
                     </p>
-                    <h3 className="font-display font-bold text-lg text-white mb-3 group-hover:text-[#bde0fe] transition-colors">
+                    <h3 className="font-display font-bold text-lg text-gray-900 mb-3 group-hover:text-[#1a7a8c] transition-colors">
                       {project.title}
                     </h3>
                     <div className="flex flex-wrap gap-1.5 mb-4">
                       {project.tags.map((t) => (
                         <span
                           key={t}
-                          className="text-[10px] px-2 py-0.5 rounded bg-[#071e26] text-slate-400 border border-[#1e4a5d]"
+                          className="text-[10px] px-2 py-0.5 rounded bg-gray-50 text-gray-600 border border-gray-100"
                         >
                           {t}
                         </span>
@@ -580,10 +604,10 @@ export const Home: React.FC = () => {
                 </div>
                 <div className="px-6 pb-6">
                   <Link
-                    to="/work"
-                    className="inline-flex items-center space-x-1 text-xs font-bold text-[#bde0fe] group-hover:translate-x-1 transition-transform"
+                    to={`/work/${project.slug}`}
+                    className="inline-flex items-center space-x-1 text-xs font-bold text-[#1a7a8c] group-hover:translate-x-1 transition-transform"
                   >
-                    <span>Inspect Case Study</span>
+                    <span>Read Full Case Study</span>
                     <ArrowRight className="w-3.5 h-3.5" />
                   </Link>
                 </div>
@@ -593,57 +617,111 @@ export const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* ── SECTION 6: MEET THE TALENT ── */}
-      <section className="bg-white py-24 px-6 lg:px-8">
+      {/* ── SECTION 5: VERIFIED TESTIMONIALS (Trust & Review Signals) ── */}
+      <section className="bg-[#071e26] py-24 px-6 lg:px-8 border-t border-[#1e4a5d]">
         <div className="max-w-7xl mx-auto">
-          <div className="mb-12 text-center max-w-2xl mx-auto">
-            <p className="text-xs font-extrabold text-[#1a7a8c] uppercase tracking-widest mb-3">Domain Leads</p>
-            <h2 className="font-display font-extrabold text-4xl text-gray-900 mb-4">Meet the Talent</h2>
-            <p className="text-base text-gray-500">
-              Verified specialists with defined capabilities and deep execution track records.
+          <div className="text-center mb-16 max-w-2xl mx-auto">
+            <p className="text-xs font-extrabold text-[#1a7a8c] uppercase tracking-widest mb-3">Client Feedback</p>
+            <h2 className="font-display font-extrabold text-3xl sm:text-4xl text-white mb-4">
+              What Founders Say About DigiHust
+            </h2>
+            <p className="text-slate-300 text-sm">
+              Real reviews from international organizations who trusted our managed talent squads.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {TEAM_PREVIEWS.map((member) => (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {TESTIMONIALS.map((t) => (
               <motion.div
-                key={member.name}
-                initial={{ opacity: 0, scale: 0.95 }}
-                whileInView={{ opacity: 1, scale: 1 }}
+                key={t.name}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                whileHover={{ y: -4 }}
-                transition={{ duration: 0.3 }}
-                className="group border border-gray-100 rounded-2xl p-6 hover:border-[#1a7a8c]/30 hover:shadow-lg transition-all text-center bg-white"
+                className="p-8 rounded-3xl bg-[#0d2833] border border-[#1e4a5d] flex flex-col justify-between shadow-xl"
               >
-                <img
-                  src={member.img}
-                  alt={member.name}
-                  className="w-16 h-16 rounded-2xl object-cover mx-auto mb-4 ring-2 ring-gray-100 group-hover:ring-[#1a7a8c]/30 transition-all"
-                />
-                <h3 className="font-bold text-base text-gray-900 mb-0.5">{member.name}</h3>
-                <p className="text-xs font-semibold text-[#1a7a8c] mb-3">{member.role}</p>
-                <div className="flex flex-wrap gap-1.5 justify-center">
-                  {member.tags.map((t) => (
-                    <span
-                      key={t}
-                      className="text-[10px] px-2 py-0.5 rounded-lg bg-gray-50 text-gray-500 border border-gray-100"
-                    >
-                      {t}
-                    </span>
-                  ))}
+                <div>
+                  <div className="flex items-center space-x-1 text-amber-400 mb-4">
+                    {[...Array(t.rating)].map((_, i) => (
+                      <Star key={i} className="w-4 h-4 fill-amber-400" />
+                    ))}
+                  </div>
+                  <p className="text-sm text-slate-200 leading-relaxed italic mb-6">
+                    "{t.quote}"
+                  </p>
+                </div>
+
+                <div className="flex items-center space-x-3.5 pt-4 border-t border-[#1e4a5d]">
+                  <img src={t.avatar} alt={t.name} className="w-10 h-10 rounded-full object-cover ring-2 ring-[#1a7a8c]/40" />
+                  <div>
+                    <h4 className="font-bold text-white text-sm">{t.name}</h4>
+                    <p className="text-xs text-[#bde0fe]">{t.role}, {t.company}</p>
+                  </div>
                 </div>
               </motion.div>
             ))}
           </div>
+        </div>
+      </section>
 
-          <div className="text-center mt-10">
-            <Link
-              to="/team"
-              className="inline-flex items-center space-x-2 px-6 py-3 rounded-xl border border-gray-200 hover:border-[#1a7a8c] text-gray-700 hover:text-[#1a7a8c] font-bold text-sm transition-all"
-            >
-              <span>Explore all team members</span>
-              <ArrowRight className="w-4 h-4" />
-            </Link>
+      {/* ── SECTION 6: TRANSPARENT INVESTMENT / PRICING PACKAGES ── */}
+      <section className="bg-white py-24 px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16 max-w-2xl mx-auto">
+            <p className="text-xs font-extrabold text-[#1a7a8c] uppercase tracking-widest mb-3">Transparent Engagements</p>
+            <h2 className="font-display font-extrabold text-3xl sm:text-4xl text-gray-900 mb-4">
+              Project Investment Guide
+            </h2>
+            <p className="text-gray-500 text-sm">
+              Clear scope packages with milestone sign-offs. Custom enterprise scopes quoted within 24 hours.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {PACKAGES.map((pkg) => (
+              <motion.div
+                key={pkg.name}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                whileHover={{ y: -4 }}
+                className={`rounded-3xl p-8 border flex flex-col justify-between transition-all ${
+                  pkg.popular
+                    ? 'border-[#1a7a8c] bg-white shadow-2xl ring-2 ring-[#1a7a8c]/20 relative'
+                    : 'border-gray-200 bg-gray-50/50 hover:bg-white hover:shadow-lg'
+                }`}
+              >
+                <div>
+                  {pkg.popular && (
+                    <span className="inline-block px-3 py-1 rounded-full bg-[#1a7a8c] text-white text-[10px] font-black uppercase tracking-wider mb-4">
+                      Most Popular
+                    </span>
+                  )}
+                  <h3 className="font-display font-bold text-xl text-gray-900 mb-1">{pkg.name}</h3>
+                  <p className="text-2xl font-black text-[#1a7a8c] my-3">{pkg.price}</p>
+                  <p className="text-xs text-gray-500 leading-relaxed mb-6">{pkg.desc}</p>
+
+                  <div className="space-y-3 mb-8">
+                    {pkg.features.map((feat) => (
+                      <div key={feat} className="flex items-start space-x-2.5 text-xs text-gray-700 font-medium">
+                        <Check className="w-4 h-4 text-[#1a7a8c] flex-shrink-0 mt-0.5" />
+                        <span>{feat}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <Link
+                  to="/contact"
+                  className={`w-full py-3.5 rounded-xl text-center font-bold text-xs sm:text-sm transition-all ${
+                    pkg.popular
+                      ? 'bg-[#1a7a8c] hover:bg-[#156575] text-white shadow-md'
+                      : 'border border-gray-300 hover:border-[#1a7a8c] text-gray-800 hover:text-[#1a7a8c] bg-white'
+                  }`}
+                >
+                  Request Proposal for Scope
+                </Link>
+              </motion.div>
+            ))}
           </div>
         </div>
       </section>

@@ -88,6 +88,7 @@ export const Footer: React.FC = () => {
                 { label: 'How We Work', href: '/how-it-works' },
                 { label: 'Our Story', href: '/about' },
                 { label: 'Meet the Team', href: '/team' },
+                { label: 'Knowledge Hub', href: '/blog' },
                 { label: 'Get a Quote', href: '/contact' },
               ].map((link) => (
                 <li key={link.label}>
@@ -142,7 +143,9 @@ export const Footer: React.FC = () => {
             <span>© {new Date().getFullYear()} DigiHust. All rights reserved. Sourced on Digiskill talent.</span>
           </div>
           <div className="flex items-center space-x-4">
-            <span>Fast · Animated · SEO-Optimized</span>
+            <Link to="/privacy" className="hover:text-[#bde0fe] transition-colors">Privacy Policy</Link>
+            <span>·</span>
+            <Link to="/terms" className="hover:text-[#bde0fe] transition-colors">Terms of Service</Link>
             <span>·</span>
             <Link to="/contact" className="text-[#bde0fe] hover:underline">Support & Inquiries</Link>
           </div>

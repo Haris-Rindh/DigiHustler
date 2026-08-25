@@ -5,12 +5,26 @@
 DigiHust is a modern digital agency and talent-powered solution company headquartered in Pakistan. Instead of requiring clients to hire and coordinate isolated freelancers, DigiHust provides single-contract, fully managed delivery across specialized multi-disciplinary teams sourced and verified through Digiskill.
 
 ## Core Capabilities
-- **Web & Full-Stack Development**: Custom web applications, React, Next.js, Node.js, API architecture, database optimization, and cloud deployments.
-- **Creative & UI/UX Design**: Brand identity systems, design systems, Figma UI/UX prototyping, vector graphics, motion design, and video editing.
-- **AI & Workflow Automation**: Custom OpenAI / LLM integrations, chatbot assistants, workflow automations (n8n, Zapier, Make), and intelligent data extractors.
-- **Digital Marketing & Growth**: SEO audit & execution, PPC advertising (Google Ads, Meta Ads), content marketing, and B2B cold outreach strategies.
+- **Web & Full-Stack Development**: Custom web applications, React, Next.js, Node.js, API architecture, PostgreSQL, PostGIS, and cloud deployments.
+- **Creative & UI/UX Design**: Brand identity systems, design systems, Figma UI/UX prototyping, vector graphics, motion design, and 3D animations.
+- **AI & Workflow Automation**: Custom OpenAI / LLM integrations, autonomous customer bots, workflow automations (n8n, Zapier, Make), and intelligent data extractors.
+- **Digital Marketing & Growth**: Technical SEO audits & execution, PPC advertising (Google Ads, Meta Ads), content marketing, and B2B cold outreach strategies.
 - **Cybersecurity & Cloud**: Web application penetration testing, vulnerability assessments, OWASP compliance, and security policy architecture.
 - **Business Intelligence & Data**: PowerBI dashboard development, ETL pipelines, SQL reporting, and administrative digital assistance.
+
+## Selected Case Studies & Proven Results
+- **Real-Estate Marketplace Portal**: https://digihust.com/work/real-estate-marketplace-portal (780ms load times, +140% conversion growth)
+- **Automotive EV Brand Launch**: https://digihust.com/work/automotive-brand-identity (2.4M launch impressions, full 3D motion suite)
+- **Hospital Executive BI Suite**: https://digihust.com/work/hospital-bi-dashboard (12+ hours saved/week, automated ETL)
+- **FinTech High-Throughput Trading Console**: https://digihust.com/work/saas-fintech-trading-console (60 FPS under load, -40% order error rate)
+- **Autonomous Logistics Customer Bot**: https://digihust.com/work/ai-logistics-customer-bot (78% autonomous resolution, < 6s response time)
+- **Luxury Goods E-Commerce**: https://digihust.com/work/ecommerce-luxury-brand ($280K in 30 days, -28% dropoff)
+
+## Knowledge & Insights Hub
+- Knowledge Base: https://digihust.com/blog
+- Next.js Architecture for AI Crawlers: https://digihust.com/blog/how-to-architect-nextjs-for-ai-crawlers
+- Enterprise Workflow Automations (n8n vs Python): https://digihust.com/blog/demystifying-ai-automations-n8n-vs-custom-python
+- OWASP Security Checklist for Startups: https://digihust.com/blog/owasp-top-10-web-security-checklist-for-startups
 
 ## Operating Model
 1. **Intake & Scope**: Client provides project brief via `/contact` or proposal intake.
@@ -26,3 +40,5 @@ DigiHust is a modern digital agency and talent-powered solution company headquar
 - Company Story & Vision: https://digihust.com/about
 - Team & Domain Leads: https://digihust.com/team
 - Get a Scoped Quote: https://digihust.com/contact
+- Privacy Policy: https://digihust.com/privacy
+- Terms of Service: https://digihust.com/terms

@@ -278,8 +278,18 @@ export default function RadialOrbitalTimeline({
               <div
                 key={item.id}
                 ref={(el) => (nodeRefs.current[item.id] = el)}
-                className="absolute transition-all duration-700 cursor-pointer"
+                tabIndex={0}
+                role="button"
+                aria-label={`${item.title} capability node - ${item.energy}%`}
+                aria-expanded={isExpanded}
+                className="absolute transition-all duration-700 cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#bde0fe] rounded-2xl"
                 style={nodeStyle}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    toggleItem(item.id);
+                  }
+                }}
                 onClick={(e) => {
                   e.stopPropagation();
                   toggleItem(item.id);

@@ -47,6 +47,7 @@ interface FormState {
   budget: string;
   timeline: string;
   file: File | null;
+  honeypot: string; // Anti-spam trap
 }
 
 export const Contact: React.FC = () => {
@@ -59,6 +60,7 @@ export const Contact: React.FC = () => {
     budget: '$1,000 – $3,000',
     timeline: '1 Month',
     file: null,
+    honeypot: '',
   });
 
   const [submitted, setSubmitted] = useState(false);
@@ -76,6 +78,12 @@ export const Contact: React.FC = () => {
 
   const validate = () => {
     const errs: Partial<Record<keyof FormState, string>> = {};
+    // Honeypot check: If filled, silently abort or flag
+    if (form.honeypot) {
+      errs.name = 'Automated bot submission detected.';
+      return errs;
+    }
+
     if (!form.name.trim()) errs.name = 'Please provide your full name.';
     if (!form.email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
       errs.email = 'Please provide a valid work email.';
@@ -246,6 +254,20 @@ export const Contact: React.FC = () => {
                   onSubmit={handleSubmit}
                   className="space-y-7"
                 >
+                  {/* Anti-spam honeypot (hidden from real users) */}
+                  <div className="hidden" aria-hidden="true">
+                    <label htmlFor="website_hp">Leave this field blank</label>
+                    <input
+                      id="website_hp"
+                      type="text"
+                      name="website_hp"
+                      tabIndex={-1}
+                      autoComplete="off"
+                      value={form.honeypot}
+                      onChange={(e) => setForm({ ...form, honeypot: e.target.value })}
+                    />
+                  </div>
+
                   {/* Name + Email */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                     <div>
