@@ -2,10 +2,43 @@ export type UserRole = 'management' | 'group_leader' | 'freelancer';
 
 export type GroupId = 'tech' | 'creative' | 'data' | 'growth';
 
+export type UserStatus = 'active' | 'inactive' | 'on_leave' | 'suspended' | 'pending_onboarding';
+
+export interface StatusChangeLog {
+  timestamp: string;
+  from: UserStatus;
+  to: UserStatus;
+  reason: string;
+  changedBy: string;
+}
+
+export interface InternalNote {
+  id: string;
+  timestamp: string;
+  authorId: string;
+  authorName: string;
+  text: string;
+}
+
+export interface DocumentAttachment {
+  id: string;
+  name: string;
+  type: 'contract' | 'id_verification' | 'portfolio' | 'other';
+  url: string;
+  uploadedAt: string;
+}
+
+export interface SplitOverride {
+  managementPct?: number;
+  leaderPct?: number;
+  freelancerPct?: number;
+}
+
 export interface User {
   id: string;
   name: string;
   email: string;
+  phone?: string;
   avatarUrl: string;
   role: UserRole;
   groupId?: GroupId;
@@ -17,7 +50,14 @@ export interface User {
   totalEarnings: number;
   rating: number;
   digiskillBatch?: string;
-  status: 'active' | 'busy' | 'available';
+  status: UserStatus;
+  joinedAt?: string;
+  onTimeDeliveryPct?: number;
+  csatScore?: number;
+  splitOverride?: SplitOverride;
+  statusHistory?: StatusChangeLog[];
+  notes?: InternalNote[];
+  documents?: DocumentAttachment[];
 }
 
 export interface Group {
@@ -144,7 +184,9 @@ export interface Applicant {
   experienceYears: number;
   bio: string;
   appliedAt: string;
-  status: 'pending' | 'approved' | 'rejected';
+  status: 'pending' | 'approved' | 'rejected' | 'more_info_requested';
+  rejectionReason?: string;
+  followUpNotes?: string;
 }
 
 export interface GlobalAdminSettings {

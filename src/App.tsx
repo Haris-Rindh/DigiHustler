@@ -89,6 +89,9 @@ export const App: React.FC = () => {
                 <Route path="/ledger" element={<PayoutLedger />} />
                 <Route path="/roster" element={<RosterView />} />
                 <Route path="/admin" element={<AdminSettings />} />
+                <Route path="/admin/people" element={<AdminSettings />} />
+                <Route path="/admin/applicants" element={<AdminSettings />} />
+                <Route path="/admin/squads" element={<AdminSettings />} />
 
                 {/* ── Wildcard Fallback Route (404) ── */}
                 <Route path="*" element={<NotFoundPage />} />
