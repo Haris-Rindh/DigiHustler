@@ -174,7 +174,7 @@ export const PeopleDirectory: React.FC<PeopleDirectoryProps> = ({
         return <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-500/20 text-purple-300 border border-purple-500/30">Pending Onboarding</span>;
       case 'inactive':
       default:
-        return <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-500/20 text-slate-300 border border-slate-500/30">Inactive</span>;
+        return <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-500/20 text-[var(--text-body)] border border-slate-500/30">Inactive</span>;
     }
   };
 
@@ -182,17 +182,17 @@ export const PeopleDirectory: React.FC<PeopleDirectoryProps> = ({
     <div className="space-y-6">
 
       {/* Top Search & Action Bar */}
-      <div className="p-5 rounded-3xl bg-[var(--color-surface)] border border-[var(--color-border)] flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4 shadow-xl">
+      <div className="p-5 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4 shadow-xl">
         
         {/* Search */}
         <div className="relative flex-1">
-          <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
+          <Search className="w-4 h-4 text-[var(--text-muted)] absolute left-3.5 top-3.5" />
           <input
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="Search by name, email, role, or skill..."
-            className="w-full pl-10 pr-4 py-2.5 rounded-2xl bg-[var(--color-bg)] border border-[var(--color-border)] text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-[var(--color-accent)] transition-colors"
+            className="w-full pl-10 pr-4 py-2.5 rounded-2xl bg-[var(--bg-page)] border border-[var(--border-subtle)] text-[var(--text-heading)] text-xs placeholder:text-[var(--text-dim)] focus:outline-none focus:border-[var(--brand-teal)] transition-colors"
           />
         </div>
 
@@ -202,7 +202,7 @@ export const PeopleDirectory: React.FC<PeopleDirectoryProps> = ({
           <select
             value={roleFilter}
             onChange={(e) => setRoleFilter(e.target.value)}
-            className="px-3 py-2 rounded-xl bg-[var(--color-bg)] border border-[var(--color-border)] text-slate-300 text-xs font-semibold focus:outline-none focus:border-[var(--color-accent)]"
+            className="px-3 py-2 rounded-xl bg-[var(--bg-page)] border border-[var(--border-subtle)] text-[var(--text-body)] text-xs font-semibold focus:outline-none focus:border-[var(--brand-teal)]"
           >
             <option value="all">All Roles</option>
             <option value="management">Management</option>
@@ -215,7 +215,7 @@ export const PeopleDirectory: React.FC<PeopleDirectoryProps> = ({
             <select
               value={squadFilter}
               onChange={(e) => setSquadFilter(e.target.value)}
-              className="px-3 py-2 rounded-xl bg-[var(--color-bg)] border border-[var(--color-border)] text-slate-300 text-xs font-semibold focus:outline-none focus:border-[var(--color-accent)]"
+              className="px-3 py-2 rounded-xl bg-[var(--bg-page)] border border-[var(--border-subtle)] text-[var(--text-body)] text-xs font-semibold focus:outline-none focus:border-[var(--brand-teal)]"
             >
               <option value="all">All Squads</option>
               {groups.map((g) => (
@@ -230,7 +230,7 @@ export const PeopleDirectory: React.FC<PeopleDirectoryProps> = ({
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="px-3 py-2 rounded-xl bg-[var(--color-bg)] border border-[var(--color-border)] text-slate-300 text-xs font-semibold focus:outline-none focus:border-[var(--color-accent)]"
+            className="px-3 py-2 rounded-xl bg-[var(--bg-page)] border border-[var(--border-subtle)] text-[var(--text-body)] text-xs font-semibold focus:outline-none focus:border-[var(--brand-teal)]"
           >
             <option value="all">All Statuses</option>
             <option value="active">Active</option>
@@ -242,7 +242,7 @@ export const PeopleDirectory: React.FC<PeopleDirectoryProps> = ({
           {/* Export CSV */}
           <button
             onClick={exportToCSV}
-            className="flex items-center space-x-1.5 px-3.5 py-2 rounded-xl border border-[var(--color-border)] bg-[var(--color-bg)] hover:bg-white/5 text-slate-300 text-xs font-bold transition-colors"
+            className="flex items-center space-x-1.5 px-3.5 py-2 rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-page)] hover:bg-[var(--bg-subtle)] text-[var(--text-body)] text-xs font-bold transition-colors"
             title="Export filtered records to CSV"
           >
             <Download className="w-3.5 h-3.5" />
@@ -253,7 +253,7 @@ export const PeopleDirectory: React.FC<PeopleDirectoryProps> = ({
           {isManagement && (
             <button
               onClick={onOpenQuickInvite}
-              className="flex items-center space-x-1.5 px-4 py-2 rounded-xl bg-[var(--color-accent-fill)] hover:bg-[var(--color-accent-hover)] text-white text-xs font-bold shadow-md shadow-md transition-all"
+              className="flex items-center space-x-1.5 px-4 py-2 rounded-xl bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-white text-xs font-bold shadow-md shadow-md transition-all"
             >
               <UserPlus className="w-3.5 h-3.5" />
               <span>Invite Talent</span>
@@ -267,9 +267,9 @@ export const PeopleDirectory: React.FC<PeopleDirectoryProps> = ({
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="p-3 rounded-2xl bg-[var(--color-accent-fill)]/20 border border-[var(--color-accent)]/40 flex flex-wrap items-center justify-between gap-3 text-xs"
+          className="p-3 rounded-2xl bg-[var(--brand-teal)]/20 border border-[var(--brand-teal)]/40 flex flex-wrap items-center justify-between gap-3 text-xs"
         >
-          <div className="flex items-center space-x-2 text-[var(--color-text-primary)] font-bold">
+          <div className="flex items-center space-x-2 text-[var(--text-heading)] font-bold">
             <CheckSquare className="w-4 h-4" />
             <span>{selectedIds.length} person records selected</span>
           </div>
@@ -277,19 +277,19 @@ export const PeopleDirectory: React.FC<PeopleDirectoryProps> = ({
           <div className="flex items-center space-x-2">
             <button
               onClick={() => setBulkStatusModal(true)}
-              className="px-3 py-1.5 rounded-lg bg-[var(--color-surface)] hover:bg-[var(--color-bg)] border border-[var(--color-border)] text-white font-bold"
+              className="px-3 py-1.5 rounded-lg bg-[var(--bg-surface)] hover:bg-[var(--bg-page)] border border-[var(--border-subtle)] text-[var(--text-heading)] font-bold"
             >
               Bulk Change Status
             </button>
             <button
               onClick={() => setBulkSquadModal(true)}
-              className="px-3 py-1.5 rounded-lg bg-[var(--color-surface)] hover:bg-[var(--color-bg)] border border-[var(--color-border)] text-white font-bold"
+              className="px-3 py-1.5 rounded-lg bg-[var(--bg-surface)] hover:bg-[var(--bg-page)] border border-[var(--border-subtle)] text-[var(--text-heading)] font-bold"
             >
               Bulk Reassign Squad
             </button>
             <button
               onClick={exportToCSV}
-              className="px-3 py-1.5 rounded-lg bg-[var(--color-surface)] hover:bg-[var(--color-bg)] border border-[var(--color-border)] text-white font-bold"
+              className="px-3 py-1.5 rounded-lg bg-[var(--bg-surface)] hover:bg-[var(--bg-page)] border border-[var(--border-subtle)] text-[var(--text-heading)] font-bold"
             >
               Export Selected
             </button>
@@ -298,16 +298,16 @@ export const PeopleDirectory: React.FC<PeopleDirectoryProps> = ({
       )}
 
       {/* People Table */}
-      <div className="rounded-3xl bg-[var(--color-surface)] border border-[var(--color-border)] overflow-hidden shadow-2xl">
+      <div className="rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] overflow-hidden shadow-2xl">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse text-xs">
             <thead>
-              <tr className="border-b border-[var(--color-border)] bg-[var(--color-bg)] text-slate-400 font-bold uppercase tracking-wider text-[10px]">
+              <tr className="border-b border-[var(--border-subtle)] bg-[var(--bg-page)] text-[var(--text-muted)] font-bold uppercase tracking-wider text-[10px]">
                 {isManagement && (
                   <th className="p-4 w-10 text-center">
                     <button onClick={toggleSelectAll}>
                       {selectedIds.length === filteredUsers.length && filteredUsers.length > 0 ? (
-                        <CheckSquare className="w-4 h-4 text-[var(--color-accent)]" />
+                        <CheckSquare className="w-4 h-4 text-[var(--brand-teal)]" />
                       ) : (
                         <Square className="w-4 h-4 text-slate-600" />
                       )}
@@ -319,7 +319,7 @@ export const PeopleDirectory: React.FC<PeopleDirectoryProps> = ({
                     setSortField('name');
                     setSortAsc(!sortAsc);
                   }}
-                  className="p-4 cursor-pointer hover:text-white"
+                  className="p-4 cursor-pointer hover:text-[var(--text-heading)]"
                 >
                   <span className="flex items-center gap-1">
                     <span>Name & Title</span>
@@ -335,7 +335,7 @@ export const PeopleDirectory: React.FC<PeopleDirectoryProps> = ({
                     setSortField('earnings');
                     setSortAsc(!sortAsc);
                   }}
-                  className="p-4 cursor-pointer hover:text-white text-right"
+                  className="p-4 cursor-pointer hover:text-[var(--text-heading)] text-right"
                 >
                   <span className="flex items-center justify-end gap-1">
                     <span>Total Earned</span>
@@ -347,7 +347,7 @@ export const PeopleDirectory: React.FC<PeopleDirectoryProps> = ({
                     setSortField('rating');
                     setSortAsc(!sortAsc);
                   }}
-                  className="p-4 cursor-pointer hover:text-white text-center"
+                  className="p-4 cursor-pointer hover:text-[var(--text-heading)] text-center"
                 >
                   <span className="flex items-center justify-center gap-1">
                     <span>Rating</span>
@@ -357,10 +357,10 @@ export const PeopleDirectory: React.FC<PeopleDirectoryProps> = ({
                 <th className="p-4 text-center">Action</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#1e4a5d]/60 text-slate-200">
+            <tbody className="divide-y divide-[#1e4a5d]/60 text-[var(--text-body)]">
               {filteredUsers.length === 0 ? (
                 <tr>
-                  <td colSpan={9} className="p-8 text-center text-slate-400">
+                  <td colSpan={9} className="p-8 text-center text-[var(--text-muted)]">
                     No matching persons found in the directory.
                   </td>
                 </tr>
@@ -373,8 +373,8 @@ export const PeopleDirectory: React.FC<PeopleDirectoryProps> = ({
                     <tr
                       key={person.id}
                       onClick={() => onSelectUser(person)}
-                      className={`hover:bg-[var(--color-accent-fill)]/10 cursor-pointer transition-colors ${
-                        isSelected ? 'bg-[var(--color-accent-fill)]/15' : ''
+                      className={`hover:bg-[var(--brand-teal)]/10 cursor-pointer transition-colors ${
+                        isSelected ? 'bg-[var(--brand-teal)]/15' : ''
                       }`}
                     >
                       {isManagement && (
@@ -386,7 +386,7 @@ export const PeopleDirectory: React.FC<PeopleDirectoryProps> = ({
                           }}
                         >
                           {isSelected ? (
-                            <CheckSquare className="w-4 h-4 text-[var(--color-accent)]" />
+                            <CheckSquare className="w-4 h-4 text-[var(--brand-teal)]" />
                           ) : (
                             <Square className="w-4 h-4 text-slate-600" />
                           )}
@@ -402,15 +402,15 @@ export const PeopleDirectory: React.FC<PeopleDirectoryProps> = ({
                             className="w-9 h-9 rounded-xl object-cover ring-1 ring-[#1e4a5d]"
                           />
                           <div>
-                            <p className="font-bold text-white text-sm">{person.name}</p>
-                            <p className="text-[11px] text-slate-400">{person.title}</p>
+                            <p className="font-bold text-[var(--text-heading)] text-sm">{person.name}</p>
+                            <p className="text-[11px] text-[var(--text-muted)]">{person.title}</p>
                           </div>
                         </div>
                       </td>
 
                       {/* Role */}
                       <td className="p-4">
-                        <span className="px-2 py-0.5 rounded-md bg-white/5 border border-white/10 text-[10px] font-bold text-slate-300 uppercase tracking-wide">
+                        <span className="px-2 py-0.5 rounded-md bg-[var(--bg-subtle)] border border-[var(--border-subtle)] text-[10px] font-bold text-[var(--text-body)] uppercase tracking-wide">
                           {person.role.replace('_', ' ')}
                         </span>
                       </td>
@@ -418,11 +418,11 @@ export const PeopleDirectory: React.FC<PeopleDirectoryProps> = ({
                       {/* Squad */}
                       <td className="p-4">
                         {group ? (
-                          <span className="text-xs font-semibold text-[var(--color-text-primary)]">
+                          <span className="text-xs font-semibold text-[var(--text-heading)]">
                             {group.name}
                           </span>
                         ) : (
-                          <span className="text-xs text-slate-500">Executive</span>
+                          <span className="text-xs text-[var(--text-dim)]">Executive</span>
                         )}
                       </td>
 
@@ -435,13 +435,13 @@ export const PeopleDirectory: React.FC<PeopleDirectoryProps> = ({
                           {person.specialties.slice(0, 2).map((s) => (
                             <span
                               key={s}
-                              className="px-1.5 py-0.5 rounded bg-[var(--color-bg)] text-slate-300 text-[10px] border border-[var(--color-border)]"
+                              className="px-1.5 py-0.5 rounded bg-[var(--bg-page)] text-[var(--text-body)] text-[10px] border border-[var(--border-subtle)]"
                             >
                               {s}
                             </span>
                           ))}
                           {person.specialties.length > 2 && (
-                            <span className="text-[10px] text-slate-500 font-bold">
+                            <span className="text-[10px] text-[var(--text-dim)] font-bold">
                               +{person.specialties.length - 2}
                             </span>
                           )}
@@ -449,7 +449,7 @@ export const PeopleDirectory: React.FC<PeopleDirectoryProps> = ({
                       </td>
 
                       {/* Total Earned */}
-                      <td className="p-4 text-right font-extrabold text-white">
+                      <td className="p-4 text-right font-extrabold text-[var(--text-heading)]">
                         ${person.totalEarnings.toLocaleString()}
                       </td>
 
@@ -465,7 +465,7 @@ export const PeopleDirectory: React.FC<PeopleDirectoryProps> = ({
                       <td className="p-4 text-center" onClick={(e) => e.stopPropagation()}>
                         <button
                           onClick={() => onSelectUser(person)}
-                          className="px-3 py-1 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-[11px] font-bold text-slate-200 transition-colors"
+                          className="px-3 py-1 rounded-lg bg-[var(--bg-subtle)] hover:bg-[var(--bg-subtle)] border border-[var(--border-subtle)] text-[11px] font-bold text-[var(--text-body)] transition-colors"
                         >
                           Profile
                         </button>
@@ -482,18 +482,18 @@ export const PeopleDirectory: React.FC<PeopleDirectoryProps> = ({
       {/* Bulk Status Modal */}
       {bulkStatusModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80">
-          <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-6 max-w-md w-full shadow-2xl space-y-4">
-            <h3 className="font-bold text-lg text-white">Bulk Status Transition</h3>
-            <p className="text-xs text-slate-300">
+          <div className="bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-2xl p-6 max-w-md w-full shadow-2xl space-y-4">
+            <h3 className="font-bold text-lg text-[var(--text-heading)]">Bulk Status Transition</h3>
+            <p className="text-xs text-[var(--text-body)]">
               Update status for {selectedIds.length} selected person records.
             </p>
 
             <div>
-              <label className="block text-xs font-bold text-slate-400 mb-1">New Status</label>
+              <label className="block text-xs font-bold text-[var(--text-muted)] mb-1">New Status</label>
               <select
                 value={bulkStatus}
                 onChange={(e) => setBulkStatus(e.target.value as UserStatus)}
-                className="w-full px-3 py-2 rounded-xl bg-[var(--color-bg)] border border-[var(--color-border)] text-white text-xs"
+                className="w-full px-3 py-2 rounded-xl bg-[var(--bg-page)] border border-[var(--border-subtle)] text-[var(--text-heading)] text-xs"
               >
                 <option value="active">Active & Available</option>
                 <option value="on_leave">On Leave</option>
@@ -503,27 +503,27 @@ export const PeopleDirectory: React.FC<PeopleDirectoryProps> = ({
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-400 mb-1">Audit Reason *</label>
+              <label className="block text-xs font-bold text-[var(--text-muted)] mb-1">Audit Reason *</label>
               <textarea
                 required
                 rows={2}
                 value={bulkReason}
                 onChange={(e) => setBulkReason(e.target.value)}
                 placeholder="e.g. Annual squad review re-certification."
-                className="w-full px-3 py-2 rounded-xl bg-[var(--color-bg)] border border-[var(--color-border)] text-white text-xs"
+                className="w-full px-3 py-2 rounded-xl bg-[var(--bg-page)] border border-[var(--border-subtle)] text-[var(--text-heading)] text-xs"
               />
             </div>
 
             <div className="flex justify-end space-x-2 pt-2">
               <button
                 onClick={() => setBulkStatusModal(false)}
-                className="px-4 py-2 rounded-xl border border-[var(--color-border)] text-xs text-slate-300"
+                className="px-4 py-2 rounded-xl border border-[var(--border-subtle)] text-xs text-[var(--text-body)]"
               >
                 Cancel
               </button>
               <button
                 onClick={handleBulkStatusApply}
-                className="px-5 py-2 rounded-xl bg-[var(--color-accent-fill)] text-white font-bold text-xs"
+                className="px-5 py-2 rounded-xl bg-[var(--brand-teal)] text-white font-bold text-xs"
               >
                 Apply Bulk Status
               </button>
@@ -535,18 +535,18 @@ export const PeopleDirectory: React.FC<PeopleDirectoryProps> = ({
       {/* Bulk Squad Modal */}
       {bulkSquadModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80">
-          <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-6 max-w-md w-full shadow-2xl space-y-4">
-            <h3 className="font-bold text-lg text-white">Bulk Squad Reassignment</h3>
-            <p className="text-xs text-slate-300">
+          <div className="bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-2xl p-6 max-w-md w-full shadow-2xl space-y-4">
+            <h3 className="font-bold text-lg text-[var(--text-heading)]">Bulk Squad Reassignment</h3>
+            <p className="text-xs text-[var(--text-body)]">
               Reassign {selectedIds.length} selected persons to a new squad.
             </p>
 
             <div>
-              <label className="block text-xs font-bold text-slate-400 mb-1">Target Squad</label>
+              <label className="block text-xs font-bold text-[var(--text-muted)] mb-1">Target Squad</label>
               <select
                 value={bulkSquad}
                 onChange={(e) => setBulkSquad(e.target.value as GroupId)}
-                className="w-full px-3 py-2 rounded-xl bg-[var(--color-bg)] border border-[var(--color-border)] text-white text-xs"
+                className="w-full px-3 py-2 rounded-xl bg-[var(--bg-page)] border border-[var(--border-subtle)] text-[var(--text-heading)] text-xs"
               >
                 {groups.map((g) => (
                   <option key={g.id} value={g.id}>
@@ -559,13 +559,13 @@ export const PeopleDirectory: React.FC<PeopleDirectoryProps> = ({
             <div className="flex justify-end space-x-2 pt-2">
               <button
                 onClick={() => setBulkSquadModal(false)}
-                className="px-4 py-2 rounded-xl border border-[var(--color-border)] text-xs text-slate-300"
+                className="px-4 py-2 rounded-xl border border-[var(--border-subtle)] text-xs text-[var(--text-body)]"
               >
                 Cancel
               </button>
               <button
                 onClick={handleBulkSquadApply}
-                className="px-5 py-2 rounded-xl bg-[var(--color-accent-fill)] text-white font-bold text-xs"
+                className="px-5 py-2 rounded-xl bg-[var(--brand-teal)] text-white font-bold text-xs"
               >
                 Apply Squad Move
               </button>

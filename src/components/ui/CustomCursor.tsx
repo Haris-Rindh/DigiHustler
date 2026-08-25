@@ -103,7 +103,7 @@ export const CustomCursor: React.FC = () => {
         className="rounded-full border flex items-center justify-center backdrop-blur-[1px] shadow-sm"
       >
         {cursorText && (
-          <span className="text-[9px] font-black tracking-widest text-white uppercase select-none drop-shadow-sm">
+          <span className="text-[9px] font-black tracking-widest text-[var(--text-heading)] uppercase select-none drop-shadow-sm">
             {cursorText}
           </span>
         )}

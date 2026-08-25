@@ -1,25 +1,30 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  ArrowRight,
-  Paperclip,
-  CheckCircle2,
-  Sparkles,
-  ShieldCheck,
   Send,
-  Clock,
+  CheckCircle2,
   AlertCircle,
+  Clock,
+  Shield,
+  MessageSquare,
+  Sparkles,
+  Paperclip,
+  Check,
+  Mail,
+  Phone,
+  MapPin,
+  HelpCircle,
 } from 'lucide-react';
 import { SEOHead } from '../seo/SEOHead';
 
 const SERVICES = [
   'Website / Full-Stack App',
   'UI/UX & Brand Identity',
-  'AI & Automation Workflows',
+  'AI & Workflow Automation',
   'Digital Marketing & SEO',
-  'Cybersecurity & Audit',
-  'PowerBI & Data Intelligence',
-  'Other / Custom Scope',
+  'Cybersecurity Audit',
+  'BI & Data Intelligence',
+  'Other Custom Scope',
 ];
 
 const BUDGETS = [
@@ -28,30 +33,19 @@ const BUDGETS = [
   '$3,000 – $7,500',
   '$7,500 – $15,000',
   '$15,000+',
-  'Flexible / Not Sure Yet',
+  'Flexible / Not Sure',
 ];
 
 const TIMELINES = [
-  'Immediate (Within 2 Weeks)',
+  'Urgent (Under 2 Weeks)',
   '1 Month',
-  '2 – 3 Months',
-  'Flexible Timeline',
+  '1 – 3 Months',
+  '3+ Months / Ongoing Retainer',
+  'Flexible',
 ];
 
-interface FormState {
-  name: string;
-  email: string;
-  company: string;
-  services: string[];
-  description: string;
-  budget: string;
-  timeline: string;
-  file: File | null;
-  honeypot: string; // Anti-spam trap
-}
-
 export const Contact: React.FC = () => {
-  const [form, setForm] = useState<FormState>({
+  const [form, setForm] = useState({
     name: '',
     email: '',
     company: '',
@@ -59,145 +53,129 @@ export const Contact: React.FC = () => {
     description: '',
     budget: '$1,000 – $3,000',
     timeline: '1 Month',
-    file: null,
-    honeypot: '',
+    file: null as File | null,
+    honeypot: '', // anti-spam field
   });
 
-  const [submitted, setSubmitted] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [errors, setErrors] = useState<Partial<Record<keyof FormState, string>>>({});
+  const [submitted, setSubmitted] = useState(false);
 
-  const toggleService = (s: string) => {
-    setForm((prev) => ({
-      ...prev,
-      services: prev.services.includes(s)
-        ? prev.services.filter((x) => x !== s)
-        : [...prev.services, s],
-    }));
+  const toggleService = (svc: string) => {
+    setForm((prev) => {
+      const exists = prev.services.includes(svc);
+      if (exists && prev.services.length === 1) return prev; // keep at least 1
+      const updated = exists
+        ? prev.services.filter((s) => s !== svc)
+        : [...prev.services, svc];
+      return { ...prev, services: updated };
+    });
   };
 
   const validate = () => {
-    const errs: Partial<Record<keyof FormState, string>> = {};
-    // Honeypot check: If filled, silently abort or flag
-    if (form.honeypot) {
-      errs.name = 'Automated bot submission detected.';
-      return errs;
-    }
-
-    if (!form.name.trim()) errs.name = 'Please provide your full name.';
+    const errs: Record<string, string> = {};
+    if (!form.name.trim()) errs.name = 'Please provide your name or organization lead';
     if (!form.email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
-      errs.email = 'Please provide a valid work email.';
+      errs.email = 'Please provide a valid work email address';
+    }
+    if (!form.description.trim() || form.description.length < 20) {
+      errs.description = 'Please provide at least 20 characters describing your project goals';
     }
     if (form.services.length === 0) {
-      errs.services = 'Please select at least one required capability.';
+      errs.services = 'Please select at least one capability';
     }
-    if (!form.description.trim() || form.description.trim().length < 15) {
-      errs.description = 'Please describe your project scope (minimum 15 characters).';
-    }
-    return errs;
+    setErrors(errs);
+    return Object.keys(errs).length === 0;
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const errs = validate();
-    if (Object.keys(errs).length > 0) {
-      setErrors(errs);
-      return;
-    }
-    setErrors({});
+    if (form.honeypot) return; // silent bot rejection
+    if (!validate()) return;
+
     setIsSubmitting(true);
 
-    // Simulate swift serverless submission
+    // Simulate reliable scope intake submission
     setTimeout(() => {
       setIsSubmitting(false);
       setSubmitted(true);
-    }, 800);
+      window.scrollTo({ top: 180, behavior: 'smooth' });
+    }, 900);
   };
 
   return (
-    <div className="pt-16">
+    <div className="pt-20 lg:pt-24 min-h-screen bg-[var(--bg-page)] text-[var(--text-body)]">
       <SEOHead
-        title="Get a Scoped Quote & Project Proposal — DigiHust"
-        description="Submit your digital project scope to DigiHust. Receive a transparent milestone quote, technical architecture review, and timeline proposal within 24 hours."
+        title="Get a Quote & Start a Project — DigiHust"
+        description="Submit your digital project scope for web development, UI/UX, AI automation, or cybersecurity. Receive a clear structured proposal within 24 hours."
       />
 
-      {/* Header */}
-      <section className="bg-[var(--color-bg)] py-20 px-6 lg:px-8 border-b border-[var(--color-border)]">
-        <div className="max-w-7xl mx-auto">
+      {/* ── HEADER INTRO ── */}
+      <section className="py-14 sm:py-20 px-6 lg:px-8 border-b border-[var(--border-subtle)] bg-[var(--bg-subtle)]">
+        <div className="max-w-4xl mx-auto text-center">
           <motion.div
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
           >
-            <p className="text-xs font-extrabold text-[var(--color-accent)] uppercase tracking-widest mb-3">
-              Direct Project Intake
+            <p className="text-xs font-extrabold text-[var(--brand-teal)] uppercase tracking-widest mb-3">
+              Project Intake & Scoping
             </p>
-            <h1 className="font-display font-extrabold text-4xl sm:text-5xl lg:text-6xl text-white mb-5">
-              Let's Build Something Great.
+            <h1 className="font-display font-extrabold text-4xl sm:text-5xl lg:text-6xl text-[var(--text-heading)] mb-5">
+              Let’s Scope Your Solution.
             </h1>
-            <p className="text-lg text-slate-300 max-w-2xl leading-relaxed">
-              Tell us about your project or digital challenge. We will evaluate technical requirements and deliver a scoped proposal within 24 hours.
+            <p className="text-base sm:text-lg text-[var(--text-body)] max-w-2xl mx-auto leading-relaxed">
+              Tell us what you want to build or solve. Our management team reviews your requirements and responds with a detailed scope and timeline proposal within 24 hours.
             </p>
           </motion.div>
         </div>
       </section>
 
-      {/* Form & Guarantee Body */}
-      <section className="bg-white py-16 px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-16">
-
-          {/* Left: What to expect & Trust metrics */}
+      {/* ── MAIN CONTENT (GRID: INFO + FORM) ── */}
+      <section className="py-16 sm:py-24 px-6 lg:px-8 max-w-7xl mx-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 lg:gap-16 items-start">
+          
+          {/* Left: Expectations, Process & Contact Info */}
           <div className="space-y-8">
-            <div>
-              <h2 className="font-display font-extrabold text-2xl text-gray-900 mb-6">
-                What Happens Next?
-              </h2>
+            <div className="p-8 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] shadow-sm space-y-6">
+              <h3 className="font-display font-bold text-xl text-[var(--text-heading)]">What Happens Next?</h3>
               <div className="space-y-4">
                 {[
-                  {
-                    step: '1',
-                    title: 'Discovery & Scope Review',
-                    desc: 'Our lead management team reviews your requirements within 24 hours.',
-                  },
-                  {
-                    step: '2',
-                    title: 'Architecture & Quote',
-                    desc: 'You receive a detailed milestone breakdown, tech recommendations, and fixed pricing.',
-                  },
-                  {
-                    step: '3',
-                    title: 'Squad Kickoff',
-                    desc: 'Upon confirmation, our verified domain squad begins sprint execution.',
-                  },
+                  { step: '1', title: 'Requirements Review', desc: 'A Group Leader assesses technical specifications and capacity.' },
+                  { step: '2', title: 'Scoped Proposal', desc: 'You receive transparent milestone pricing and squad assembly plan.' },
+                  { step: '3', title: 'Kickoff Sprint', desc: 'Work begins with live staging previews and dedicated PM check-ins.' },
                 ].map((item) => (
                   <div key={item.step} className="flex items-start space-x-3.5">
-                    <div className="w-7 h-7 rounded-xl bg-[var(--color-accent-fill)] text-white font-bold text-xs flex items-center justify-center flex-shrink-0 mt-0.5 shadow-sm">
+                    <div className="w-7 h-7 rounded-xl bg-[var(--brand-teal-subtle)] text-[var(--brand-teal)] font-bold text-xs flex items-center justify-center flex-shrink-0 mt-0.5 border border-[var(--brand-teal)]/30">
                       {item.step}
                     </div>
                     <div>
-                      <h3 className="font-bold text-sm text-gray-900">{item.title}</h3>
-                      <p className="text-xs text-gray-500 mt-0.5">{item.desc}</p>
+                      <h4 className="font-bold text-sm text-[var(--text-heading)]">{item.title}</h4>
+                      <p className="text-xs text-[var(--text-muted)] mt-0.5">{item.desc}</p>
                     </div>
                   </div>
                 ))}
               </div>
             </div>
 
-            <div className="p-6 rounded-2xl bg-gray-50 border border-gray-200 space-y-3">
-              <div className="flex items-center space-x-2 text-xs font-bold text-[var(--color-accent)] uppercase tracking-wider">
-                <ShieldCheck className="w-4 h-4" />
-                <span>Our Delivery Guarantee</span>
-              </div>
-              <p className="text-xs text-gray-600 leading-relaxed">
-                All projects are backed by single-contract accountability, verified Digiskill domain leads, NDA IP protection, and structured milestone sign-offs.
+            {/* Direct Contact Card */}
+            <div className="p-8 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] shadow-sm space-y-4">
+              <h3 className="font-display font-bold text-lg text-[var(--text-heading)]">Direct Inquiries</h3>
+              <p className="text-xs text-[var(--text-muted)] leading-relaxed">
+                Prefer to email directly or have an RFP document ready?
               </p>
-            </div>
-
-            <div className="pt-2 text-xs text-gray-500">
-              <p className="font-bold text-gray-700 mb-1">Direct inquiries via email:</p>
-              <a href="mailto:contact@digihust.com" className="text-[var(--color-accent)] font-bold text-sm hover:underline">
-                contact@digihust.com
-              </a>
+              <div className="space-y-3 text-xs pt-1">
+                <div className="flex items-center space-x-3 text-[var(--text-body)]">
+                  <Mail className="w-4 h-4 text-[var(--brand-teal)]" />
+                  <a href="mailto:contact@digihust.com" className="font-semibold text-[var(--text-heading)] hover:text-[var(--brand-teal)] transition-colors">
+                    contact@digihust.com
+                  </a>
+                </div>
+                <div className="flex items-center space-x-3 text-[var(--text-body)]">
+                  <MapPin className="w-4 h-4 text-[var(--brand-teal)]" />
+                  <span>Islamabad / Global Remote Squads</span>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -210,21 +188,21 @@ export const Contact: React.FC = () => {
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.95 }}
-                  className="p-10 sm:p-14 rounded-3xl bg-[var(--color-bg)] text-white border border-[var(--color-border)] text-center shadow-2xl space-y-6"
+                  className="p-10 sm:p-14 rounded-3xl bg-[var(--bg-surface)] text-[var(--text-heading)] border border-[var(--border-subtle)] text-center shadow-xl space-y-6"
                 >
-                  <div className="w-20 h-20 rounded-3xl bg-[var(--color-accent-fill)]/20 border-2 border-[var(--color-accent)] flex items-center justify-center mx-auto shadow-xl">
-                    <CheckCircle2 className="w-10 h-10 text-[var(--color-text-primary)]" />
+                  <div className="w-20 h-20 rounded-3xl bg-[var(--brand-teal-subtle)] border-2 border-[var(--brand-teal)] flex items-center justify-center mx-auto shadow-sm">
+                    <CheckCircle2 className="w-10 h-10 text-[var(--brand-teal)]" />
                   </div>
-                  <h2 className="font-display font-extrabold text-3xl sm:text-4xl text-white">
+                  <h2 className="font-display font-extrabold text-3xl sm:text-4xl text-[var(--text-heading)]">
                     Proposal Request Received!
                   </h2>
-                  <p className="text-slate-300 max-w-md mx-auto leading-relaxed text-sm sm:text-base">
-                    Thank you, <strong className="text-white font-bold">{form.name}</strong>. Our management leads will review your requirements for{' '}
-                    <span className="text-[var(--color-text-primary)] font-semibold">{form.services.join(', ')}</span> and reach out to{' '}
-                    <strong className="text-white font-bold">{form.email}</strong> within 24 hours.
+                  <p className="text-[var(--text-body)] max-w-md mx-auto leading-relaxed text-sm sm:text-base">
+                    Thank you, <strong className="text-[var(--text-heading)] font-bold">{form.name}</strong>. Our management leads will review your requirements for{' '}
+                    <span className="text-[var(--brand-teal)] font-semibold">{form.services.join(', ')}</span> and reach out to{' '}
+                    <strong className="text-[var(--text-heading)] font-bold">{form.email}</strong> within 24 hours.
                   </p>
 
-                  <div className="pt-6 border-t border-[var(--color-border)]">
+                  <div className="pt-6 border-t border-[var(--border-subtle)]">
                     <button
                       onClick={() => {
                         setSubmitted(false);
@@ -237,9 +215,10 @@ export const Contact: React.FC = () => {
                           budget: '$1,000 – $3,000',
                           timeline: '1 Month',
                           file: null,
+                          honeypot: '',
                         });
                       }}
-                      className="text-xs font-bold text-[var(--color-text-primary)] hover:underline"
+                      className="text-xs font-bold text-[var(--brand-teal)] hover:underline"
                     >
                       Submit Another Project Scope →
                     </button>
@@ -252,7 +231,7 @@ export const Contact: React.FC = () => {
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   onSubmit={handleSubmit}
-                  className="space-y-7"
+                  className="space-y-7 p-8 sm:p-10 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] shadow-sm"
                 >
                   {/* Anti-spam honeypot (hidden from real users) */}
                   <div className="hidden" aria-hidden="true">
@@ -271,15 +250,15 @@ export const Contact: React.FC = () => {
                   {/* Name + Email */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                     <div>
-                      <label className="block text-xs font-extrabold text-gray-700 uppercase tracking-widest mb-2">
+                      <label className="block text-xs font-extrabold text-[var(--text-heading)] uppercase tracking-widest mb-2">
                         Your Full Name <span className="text-red-500">*</span>
                       </label>
                       <input
                         type="text"
                         value={form.name}
                         onChange={(e) => setForm({ ...form, name: e.target.value })}
-                        className={`w-full px-4 py-3.5 rounded-xl border text-sm text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)]/40 focus:border-[var(--color-accent)] transition-colors ${
-                          errors.name ? 'border-red-400' : 'border-gray-200'
+                        className={`w-full px-4 py-3.5 rounded-xl border text-sm text-[var(--text-heading)] bg-[var(--bg-page)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-teal)]/40 focus:border-[var(--brand-teal)] transition-colors ${
+                          errors.name ? 'border-red-400' : 'border-[var(--border-subtle)]'
                         }`}
                         placeholder="e.g. Sarah Jenkins"
                       />
@@ -292,15 +271,15 @@ export const Contact: React.FC = () => {
                     </div>
 
                     <div>
-                      <label className="block text-xs font-extrabold text-gray-700 uppercase tracking-widest mb-2">
+                      <label className="block text-xs font-extrabold text-[var(--text-heading)] uppercase tracking-widest mb-2">
                         Work Email Address <span className="text-red-500">*</span>
                       </label>
                       <input
                         type="email"
                         value={form.email}
                         onChange={(e) => setForm({ ...form, email: e.target.value })}
-                        className={`w-full px-4 py-3.5 rounded-xl border text-sm text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)]/40 focus:border-[var(--color-accent)] transition-colors ${
-                          errors.email ? 'border-red-400' : 'border-gray-200'
+                        className={`w-full px-4 py-3.5 rounded-xl border text-sm text-[var(--text-heading)] bg-[var(--bg-page)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-teal)]/40 focus:border-[var(--brand-teal)] transition-colors ${
+                          errors.email ? 'border-red-400' : 'border-[var(--border-subtle)]'
                         }`}
                         placeholder="you@company.com"
                       />
@@ -315,22 +294,22 @@ export const Contact: React.FC = () => {
 
                   {/* Company */}
                   <div>
-                    <label className="block text-xs font-extrabold text-gray-700 uppercase tracking-widest mb-2">
+                    <label className="block text-xs font-extrabold text-[var(--text-heading)] uppercase tracking-widest mb-2">
                       Company / Organization Name{' '}
-                      <span className="text-gray-400 font-normal normal-case text-xs">(optional)</span>
+                      <span className="text-[var(--text-muted)] font-normal normal-case text-xs">(optional)</span>
                     </label>
                     <input
                       type="text"
                       value={form.company}
                       onChange={(e) => setForm({ ...form, company: e.target.value })}
-                      className="w-full px-4 py-3.5 rounded-xl border border-gray-200 text-sm text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)]/40 focus:border-[var(--color-accent)] transition-colors"
+                      className="w-full px-4 py-3.5 rounded-xl border border-[var(--border-subtle)] text-sm text-[var(--text-heading)] bg-[var(--bg-page)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-teal)]/40 focus:border-[var(--brand-teal)] transition-colors"
                       placeholder="e.g. Acme Innovations Ltd."
                     />
                   </div>
 
                   {/* Required Services (Multi-Select Pills) */}
                   <div>
-                    <label className="block text-xs font-extrabold text-gray-700 uppercase tracking-widest mb-3">
+                    <label className="block text-xs font-extrabold text-[var(--text-heading)] uppercase tracking-widest mb-3">
                       Required Capabilities <span className="text-red-500">*</span>
                     </label>
                     <div className="flex flex-wrap gap-2">
@@ -344,8 +323,8 @@ export const Contact: React.FC = () => {
                             whileTap={{ scale: 0.95 }}
                             className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold border transition-all ${
                               selected
-                                ? 'bg-[var(--color-accent-fill)] text-white border-[var(--color-accent)] shadow-md shadow-md'
-                                : 'bg-gray-50 text-gray-700 border-gray-200 hover:border-gray-300'
+                                ? 'bg-[var(--brand-teal)] text-white border-[var(--brand-teal)] shadow-md'
+                                : 'bg-[var(--bg-page)] text-[var(--text-body)] border-[var(--border-subtle)] hover:border-[var(--brand-teal)]'
                             }`}
                           >
                             {s}
@@ -360,15 +339,15 @@ export const Contact: React.FC = () => {
 
                   {/* Description */}
                   <div>
-                    <label className="block text-xs font-extrabold text-gray-700 uppercase tracking-widest mb-2">
+                    <label className="block text-xs font-extrabold text-[var(--text-heading)] uppercase tracking-widest mb-2">
                       Project Overview & Objectives <span className="text-red-500">*</span>
                     </label>
                     <textarea
                       rows={5}
                       value={form.description}
                       onChange={(e) => setForm({ ...form, description: e.target.value })}
-                      className={`w-full px-4 py-3.5 rounded-xl border text-sm text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)]/40 focus:border-[var(--color-accent)] transition-colors resize-none ${
-                        errors.description ? 'border-red-400' : 'border-gray-200'
+                      className={`w-full px-4 py-3.5 rounded-xl border text-sm text-[var(--text-heading)] bg-[var(--bg-page)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-teal)]/40 focus:border-[var(--brand-teal)] transition-colors resize-none ${
+                        errors.description ? 'border-red-400' : 'border-[var(--border-subtle)]'
                       }`}
                       placeholder="Tell us what you are looking to build or solve. Include target audience, desired features, deadlines, or existing tech stack..."
                     />
@@ -383,13 +362,13 @@ export const Contact: React.FC = () => {
                   {/* Budget & Timeline */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                     <div>
-                      <label className="block text-xs font-extrabold text-gray-700 uppercase tracking-widest mb-2">
+                      <label className="block text-xs font-extrabold text-[var(--text-heading)] uppercase tracking-widest mb-2">
                         Target Budget Range
                       </label>
                       <select
                         value={form.budget}
                         onChange={(e) => setForm({ ...form, budget: e.target.value })}
-                        className="w-full px-4 py-3.5 rounded-xl border border-gray-200 text-sm text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)]/40 focus:border-[var(--color-accent)]"
+                        className="w-full px-4 py-3.5 rounded-xl border border-[var(--border-subtle)] text-sm text-[var(--text-heading)] bg-[var(--bg-page)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-teal)]/40 focus:border-[var(--brand-teal)]"
                       >
                         {BUDGETS.map((b) => (
                           <option key={b} value={b}>
@@ -400,13 +379,13 @@ export const Contact: React.FC = () => {
                     </div>
 
                     <div>
-                      <label className="block text-xs font-extrabold text-gray-700 uppercase tracking-widest mb-2">
+                      <label className="block text-xs font-extrabold text-[var(--text-heading)] uppercase tracking-widest mb-2">
                         Target Completion Window
                       </label>
                       <select
                         value={form.timeline}
                         onChange={(e) => setForm({ ...form, timeline: e.target.value })}
-                        className="w-full px-4 py-3.5 rounded-xl border border-gray-200 text-sm text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)]/40 focus:border-[var(--color-accent)]"
+                        className="w-full px-4 py-3.5 rounded-xl border border-[var(--border-subtle)] text-sm text-[var(--text-heading)] bg-[var(--bg-page)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-teal)]/40 focus:border-[var(--brand-teal)]"
                       >
                         {TIMELINES.map((t) => (
                           <option key={t} value={t}>
@@ -419,13 +398,13 @@ export const Contact: React.FC = () => {
 
                   {/* File Attachment */}
                   <div>
-                    <label className="block text-xs font-extrabold text-gray-700 uppercase tracking-widest mb-2">
+                    <label className="block text-xs font-extrabold text-[var(--text-heading)] uppercase tracking-widest mb-2">
                       Attach Architecture / Brief Document{' '}
-                      <span className="text-gray-400 font-normal normal-case text-xs">(PDF, ZIP, PNG, DOCX — Max 15MB)</span>
+                      <span className="text-[var(--text-muted)] font-normal normal-case text-xs">(PDF, ZIP, PNG, DOCX — Max 15MB)</span>
                     </label>
-                    <label className="flex items-center space-x-3 px-4 py-3.5 rounded-xl border-2 border-dashed border-gray-200 hover:border-[var(--color-accent)]/50 cursor-pointer bg-gray-50/50 hover:bg-gray-50 transition-colors">
-                      <Paperclip className="w-4 h-4 text-gray-400 flex-shrink-0" />
-                      <span className="text-xs sm:text-sm text-gray-500 truncate">
+                    <label className="flex items-center space-x-3 px-4 py-3.5 rounded-xl border-2 border-dashed border-[var(--border-subtle)] hover:border-[var(--brand-teal)] cursor-pointer bg-[var(--bg-page)] transition-colors">
+                      <Paperclip className="w-4 h-4 text-[var(--text-muted)] flex-shrink-0" />
+                      <span className="text-xs sm:text-sm text-[var(--text-muted)] truncate">
                         {form.file ? form.file.name : 'Click to select an attachment or drag here'}
                       </span>
                       <input
@@ -444,12 +423,12 @@ export const Contact: React.FC = () => {
                       disabled={isSubmitting}
                       whileHover={{ scale: 1.01 }}
                       whileTap={{ scale: 0.98 }}
-                      className="w-full sm:w-auto flex items-center justify-center space-x-2.5 px-10 py-4 rounded-xl bg-[var(--color-accent-fill)] hover:bg-[var(--color-accent-hover)] text-white font-extrabold text-base shadow-lg shadow-md transition-all disabled:opacity-50"
+                      className="w-full sm:w-auto flex items-center justify-center space-x-2.5 px-10 py-4 rounded-xl bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-white font-extrabold text-base shadow-md transition-all disabled:opacity-50"
                     >
                       <Send className="w-4 h-4" />
                       <span>{isSubmitting ? 'Transmitting Scope...' : 'Submit Project Scope'}</span>
                     </motion.button>
-                    <p className="text-xs text-gray-400 mt-3 flex items-center space-x-1">
+                    <p className="text-xs text-[var(--text-muted)] mt-3 flex items-center space-x-1">
                       <Clock className="w-3.5 h-3.5" />
                       <span>Zero commitment required. Proposal returned in 24 hours.</span>
                     </p>

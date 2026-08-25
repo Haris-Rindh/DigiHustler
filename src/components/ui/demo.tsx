@@ -4,7 +4,7 @@ import RadialOrbitalTimeline, { defaultServicesTimelineData } from "@/components
 
 export function RadialOrbitalTimelineDemo() {
   return (
-    <div className="w-full bg-[var(--color-bg)] py-12 flex flex-col items-center justify-center">
+    <div className="w-full bg-[var(--bg-page)] py-12 flex flex-col items-center justify-center">
       <RadialOrbitalTimeline timelineData={defaultServicesTimelineData} embedded={true} />
     </div>
   );

@@ -105,20 +105,20 @@ export const Team: React.FC = () => {
       />
 
       {/* Header */}
-      <section className="bg-[var(--color-bg)] py-20 px-6 lg:px-8 border-b border-[var(--color-border)]">
+      <section className="bg-[var(--bg-page)] py-20 px-6 lg:px-8 border-b border-[var(--border-subtle)]">
         <div className="max-w-7xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
           >
-            <p className="text-xs font-extrabold text-[var(--color-accent)] uppercase tracking-widest mb-3">
+            <p className="text-xs font-extrabold text-[var(--brand-teal)] uppercase tracking-widest mb-3">
               Domain Specialists
             </p>
-            <h1 className="font-display font-extrabold text-4xl sm:text-5xl lg:text-6xl text-white mb-5">
+            <h1 className="font-display font-extrabold text-4xl sm:text-5xl lg:text-6xl text-[var(--text-heading)] mb-5">
               Meet the Talent.
             </h1>
-            <p className="text-lg text-slate-300 max-w-2xl leading-relaxed">
+            <p className="text-lg text-[var(--text-body)] max-w-2xl leading-relaxed">
               Every DigiHust squad member is a verified professional with specialized technical skills, trained and vetted through Pakistan's Digiskill ecosystem.
             </p>
           </motion.div>
@@ -126,7 +126,7 @@ export const Team: React.FC = () => {
       </section>
 
       {/* Filter Tabs */}
-      <section className="bg-white border-b border-gray-100 sticky top-16 z-30 shadow-sm">
+      <section className="bg-[var(--bg-page)] border-b border-[var(--border-subtle)] sticky top-16 z-30 shadow-sm">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="flex items-center space-x-2 py-4 overflow-x-auto">
             {CATS.map((cat) => {
@@ -136,13 +136,13 @@ export const Team: React.FC = () => {
                   key={cat}
                   onClick={() => setFilter(cat)}
                   className={`relative px-5 py-2 rounded-xl text-sm font-bold transition-colors ${
-                    active ? 'text-white' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                    active ? 'text-white' : 'text-[var(--text-body)] hover:text-[var(--text-heading)] hover:bg-[var(--bg-subtle)]'
                   }`}
                 >
                   {active && (
                     <motion.div
                       layoutId="teamCategoryPill"
-                      className="absolute inset-0 bg-[var(--color-accent-fill)] rounded-xl shadow-md"
+                      className="absolute inset-0 bg-[var(--brand-teal)] rounded-xl shadow-md"
                       transition={{ type: 'spring', stiffness: 400, damping: 30 }}
                     />
                   )}
@@ -155,7 +155,7 @@ export const Team: React.FC = () => {
       </section>
 
       {/* Team Grid */}
-      <section className="bg-white py-16 px-6 lg:px-8">
+      <section className="bg-[var(--bg-page)] py-16 px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <motion.div layout className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             <AnimatePresence>
@@ -168,17 +168,17 @@ export const Team: React.FC = () => {
                   exit={{ opacity: 0, scale: 0.95 }}
                   transition={{ duration: 0.3 }}
                   whileHover={{ y: -4 }}
-                  className="group border border-gray-200/80 rounded-2xl p-6 bg-white hover:shadow-xl hover:border-[var(--color-accent)]/40 transition-all flex flex-col justify-between"
+                  className="group border border-[var(--border-subtle)] rounded-2xl p-6 bg-white hover:shadow-xl hover:border-[var(--brand-teal)]/40 transition-all flex flex-col justify-between"
                 >
                   <div>
                     <div className="flex items-start space-x-4 mb-4">
                       <img
                         src={member.img}
                         alt={member.name}
-                        className="w-14 h-14 rounded-2xl object-cover ring-2 ring-gray-100 group-hover:ring-[var(--color-accent)]/40 transition-all flex-shrink-0"
+                        className="w-14 h-14 rounded-2xl object-cover ring-2 ring-gray-100 group-hover:ring-[var(--brand-teal)]/40 transition-all flex-shrink-0"
                       />
                       <div className="min-w-0">
-                        <h2 className="font-bold text-base text-gray-900 leading-tight truncate">
+                        <h2 className="font-bold text-base text-[var(--text-heading)] leading-tight truncate">
                           {member.name}
                         </h2>
                         <p
@@ -190,7 +190,7 @@ export const Team: React.FC = () => {
                       </div>
                     </div>
 
-                    <p className="text-sm text-gray-600 leading-relaxed mb-4">
+                    <p className="text-sm text-[var(--text-body)] leading-relaxed mb-4">
                       {member.bio}
                     </p>
 
@@ -198,7 +198,7 @@ export const Team: React.FC = () => {
                       {member.skills.map((s) => (
                         <span
                           key={s}
-                          className="text-[10px] px-2 py-0.5 rounded-md bg-gray-50 text-gray-600 border border-gray-100 font-medium"
+                          className="text-[10px] px-2 py-0.5 rounded-md bg-[var(--bg-subtle)] text-[var(--text-body)] border border-[var(--border-subtle)] font-medium"
                         >
                           {s}
                         </span>
@@ -206,7 +206,7 @@ export const Team: React.FC = () => {
                     </div>
                   </div>
 
-                  <div className="pt-4 border-t border-gray-100 flex items-center justify-between">
+                  <div className="pt-4 border-t border-[var(--border-subtle)] flex items-center justify-between">
                     <span
                       className="text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wide"
                       style={{
@@ -229,20 +229,20 @@ export const Team: React.FC = () => {
       </section>
 
       {/* Talent Assembly Info */}
-      <section className="bg-gray-50 py-16 px-6 lg:px-8 border-t border-gray-200/70 text-center">
+      <section className="bg-[var(--bg-subtle)] py-16 px-6 lg:px-8 border-t border-[var(--border-subtle)]/70 text-center">
         <div className="max-w-3xl mx-auto">
-          <div className="inline-flex p-3 rounded-2xl bg-white border border-gray-200 shadow-sm mb-4">
-            <ShieldCheck className="w-6 h-6 text-[var(--color-accent)]" />
+          <div className="inline-flex p-3 rounded-2xl bg-white border border-[var(--border-subtle)] shadow-sm mb-4">
+            <ShieldCheck className="w-6 h-6 text-[var(--brand-teal)]" />
           </div>
-          <h3 className="font-display font-extrabold text-2xl text-gray-900 mb-3">
+          <h3 className="font-display font-extrabold text-2xl text-[var(--text-heading)] mb-3">
             How Talent is Assembled for Your Project
           </h3>
-          <p className="text-sm text-gray-600 leading-relaxed max-w-xl mx-auto mb-6">
+          <p className="text-sm text-[var(--text-body)] leading-relaxed max-w-xl mx-auto mb-6">
             When you submit a project, our management team selects the specific domain leads and contributors required for your exact scope. No filler resources, no learning on your dime.
           </p>
           <Link
             to="/contact"
-            className="inline-flex items-center space-x-2 text-sm font-bold text-[var(--color-accent)] hover:underline"
+            className="inline-flex items-center space-x-2 text-sm font-bold text-[var(--brand-teal)] hover:underline"
           >
             <span>Have our team review your project scope</span>
             <ArrowRight className="w-4 h-4" />

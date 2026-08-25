@@ -66,26 +66,26 @@ export const QuickInviteModal: React.FC<QuickInviteModalProps> = ({ isOpen, onCl
           initial={{ opacity: 0, scale: 0.95, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 20 }}
-          className="relative w-full max-w-2xl bg-[var(--color-surface)] border border-[var(--color-border)] rounded-3xl shadow-2xl overflow-hidden my-8"
+          className="relative w-full max-w-2xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-3xl shadow-2xl overflow-hidden my-8"
         >
           {/* Header */}
-          <div className="p-6 border-b border-[var(--color-border)] bg-[var(--color-bg)] flex items-center justify-between">
+          <div className="p-6 border-b border-[var(--border-subtle)] bg-[var(--bg-page)] flex items-center justify-between">
             <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-[#022B3A] via-[#1F7A8C] to-[#E1E5F2] flex items-center justify-center text-white shadow-md">
+              <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-[#022B3A] via-[#1F7A8C] to-[#E1E5F2] flex items-center justify-center text-[var(--text-heading)] shadow-md">
                 <UserPlus className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="font-display font-extrabold text-lg text-white">
+                <h3 className="font-display font-extrabold text-lg text-[var(--text-heading)]">
                   Direct Talent Onboarding
                 </h3>
-                <p className="text-xs text-slate-400">
+                <p className="text-xs text-[var(--text-muted)]">
                   Add verified domain specialists directly to the DigiHust roster
                 </p>
               </div>
             </div>
             <button
               onClick={onClose}
-              className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 transition-colors"
+              className="p-2 rounded-xl text-[var(--text-muted)] hover:text-[var(--text-heading)] hover:bg-[var(--bg-subtle)] transition-colors"
             >
               <X className="w-5 h-5" />
             </button>
@@ -95,35 +95,35 @@ export const QuickInviteModal: React.FC<QuickInviteModalProps> = ({ isOpen, onCl
           <form onSubmit={handleSubmit} className="p-6 space-y-5">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">
+                <label className="block text-xs font-bold text-[var(--text-body)] uppercase tracking-wider mb-1.5">
                   Full Name *
                 </label>
                 <div className="relative">
-                  <UserIcon className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
+                  <UserIcon className="w-4 h-4 text-[var(--text-muted)] absolute left-3.5 top-3.5" />
                   <input
                     type="text"
                     required
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="e.g. Zaid Haroon"
-                    className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[var(--color-bg)] border border-[var(--color-border)] text-white text-xs focus:outline-none focus:border-[var(--color-accent)]"
+                    className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[var(--bg-page)] border border-[var(--border-subtle)] text-[var(--text-heading)] text-xs focus:outline-none focus:border-[var(--brand-teal)]"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">
+                <label className="block text-xs font-bold text-[var(--text-body)] uppercase tracking-wider mb-1.5">
                   Work Email *
                 </label>
                 <div className="relative">
-                  <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
+                  <Mail className="w-4 h-4 text-[var(--text-muted)] absolute left-3.5 top-3.5" />
                   <input
                     type="email"
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="e.g. zaid.dev@digihust.com"
-                    className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[var(--color-bg)] border border-[var(--color-border)] text-white text-xs focus:outline-none focus:border-[var(--color-accent)]"
+                    className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[var(--bg-page)] border border-[var(--border-subtle)] text-[var(--text-heading)] text-xs focus:outline-none focus:border-[var(--brand-teal)]"
                   />
                 </div>
               </div>
@@ -131,34 +131,34 @@ export const QuickInviteModal: React.FC<QuickInviteModalProps> = ({ isOpen, onCl
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">
+                <label className="block text-xs font-bold text-[var(--text-body)] uppercase tracking-wider mb-1.5">
                   Phone / WhatsApp
                 </label>
                 <div className="relative">
-                  <Phone className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
+                  <Phone className="w-4 h-4 text-[var(--text-muted)] absolute left-3.5 top-3.5" />
                   <input
                     type="text"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
                     placeholder="+92 300 0000000"
-                    className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[var(--color-bg)] border border-[var(--color-border)] text-white text-xs focus:outline-none focus:border-[var(--color-accent)]"
+                    className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[var(--bg-page)] border border-[var(--border-subtle)] text-[var(--text-heading)] text-xs focus:outline-none focus:border-[var(--brand-teal)]"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">
+                <label className="block text-xs font-bold text-[var(--text-body)] uppercase tracking-wider mb-1.5">
                   Professional Title *
                 </label>
                 <div className="relative">
-                  <Briefcase className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
+                  <Briefcase className="w-4 h-4 text-[var(--text-muted)] absolute left-3.5 top-3.5" />
                   <input
                     type="text"
                     required
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
                     placeholder="e.g. Senior AI Automation Engineer"
-                    className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[var(--color-bg)] border border-[var(--color-border)] text-white text-xs focus:outline-none focus:border-[var(--color-accent)]"
+                    className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[var(--bg-page)] border border-[var(--border-subtle)] text-[var(--text-heading)] text-xs focus:outline-none focus:border-[var(--brand-teal)]"
                   />
                 </div>
               </div>
@@ -166,13 +166,13 @@ export const QuickInviteModal: React.FC<QuickInviteModalProps> = ({ isOpen, onCl
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div>
-                <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">
+                <label className="block text-xs font-bold text-[var(--text-body)] uppercase tracking-wider mb-1.5">
                   Role
                 </label>
                 <select
                   value={role}
                   onChange={(e) => setRole(e.target.value as UserRole)}
-                  className="w-full px-3 py-2.5 rounded-xl bg-[var(--color-bg)] border border-[var(--color-border)] text-white text-xs focus:outline-none focus:border-[var(--color-accent)]"
+                  className="w-full px-3 py-2.5 rounded-xl bg-[var(--bg-page)] border border-[var(--border-subtle)] text-[var(--text-heading)] text-xs focus:outline-none focus:border-[var(--brand-teal)]"
                 >
                   <option value="freelancer">Freelancer / Specialist</option>
                   <option value="group_leader">Group Leader</option>
@@ -181,13 +181,13 @@ export const QuickInviteModal: React.FC<QuickInviteModalProps> = ({ isOpen, onCl
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">
+                <label className="block text-xs font-bold text-[var(--text-body)] uppercase tracking-wider mb-1.5">
                   Assigned Squad
                 </label>
                 <select
                   value={groupId}
                   onChange={(e) => setGroupId(e.target.value as GroupId)}
-                  className="w-full px-3 py-2.5 rounded-xl bg-[var(--color-bg)] border border-[var(--color-border)] text-white text-xs focus:outline-none focus:border-[var(--color-accent)]"
+                  className="w-full px-3 py-2.5 rounded-xl bg-[var(--bg-page)] border border-[var(--border-subtle)] text-[var(--text-heading)] text-xs focus:outline-none focus:border-[var(--brand-teal)]"
                 >
                   {groups.map((g) => (
                     <option key={g.id} value={g.id}>
@@ -198,13 +198,13 @@ export const QuickInviteModal: React.FC<QuickInviteModalProps> = ({ isOpen, onCl
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">
+                <label className="block text-xs font-bold text-[var(--text-body)] uppercase tracking-wider mb-1.5">
                   Initial Status
                 </label>
                 <select
                   value={status}
                   onChange={(e) => setStatus(e.target.value as UserStatus)}
-                  className="w-full px-3 py-2.5 rounded-xl bg-[var(--color-bg)] border border-[var(--color-border)] text-white text-xs focus:outline-none focus:border-[var(--color-accent)]"
+                  className="w-full px-3 py-2.5 rounded-xl bg-[var(--bg-page)] border border-[var(--border-subtle)] text-[var(--text-heading)] text-xs focus:outline-none focus:border-[var(--brand-teal)]"
                 >
                   <option value="pending_onboarding">Pending Onboarding</option>
                   <option value="active">Active & Available</option>
@@ -214,7 +214,7 @@ export const QuickInviteModal: React.FC<QuickInviteModalProps> = ({ isOpen, onCl
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">
+              <label className="block text-xs font-bold text-[var(--text-body)] uppercase tracking-wider mb-1.5">
                 Skills & Specialties (comma separated)
               </label>
               <input
@@ -222,16 +222,16 @@ export const QuickInviteModal: React.FC<QuickInviteModalProps> = ({ isOpen, onCl
                 value={specialtiesStr}
                 onChange={(e) => setSpecialtiesStr(e.target.value)}
                 placeholder="e.g. Next.js, Python, n8n, Tailwind, PostgreSQL"
-                className="w-full px-4 py-2.5 rounded-xl bg-[var(--color-bg)] border border-[var(--color-border)] text-white text-xs focus:outline-none focus:border-[var(--color-accent)]"
+                className="w-full px-4 py-2.5 rounded-xl bg-[var(--bg-page)] border border-[var(--border-subtle)] text-[var(--text-heading)] text-xs focus:outline-none focus:border-[var(--brand-teal)]"
               />
             </div>
 
             {/* Optional Custom Split Override */}
-            <div className="p-4 rounded-2xl bg-[var(--color-bg)]/80 border border-[var(--color-border)] space-y-3">
+            <div className="p-4 rounded-2xl bg-[var(--bg-page)]/80 border border-[var(--border-subtle)] space-y-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
-                  <DollarSign className="w-4 h-4 text-[var(--color-accent)]" />
-                  <span className="text-xs font-bold text-white">Custom Per-Person Split Override</span>
+                  <DollarSign className="w-4 h-4 text-[var(--brand-teal)]" />
+                  <span className="text-xs font-bold text-[var(--text-heading)]">Custom Per-Person Split Override</span>
                 </div>
                 <label className="relative inline-flex items-center cursor-pointer">
                   <input
@@ -240,37 +240,37 @@ export const QuickInviteModal: React.FC<QuickInviteModalProps> = ({ isOpen, onCl
                     onChange={(e) => setHasSplitOverride(e.target.checked)}
                     className="sr-only peer"
                   />
-                  <div className="w-9 h-5 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[var(--color-accent-fill)]"></div>
+                  <div className="w-9 h-5 bg-[var(--bg-subtle)] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[var(--brand-teal)]"></div>
                 </label>
               </div>
 
               {hasSplitOverride && (
                 <div className="grid grid-cols-3 gap-3 pt-2 text-center text-xs">
                   <div>
-                    <label className="block text-slate-400 mb-1">Mgmt %</label>
+                    <label className="block text-[var(--text-muted)] mb-1">Mgmt %</label>
                     <input
                       type="number"
                       value={mgmtSplit}
                       onChange={(e) => setMgmtSplit(Number(e.target.value))}
-                      className="w-full text-center py-1.5 rounded-lg bg-[var(--color-surface)] border border-[var(--color-border)] text-white"
+                      className="w-full text-center py-1.5 rounded-lg bg-[var(--bg-surface)] border border-[var(--border-subtle)] text-[var(--text-heading)]"
                     />
                   </div>
                   <div>
-                    <label className="block text-slate-400 mb-1">Leader %</label>
+                    <label className="block text-[var(--text-muted)] mb-1">Leader %</label>
                     <input
                       type="number"
                       value={ldrSplit}
                       onChange={(e) => setLdrSplit(Number(e.target.value))}
-                      className="w-full text-center py-1.5 rounded-lg bg-[var(--color-surface)] border border-[var(--color-border)] text-white"
+                      className="w-full text-center py-1.5 rounded-lg bg-[var(--bg-surface)] border border-[var(--border-subtle)] text-[var(--text-heading)]"
                     />
                   </div>
                   <div>
-                    <label className="block text-slate-400 mb-1">Talent %</label>
+                    <label className="block text-[var(--text-muted)] mb-1">Talent %</label>
                     <input
                       type="number"
                       value={flSplit}
                       onChange={(e) => setFlSplit(Number(e.target.value))}
-                      className="w-full text-center py-1.5 rounded-lg bg-[var(--color-surface)] border border-[var(--color-border)] text-white"
+                      className="w-full text-center py-1.5 rounded-lg bg-[var(--bg-surface)] border border-[var(--border-subtle)] text-[var(--text-heading)]"
                     />
                   </div>
                 </div>
@@ -278,17 +278,17 @@ export const QuickInviteModal: React.FC<QuickInviteModalProps> = ({ isOpen, onCl
             </div>
 
             {/* Action Buttons */}
-            <div className="flex items-center justify-end space-x-3 pt-3 border-t border-[var(--color-border)]">
+            <div className="flex items-center justify-end space-x-3 pt-3 border-t border-[var(--border-subtle)]">
               <button
                 type="button"
                 onClick={onClose}
-                className="px-4 py-2.5 rounded-xl border border-[var(--color-border)] text-slate-300 hover:text-white hover:bg-white/5 text-xs font-bold transition-colors"
+                className="px-4 py-2.5 rounded-xl border border-[var(--border-subtle)] text-[var(--text-body)] hover:text-[var(--text-heading)] hover:bg-[var(--bg-subtle)] text-xs font-bold transition-colors"
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                className="px-6 py-2.5 rounded-xl bg-[var(--color-accent-fill)] hover:bg-[var(--color-accent-hover)] text-white text-xs font-bold shadow-lg shadow-md transition-all"
+                className="px-6 py-2.5 rounded-xl bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-white text-xs font-bold shadow-lg shadow-md transition-all"
               >
                 Add to Roster
               </button>

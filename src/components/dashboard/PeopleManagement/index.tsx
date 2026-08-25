@@ -54,33 +54,33 @@ export const PeopleManagementPanel: React.FC = () => {
     <div className="max-w-7xl mx-auto px-4 lg:px-8 py-8 space-y-8">
 
       {/* Top Banner & Active Persona Switcher */}
-      <div className="p-6 sm:p-8 rounded-3xl bg-[var(--color-surface)] border border-[var(--color-border)] shadow-2xl flex flex-col md:flex-row md:items-center justify-between gap-6">
+      <div className="p-6 sm:p-8 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] shadow-2xl flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
           <div className="flex items-center space-x-2 mb-2">
-            <span className="text-[10px] font-extrabold px-3 py-1 rounded-full bg-[var(--color-accent-fill)]/20 text-[var(--color-text-primary)] border border-[var(--color-accent)]/40 uppercase tracking-widest flex items-center gap-1.5">
-              <Shield className="w-3 h-3 text-[var(--color-accent)]" />
+            <span className="text-[10px] font-extrabold px-3 py-1 rounded-full bg-[var(--brand-teal)]/20 text-[var(--text-heading)] border border-[var(--brand-teal)]/40 uppercase tracking-widest flex items-center gap-1.5">
+              <Shield className="w-3 h-3 text-[var(--brand-teal)]" />
               <span>Unified People & Community Admin</span>
             </span>
-            <span className="text-xs text-slate-400">
-              Role: <strong className="text-white uppercase font-bold">{currentUser.role.replace('_', ' ')}</strong>
+            <span className="text-xs text-[var(--text-muted)]">
+              Role: <strong className="text-[var(--text-heading)] uppercase font-bold">{currentUser.role.replace('_', ' ')}</strong>
             </span>
           </div>
-          <h1 className="font-display font-extrabold text-3xl sm:text-4xl text-white">
+          <h1 className="font-display font-extrabold text-3xl sm:text-4xl text-[var(--text-heading)]">
             Community Ecosystem & Talent Suite
           </h1>
-          <p className="text-xs sm:text-sm text-slate-300 max-w-2xl mt-1.5 leading-relaxed">
+          <p className="text-xs sm:text-sm text-[var(--text-body)] max-w-2xl mt-1.5 leading-relaxed">
             Manage domain specialists, applicant review workflows, squad leadership hierarchies, and customized financial split overrides from one unified console.
           </p>
         </div>
 
         {/* Persona Switcher & Reset */}
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-          <div className="p-2 rounded-2xl bg-[var(--color-bg)] border border-[var(--color-border)] flex items-center space-x-2">
-            <span className="text-[10px] uppercase font-bold text-slate-400 pl-2">Persona:</span>
+          <div className="p-2 rounded-2xl bg-[var(--bg-page)] border border-[var(--border-subtle)] flex items-center space-x-2">
+            <span className="text-[10px] uppercase font-bold text-[var(--text-muted)] pl-2">Persona:</span>
             <select
               value={currentUser.id}
               onChange={(e) => switchRole(e.target.value)}
-              className="bg-[var(--color-surface)] text-white text-xs font-bold py-1.5 px-3 rounded-xl border border-[var(--color-border)] focus:outline-none focus:border-[var(--color-accent)]"
+              className="bg-[var(--bg-surface)] text-[var(--text-heading)] text-xs font-bold py-1.5 px-3 rounded-xl border border-[var(--border-subtle)] focus:outline-none focus:border-[var(--brand-teal)]"
             >
               {users.map((u) => (
                 <option key={u.id} value={u.id}>
@@ -93,7 +93,7 @@ export const PeopleManagementPanel: React.FC = () => {
           {isManagement && (
             <button
               onClick={() => setIsInviteOpen(true)}
-              className="flex items-center justify-center space-x-2 px-5 py-3 rounded-2xl bg-[var(--color-accent-fill)] hover:bg-[var(--color-accent-hover)] text-white text-xs font-bold shadow-lg shadow-md transition-all"
+              className="flex items-center justify-center space-x-2 px-5 py-3 rounded-2xl bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-white text-xs font-bold shadow-lg shadow-md transition-all"
             >
               <UserPlus className="w-4 h-4" />
               <span>Invite Talent</span>
@@ -103,7 +103,7 @@ export const PeopleManagementPanel: React.FC = () => {
       </div>
 
       {/* Navigation Tabs with Spring Active Pill */}
-      <div className="flex items-center space-x-2 p-1.5 rounded-2xl bg-[var(--color-surface)] border border-[var(--color-border)] overflow-x-auto">
+      <div className="flex items-center space-x-2 p-1.5 rounded-2xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] overflow-x-auto">
         {tabs.map((tab) => {
           const isActive = activeTab === tab.id;
 
@@ -112,13 +112,13 @@ export const PeopleManagementPanel: React.FC = () => {
               key={tab.id}
               onClick={() => setActiveTab(tab.id as any)}
               className={`relative px-4 py-2.5 rounded-xl text-xs font-bold flex items-center space-x-2 transition-colors whitespace-nowrap ${
-                isActive ? 'text-white' : 'text-slate-400 hover:text-slate-200'
+                isActive ? 'text-white' : 'text-[var(--text-muted)] hover:text-[var(--text-body)]'
               }`}
             >
               {isActive && (
                 <motion.div
                   layoutId="activeAdminTab"
-                  className="absolute inset-0 bg-[var(--color-accent-fill)] rounded-xl shadow-md"
+                  className="absolute inset-0 bg-[var(--brand-teal)] rounded-xl shadow-md"
                   transition={{ type: 'spring', stiffness: 400, damping: 30 }}
                 />
               )}

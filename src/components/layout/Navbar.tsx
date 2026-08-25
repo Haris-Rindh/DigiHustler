@@ -38,7 +38,7 @@ export const Navbar: React.FC = () => {
     <header
       className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${
         scrolled
-          ? 'bg-[var(--color-bg)]/90 backdrop-blur-md shadow-lg shadow-black/20 border-b border-[var(--color-border)]/80 py-0'
+          ? 'bg-[var(--bg-page)]/90 backdrop-blur-md shadow-md border-b border-[var(--border-subtle)] py-0'
           : 'bg-transparent py-2'
       }`}
     >
@@ -49,13 +49,13 @@ export const Navbar: React.FC = () => {
           <motion.div
             whileHover={{ scale: 1.05, rotate: 5 }}
             whileTap={{ scale: 0.95 }}
-            className="w-8 h-8 rounded-xl bg-gradient-to-br from-[#022B3A] via-[#1F7A8C] to-[#E1E5F2] flex items-center justify-center shadow-md shadow-md"
+            className="w-8 h-8 rounded-xl bg-gradient-to-br from-[#022B3A] via-[#1F7A8C] to-[#E1E5F2] flex items-center justify-center shadow-md"
           >
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
               <path d="M2 4h12M2 8h8M2 12h10" stroke="white" strokeWidth="2" strokeLinecap="round"/>
             </svg>
           </motion.div>
-          <span className="font-display font-extrabold text-xl tracking-tight text-white group-hover:text-[var(--color-text-primary)] transition-colors">
+          <span className="font-display font-extrabold text-xl tracking-tight text-[var(--text-heading)] group-hover:text-[var(--brand-teal)] transition-colors">
             DigiHust
           </span>
         </Link>
@@ -69,13 +69,13 @@ export const Navbar: React.FC = () => {
                 key={link.href}
                 to={link.href}
                 className={`relative px-4 py-2 rounded-xl text-sm font-semibold transition-colors duration-200 ${
-                  active ? 'text-white' : 'text-slate-300 hover:text-white'
+                  active ? 'text-[var(--brand-teal)] font-bold' : 'text-[var(--text-body)] hover:text-[var(--text-heading)]'
                 }`}
               >
                 {active && (
                   <motion.div
                     layoutId="activeNavTab"
-                    className="absolute inset-0 bg-[var(--color-accent-fill)]/25 border border-[var(--color-accent)]/50 rounded-xl"
+                    className="absolute inset-0 bg-[var(--brand-teal-subtle)] border border-[var(--brand-teal)]/40 rounded-xl"
                     transition={{ type: 'spring', stiffness: 380, damping: 30 }}
                   />
                 )}
@@ -92,7 +92,7 @@ export const Navbar: React.FC = () => {
           <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
             <Link
               to="/contact"
-              className="flex items-center space-x-2 px-5 py-2.5 rounded-xl bg-[var(--color-accent-fill)] hover:bg-[var(--color-accent-hover)] text-white text-sm font-bold shadow-md shadow-md transition-colors"
+              className="flex items-center space-x-2 px-5 py-2.5 rounded-xl bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-white text-sm font-bold shadow-md transition-colors"
             >
               <span>Get a Quote</span>
               <ArrowRight className="w-4 h-4" />
@@ -103,7 +103,7 @@ export const Navbar: React.FC = () => {
         {/* Mobile toggle */}
         <button
           onClick={() => setMobileOpen(!mobileOpen)}
-          className="lg:hidden p-2 rounded-xl text-slate-300 hover:text-white hover:bg-white/5 transition-colors"
+          className="lg:hidden p-2 rounded-xl text-[var(--text-heading)] hover:bg-[var(--bg-subtle)] transition-colors"
           aria-label={mobileOpen ? 'Close Menu' : 'Open Menu'}
         >
           {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -118,7 +118,7 @@ export const Navbar: React.FC = () => {
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.25, ease: 'easeInOut' }}
-            className="lg:hidden bg-[var(--color-surface)]/98 backdrop-blur-lg border-b border-[var(--color-border)] px-6 py-5 space-y-2 overflow-hidden shadow-2xl"
+            className="lg:hidden bg-[var(--bg-surface)] backdrop-blur-lg border-b border-[var(--border-subtle)] px-6 py-5 space-y-2 overflow-hidden shadow-2xl"
           >
             {navLinks.map((link) => (
               <Link
@@ -127,15 +127,15 @@ export const Navbar: React.FC = () => {
                 onClick={() => setMobileOpen(false)}
                 className={`block px-4 py-3 rounded-xl text-sm font-semibold transition-colors ${
                   isActive(link.href)
-                    ? 'text-white bg-[var(--color-accent-fill)]/30 border border-[var(--color-accent)]/50'
-                    : 'text-slate-300 hover:text-white hover:bg-white/5'
+                    ? 'text-[var(--brand-teal)] font-bold bg-[var(--brand-teal-subtle)] border border-[var(--brand-teal)]/40'
+                    : 'text-[var(--text-body)] hover:text-[var(--text-heading)] hover:bg-[var(--bg-subtle)]'
                 }`}
               >
                 {link.label}
               </Link>
             ))}
-            <div className="flex items-center justify-between pt-3 pb-1 px-1 border-t border-[var(--color-border)]/60">
-              <span className="text-xs font-bold text-slate-400">Preferences:</span>
+            <div className="flex items-center justify-between pt-3 pb-1 px-1 border-t border-[var(--border-subtle)]">
+              <span className="text-xs font-bold text-[var(--text-muted)]">Preferences:</span>
               <div className="flex items-center space-x-2">
                 <LanguageSelector />
                 <ThemeToggle />
@@ -144,7 +144,7 @@ export const Navbar: React.FC = () => {
             <Link
               to="/contact"
               onClick={() => setMobileOpen(false)}
-              className="flex items-center justify-center space-x-2 px-4 py-3.5 rounded-xl bg-[var(--color-accent-fill)] text-white text-sm font-bold mt-3 shadow-lg"
+              className="flex items-center justify-center space-x-2 px-4 py-3.5 rounded-xl bg-[var(--brand-teal)] text-white text-sm font-bold mt-3 shadow-md"
             >
               <span>Get a Quote</span>
               <ArrowRight className="w-4 h-4" />
@@ -171,31 +171,31 @@ const InternalNavbar: React.FC = () => {
 
   return (
     <>
-      <nav className="sticky top-0 z-40 bg-[var(--color-bg)]/98 backdrop-blur-md border-b border-[var(--color-border)] px-4 lg:px-8 py-3 shadow-md">
+      <nav className="sticky top-0 z-40 bg-[var(--bg-surface)] backdrop-blur-md border-b border-[var(--border-subtle)] px-4 lg:px-8 py-3 shadow-sm">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center space-x-6">
             <Link to="/" className="flex items-center space-x-2">
-              <div className="w-8 h-8 rounded-lg bg-[var(--color-accent-fill)] flex items-center justify-center shadow">
+              <div className="w-8 h-8 rounded-lg bg-[var(--brand-teal)] flex items-center justify-center shadow">
                 <Shield className="w-4 h-4 text-white" />
               </div>
-              <span className="font-display font-extrabold text-lg text-white">DigiHust</span>
-              <span className="text-[9px] uppercase font-bold px-2 py-0.5 rounded-full bg-[var(--color-accent-muted)] text-[var(--color-accent)] border border-[var(--color-border)] ml-1">
+              <span className="font-display font-extrabold text-lg text-[var(--text-heading)]">DigiHust</span>
+              <span className="text-[9px] uppercase font-bold px-2 py-0.5 rounded-full bg-[var(--brand-teal-subtle)] text-[var(--brand-teal)] border border-[var(--border-subtle)] ml-1">
                 Portal
               </span>
             </Link>
-            <div className="hidden md:flex items-center space-x-1 pl-4 border-l border-[var(--color-border)]">
+            <div className="hidden md:flex items-center space-x-1 pl-4 border-l border-[var(--border-subtle)]">
               {[
                 { href: '/dashboard', icon: <LayoutDashboard className="w-3.5 h-3.5" />, label: 'Pipeline' },
-                { href: '/ledger', icon: <DollarSign className="w-3.5 h-3.5 text-emerald-400" />, label: 'Ledger' },
-                { href: '/roster', icon: <Users className="w-3.5 h-3.5 text-[var(--color-text-primary)]" />, label: 'Rosters' },
+                { href: '/ledger', icon: <DollarSign className="w-3.5 h-3.5 text-[var(--brand-teal)]" />, label: 'Ledger' },
+                { href: '/roster', icon: <Users className="w-3.5 h-3.5" />, label: 'Rosters' },
               ].map((item) => (
                 <Link
                   key={item.href}
                   to={item.href}
                   className={`flex items-center space-x-1.5 px-3 py-2 rounded-lg text-xs font-bold transition-colors ${
                     location.pathname === item.href
-                      ? 'bg-[var(--color-accent-fill)] text-white shadow-sm'
-                      : 'text-slate-300 hover:text-white hover:bg-white/5'
+                      ? 'bg-[var(--brand-teal)] text-white shadow-sm'
+                      : 'text-[var(--text-body)] hover:text-[var(--text-heading)] hover:bg-[var(--bg-subtle)]'
                   }`}
                 >
                   {item.icon}
@@ -207,27 +207,28 @@ const InternalNavbar: React.FC = () => {
                   to="/admin"
                   className={`flex items-center space-x-1.5 px-3 py-2 rounded-lg text-xs font-bold transition-colors ${
                     location.pathname === '/admin'
-                      ? 'bg-[var(--color-accent-fill)] text-white shadow-sm'
-                      : 'text-slate-300 hover:text-white hover:bg-white/5'
+                      ? 'bg-[var(--brand-teal)] text-white shadow-sm'
+                      : 'text-[var(--text-body)] hover:text-[var(--text-heading)] hover:bg-[var(--bg-subtle)]'
                   }`}
                 >
-                  <Settings className="w-3.5 h-3.5 text-amber-400" />
+                  <Settings className="w-3.5 h-3.5 text-[var(--color-status-warning)]" />
                   <span>Admin</span>
                 </Link>
               )}
             </div>
           </div>
           <div className="flex items-center space-x-3">
+            <ThemeToggle />
             <button
               onClick={() => setIsCalcOpen(true)}
-              className="hidden sm:flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-[var(--color-surface)] border border-[var(--color-border)] hover:border-[var(--color-accent)] text-xs font-semibold text-[var(--color-text-primary)] transition-colors"
+              className="hidden sm:flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-[var(--bg-surface)] border border-[var(--border-subtle)] hover:border-[var(--brand-teal)] text-xs font-semibold text-[var(--text-heading)] transition-colors"
             >
-              <Calculator className="w-3.5 h-3.5 text-[var(--color-accent)]" />
+              <Calculator className="w-3.5 h-3.5 text-[var(--brand-teal)]" />
               <span>Split Calc</span>
             </button>
             <button
               onClick={() => setIsLeadOpen(true)}
-              className="flex items-center space-x-1.5 px-3.5 py-1.5 rounded-lg bg-[var(--color-accent-fill)] hover:bg-[var(--color-accent-hover)] text-xs font-bold text-white shadow transition-colors"
+              className="flex items-center space-x-1.5 px-3.5 py-1.5 rounded-lg bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-xs font-bold text-white shadow transition-colors"
             >
               <PlusCircle className="w-4 h-4" />
               <span>Submit Lead</span>
@@ -235,19 +236,19 @@ const InternalNavbar: React.FC = () => {
             <div className="relative">
               <button
                 onClick={() => setShowRoleDropdown(!showRoleDropdown)}
-                className="flex items-center space-x-2 p-1.5 pl-3 rounded-xl bg-[var(--color-surface)] border border-[var(--color-border)] hover:border-[var(--color-accent)] transition-colors"
+                className="flex items-center space-x-2 p-1.5 pl-3 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] hover:border-[var(--brand-teal)] transition-colors"
               >
-                <img src={currentUser.avatarUrl} alt={currentUser.name} className="w-7 h-7 rounded-full object-cover ring-2 ring-[var(--color-accent)]/40" />
+                <img src={currentUser.avatarUrl} alt={currentUser.name} className="w-7 h-7 rounded-full object-cover ring-2 ring-[var(--brand-teal)]/40" />
                 <div className="hidden xl:block text-left">
-                  <div className="text-xs font-bold text-white flex items-center gap-1">{currentUser.name}</div>
-                  <div className="text-[10px] text-slate-400 truncate max-w-[100px]">{currentUser.title}</div>
+                  <div className="text-xs font-bold text-[var(--text-heading)] flex items-center gap-1">{currentUser.name}</div>
+                  <div className="text-[10px] text-[var(--text-muted)] truncate max-w-[100px]">{currentUser.title}</div>
                 </div>
-                <ChevronDown className="w-4 h-4 text-slate-400" />
+                <ChevronDown className="w-4 h-4 text-[var(--text-muted)]" />
               </button>
               {showRoleDropdown && (
-                <div className="absolute right-0 mt-2 w-72 rounded-2xl bg-[var(--color-surface)] border border-[var(--color-border)] shadow-2xl p-2 z-50">
-                  <div className="px-3 py-2 border-b border-[var(--color-border)] mb-1">
-                    <p className="text-[10px] uppercase font-bold tracking-wider text-[var(--color-text-primary)]">Switch Active Role</p>
+                <div className="absolute right-0 mt-2 w-72 rounded-2xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] shadow-2xl p-2 z-50">
+                  <div className="px-3 py-2 border-b border-[var(--border-subtle)] mb-1">
+                    <p className="text-[10px] uppercase font-bold tracking-wider text-[var(--text-muted)]">Switch Active Role</p>
                   </div>
                   <div className="max-h-72 overflow-y-auto space-y-1">
                     {users.map((u) => (
@@ -258,20 +259,20 @@ const InternalNavbar: React.FC = () => {
                           setShowRoleDropdown(false);
                         }}
                         className={`w-full flex items-center justify-between p-2 rounded-xl text-left transition-colors ${
-                          u.id === currentUser.id ? 'bg-[var(--color-accent-fill)]/20 border border-[var(--color-accent)]/40' : 'hover:bg-white/5'
+                          u.id === currentUser.id ? 'bg-[var(--brand-teal-subtle)] border border-[var(--brand-teal)]/40' : 'hover:bg-[var(--bg-subtle)]'
                         }`}
                       >
                         <div className="flex items-center space-x-2.5">
                           <img src={u.avatarUrl} alt={u.name} className="w-7 h-7 rounded-full object-cover" />
                           <div>
-                            <p className="text-xs font-bold text-white flex items-center gap-1">
+                            <p className="text-xs font-bold text-[var(--text-heading)] flex items-center gap-1">
                               {u.name}
-                              {u.id === currentUser.id && <UserCheck className="w-3 h-3 text-[var(--color-text-primary)]" />}
+                              {u.id === currentUser.id && <UserCheck className="w-3 h-3 text-[var(--brand-teal)]" />}
                             </p>
-                            <p className="text-[10px] text-slate-400">{u.title}</p>
+                            <p className="text-[10px] text-[var(--text-muted)]">{u.title}</p>
                           </div>
                         </div>
-                        <span className="text-[9px] font-bold px-2 py-0.5 rounded uppercase bg-[var(--color-bg)] text-[var(--color-text-primary)] border border-[var(--color-border)]">
+                        <span className="text-[9px] font-bold px-2 py-0.5 rounded uppercase bg-[var(--bg-page)] text-[var(--text-heading)] border border-[var(--border-subtle)]">
                           {u.role.replace('_', ' ')}
                         </span>
                       </button>

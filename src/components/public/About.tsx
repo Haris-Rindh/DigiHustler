@@ -13,20 +13,20 @@ export const About: React.FC = () => {
       />
 
       {/* Header */}
-      <section className="bg-[var(--color-bg)] py-20 px-6 lg:px-8 border-b border-[var(--color-border)]">
+      <section className="bg-[var(--bg-page)] py-20 px-6 lg:px-8 border-b border-[var(--border-subtle)]">
         <div className="max-w-7xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
           >
-            <p className="text-xs font-extrabold text-[var(--color-accent)] uppercase tracking-widest mb-3">
+            <p className="text-xs font-extrabold text-[var(--brand-teal)] uppercase tracking-widest mb-3">
               The Story & Mission
             </p>
-            <h1 className="font-display font-extrabold text-4xl sm:text-5xl lg:text-6xl text-white mb-5">
+            <h1 className="font-display font-extrabold text-4xl sm:text-5xl lg:text-6xl text-[var(--text-heading)] mb-5">
               The DigiHust Mission.
             </h1>
-            <p className="text-lg text-slate-300 max-w-2xl leading-relaxed">
+            <p className="text-lg text-[var(--text-body)] max-w-2xl leading-relaxed">
               Founded inside Pakistan's Digiskill community to replace isolated freelance hustling with managed, world-class project delivery.
             </p>
           </motion.div>
@@ -34,7 +34,7 @@ export const About: React.FC = () => {
       </section>
 
       {/* The Problem Section */}
-      <section className="bg-white py-20 px-6 lg:px-8">
+      <section className="bg-[var(--bg-page)] py-20 px-6 lg:px-8">
         <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
           <motion.div
             initial={{ opacity: 0, x: -20 }}
@@ -45,13 +45,13 @@ export const About: React.FC = () => {
             <p className="text-xs font-extrabold text-rose-500 uppercase tracking-widest mb-3">
               The Market Dilemma
             </p>
-            <h2 className="font-display font-extrabold text-3xl sm:text-4xl text-gray-900 mb-6 leading-tight">
+            <h2 className="font-display font-extrabold text-3xl sm:text-4xl text-[var(--text-heading)] mb-6 leading-tight">
               Exceptional Talent. Broken Freelance Marketplaces.
             </h2>
-            <p className="text-base text-gray-600 leading-relaxed mb-4">
+            <p className="text-base text-[var(--text-body)] leading-relaxed mb-4">
               Pakistan produces thousands of skilled software engineers, brand designers, and AI practitioners every year. Yet, on traditional gig marketplaces, individual freelancers are trapped in races to the bottom on price, working in isolated silos without project management support.
             </p>
-            <p className="text-base text-gray-600 leading-relaxed">
+            <p className="text-base text-[var(--text-body)] leading-relaxed">
               Simultaneously, international companies waste dozens of hours vetting unverified profiles, struggling through communication barriers, and trying to orchestrate multiple uncoordinated freelancers.
             </p>
           </motion.div>
@@ -82,14 +82,14 @@ export const About: React.FC = () => {
             ].map((s) => (
               <div
                 key={s.title}
-                className="p-6 rounded-2xl border border-gray-200 bg-gray-50/70 hover:bg-white hover:shadow-md transition-all flex items-start space-x-5"
+                className="p-6 rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] hover:bg-white hover:shadow-md transition-all flex items-start space-x-5"
               >
-                <div className="font-display font-black text-3xl sm:text-4xl text-[var(--color-accent)] flex-shrink-0">
+                <div className="font-display font-black text-3xl sm:text-4xl text-[var(--brand-teal)] flex-shrink-0">
                   {s.stat}
                 </div>
                 <div>
-                  <h3 className="font-bold text-gray-900 text-base mb-1">{s.title}</h3>
-                  <p className="text-xs text-gray-500">{s.sub}</p>
+                  <h3 className="font-bold text-[var(--text-heading)] text-base mb-1">{s.title}</h3>
+                  <p className="text-xs text-[var(--text-muted)]">{s.sub}</p>
                 </div>
               </div>
             ))}
@@ -98,7 +98,7 @@ export const About: React.FC = () => {
       </section>
 
       {/* The Solution Section */}
-      <section className="bg-[var(--color-bg)] py-20 px-6 lg:px-8 border-y border-[var(--color-border)]">
+      <section className="bg-[var(--bg-page)] py-20 px-6 lg:px-8 border-y border-[var(--border-subtle)]">
         <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
           <motion.div
             initial={{ opacity: 0, x: -20 }}
@@ -106,16 +106,16 @@ export const About: React.FC = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
           >
-            <p className="text-xs font-extrabold text-[var(--color-accent)] uppercase tracking-widest mb-3">
+            <p className="text-xs font-extrabold text-[var(--brand-teal)] uppercase tracking-widest mb-3">
               The DigiHust Architecture
             </p>
-            <h2 className="font-display font-extrabold text-3xl sm:text-4xl text-white mb-6 leading-tight">
+            <h2 className="font-display font-extrabold text-3xl sm:text-4xl text-[var(--text-heading)] mb-6 leading-tight">
               A Sustainable Bridge Between Talent & Enterprise Demand.
             </h2>
-            <p className="text-base text-slate-300 leading-relaxed mb-4">
+            <p className="text-base text-[var(--text-body)] leading-relaxed mb-4">
               DigiHust operates as a centralized management and delivery engine. We acquire clients centrally, architect technical solutions, and route development directly to specialized squads.
             </p>
-            <p className="text-base text-slate-300 leading-relaxed">
+            <p className="text-base text-[var(--text-body)] leading-relaxed">
               Clients receive agency-grade reliability, transparent communication, and structured delivery. Our specialists receive consistent work, fair compensation splits, and a supportive team environment.
             </p>
           </motion.div>
@@ -129,7 +129,7 @@ export const About: React.FC = () => {
           >
             {[
               {
-                icon: <Target className="w-5 h-5 text-[var(--color-text-primary)]" />,
+                icon: <Target className="w-5 h-5 text-[var(--text-heading)]" />,
                 title: 'Centralized Client Acquisition',
                 desc: 'Single contract, professional scoping, and dedicated management oversight.',
               },
@@ -146,14 +146,14 @@ export const About: React.FC = () => {
             ].map((item) => (
               <div
                 key={item.title}
-                className="p-5 rounded-2xl bg-[var(--color-surface)] border border-[var(--color-border)] flex items-start space-x-4"
+                className="p-5 rounded-2xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] flex items-start space-x-4"
               >
-                <div className="p-2 rounded-xl bg-[var(--color-bg)] border border-[var(--color-border)] flex-shrink-0 mt-0.5">
+                <div className="p-2 rounded-xl bg-[var(--bg-page)] border border-[var(--border-subtle)] flex-shrink-0 mt-0.5">
                   {item.icon}
                 </div>
                 <div>
-                  <h3 className="font-bold text-white text-base mb-1">{item.title}</h3>
-                  <p className="text-xs text-slate-400 leading-relaxed">{item.desc}</p>
+                  <h3 className="font-bold text-[var(--text-heading)] text-base mb-1">{item.title}</h3>
+                  <p className="text-xs text-[var(--text-muted)] leading-relaxed">{item.desc}</p>
                 </div>
               </div>
             ))}
@@ -162,12 +162,12 @@ export const About: React.FC = () => {
       </section>
 
       {/* Core Values (Hustle. Create. Deliver.) */}
-      <section className="bg-white py-20 px-6 lg:px-8">
+      <section className="bg-[var(--bg-page)] py-20 px-6 lg:px-8">
         <div className="max-w-5xl mx-auto text-center">
-          <p className="text-xs font-extrabold text-[var(--color-accent)] uppercase tracking-widest mb-3">
+          <p className="text-xs font-extrabold text-[var(--brand-teal)] uppercase tracking-widest mb-3">
             Core Principles
           </p>
-          <h2 className="font-display font-extrabold text-3xl sm:text-4xl text-gray-900 mb-12">
+          <h2 className="font-display font-extrabold text-3xl sm:text-4xl text-[var(--text-heading)] mb-12">
             How We Operate Every Day
           </h2>
 
@@ -196,15 +196,15 @@ export const About: React.FC = () => {
                 viewport={{ once: true }}
                 whileHover={{ y: -4 }}
                 transition={{ duration: 0.3 }}
-                className="p-8 rounded-3xl border border-gray-200 bg-white hover:shadow-xl hover:border-[var(--color-accent)]/40 transition-all"
+                className="p-8 rounded-3xl border border-[var(--border-subtle)] bg-white hover:shadow-xl hover:border-[var(--brand-teal)]/40 transition-all"
               >
-                <span className="text-xs font-bold text-[var(--color-accent)] uppercase tracking-wider">
+                <span className="text-xs font-bold text-[var(--brand-teal)] uppercase tracking-wider">
                   {val.tag}
                 </span>
-                <h3 className="font-display font-black text-3xl text-gray-900 my-2">
+                <h3 className="font-display font-black text-3xl text-[var(--text-heading)] my-2">
                   {val.word}.
                 </h3>
-                <p className="text-sm text-gray-600 leading-relaxed">{val.desc}</p>
+                <p className="text-sm text-[var(--text-body)] leading-relaxed">{val.desc}</p>
               </motion.div>
             ))}
           </div>
@@ -212,16 +212,16 @@ export const About: React.FC = () => {
       </section>
 
       {/* CTA */}
-      <section className="bg-[var(--color-bg)] py-20 px-6 lg:px-8 text-center border-t border-[var(--color-border)]">
-        <h2 className="font-display font-extrabold text-3xl text-white mb-4">
+      <section className="bg-[var(--bg-page)] py-20 px-6 lg:px-8 text-center border-t border-[var(--border-subtle)]">
+        <h2 className="font-display font-extrabold text-3xl text-[var(--text-heading)] mb-4">
           Partner with DigiHust
         </h2>
-        <p className="text-slate-300 mb-8 max-w-md mx-auto">
+        <p className="text-[var(--text-body)] mb-8 max-w-md mx-auto">
           Whether you need a dedicated development squad or a complete brand overhaul, we are ready.
         </p>
         <Link
           to="/contact"
-          className="inline-flex items-center space-x-2 px-8 py-4 rounded-xl bg-[var(--color-accent-fill)] hover:bg-[var(--color-accent-hover)] text-white font-bold shadow-lg transition-all"
+          className="inline-flex items-center space-x-2 px-8 py-4 rounded-xl bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-white font-bold shadow-lg transition-all"
         >
           <span>Get a Scoped Quote</span>
           <ArrowRight className="w-4 h-4" />

@@ -54,31 +54,31 @@ export const PWAInstallPrompt: React.FC = () => {
         initial={{ opacity: 0, y: 30, scale: 0.95 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         exit={{ opacity: 0, y: 30, scale: 0.95 }}
-        className="fixed bottom-4 left-4 z-50 p-4 rounded-2xl bg-[var(--color-surface)]/95 backdrop-blur-md border border-[var(--color-accent)] shadow-2xl text-white max-w-sm flex items-center justify-between gap-3.5"
+        className="fixed bottom-4 left-4 z-50 p-4 rounded-2xl bg-[var(--bg-surface)]/95 backdrop-blur-md border border-[var(--brand-teal)] shadow-2xl text-white max-w-sm flex items-center justify-between gap-3.5"
       >
         <div className="flex items-center space-x-3">
           <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#022B3A] via-[#1F7A8C] to-[#E1E5F2] flex items-center justify-center text-white shadow-md flex-shrink-0">
             <Download className="w-5 h-5" />
           </div>
           <div>
-            <h4 className="font-bold text-xs text-white flex items-center gap-1">
+            <h4 className="font-bold text-xs text-[var(--text-heading)] flex items-center gap-1">
               <span>Install DigiHust App</span>
               <Sparkles className="w-3 h-3 text-amber-400" />
             </h4>
-            <p className="text-[11px] text-slate-300">Fast, offline-ready desktop & mobile portal</p>
+            <p className="text-[11px] text-[var(--text-body)]">Fast, offline-ready desktop & mobile portal</p>
           </div>
         </div>
 
         <div className="flex items-center space-x-1.5 flex-shrink-0">
           <button
             onClick={handleInstallClick}
-            className="px-3 py-1.5 rounded-lg bg-[var(--color-accent-fill)] hover:bg-[var(--color-accent-hover)] text-white font-bold text-xs shadow transition-colors"
+            className="px-3 py-1.5 rounded-lg bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-white font-bold text-xs shadow transition-colors"
           >
             Install
           </button>
           <button
             onClick={handleDismiss}
-            className="p-1.5 rounded-lg hover:bg-white/10 text-slate-400 hover:text-white transition-colors"
+            className="p-1.5 rounded-lg hover:bg-[var(--bg-subtle)] text-[var(--text-muted)] hover:text-white transition-colors"
             aria-label="Dismiss PWA prompt"
           >
             <X className="w-4 h-4" />

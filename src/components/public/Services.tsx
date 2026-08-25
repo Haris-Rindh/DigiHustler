@@ -32,7 +32,7 @@ const SERVICES = [
     ],
     tags: ['React', 'Next.js', 'Node.js', 'TypeScript', 'Tailwind CSS', 'AWS', 'PostgreSQL'],
     color: '#1F7A8C',
-    bgLight: 'bg-[var(--color-surface)]',
+    bgLight: 'bg-[var(--bg-surface)]',
   },
   {
     id: 'creative',
@@ -50,7 +50,7 @@ const SERVICES = [
     ],
     tags: ['Figma', 'Adobe Suite', 'After Effects', 'UI/UX', 'Brand Strategy', 'Motion Design'],
     color: '#1F7A8C',
-    bgLight: 'bg-[var(--color-surface)]',
+    bgLight: 'bg-[var(--bg-surface)]',
   },
   {
     id: 'ai-automation',
@@ -68,7 +68,7 @@ const SERVICES = [
     ],
     tags: ['OpenAI', 'Python', 'n8n', 'Zapier', 'LangChain', 'Automated APIs'],
     color: '#1F7A8C',
-    bgLight: 'bg-[var(--color-surface)]',
+    bgLight: 'bg-[var(--bg-surface)]',
   },
   {
     id: 'marketing',
@@ -86,7 +86,7 @@ const SERVICES = [
     ],
     tags: ['Technical SEO', 'Google Ads', 'Meta Ads', 'B2B Sales', 'GA4', 'Content Strategy'],
     color: '#B08D57',
-    bgLight: 'bg-[var(--color-surface)]',
+    bgLight: 'bg-[var(--bg-surface)]',
   },
   {
     id: 'cybersecurity',
@@ -104,7 +104,7 @@ const SERVICES = [
     ],
     tags: ['Pen Testing', 'OWASP', 'Vulnerability Assessment', 'API Security', 'Compliance'],
     color: '#A85C4A',
-    bgLight: 'bg-[var(--color-surface)]',
+    bgLight: 'bg-[var(--bg-surface)]',
   },
   {
     id: 'data-solutions',
@@ -122,7 +122,7 @@ const SERVICES = [
     ],
     tags: ['PowerBI', 'SQL', 'Data Analytics', 'Excel Automation', 'BI Reporting'],
     color: '#1F7A8C',
-    bgLight: 'bg-[var(--color-surface)]',
+    bgLight: 'bg-[var(--bg-surface)]',
   },
 ];
 
@@ -137,20 +137,20 @@ export const Services: React.FC = () => {
       />
 
       {/* Header Banner */}
-      <section className="bg-[var(--color-bg)] py-20 px-6 lg:px-8 border-b border-[var(--color-border)]">
+      <section className="bg-[var(--bg-page)] py-20 px-6 lg:px-8 border-b border-[var(--border-subtle)]">
         <div className="max-w-7xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
           >
-            <p className="text-xs font-extrabold text-[var(--color-accent)] uppercase tracking-widest mb-3">
+            <p className="text-xs font-extrabold text-[var(--brand-teal)] uppercase tracking-widest mb-3">
               Full-Spectrum Capabilities
             </p>
-            <h1 className="font-display font-extrabold text-4xl sm:text-5xl lg:text-6xl text-white mb-5">
+            <h1 className="font-display font-extrabold text-4xl sm:text-5xl lg:text-6xl text-[var(--text-heading)] mb-5">
               Services Built for Execution.
             </h1>
-            <p className="text-lg text-slate-300 max-w-2xl leading-relaxed">
+            <p className="text-lg text-[var(--text-body)] max-w-2xl leading-relaxed">
               Six specialized domains — delivered as one cohesive digital engine. Click any capability below to review included deliverables and technologies.
             </p>
           </motion.div>
@@ -158,7 +158,7 @@ export const Services: React.FC = () => {
       </section>
 
       {/* Interactive Services List */}
-      <section className="bg-white py-20 px-6 lg:px-8">
+      <section className="bg-[var(--bg-page)] py-20 px-6 lg:px-8">
         <div className="max-w-7xl mx-auto space-y-6">
           {SERVICES.map((svc) => {
             const isExpanded = expandedId === svc.id;
@@ -171,8 +171,8 @@ export const Services: React.FC = () => {
                 viewport={{ once: true }}
                 className={`border rounded-2xl overflow-hidden transition-all ${
                   isExpanded
-                    ? 'border-[var(--color-accent)]/50 shadow-xl bg-white ring-1 ring-[var(--color-accent)]/20'
-                    : 'border-gray-200 hover:border-gray-300 hover:shadow-md bg-white'
+                    ? 'border-[var(--brand-teal)]/50 shadow-xl bg-white ring-1 ring-[var(--brand-teal)]/20'
+                    : 'border-[var(--border-subtle)] hover:border-[var(--border-hover)] hover:shadow-md bg-white'
                 }`}
               >
                 {/* Trigger button */}
@@ -190,19 +190,19 @@ export const Services: React.FC = () => {
                     </div>
                     <div>
                       <div className="flex flex-wrap items-center gap-2 mb-1">
-                        <h2 className="font-display font-extrabold text-2xl text-gray-900">{svc.title}</h2>
+                        <h2 className="font-display font-extrabold text-2xl text-[var(--text-heading)]">{svc.title}</h2>
                       </div>
-                      <p className="text-xs font-bold text-gray-400 uppercase tracking-wide mb-1">
+                      <p className="text-xs font-bold text-[var(--text-dim)] uppercase tracking-wide mb-1">
                         {svc.headline}
                       </p>
-                      <p className="text-sm text-gray-600 max-w-2xl hidden sm:block">
+                      <p className="text-sm text-[var(--text-body)] max-w-2xl hidden sm:block">
                         {svc.description}
                       </p>
                     </div>
                   </div>
                   <div
-                    className={`w-10 h-10 rounded-xl flex items-center justify-center border border-gray-200 text-gray-500 flex-shrink-0 transition-transform duration-300 ${
-                      isExpanded ? 'rotate-180 bg-gray-50' : ''
+                    className={`w-10 h-10 rounded-xl flex items-center justify-center border border-[var(--border-subtle)] text-[var(--text-muted)] flex-shrink-0 transition-transform duration-300 ${
+                      isExpanded ? 'rotate-180 bg-[var(--bg-subtle)]' : ''
                     }`}
                   >
                     <ChevronDown className="w-5 h-5" />
@@ -217,7 +217,7 @@ export const Services: React.FC = () => {
                       animate={{ opacity: 1, height: 'auto' }}
                       exit={{ opacity: 0, height: 0 }}
                       transition={{ duration: 0.35, ease: 'easeInOut' }}
-                      className={`px-6 sm:px-8 pb-8 pt-2 border-t border-gray-100 ${svc.bgLight}`}
+                      className={`px-6 sm:px-8 pb-8 pt-2 border-t border-[var(--border-subtle)] ${svc.bgLight}`}
                     >
                       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 pt-4">
                         {/* Scope Checklist */}
@@ -231,7 +231,7 @@ export const Services: React.FC = () => {
                           </h3>
                           <ul className="space-y-2.5">
                             {svc.offerings.map((offering) => (
-                              <li key={offering} className="flex items-start space-x-3 text-sm text-gray-700">
+                              <li key={offering} className="flex items-start space-x-3 text-sm text-[var(--text-body)]">
                                 <CheckCircle2
                                   className="w-4 h-4 flex-shrink-0 mt-0.5"
                                   style={{ color: svc.color }}
@@ -245,14 +245,14 @@ export const Services: React.FC = () => {
                         {/* Tech Stack & Action */}
                         <div className="flex flex-col justify-between">
                           <div>
-                            <h3 className="text-xs font-black uppercase tracking-widest text-gray-500 mb-4">
+                            <h3 className="text-xs font-black uppercase tracking-widest text-[var(--text-muted)] mb-4">
                               Technologies & Frameworks
                             </h3>
                             <div className="flex flex-wrap gap-2 mb-6">
                               {svc.tags.map((t) => (
                                 <span
                                   key={t}
-                                  className="text-xs px-3 py-1.5 rounded-xl bg-white text-gray-700 border border-gray-200 font-semibold shadow-sm"
+                                  className="text-xs px-3 py-1.5 rounded-xl bg-white text-[var(--text-body)] border border-[var(--border-subtle)] font-semibold shadow-sm"
                                 >
                                   {t}
                                 </span>
@@ -260,7 +260,7 @@ export const Services: React.FC = () => {
                             </div>
                           </div>
 
-                          <div className="pt-4 border-t border-gray-200/60">
+                          <div className="pt-4 border-t border-[var(--border-subtle)]/60">
                             <Link
                               to="/contact"
                               className="inline-flex items-center space-x-2 px-6 py-3.5 rounded-xl text-white font-bold text-sm shadow-md transition-all hover:opacity-90"
@@ -282,17 +282,17 @@ export const Services: React.FC = () => {
       </section>
 
       {/* Bottom CTA Banner */}
-      <section className="bg-[var(--color-bg)] py-20 px-6 lg:px-8 border-t border-[var(--color-border)] text-center">
+      <section className="bg-[var(--bg-page)] py-20 px-6 lg:px-8 border-t border-[var(--border-subtle)] text-center">
         <div className="max-w-2xl mx-auto">
-          <h2 className="font-display font-extrabold text-3xl sm:text-4xl text-white mb-4">
+          <h2 className="font-display font-extrabold text-3xl sm:text-4xl text-[var(--text-heading)] mb-4">
             Need a Multi-Disciplinary Squad?
           </h2>
-          <p className="text-slate-300 mb-8 leading-relaxed">
+          <p className="text-[var(--text-body)] mb-8 leading-relaxed">
             Most projects require a combination of engineering, branding, and automation. We combine these disciplines seamlessly into one scope.
           </p>
           <Link
             to="/contact"
-            className="inline-flex items-center space-x-2 px-8 py-4 rounded-xl bg-[var(--color-accent-fill)] hover:bg-[var(--color-accent-hover)] text-white font-bold shadow-lg transition-all"
+            className="inline-flex items-center space-x-2 px-8 py-4 rounded-xl bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-white font-bold shadow-lg transition-all"
           >
             <span>Start a Combined Scope</span>
             <ArrowRight className="w-4 h-4" />

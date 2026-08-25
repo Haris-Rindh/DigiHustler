@@ -1,5 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 export default {
+  darkMode: ['class', '[data-theme="dark"]'],
   content: [
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
@@ -7,18 +8,26 @@ export default {
   theme: {
     extend: {
       colors: {
-        breeze: {
-          dark: '#071e26',       // Deepest Ocean Navy (Background)
-          surface: '#0d2833',    // Card Background
-          elevated: '#113240',   // Modal & Hover Background
-          border: '#1e4a5d',     // Subtle Crisp Border
-          teal: '#1a7a8c',       // Ocean Teal (Primary Action Accent)
-          'teal-hover': '#156575',
-          sky: '#bde0fe',        // Sky Breeze (Soft Accent & Status Pills)
-          'sky-dark': '#8ecae6',
-          mist: '#e2e8f0',       // Ice Mist Text / Subtle Elements
-          white: '#ffffff',      // Pure White Text & High Contrast
-        }
+        page: 'var(--bg-page)',
+        surface: 'var(--bg-surface)',
+        subtle: 'var(--bg-subtle)',
+        'border-subtle': 'var(--border-subtle)',
+        'border-hover': 'var(--border-hover)',
+        heading: 'var(--text-heading)',
+        body: 'var(--text-body)',
+        muted: 'var(--text-muted)',
+        dim: 'var(--text-dim)',
+        brand: {
+          DEFAULT: 'var(--brand-teal)',
+          hover: 'var(--brand-teal-hover)',
+          text: 'var(--brand-teal-text)',
+          subtle: 'var(--brand-teal-subtle)',
+        },
+        status: {
+          error: 'var(--color-status-error)',
+          success: 'var(--color-status-success)',
+          warning: 'var(--color-status-warning)',
+        },
       },
       fontFamily: {
         sans: ['Plus Jakarta Sans', 'sans-serif'],

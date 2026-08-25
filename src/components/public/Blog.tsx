@@ -1,93 +1,85 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowRight, BookOpen, Clock, Calendar, Tag } from 'lucide-react';
+import { ArrowRight, Clock, User, Calendar, BookOpen, Sparkles } from 'lucide-react';
 import { SEOHead } from '../seo/SEOHead';
 
 export interface BlogPostItem {
   slug: string;
-  category: string;
   title: string;
   excerpt: string;
+  category: string;
   readTime: string;
   date: string;
   author: string;
-  authorRole: string;
   image: string;
-  tags: string[];
 }
 
 export const BLOG_POSTS: BlogPostItem[] = [
   {
     slug: 'how-to-architect-nextjs-for-ai-crawlers',
-    category: 'Engineering & SEO',
     title: 'Architecting Modern Web Apps for AI Search Engines & LLM Crawlers',
-    excerpt: 'Why traditional client-side SPAs fail against non-JS AI agents (GPTBot, ClaudeBot, Perplexity), and how static pre-rendering bridges the semantic gap.',
+    excerpt: 'Why traditional client-side SPAs fail against non-JS AI search engines (GPTBot, ClaudeBot, Perplexity), and how static pre-rendering bridges the semantic discovery gap.',
+    category: 'Engineering',
     readTime: '6 min read',
-    date: 'Aug 24, 2026',
-    author: 'Zubair Ahmed',
-    authorRole: 'Lead Full-Stack Architect',
+    date: 'August 24, 2026',
+    author: 'Haris Asad',
     image: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=800&q=80',
-    tags: ['Next.js', 'AI Crawlers', 'Technical SEO', 'Architecture'],
   },
   {
     slug: 'demystifying-ai-automations-n8n-vs-custom-python',
-    category: 'AI & Automation',
     title: 'Automating Business Workflows: n8n vs. Custom Python LLM Microservices',
     excerpt: 'A pragmatic framework for deciding when to use visual workflow tools versus specialized Python function-calling pipelines for enterprise operations.',
+    category: 'AI & Automations',
     readTime: '8 min read',
-    date: 'Aug 22, 2026',
-    author: 'Dr. Hamza Ali',
-    authorRole: 'Head of AI & Data Intelligence',
-    image: 'https://images.unsplash.com/photo-1677442135703-1787eea5ce01?auto=format&fit=crop&w=800&q=80',
-    tags: ['AI Workflows', 'Python', 'n8n', 'LLMs'],
+    date: 'August 18, 2026',
+    author: 'AI Engineering Lead',
+    image: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=800&q=80',
   },
   {
     slug: 'owasp-top-10-web-security-checklist-for-startups',
-    category: 'Cybersecurity',
     title: 'The Essential OWASP Web Application Security & Hardening Checklist',
     excerpt: 'Protecting your digital infrastructure against injection, broken access controls, and data exposure before production deployment.',
+    category: 'Cybersecurity',
     readTime: '7 min read',
-    date: 'Aug 19, 2026',
-    author: 'Usman Tariq',
-    authorRole: 'Security & Cloud Engineer',
+    date: 'August 10, 2026',
+    author: 'Cybersecurity Lead',
     image: 'https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=800&q=80',
-    tags: ['Cybersecurity', 'OWASP', 'Penetration Testing', 'Cloud'],
   },
 ];
 
 export const Blog: React.FC = () => {
   const [activeCategory, setActiveCategory] = useState('All');
 
-  const categories = ['All', 'Engineering & SEO', 'AI & Automation', 'Cybersecurity'];
+  const categories = ['All', 'Engineering', 'AI & Automations', 'Cybersecurity'];
 
-  const filteredPosts = activeCategory === 'All'
-    ? BLOG_POSTS
-    : BLOG_POSTS.filter((p) => p.category === activeCategory);
+  const filteredPosts =
+    activeCategory === 'All'
+      ? BLOG_POSTS
+      : BLOG_POSTS.filter((p) => p.category === activeCategory);
 
   return (
-    <div className="pt-16">
+    <div className="pt-20 lg:pt-24 min-h-screen bg-[var(--bg-page)] text-[var(--text-body)]">
       <SEOHead
-        title="Knowledge Base & Technical Insights — DigiHust"
-        description="Actionable technical articles and engineering deep dives on Web Architecture, Technical SEO, AI Automation, and Cybersecurity by DigiHust specialists."
-        canonical="https://digihust.com/blog"
+        title="Knowledge Hub & Technical Insights — DigiHust"
+        description="Explore technical architecture guides, AI automation workflows, and cybersecurity benchmarks written by DigiHust domain specialists."
       />
 
       {/* Header Banner */}
-      <section className="bg-[var(--color-bg)] py-20 px-6 lg:px-8 border-b border-[var(--color-border)]">
+      <section className="bg-[var(--bg-subtle)] py-16 sm:py-20 px-6 lg:px-8 border-b border-[var(--border-subtle)]">
         <div className="max-w-7xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
           >
-            <p className="text-xs font-extrabold text-[var(--color-accent)] uppercase tracking-widest mb-3">
+            <p className="text-xs font-extrabold text-[var(--brand-teal)] uppercase tracking-widest mb-3">
               Engineering & Digital Strategy
             </p>
-            <h1 className="font-display font-extrabold text-4xl sm:text-5xl lg:text-6xl text-white mb-5">
+            <h1 className="font-display font-extrabold text-4xl sm:text-5xl lg:text-6xl text-[var(--text-heading)] mb-5">
               Insights & Knowledge Hub.
             </h1>
-            <p className="text-lg text-slate-300 max-w-2xl leading-relaxed">
+            <p className="text-lg text-[var(--text-body)] max-w-2xl leading-relaxed">
               Technical guides, architectural blueprints, and digital growth strategies authored directly by our domain leads.
             </p>
           </motion.div>
@@ -95,7 +87,7 @@ export const Blog: React.FC = () => {
       </section>
 
       {/* Category Tabs */}
-      <section className="bg-white border-b border-gray-100 sticky top-16 z-30 shadow-sm">
+      <section className="bg-[var(--bg-surface)] border-b border-[var(--border-subtle)] sticky top-16 z-30 shadow-sm">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="flex items-center space-x-2 py-4 overflow-x-auto">
             {categories.map((cat) => (
@@ -104,8 +96,8 @@ export const Blog: React.FC = () => {
                 onClick={() => setActiveCategory(cat)}
                 className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all ${
                   activeCategory === cat
-                    ? 'bg-[var(--color-accent-fill)] text-white shadow-md'
-                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                    ? 'bg-[var(--brand-teal)] text-white shadow-md'
+                    : 'text-[var(--text-body)] hover:text-[var(--text-heading)] hover:bg-[var(--bg-subtle)]'
                 }`}
               >
                 {cat}
@@ -116,71 +108,62 @@ export const Blog: React.FC = () => {
       </section>
 
       {/* Blog Posts Grid */}
-      <section className="bg-white py-16 px-6 lg:px-8">
+      <section className="bg-[var(--bg-page)] py-16 px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {filteredPosts.map((post) => (
               <article
                 key={post.slug}
                 data-cursor="view"
-                className="group border border-gray-200/80 rounded-2xl overflow-hidden bg-white hover:shadow-xl hover:border-[var(--color-accent)]/40 transition-all flex flex-col justify-between"
+                className="group border border-[var(--border-subtle)] rounded-2xl overflow-hidden bg-[var(--bg-surface)] hover:shadow-xl hover:border-[var(--brand-teal)] transition-all flex flex-col justify-between"
               >
                 <div>
-                  <div className="aspect-video overflow-hidden bg-gray-100 relative">
+                  <div className="aspect-video overflow-hidden bg-[var(--bg-subtle)] relative">
                     <img
                       src={post.image}
                       alt={post.title}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     />
-                    <div className="absolute top-3 left-3 px-2.5 py-1 rounded-md bg-[var(--color-bg)]/90 backdrop-blur-sm text-[10px] font-bold text-[var(--color-text-primary)] border border-[var(--color-border)]">
+                    <div className="absolute top-3 left-3 px-2.5 py-1 rounded-md bg-[var(--bg-page)]/90 backdrop-blur-sm text-[10px] font-bold text-[var(--brand-teal)] border border-[var(--border-subtle)]">
                       {post.category}
                     </div>
                   </div>
 
                   <div className="p-6">
-                    <div className="flex items-center space-x-3 text-xs text-gray-400 mb-3">
-                      <span className="flex items-center gap-1">
+                    <div className="flex items-center space-x-4 text-xs text-[var(--text-muted)] mb-3">
+                      <span className="flex items-center space-x-1">
                         <Calendar className="w-3.5 h-3.5" />
                         <span>{post.date}</span>
                       </span>
                       <span>·</span>
-                      <span className="flex items-center gap-1">
+                      <span className="flex items-center space-x-1">
                         <Clock className="w-3.5 h-3.5" />
                         <span>{post.readTime}</span>
                       </span>
                     </div>
 
-                    <h2 className="font-display font-bold text-xl text-gray-900 mb-3 group-hover:text-[var(--color-accent)] transition-colors leading-tight">
+                    <h2 className="font-display font-bold text-xl text-[var(--text-heading)] mb-3 group-hover:text-[var(--brand-teal)] transition-colors leading-snug">
                       <Link to={`/blog/${post.slug}`}>{post.title}</Link>
                     </h2>
 
-                    <p className="text-sm text-gray-600 leading-relaxed mb-4">
+                    <p className="text-sm text-[var(--text-body)] leading-relaxed mb-6">
                       {post.excerpt}
                     </p>
-
-                    <div className="flex flex-wrap gap-1.5 mb-2">
-                      {post.tags.map((tag) => (
-                        <span
-                          key={tag}
-                          className="text-[10px] px-2 py-0.5 rounded-md bg-gray-50 text-gray-600 border border-gray-100 font-medium"
-                        >
-                          #{tag}
-                        </span>
-                      ))}
-                    </div>
                   </div>
                 </div>
 
-                <div className="px-6 pb-6 pt-2 border-t border-gray-100 flex items-center justify-between">
-                  <div className="text-xs">
-                    <p className="font-bold text-gray-900">{post.author}</p>
-                    <p className="text-[10px] text-gray-500">{post.authorRole}</p>
+                <div className="px-6 pb-6 pt-0 border-t border-[var(--border-subtle)] flex items-center justify-between">
+                  <div className="flex items-center space-x-2 pt-4">
+                    <div className="w-6 h-6 rounded-full bg-[var(--brand-teal-subtle)] text-[var(--brand-teal)] border border-[var(--brand-teal)]/30 flex items-center justify-center font-bold text-[10px]">
+                      {post.author.charAt(0)}
+                    </div>
+                    <span className="text-xs font-semibold text-[var(--text-heading)]">{post.author}</span>
                   </div>
                   <Link
                     to={`/blog/${post.slug}`}
-                    className="inline-flex items-center space-x-1 text-xs font-bold text-[var(--color-accent)] group-hover:translate-x-1 transition-transform"
+                    className="inline-flex items-center space-x-1 text-xs font-bold text-[var(--brand-teal)] pt-4 group-hover:translate-x-1 transition-transform"
                   >
-                    <span>Read Article</span>
+                    <span>Read Guide</span>
                     <ArrowRight className="w-3.5 h-3.5" />
                   </Link>
                 </div>

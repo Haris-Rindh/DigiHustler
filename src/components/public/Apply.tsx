@@ -45,8 +45,8 @@ export const Apply: React.FC = () => {
         <span className="text-[10px] font-bold px-3 py-1 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 uppercase tracking-widest">
           Join the Ecosystem
         </span>
-        <h1 className="font-display font-extrabold text-4xl text-white">Apply to DigiHust Community</h1>
-        <p className="text-xs text-slate-400 max-w-lg mx-auto">
+        <h1 className="font-display font-extrabold text-4xl text-[var(--text-heading)]">Apply to DigiHust Community</h1>
+        <p className="text-xs text-[var(--text-muted)] max-w-lg mx-auto">
           Exclusive membership for verified Digiskill graduates. Get assigned to high-ticket client projects routed through department group leaders.
         </p>
       </div>
@@ -56,13 +56,13 @@ export const Apply: React.FC = () => {
           <div className="w-16 h-16 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center mx-auto">
             <CheckCircle2 className="w-8 h-8" />
           </div>
-          <h2 className="font-display font-extrabold text-2xl text-white">Application Received!</h2>
-          <p className="text-xs text-slate-300 max-w-md mx-auto leading-relaxed">
+          <h2 className="font-display font-extrabold text-2xl text-[var(--text-heading)]">Application Received!</h2>
+          <p className="text-xs text-[var(--text-body)] max-w-md mx-auto leading-relaxed">
             Thank you, {name}! Your Digiskill credentials (<strong>{digiskillId}</strong>) have been submitted to Founding Management for review. You can test your approval live in the Admin Settings tab.
           </p>
           <button 
             onClick={() => setSubmitted(false)}
-            className="px-6 py-2.5 rounded-xl bg-white/10 text-white font-bold text-xs hover:bg-white/20"
+            className="px-6 py-2.5 rounded-xl bg-[var(--bg-subtle)] text-white font-bold text-xs hover:bg-white/20"
           >
             Submit Another Application
           </button>
@@ -72,60 +72,60 @@ export const Apply: React.FC = () => {
           
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">Full Name *</label>
+              <label className="block text-xs font-semibold text-[var(--text-body)] mb-1">Full Name *</label>
               <input 
                 type="text" 
                 required
                 placeholder="Usman Tariq"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full bg-slate-950 border border-white/10 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-400"
+                className="w-full bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-400"
               />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">Email Address *</label>
+              <label className="block text-xs font-semibold text-[var(--text-body)] mb-1">Email Address *</label>
               <input 
                 type="email" 
                 required
                 placeholder="usman@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full bg-slate-950 border border-white/10 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-400"
+                className="w-full bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-400"
               />
             </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">Digiskill Batch / Reg ID *</label>
+              <label className="block text-xs font-semibold text-[var(--text-body)] mb-1">Digiskill Batch / Reg ID *</label>
               <input 
                 type="text" 
                 required
                 placeholder="DS-Batch 15 (ID: 98421)"
                 value={digiskillId}
                 onChange={(e) => setDigiskillId(e.target.value)}
-                className="w-full bg-slate-950 border border-white/10 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-400"
+                className="w-full bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-400"
               />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">Digiskill Primary Course</label>
+              <label className="block text-xs font-semibold text-[var(--text-body)] mb-1">Digiskill Primary Course</label>
               <input 
                 type="text" 
                 placeholder="Web Development / Graphic Design"
                 value={digiskillCourse}
                 onChange={(e) => setDigiskillCourse(e.target.value)}
-                className="w-full bg-slate-950 border border-white/10 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-400"
+                className="w-full bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-400"
               />
             </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">Target Department Group *</label>
+              <label className="block text-xs font-semibold text-[var(--text-body)] mb-1">Target Department Group *</label>
               <select
                 value={preferredGroupId}
                 onChange={(e) => setPreferredGroupId(e.target.value as GroupId)}
-                className="w-full bg-slate-950 border border-white/10 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-400"
+                className="w-full bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-400"
               >
                 {groups.map(g => (
                   <option key={g.id} value={g.id}>{g.name}</option>
@@ -133,36 +133,36 @@ export const Apply: React.FC = () => {
               </select>
             </div>
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">Portfolio / GitHub / Behance URL</label>
+              <label className="block text-xs font-semibold text-[var(--text-body)] mb-1">Portfolio / GitHub / Behance URL</label>
               <input 
                 type="url" 
                 placeholder="https://github.com/your-username"
                 value={portfolioUrl}
                 onChange={(e) => setPortfolioUrl(e.target.value)}
-                className="w-full bg-slate-950 border border-white/10 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-400"
+                className="w-full bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-400"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-300 mb-1">Specialties & Tags (Comma Separated)</label>
+            <label className="block text-xs font-semibold text-[var(--text-body)] mb-1">Specialties & Tags (Comma Separated)</label>
             <input 
               type="text" 
               placeholder="React, TypeScript, Tailwind CSS, Figma"
               value={specialtiesText}
               onChange={(e) => setSpecialtiesText(e.target.value)}
-              className="w-full bg-slate-950 border border-white/10 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-400"
+              className="w-full bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-400"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-300 mb-1">Brief Bio & Work Experience Summary</label>
+            <label className="block text-xs font-semibold text-[var(--text-body)] mb-1">Brief Bio & Work Experience Summary</label>
             <textarea 
               rows={3}
               placeholder="Tell Management about your key strengths and previous client projects..."
               value={bio}
               onChange={(e) => setBio(e.target.value)}
-              className="w-full bg-slate-950 border border-white/10 rounded-xl p-3 text-sm text-white focus:outline-none focus:border-cyan-400"
+              className="w-full bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl p-3 text-sm text-white focus:outline-none focus:border-cyan-400"
             />
           </div>
 

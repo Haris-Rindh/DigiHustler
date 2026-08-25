@@ -47,24 +47,24 @@ export const SplitConfigurationView: React.FC<SplitConfigurationViewProps> = ({ 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         
         {/* Global Default Split Settings Form */}
-        <form onSubmit={handleSaveGlobal} className="p-6 rounded-3xl bg-[var(--color-surface)] border border-[var(--color-border)] space-y-5 shadow-xl">
-          <div className="flex items-center justify-between border-b border-[var(--color-border)] pb-3">
-            <h3 className="font-display font-bold text-lg text-white flex items-center gap-2">
-              <DollarSign className="w-5 h-5 text-[var(--color-accent)]" />
+        <form onSubmit={handleSaveGlobal} className="p-6 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] space-y-5 shadow-xl">
+          <div className="flex items-center justify-between border-b border-[var(--border-subtle)] pb-3">
+            <h3 className="font-display font-bold text-lg text-[var(--text-heading)] flex items-center gap-2">
+              <DollarSign className="w-5 h-5 text-[var(--brand-teal)]" />
               <span>Global Default Split Allocation</span>
             </h3>
-            <span className="text-[10px] text-slate-400 uppercase font-bold">Standard Baseline</span>
+            <span className="text-[10px] text-[var(--text-muted)] uppercase font-bold">Standard Baseline</span>
           </div>
 
-          <p className="text-xs text-slate-300 leading-relaxed">
+          <p className="text-xs text-[var(--text-body)] leading-relaxed">
             DigiHust standard baseline: Management takes 15–20%, Group Leader takes 20–25%, and Freelancer pool takes ~60%. Automatically auto-fills on newly scoped projects.
           </p>
 
           <div className="space-y-4">
             <div>
-              <div className="flex justify-between text-xs font-semibold text-slate-300 mb-1">
+              <div className="flex justify-between text-xs font-semibold text-[var(--text-body)] mb-1">
                 <span>Default Management Cut %</span>
-                <span className="text-[var(--color-text-primary)] font-bold">{mgmtPct}%</span>
+                <span className="text-[var(--text-heading)] font-bold">{mgmtPct}%</span>
               </div>
               <input
                 type="range"
@@ -73,12 +73,12 @@ export const SplitConfigurationView: React.FC<SplitConfigurationViewProps> = ({ 
                 step="1"
                 value={mgmtPct}
                 onChange={(e) => setMgmtPct(parseFloat(e.target.value))}
-                className="w-full accent-[var(--color-accent)]"
+                className="w-full accent-[var(--brand-teal)]"
               />
             </div>
 
             <div>
-              <div className="flex justify-between text-xs font-semibold text-slate-300 mb-1">
+              <div className="flex justify-between text-xs font-semibold text-[var(--text-body)] mb-1">
                 <span>Default Group Leader Cut %</span>
                 <span className="text-cyan-400 font-bold">{ldrPct}%</span>
               </div>
@@ -94,7 +94,7 @@ export const SplitConfigurationView: React.FC<SplitConfigurationViewProps> = ({ 
             </div>
 
             <div>
-              <div className="flex justify-between text-xs font-semibold text-slate-300 mb-1">
+              <div className="flex justify-between text-xs font-semibold text-[var(--text-body)] mb-1">
                 <span>Default Specialist Freelancer Pool %</span>
                 <span className="text-emerald-400 font-bold">{flPct}%</span>
               </div>
@@ -109,8 +109,8 @@ export const SplitConfigurationView: React.FC<SplitConfigurationViewProps> = ({ 
               />
             </div>
 
-            <div className="pt-2 border-t border-[var(--color-border)]/60">
-              <div className="flex justify-between text-xs font-semibold text-slate-300 mb-1">
+            <div className="pt-2 border-t border-[var(--border-subtle)]/60">
+              <div className="flex justify-between text-xs font-semibold text-[var(--text-body)] mb-1">
                 <span>Independent Lead Gen Commission %</span>
                 <span className="text-amber-400 font-bold">{lgPct}%</span>
               </div>
@@ -128,7 +128,7 @@ export const SplitConfigurationView: React.FC<SplitConfigurationViewProps> = ({ 
 
           <div className="flex items-center justify-between pt-2">
             <div className="text-xs">
-              <span className="text-slate-400">Total Core Split: </span>
+              <span className="text-[var(--text-muted)]">Total Core Split: </span>
               <strong className={mgmtPct + ldrPct + flPct === 100 ? 'text-emerald-400 font-extrabold' : 'text-rose-400 font-extrabold'}>
                 {mgmtPct + ldrPct + flPct}%
               </strong>
@@ -143,7 +143,7 @@ export const SplitConfigurationView: React.FC<SplitConfigurationViewProps> = ({ 
               )}
               <button
                 type="submit"
-                className="px-5 py-2.5 rounded-xl bg-[var(--color-accent-fill)] hover:bg-[var(--color-accent-hover)] text-white font-bold text-xs shadow-md transition-colors"
+                className="px-5 py-2.5 rounded-xl bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-white font-bold text-xs shadow-md transition-colors"
               >
                 Save Global Defaults
               </button>
@@ -152,32 +152,32 @@ export const SplitConfigurationView: React.FC<SplitConfigurationViewProps> = ({ 
         </form>
 
         {/* Individual Split Overrides List */}
-        <div className="p-6 rounded-3xl bg-[var(--color-surface)] border border-[var(--color-border)] space-y-5 shadow-xl flex flex-col justify-between">
+        <div className="p-6 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] space-y-5 shadow-xl flex flex-col justify-between">
           <div>
-            <div className="flex items-center justify-between border-b border-[var(--color-border)] pb-3">
-              <h3 className="font-display font-bold text-lg text-white flex items-center gap-2">
-                <Users className="w-5 h-5 text-[var(--color-text-primary)]" />
+            <div className="flex items-center justify-between border-b border-[var(--border-subtle)] pb-3">
+              <h3 className="font-display font-bold text-lg text-[var(--text-heading)] flex items-center gap-2">
+                <Users className="w-5 h-5 text-[var(--text-heading)]" />
                 <span>Custom Per-Person Overrides</span>
               </h3>
-              <span className="text-[10px] text-slate-400 uppercase font-bold">
+              <span className="text-[10px] text-[var(--text-muted)] uppercase font-bold">
                 {usersWithOverrides.length} Configured
               </span>
             </div>
 
-            <p className="text-xs text-slate-300 leading-relaxed my-3">
+            <p className="text-xs text-[var(--text-body)] leading-relaxed my-3">
               Specialists or senior leads who have contractually negotiated compensation splits that differ from the global baseline.
             </p>
 
             <div className="space-y-3 mt-4">
               {usersWithOverrides.length === 0 ? (
-                <div className="p-8 text-center rounded-2xl bg-[var(--color-bg)] border border-[var(--color-border)] text-slate-400 text-xs">
+                <div className="p-8 text-center rounded-2xl bg-[var(--bg-page)] border border-[var(--border-subtle)] text-[var(--text-muted)] text-xs">
                   No individual split overrides configured. All talent uses the global baseline.
                 </div>
               ) : (
                 usersWithOverrides.map((u) => (
                   <div
                     key={u.id}
-                    className="p-4 rounded-2xl bg-[var(--color-bg)] border border-[var(--color-border)] flex items-center justify-between gap-4"
+                    className="p-4 rounded-2xl bg-[var(--bg-page)] border border-[var(--border-subtle)] flex items-center justify-between gap-4"
                   >
                     <div className="flex items-center space-x-3">
                       <img
@@ -186,9 +186,9 @@ export const SplitConfigurationView: React.FC<SplitConfigurationViewProps> = ({ 
                         className="w-10 h-10 rounded-xl object-cover"
                       />
                       <div>
-                        <h4 className="font-bold text-xs text-white">{u.name}</h4>
-                        <p className="text-[10px] text-slate-400">{u.title}</p>
-                        <p className="text-[10px] text-[var(--color-text-primary)] font-semibold mt-0.5">
+                        <h4 className="font-bold text-xs text-[var(--text-heading)]">{u.name}</h4>
+                        <p className="text-[10px] text-[var(--text-muted)]">{u.title}</p>
+                        <p className="text-[10px] text-[var(--text-heading)] font-semibold mt-0.5">
                           Override: {u.splitOverride?.managementPct || mgmtPct}% Mgmt / {u.splitOverride?.leaderPct || ldrPct}% Leader / {u.splitOverride?.freelancerPct || flPct}% Talent
                         </p>
                       </div>
@@ -197,13 +197,13 @@ export const SplitConfigurationView: React.FC<SplitConfigurationViewProps> = ({ 
                     <div className="flex items-center space-x-2">
                       <button
                         onClick={() => onSelectUser(u)}
-                        className="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-[11px] font-bold text-white border border-white/10"
+                        className="px-3 py-1.5 rounded-lg bg-[var(--bg-subtle)] hover:bg-[var(--bg-subtle)] text-[11px] font-bold text-[var(--text-heading)] border border-[var(--border-subtle)]"
                       >
                         Edit
                       </button>
                       <button
                         onClick={() => removeOverride(u.id)}
-                        className="p-1.5 rounded-lg hover:bg-rose-500/20 text-slate-400 hover:text-rose-400"
+                        className="p-1.5 rounded-lg hover:bg-rose-500/20 text-[var(--text-muted)] hover:text-rose-400"
                         title="Reset to Global Default"
                       >
                         <RefreshCw className="w-3.5 h-3.5" />

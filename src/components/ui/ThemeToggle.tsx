@@ -27,10 +27,10 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({ className = '' }) => {
       tabIndex={0}
       onClick={toggleTheme}
       onKeyDown={handleKeyDown}
-      className={`relative inline-flex items-center h-9 w-16 p-1 rounded-full border transition-colors cursor-pointer select-none focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)] ${
+      className={`relative inline-flex items-center h-9 w-16 p-1 rounded-full border transition-colors cursor-pointer select-none focus:outline-none focus:ring-2 focus:ring-[var(--brand-teal)] ${
         isDark
-          ? 'bg-[var(--color-surface)] border-[var(--color-border)]'
-          : 'bg-[#E1E5F2] border-[var(--color-border)]'
+          ? 'bg-[var(--bg-surface)] border-[var(--border-subtle)]'
+          : 'bg-[#E1E5F2] border-[var(--border-subtle)]'
       } ${className}`}
     >
       {/* Background Subtle Indicators */}

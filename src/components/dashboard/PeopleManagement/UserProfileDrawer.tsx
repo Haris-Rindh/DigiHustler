@@ -164,7 +164,7 @@ export const UserProfileDrawer: React.FC<UserProfileDrawerProps> = ({ user, onCl
         return <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-purple-500/20 text-purple-300 border border-purple-500/30">Pending Onboarding</span>;
       case 'inactive':
       default:
-        return <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-slate-500/20 text-slate-300 border border-slate-500/30">Inactive</span>;
+        return <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-slate-500/20 text-[var(--text-body)] border border-slate-500/30">Inactive</span>;
     }
   };
 
@@ -176,13 +176,13 @@ export const UserProfileDrawer: React.FC<UserProfileDrawerProps> = ({ user, onCl
           animate={{ x: 0 }}
           exit={{ x: '100%' }}
           transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-          className="relative w-full max-w-2xl bg-[var(--color-bg)] border-l border-[var(--color-border)] h-full flex flex-col shadow-2xl overflow-hidden"
+          className="relative w-full max-w-2xl bg-[var(--bg-page)] border-l border-[var(--border-subtle)] h-full flex flex-col shadow-2xl overflow-hidden"
         >
           {/* Header Banner */}
-          <div className="p-6 border-b border-[var(--color-border)] bg-[var(--color-surface)] relative flex-shrink-0">
+          <div className="p-6 border-b border-[var(--border-subtle)] bg-[var(--bg-surface)] relative flex-shrink-0">
             <button
               onClick={onClose}
-              className="absolute top-5 right-5 p-2 rounded-xl text-slate-400 hover:text-white hover:bg-white/10 transition-colors"
+              className="absolute top-5 right-5 p-2 rounded-xl text-[var(--text-muted)] hover:text-[var(--text-heading)] hover:bg-[var(--bg-subtle)] transition-colors"
             >
               <X className="w-5 h-5" />
             </button>
@@ -191,18 +191,18 @@ export const UserProfileDrawer: React.FC<UserProfileDrawerProps> = ({ user, onCl
               <img
                 src={user.avatarUrl}
                 alt={user.name}
-                className="w-16 h-16 rounded-2xl object-cover ring-2 ring-[var(--color-accent)] shadow-lg flex-shrink-0"
+                className="w-16 h-16 rounded-2xl object-cover ring-2 ring-[var(--brand-teal)] shadow-lg flex-shrink-0"
               />
               <div className="flex-1 pr-8">
                 <div className="flex items-center space-x-2 mb-1">
-                  <span className="text-[10px] uppercase font-extrabold px-2 py-0.5 rounded bg-[var(--color-accent-fill)]/20 text-[var(--color-text-primary)] border border-[var(--color-accent)]/40">
+                  <span className="text-[10px] uppercase font-extrabold px-2 py-0.5 rounded bg-[var(--brand-teal)]/20 text-[var(--text-heading)] border border-[var(--brand-teal)]/40">
                     {user.role.replace('_', ' ')}
                   </span>
                   {getStatusBadge(user.status)}
                 </div>
-                <h2 className="font-display font-extrabold text-2xl text-white">{user.name}</h2>
-                <p className="text-xs text-slate-300 font-medium">{user.title}</p>
-                <div className="flex items-center space-x-4 text-[11px] text-slate-400 mt-2">
+                <h2 className="font-display font-extrabold text-2xl text-[var(--text-heading)]">{user.name}</h2>
+                <p className="text-xs text-[var(--text-body)] font-medium">{user.title}</p>
+                <div className="flex items-center space-x-4 text-[11px] text-[var(--text-muted)] mt-2">
                   <span className="flex items-center gap-1">
                     <Calendar className="w-3.5 h-3.5" />
                     <span>Joined: {user.joinedAt || '2024-06-10'}</span>
@@ -217,13 +217,13 @@ export const UserProfileDrawer: React.FC<UserProfileDrawerProps> = ({ user, onCl
 
             {/* Quick Action Bar for Management */}
             {isManagement && (
-              <div className="flex flex-wrap items-center gap-2 mt-5 pt-4 border-t border-[var(--color-border)]/60">
+              <div className="flex flex-wrap items-center gap-2 mt-5 pt-4 border-t border-[var(--border-subtle)]/60">
                 <button
                   onClick={() => {
                     setNewStatus(user.status);
                     setShowStatusModal(true);
                   }}
-                  className="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-xs font-bold text-slate-200 border border-white/10 transition-colors"
+                  className="px-3 py-1.5 rounded-lg bg-[var(--bg-subtle)] hover:bg-[var(--bg-subtle)] text-xs font-bold text-[var(--text-body)] border border-[var(--border-subtle)] transition-colors"
                 >
                   Change Status
                 </button>
@@ -233,13 +233,13 @@ export const UserProfileDrawer: React.FC<UserProfileDrawerProps> = ({ user, onCl
                     setNewGroupId(user.groupId || 'tech');
                     setShowRoleConfirm(true);
                   }}
-                  className="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-xs font-bold text-slate-200 border border-white/10 transition-colors"
+                  className="px-3 py-1.5 rounded-lg bg-[var(--bg-subtle)] hover:bg-[var(--bg-subtle)] text-xs font-bold text-[var(--text-body)] border border-[var(--border-subtle)] transition-colors"
                 >
                   Promote / Move Squad
                 </button>
                 <button
                   onClick={startEdit}
-                  className="px-3 py-1.5 rounded-lg bg-[var(--color-accent-fill)] hover:bg-[var(--color-accent-hover)] text-xs font-bold text-white shadow-sm transition-colors"
+                  className="px-3 py-1.5 rounded-lg bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-xs font-bold text-white shadow-sm transition-colors"
                 >
                   Edit Profile
                 </button>
@@ -248,7 +248,7 @@ export const UserProfileDrawer: React.FC<UserProfileDrawerProps> = ({ user, onCl
           </div>
 
           {/* Navigation Tabs */}
-          <div className="flex border-b border-[var(--color-border)] px-6 bg-[var(--color-surface)] overflow-x-auto scrollbar-none flex-shrink-0">
+          <div className="flex border-b border-[var(--border-subtle)] px-6 bg-[var(--bg-surface)] overflow-x-auto scrollbar-none flex-shrink-0">
             {[
               { id: 'overview', label: 'Overview' },
               { id: 'workload', label: `Workload (${userProjects.length})` },
@@ -261,8 +261,8 @@ export const UserProfileDrawer: React.FC<UserProfileDrawerProps> = ({ user, onCl
                 onClick={() => setActiveTab(t.id as any)}
                 className={`py-3 px-3 text-xs font-bold whitespace-nowrap transition-colors border-b-2 ${
                   activeTab === t.id
-                    ? 'text-[var(--color-text-primary)] border-[var(--color-accent)]'
-                    : 'text-slate-400 border-transparent hover:text-slate-200'
+                    ? 'text-[var(--text-heading)] border-[var(--brand-teal)]'
+                    : 'text-[var(--text-muted)] border-transparent hover:text-[var(--text-body)]'
                 }`}
               >
                 {t.label}
@@ -277,63 +277,63 @@ export const UserProfileDrawer: React.FC<UserProfileDrawerProps> = ({ user, onCl
             {activeTab === 'overview' && (
               <div className="space-y-6">
                 {isEditing ? (
-                  <div className="space-y-4 bg-[var(--color-surface)] p-5 rounded-2xl border border-[var(--color-border)]">
-                    <h4 className="text-xs font-bold text-white uppercase tracking-wider">Edit Profile Details</h4>
+                  <div className="space-y-4 bg-[var(--bg-surface)] p-5 rounded-2xl border border-[var(--border-subtle)]">
+                    <h4 className="text-xs font-bold text-[var(--text-heading)] uppercase tracking-wider">Edit Profile Details</h4>
                     <div>
-                      <label className="block text-[11px] text-slate-400 mb-1">Job Title</label>
+                      <label className="block text-[11px] text-[var(--text-muted)] mb-1">Job Title</label>
                       <input
                         type="text"
                         value={editTitle}
                         onChange={(e) => setEditTitle(e.target.value)}
-                        className="w-full px-3 py-2 rounded-xl bg-[var(--color-bg)] border border-[var(--color-border)] text-white text-xs"
+                        className="w-full px-3 py-2 rounded-xl bg-[var(--bg-page)] border border-[var(--border-subtle)] text-[var(--text-heading)] text-xs"
                       />
                     </div>
                     <div>
-                      <label className="block text-[11px] text-slate-400 mb-1">Hourly Rate ($/hr)</label>
+                      <label className="block text-[11px] text-[var(--text-muted)] mb-1">Hourly Rate ($/hr)</label>
                       <input
                         type="number"
                         value={editHourlyRate}
                         onChange={(e) => setEditHourlyRate(Number(e.target.value))}
-                        className="w-full px-3 py-2 rounded-xl bg-[var(--color-bg)] border border-[var(--color-border)] text-white text-xs"
+                        className="w-full px-3 py-2 rounded-xl bg-[var(--bg-page)] border border-[var(--border-subtle)] text-[var(--text-heading)] text-xs"
                       />
                     </div>
                     <div>
-                      <label className="block text-[11px] text-slate-400 mb-1">Phone / WhatsApp</label>
+                      <label className="block text-[11px] text-[var(--text-muted)] mb-1">Phone / WhatsApp</label>
                       <input
                         type="text"
                         value={editPhone}
                         onChange={(e) => setEditPhone(e.target.value)}
-                        className="w-full px-3 py-2 rounded-xl bg-[var(--color-bg)] border border-[var(--color-border)] text-white text-xs"
+                        className="w-full px-3 py-2 rounded-xl bg-[var(--bg-page)] border border-[var(--border-subtle)] text-[var(--text-heading)] text-xs"
                       />
                     </div>
                     <div>
-                      <label className="block text-[11px] text-slate-400 mb-1">Skills & Specialties (comma separated)</label>
+                      <label className="block text-[11px] text-[var(--text-muted)] mb-1">Skills & Specialties (comma separated)</label>
                       <input
                         type="text"
                         value={editSpecialties}
                         onChange={(e) => setEditSpecialties(e.target.value)}
-                        className="w-full px-3 py-2 rounded-xl bg-[var(--color-bg)] border border-[var(--color-border)] text-white text-xs"
+                        className="w-full px-3 py-2 rounded-xl bg-[var(--bg-page)] border border-[var(--border-subtle)] text-[var(--text-heading)] text-xs"
                       />
                     </div>
                     <div>
-                      <label className="block text-[11px] text-slate-400 mb-1">Bio</label>
+                      <label className="block text-[11px] text-[var(--text-muted)] mb-1">Bio</label>
                       <textarea
                         rows={3}
                         value={editBio}
                         onChange={(e) => setEditBio(e.target.value)}
-                        className="w-full px-3 py-2 rounded-xl bg-[var(--color-bg)] border border-[var(--color-border)] text-white text-xs"
+                        className="w-full px-3 py-2 rounded-xl bg-[var(--bg-page)] border border-[var(--border-subtle)] text-[var(--text-heading)] text-xs"
                       />
                     </div>
                     <div className="flex justify-end space-x-2 pt-2">
                       <button
                         onClick={() => setIsEditing(false)}
-                        className="px-3 py-1.5 rounded-lg border border-[var(--color-border)] text-xs text-slate-300"
+                        className="px-3 py-1.5 rounded-lg border border-[var(--border-subtle)] text-xs text-[var(--text-body)]"
                       >
                         Cancel
                       </button>
                       <button
                         onClick={saveEdit}
-                        className="px-4 py-1.5 rounded-lg bg-[var(--color-accent-fill)] text-white font-bold text-xs"
+                        className="px-4 py-1.5 rounded-lg bg-[var(--brand-teal)] text-white font-bold text-xs"
                       >
                         Save Changes
                       </button>
@@ -343,20 +343,20 @@ export const UserProfileDrawer: React.FC<UserProfileDrawerProps> = ({ user, onCl
                   <>
                     {/* Performance Stat Strip */}
                     <div className="grid grid-cols-3 gap-3">
-                      <div className="p-4 rounded-2xl bg-[var(--color-surface)] border border-[var(--color-border)] text-center">
-                        <span className="text-[10px] text-slate-400 uppercase font-bold">Total Earned</span>
-                        <p className="font-display font-extrabold text-lg text-[var(--color-text-primary)] mt-0.5">
+                      <div className="p-4 rounded-2xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] text-center">
+                        <span className="text-[10px] text-[var(--text-muted)] uppercase font-bold">Total Earned</span>
+                        <p className="font-display font-extrabold text-lg text-[var(--text-heading)] mt-0.5">
                           ${totalEarned.toLocaleString()}
                         </p>
                       </div>
-                      <div className="p-4 rounded-2xl bg-[var(--color-surface)] border border-[var(--color-border)] text-center">
-                        <span className="text-[10px] text-slate-400 uppercase font-bold">On-Time %</span>
+                      <div className="p-4 rounded-2xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] text-center">
+                        <span className="text-[10px] text-[var(--text-muted)] uppercase font-bold">On-Time %</span>
                         <p className="font-display font-extrabold text-lg text-emerald-400 mt-0.5">
                           {user.onTimeDeliveryPct || 98}%
                         </p>
                       </div>
-                      <div className="p-4 rounded-2xl bg-[var(--color-surface)] border border-[var(--color-border)] text-center">
-                        <span className="text-[10px] text-slate-400 uppercase font-bold">Projects</span>
+                      <div className="p-4 rounded-2xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] text-center">
+                        <span className="text-[10px] text-[var(--text-muted)] uppercase font-bold">Projects</span>
                         <p className="font-display font-extrabold text-lg text-purple-400 mt-0.5">
                           {user.completedProjectsCount}
                         </p>
@@ -364,26 +364,26 @@ export const UserProfileDrawer: React.FC<UserProfileDrawerProps> = ({ user, onCl
                     </div>
 
                     {/* Contact & Verification info */}
-                    <div className="p-5 rounded-2xl bg-[var(--color-surface)] border border-[var(--color-border)] space-y-3 text-xs">
-                      <h4 className="font-bold text-white flex items-center gap-1.5">
-                        <Shield className="w-4 h-4 text-[var(--color-accent)]" />
+                    <div className="p-5 rounded-2xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] space-y-3 text-xs">
+                      <h4 className="font-bold text-[var(--text-heading)] flex items-center gap-1.5">
+                        <Shield className="w-4 h-4 text-[var(--brand-teal)]" />
                         <span>Identity & Credentials</span>
                       </h4>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-slate-300">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-[var(--text-body)]">
                         <div>
-                          <span className="text-slate-500 block">Email Address:</span>
-                          <span className="font-semibold text-white">{user.email}</span>
+                          <span className="text-[var(--text-dim)] block">Email Address:</span>
+                          <span className="font-semibold text-[var(--text-heading)]">{user.email}</span>
                         </div>
                         <div>
-                          <span className="text-slate-500 block">Phone / WhatsApp:</span>
-                          <span className="font-semibold text-white">{user.phone || '+92 300 0000000'}</span>
+                          <span className="text-[var(--text-dim)] block">Phone / WhatsApp:</span>
+                          <span className="font-semibold text-[var(--text-heading)]">{user.phone || '+92 300 0000000'}</span>
                         </div>
                         <div>
-                          <span className="text-slate-500 block">Digiskill Certificate:</span>
-                          <span className="font-semibold text-[var(--color-text-primary)]">{user.digiskillBatch || 'Verified Alumnus'}</span>
+                          <span className="text-[var(--text-dim)] block">Digiskill Certificate:</span>
+                          <span className="font-semibold text-[var(--text-heading)]">{user.digiskillBatch || 'Verified Alumnus'}</span>
                         </div>
                         <div>
-                          <span className="text-slate-500 block">Hourly Rate:</span>
+                          <span className="text-[var(--text-dim)] block">Hourly Rate:</span>
                           <span className="font-semibold text-emerald-400">${user.hourlyRate || 30}/hr</span>
                         </div>
                       </div>
@@ -391,23 +391,23 @@ export const UserProfileDrawer: React.FC<UserProfileDrawerProps> = ({ user, onCl
 
                     {/* Bio */}
                     {user.bio && (
-                      <div className="p-5 rounded-2xl bg-[var(--color-surface)] border border-[var(--color-border)] text-xs">
-                        <h4 className="font-bold text-white mb-2">Professional Bio</h4>
-                        <p className="text-slate-300 leading-relaxed">{user.bio}</p>
+                      <div className="p-5 rounded-2xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] text-xs">
+                        <h4 className="font-bold text-[var(--text-heading)] mb-2">Professional Bio</h4>
+                        <p className="text-[var(--text-body)] leading-relaxed">{user.bio}</p>
                       </div>
                     )}
 
                     {/* Skills Tags */}
-                    <div className="p-5 rounded-2xl bg-[var(--color-surface)] border border-[var(--color-border)]">
-                      <h4 className="text-xs font-bold text-white mb-3 flex items-center gap-1.5">
-                        <Tag className="w-4 h-4 text-[var(--color-accent)]" />
+                    <div className="p-5 rounded-2xl bg-[var(--bg-surface)] border border-[var(--border-subtle)]">
+                      <h4 className="text-xs font-bold text-[var(--text-heading)] mb-3 flex items-center gap-1.5">
+                        <Tag className="w-4 h-4 text-[var(--brand-teal)]" />
                         <span>Verified Digiskill Skillsets</span>
                       </h4>
                       <div className="flex flex-wrap gap-2">
                         {user.specialties.map((spec) => (
                           <span
                             key={spec}
-                            className="px-2.5 py-1 rounded-lg bg-[var(--color-bg)] text-slate-200 border border-[var(--color-border)] text-xs font-semibold"
+                            className="px-2.5 py-1 rounded-lg bg-[var(--bg-page)] text-[var(--text-body)] border border-[var(--border-subtle)] text-xs font-semibold"
                           >
                             {spec}
                           </span>
@@ -423,38 +423,38 @@ export const UserProfileDrawer: React.FC<UserProfileDrawerProps> = ({ user, onCl
             {activeTab === 'workload' && (
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <h4 className="text-xs font-bold text-white uppercase tracking-wider">
+                  <h4 className="text-xs font-bold text-[var(--text-heading)] uppercase tracking-wider">
                     Assigned Projects & Deliverables
                   </h4>
-                  <Link to="/dashboard" className="text-xs font-bold text-[var(--color-text-primary)] hover:underline flex items-center gap-1">
+                  <Link to="/dashboard" className="text-xs font-bold text-[var(--text-heading)] hover:underline flex items-center gap-1">
                     <span>Open Kanban Board</span>
                     <ExternalLink className="w-3 h-3" />
                   </Link>
                 </div>
 
                 {userProjects.length === 0 ? (
-                  <div className="p-8 text-center rounded-2xl bg-[var(--color-surface)] border border-[var(--color-border)] text-slate-400 text-xs">
+                  <div className="p-8 text-center rounded-2xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] text-[var(--text-muted)] text-xs">
                     No active kanban projects currently assigned to this member.
                   </div>
                 ) : (
                   userProjects.map((p) => (
                     <div
                       key={p.id}
-                      className="p-4 rounded-2xl bg-[var(--color-surface)] border border-[var(--color-border)] flex items-center justify-between gap-4"
+                      className="p-4 rounded-2xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] flex items-center justify-between gap-4"
                     >
                       <div>
                         <div className="flex items-center space-x-2">
                           <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-cyan-500/20 text-cyan-300 uppercase">
                             {p.status.replace('_', ' ')}
                           </span>
-                          <span className="text-xs text-slate-400 font-medium">Net: ${p.netRevenue.toLocaleString()}</span>
+                          <span className="text-xs text-[var(--text-muted)] font-medium">Net: ${p.netRevenue.toLocaleString()}</span>
                         </div>
-                        <h5 className="font-bold text-sm text-white mt-1">{p.title}</h5>
-                        <p className="text-xs text-slate-400">Client: {p.clientName}</p>
+                        <h5 className="font-bold text-sm text-[var(--text-heading)] mt-1">{p.title}</h5>
+                        <p className="text-xs text-[var(--text-muted)]">Client: {p.clientName}</p>
                       </div>
                       <Link
                         to="/dashboard"
-                        className="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-xs font-bold text-slate-200 border border-white/10 transition-colors"
+                        className="px-3 py-1.5 rounded-lg bg-[var(--bg-subtle)] hover:bg-[var(--bg-subtle)] text-xs font-bold text-[var(--text-body)] border border-[var(--border-subtle)] transition-colors"
                       >
                         View Project
                       </Link>
@@ -467,14 +467,14 @@ export const UserProfileDrawer: React.FC<UserProfileDrawerProps> = ({ user, onCl
             {/* ── TAB 3: FINANCIALS & SPLITS ── */}
             {activeTab === 'financials' && (
               <div className="space-y-6">
-                <form onSubmit={handleSaveSplitOverride} className="p-5 rounded-2xl bg-[var(--color-surface)] border border-[var(--color-border)] space-y-4">
+                <form onSubmit={handleSaveSplitOverride} className="p-5 rounded-2xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] space-y-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <h4 className="font-bold text-sm text-white flex items-center gap-2">
-                        <DollarSign className="w-4 h-4 text-[var(--color-accent)]" />
+                      <h4 className="font-bold text-sm text-[var(--text-heading)] flex items-center gap-2">
+                        <DollarSign className="w-4 h-4 text-[var(--brand-teal)]" />
                         <span>Individual Split Override Configuration</span>
                       </h4>
-                      <p className="text-xs text-slate-400 mt-0.5">
+                      <p className="text-xs text-[var(--text-muted)] mt-0.5">
                         Customize compensation splits for this individual rather than applying global defaults.
                       </p>
                     </div>
@@ -486,7 +486,7 @@ export const UserProfileDrawer: React.FC<UserProfileDrawerProps> = ({ user, onCl
                           onChange={(e) => setHasSplitOverride(e.target.checked)}
                           className="sr-only peer"
                         />
-                        <div className="w-9 h-5 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[var(--color-accent-fill)]"></div>
+                        <div className="w-9 h-5 bg-[var(--bg-subtle)] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[var(--brand-teal)]"></div>
                       </label>
                     )}
                   </div>
@@ -494,30 +494,30 @@ export const UserProfileDrawer: React.FC<UserProfileDrawerProps> = ({ user, onCl
                   {hasSplitOverride && isManagement && (
                     <div className="grid grid-cols-3 gap-3 pt-2 text-center text-xs">
                       <div>
-                        <label className="block text-slate-400 mb-1">Management Cut %</label>
+                        <label className="block text-[var(--text-muted)] mb-1">Management Cut %</label>
                         <input
                           type="number"
                           value={overrideMgmt}
                           onChange={(e) => setOverrideMgmt(Number(e.target.value))}
-                          className="w-full text-center py-1.5 rounded-lg bg-[var(--color-bg)] border border-[var(--color-border)] text-white"
+                          className="w-full text-center py-1.5 rounded-lg bg-[var(--bg-page)] border border-[var(--border-subtle)] text-[var(--text-heading)]"
                         />
                       </div>
                       <div>
-                        <label className="block text-slate-400 mb-1">Leader Cut %</label>
+                        <label className="block text-[var(--text-muted)] mb-1">Leader Cut %</label>
                         <input
                           type="number"
                           value={overrideLdr}
                           onChange={(e) => setOverrideLdr(Number(e.target.value))}
-                          className="w-full text-center py-1.5 rounded-lg bg-[var(--color-bg)] border border-[var(--color-border)] text-white"
+                          className="w-full text-center py-1.5 rounded-lg bg-[var(--bg-page)] border border-[var(--border-subtle)] text-[var(--text-heading)]"
                         />
                       </div>
                       <div>
-                        <label className="block text-slate-400 mb-1">Freelancer Cut %</label>
+                        <label className="block text-[var(--text-muted)] mb-1">Freelancer Cut %</label>
                         <input
                           type="number"
                           value={overrideFl}
                           onChange={(e) => setOverrideFl(Number(e.target.value))}
-                          className="w-full text-center py-1.5 rounded-lg bg-[var(--color-bg)] border border-[var(--color-border)] text-white"
+                          className="w-full text-center py-1.5 rounded-lg bg-[var(--bg-page)] border border-[var(--border-subtle)] text-[var(--text-heading)]"
                         />
                       </div>
                     </div>
@@ -527,7 +527,7 @@ export const UserProfileDrawer: React.FC<UserProfileDrawerProps> = ({ user, onCl
                     <div className="flex justify-end">
                       <button
                         type="submit"
-                        className="px-4 py-2 rounded-xl bg-[var(--color-accent-fill)] hover:bg-[var(--color-accent-hover)] text-xs font-bold text-white transition-colors"
+                        className="px-4 py-2 rounded-xl bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-xs font-bold text-white transition-colors"
                       >
                         Save Split Configuration
                       </button>
@@ -538,32 +538,32 @@ export const UserProfileDrawer: React.FC<UserProfileDrawerProps> = ({ user, onCl
                 {/* Ledger Payout Records */}
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <h4 className="text-xs font-bold text-white uppercase tracking-wider">
+                    <h4 className="text-xs font-bold text-[var(--text-heading)] uppercase tracking-wider">
                       Ledger Payout History ({userPayouts.length})
                     </h4>
-                    <Link to="/ledger" className="text-xs font-bold text-[var(--color-text-primary)] hover:underline flex items-center gap-1">
+                    <Link to="/ledger" className="text-xs font-bold text-[var(--text-heading)] hover:underline flex items-center gap-1">
                       <span>Open Platform Ledger</span>
                       <ExternalLink className="w-3 h-3" />
                     </Link>
                   </div>
 
                   {userPayouts.length === 0 ? (
-                    <div className="p-6 text-center rounded-2xl bg-[var(--color-surface)] border border-[var(--color-border)] text-slate-400 text-xs">
+                    <div className="p-6 text-center rounded-2xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] text-[var(--text-muted)] text-xs">
                       No disbursed payouts recorded in ledger yet.
                     </div>
                   ) : (
                     userPayouts.map((payout) => (
                       <div
                         key={payout.id}
-                        className="p-4 rounded-2xl bg-[var(--color-surface)] border border-[var(--color-border)] flex items-center justify-between"
+                        className="p-4 rounded-2xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] flex items-center justify-between"
                       >
                         <div>
-                          <p className="text-xs font-bold text-white">{payout.projectTitle}</p>
-                          <p className="text-[11px] text-slate-400">{payout.roleDescription}</p>
+                          <p className="text-xs font-bold text-[var(--text-heading)]">{payout.projectTitle}</p>
+                          <p className="text-[11px] text-[var(--text-muted)]">{payout.roleDescription}</p>
                         </div>
                         <div className="text-right">
                           <p className="text-sm font-extrabold text-emerald-400">+${payout.amount.toLocaleString()}</p>
-                          <p className="text-[10px] text-slate-500">{new Date(payout.paidAt).toLocaleDateString()}</p>
+                          <p className="text-[10px] text-[var(--text-dim)]">{new Date(payout.paidAt).toLocaleDateString()}</p>
                         </div>
                       </div>
                     ))
@@ -575,28 +575,28 @@ export const UserProfileDrawer: React.FC<UserProfileDrawerProps> = ({ user, onCl
             {/* ── TAB 4: STATUS & AUDIT HISTORY ── */}
             {activeTab === 'history' && (
               <div className="space-y-4">
-                <h4 className="text-xs font-bold text-white uppercase tracking-wider">
+                <h4 className="text-xs font-bold text-[var(--text-heading)] uppercase tracking-wider">
                   Audit Trail & Status Transitions
                 </h4>
 
                 {(!user.statusHistory || user.statusHistory.length === 0) ? (
-                  <div className="p-6 text-center rounded-2xl bg-[var(--color-surface)] border border-[var(--color-border)] text-slate-400 text-xs">
+                  <div className="p-6 text-center rounded-2xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] text-[var(--text-muted)] text-xs">
                     No status change events logged for this record.
                   </div>
                 ) : (
-                  <div className="relative border-l-2 border-[var(--color-border)] ml-3 pl-4 space-y-4">
+                  <div className="relative border-l-2 border-[var(--border-subtle)] ml-3 pl-4 space-y-4">
                     {user.statusHistory.map((item, idx) => (
                       <div key={idx} className="relative">
-                        <div className="absolute -left-[23px] top-1 w-3 h-3 rounded-full bg-[var(--color-accent-fill)] border-2 border-[#071e26]" />
-                        <div className="p-3.5 rounded-xl bg-[var(--color-surface)] border border-[var(--color-border)] text-xs">
-                          <div className="flex items-center justify-between text-[11px] text-slate-400 mb-1">
-                            <span className="font-bold text-white">
-                              {item.from.replace('_', ' ')} → <span className="text-[var(--color-text-primary)]">{item.to.replace('_', ' ')}</span>
+                        <div className="absolute -left-[23px] top-1 w-3 h-3 rounded-full bg-[var(--brand-teal)] border-2 border-[#071e26]" />
+                        <div className="p-3.5 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] text-xs">
+                          <div className="flex items-center justify-between text-[11px] text-[var(--text-muted)] mb-1">
+                            <span className="font-bold text-[var(--text-heading)]">
+                              {item.from.replace('_', ' ')} → <span className="text-[var(--text-heading)]">{item.to.replace('_', ' ')}</span>
                             </span>
                             <span>{new Date(item.timestamp).toLocaleString()}</span>
                           </div>
-                          <p className="text-slate-300 font-medium">"{item.reason}"</p>
-                          <p className="text-[10px] text-slate-500 mt-1">Authorized by: {item.changedBy}</p>
+                          <p className="text-[var(--text-body)] font-medium">"{item.reason}"</p>
+                          <p className="text-[10px] text-[var(--text-dim)] mt-1">Authorized by: {item.changedBy}</p>
                         </div>
                       </div>
                     ))}
@@ -608,7 +608,7 @@ export const UserProfileDrawer: React.FC<UserProfileDrawerProps> = ({ user, onCl
             {/* ── TAB 5: ADMIN NOTES ── */}
             {activeTab === 'notes' && (
               <div className="space-y-4">
-                <h4 className="text-xs font-bold text-white uppercase tracking-wider">
+                <h4 className="text-xs font-bold text-[var(--text-heading)] uppercase tracking-wider">
                   Internal Management Notes
                 </h4>
 
@@ -619,11 +619,11 @@ export const UserProfileDrawer: React.FC<UserProfileDrawerProps> = ({ user, onCl
                       value={noteText}
                       onChange={(e) => setNoteText(e.target.value)}
                       placeholder="Add an internal context note or warning..."
-                      className="flex-1 px-4 py-2.5 rounded-xl bg-[var(--color-surface)] border border-[var(--color-border)] text-white text-xs focus:outline-none focus:border-[var(--color-accent)]"
+                      className="flex-1 px-4 py-2.5 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] text-[var(--text-heading)] text-xs focus:outline-none focus:border-[var(--brand-teal)]"
                     />
                     <button
                       type="submit"
-                      className="px-4 py-2.5 rounded-xl bg-[var(--color-accent-fill)] hover:bg-[var(--color-accent-hover)] text-white font-bold text-xs"
+                      className="px-4 py-2.5 rounded-xl bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-white font-bold text-xs"
                     >
                       Post Note
                     </button>
@@ -631,28 +631,28 @@ export const UserProfileDrawer: React.FC<UserProfileDrawerProps> = ({ user, onCl
                 )}
 
                 {(!user.notes || user.notes.length === 0) ? (
-                  <div className="p-6 text-center rounded-2xl bg-[var(--color-surface)] border border-[var(--color-border)] text-slate-400 text-xs">
+                  <div className="p-6 text-center rounded-2xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] text-[var(--text-muted)] text-xs">
                     No admin notes written yet.
                   </div>
                 ) : (
                   user.notes.map((note) => (
                     <div
                       key={note.id}
-                      className="p-4 rounded-2xl bg-[var(--color-surface)] border border-[var(--color-border)] text-xs flex justify-between items-start gap-3"
+                      className="p-4 rounded-2xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] text-xs flex justify-between items-start gap-3"
                     >
                       <div>
                         <div className="flex items-center space-x-2 mb-1">
-                          <span className="font-bold text-white">{note.authorName}</span>
-                          <span className="text-[10px] text-slate-500">
+                          <span className="font-bold text-[var(--text-heading)]">{note.authorName}</span>
+                          <span className="text-[10px] text-[var(--text-dim)]">
                             {new Date(note.timestamp).toLocaleString()}
                           </span>
                         </div>
-                        <p className="text-slate-300 leading-relaxed">{note.text}</p>
+                        <p className="text-[var(--text-body)] leading-relaxed">{note.text}</p>
                       </div>
                       {isManagement && (
                         <button
                           onClick={() => deleteUserNote(user.id, note.id)}
-                          className="p-1 rounded text-slate-500 hover:text-rose-400"
+                          className="p-1 rounded text-[var(--text-dim)] hover:text-rose-400"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
                         </button>
@@ -672,19 +672,19 @@ export const UserProfileDrawer: React.FC<UserProfileDrawerProps> = ({ user, onCl
             <motion.div
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-6 max-w-md w-full shadow-2xl space-y-4"
+              className="bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-2xl p-6 max-w-md w-full shadow-2xl space-y-4"
             >
-              <h3 className="font-bold text-lg text-white">Transition User Status</h3>
-              <p className="text-xs text-slate-300">
+              <h3 className="font-bold text-lg text-[var(--text-heading)]">Transition User Status</h3>
+              <p className="text-xs text-[var(--text-body)]">
                 Updating status to <strong>{newStatus.toUpperCase()}</strong> requires a recorded justification for the audit trail.
               </p>
 
               <div>
-                <label className="block text-xs font-bold text-slate-400 mb-1">New Status</label>
+                <label className="block text-xs font-bold text-[var(--text-muted)] mb-1">New Status</label>
                 <select
                   value={newStatus}
                   onChange={(e) => setNewStatus(e.target.value as UserStatus)}
-                  className="w-full px-3 py-2 rounded-xl bg-[var(--color-bg)] border border-[var(--color-border)] text-white text-xs"
+                  className="w-full px-3 py-2 rounded-xl bg-[var(--bg-page)] border border-[var(--border-subtle)] text-[var(--text-heading)] text-xs"
                 >
                   <option value="active">Active & Available</option>
                   <option value="on_leave">On Leave</option>
@@ -695,14 +695,14 @@ export const UserProfileDrawer: React.FC<UserProfileDrawerProps> = ({ user, onCl
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-400 mb-1">Audit Reason *</label>
+                <label className="block text-xs font-bold text-[var(--text-muted)] mb-1">Audit Reason *</label>
                 <textarea
                   required
                   rows={3}
                   value={statusReason}
                   onChange={(e) => setStatusReason(e.target.value)}
                   placeholder="e.g. Approved 2-week leave for university exams."
-                  className="w-full px-3 py-2 rounded-xl bg-[var(--color-bg)] border border-[var(--color-border)] text-white text-xs"
+                  className="w-full px-3 py-2 rounded-xl bg-[var(--bg-page)] border border-[var(--border-subtle)] text-[var(--text-heading)] text-xs"
                 />
               </div>
 
@@ -710,14 +710,14 @@ export const UserProfileDrawer: React.FC<UserProfileDrawerProps> = ({ user, onCl
                 <button
                   type="button"
                   onClick={() => setShowStatusModal(false)}
-                  className="px-4 py-2 rounded-xl border border-[var(--color-border)] text-xs text-slate-300"
+                  className="px-4 py-2 rounded-xl border border-[var(--border-subtle)] text-xs text-[var(--text-body)]"
                 >
                   Cancel
                 </button>
                 <button
                   type="button"
                   onClick={handleStatusSubmit}
-                  className="px-5 py-2 rounded-xl bg-[var(--color-accent-fill)] text-white font-bold text-xs"
+                  className="px-5 py-2 rounded-xl bg-[var(--brand-teal)] text-white font-bold text-xs"
                 >
                   Confirm Transition
                 </button>
@@ -732,22 +732,22 @@ export const UserProfileDrawer: React.FC<UserProfileDrawerProps> = ({ user, onCl
             <motion.div
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-6 max-w-md w-full shadow-2xl space-y-4"
+              className="bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-2xl p-6 max-w-md w-full shadow-2xl space-y-4"
             >
               <div className="flex items-center space-x-3 text-amber-400">
                 <AlertTriangle className="w-6 h-6" />
-                <h3 className="font-bold text-lg text-white">Reassign Role & Squad</h3>
+                <h3 className="font-bold text-lg text-[var(--text-heading)]">Reassign Role & Squad</h3>
               </div>
-              <p className="text-xs text-slate-300 leading-relaxed">
+              <p className="text-xs text-[var(--text-body)] leading-relaxed">
                 Promoting or reassigning talent alters their default project management cut and squad reporting hierarchy.
               </p>
 
               <div>
-                <label className="block text-xs font-bold text-slate-400 mb-1">Target Role</label>
+                <label className="block text-xs font-bold text-[var(--text-muted)] mb-1">Target Role</label>
                 <select
                   value={newRole}
                   onChange={(e) => setNewRole(e.target.value as UserRole)}
-                  className="w-full px-3 py-2 rounded-xl bg-[var(--color-bg)] border border-[var(--color-border)] text-white text-xs"
+                  className="w-full px-3 py-2 rounded-xl bg-[var(--bg-page)] border border-[var(--border-subtle)] text-[var(--text-heading)] text-xs"
                 >
                   <option value="freelancer">Freelancer / Specialist</option>
                   <option value="group_leader">Group Leader</option>
@@ -756,11 +756,11 @@ export const UserProfileDrawer: React.FC<UserProfileDrawerProps> = ({ user, onCl
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-400 mb-1">Target Squad</label>
+                <label className="block text-xs font-bold text-[var(--text-muted)] mb-1">Target Squad</label>
                 <select
                   value={newGroupId}
                   onChange={(e) => setNewGroupId(e.target.value as GroupId)}
-                  className="w-full px-3 py-2 rounded-xl bg-[var(--color-bg)] border border-[var(--color-border)] text-white text-xs"
+                  className="w-full px-3 py-2 rounded-xl bg-[var(--bg-page)] border border-[var(--border-subtle)] text-[var(--text-heading)] text-xs"
                 >
                   {groups.map((g) => (
                     <option key={g.id} value={g.id}>
@@ -774,14 +774,14 @@ export const UserProfileDrawer: React.FC<UserProfileDrawerProps> = ({ user, onCl
                 <button
                   type="button"
                   onClick={() => setShowRoleConfirm(false)}
-                  className="px-4 py-2 rounded-xl border border-[var(--color-border)] text-xs text-slate-300"
+                  className="px-4 py-2 rounded-xl border border-[var(--border-subtle)] text-xs text-[var(--text-body)]"
                 >
                   Cancel
                 </button>
                 <button
                   type="button"
                   onClick={handleRoleSquadConfirm}
-                  className="px-5 py-2 rounded-xl bg-[var(--color-accent-fill)] text-white font-bold text-xs"
+                  className="px-5 py-2 rounded-xl bg-[var(--brand-teal)] text-white font-bold text-xs"
                 >
                   Apply Role & Squad
                 </button>

@@ -2,191 +2,206 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ── LOCKED 5-HEX PALETTE & SEMANTIC TOKENS ── */
+/* ── BULLETPROOF THEME SYSTEM (Dark / Light) ── */
 :root,
 html[data-theme="dark"],
 html.dark {
-  /* Base Palette */
-  --color-deep-navy: #022B3A;
-  --color-sea-teal: #1F7A8C;
-  --color-soft-periwinkle: #E1E5F2;
-  --color-cool-mist: #EFF1F5;
-  --color-white: #FFFFFF;
-
-  /* Status Tokens (Muted / In-Family) */
-  --color-status-error: #A85C4A;
+  --bg-page: #022B3A;
+  --bg-surface: #073547;
+  --bg-subtle: #0b4156;
+  --bg-muted: #03212d;
+  --border-subtle: rgba(31, 122, 140, 0.28);
+  --border-hover: rgba(31, 122, 140, 0.65);
+  --border-strong: #1F7A8C;
+  --text-heading: #FFFFFF;
+  --text-body: #D5DEE8;
+  --text-muted: #8EADC0;
+  --text-dim: #5B7B8F;
+  --brand-teal: #1F7A8C;
+  --brand-teal-hover: #165F6D;
+  --brand-teal-text: #FFFFFF;
+  --brand-teal-subtle: rgba(31, 122, 140, 0.22);
+  --color-status-error: #E06D53;
   --color-status-success: #1F7A8C;
-  --color-status-warning: #B08D57;
-
-  /* Semantic Resolved Tokens - Dark Mode */
-  --color-bg: #022B3A;
-  --color-surface: color-mix(in srgb, #022B3A 92%, #FFFFFF);
-  --color-surface-hover: color-mix(in srgb, #022B3A 86%, #FFFFFF);
-  --color-border: rgba(31, 122, 140, 0.22);
-  --color-border-hover: rgba(31, 122, 140, 0.45);
-  --color-border-solid: color-mix(in srgb, #022B3A 75%, #1F7A8C);
-  
-  --color-text-primary: #EFF1F5;
-  --color-text-secondary: rgba(239, 241, 245, 0.70);
-  --color-text-muted: rgba(239, 241, 245, 0.45);
-  
-  --color-accent: #1F7A8C;
-  --color-accent-fill: #1F7A8C;
-  --color-accent-hover: color-mix(in srgb, #1F7A8C 88%, #022B3A);
-  --color-accent-muted: rgba(31, 122, 140, 0.18);
+  --color-status-warning: #D9A84E;
 
   --canvas-particle: #1F7A8C;
   --canvas-line: rgba(225, 229, 242, 0.12);
   --orbit-ring: rgba(31, 122, 140, 0.35);
   --orbit-ring-dashed: rgba(31, 122, 140, 0.22);
 
-  /* Legacy Backward-Compatibility Variables (Points strictly to locked tokens) */
-  --bg-main: var(--color-bg);
-  --bg-secondary: var(--color-surface);
-  --surface-bg: var(--color-surface);
-  --surface-border: var(--color-border);
-  --surface-hover: var(--color-surface-hover);
-  --accent-teal: var(--color-accent);
-  --accent-teal-dark: var(--color-accent-hover);
-  --accent-sky: var(--color-soft-periwinkle);
-  --text-main: var(--color-text-primary);
-  --text-muted: var(--color-text-secondary);
+  /* Legacy Backward Compatibility Mappings */
+  --color-bg: var(--bg-page);
+  --color-surface: var(--bg-surface);
+  --color-surface-hover: var(--bg-subtle);
+  --color-border: var(--border-subtle);
+  --color-border-hover: var(--border-hover);
+  --color-text-primary: var(--text-heading);
+  --color-text-secondary: var(--text-body);
+  --color-text-muted: var(--text-muted);
+  --color-accent: var(--brand-teal);
+  --color-accent-fill: var(--brand-teal);
+  --color-accent-hover: var(--brand-teal-hover);
+  --color-accent-muted: var(--brand-teal-subtle);
+  --color-soft-periwinkle: #E1E5F2;
+  --color-deep-navy: #022B3A;
 
-  /* ── shadcn/ui & Radix Semantic Variable Mapping ── */
-  --background: var(--color-bg);
-  --foreground: var(--color-text-primary);
-  --card: var(--color-surface);
-  --card-foreground: var(--color-text-primary);
-  --popover: var(--color-surface);
-  --popover-foreground: var(--color-text-primary);
-  --primary: var(--color-accent-fill);
-  --primary-foreground: #EFF1F5;
-  --secondary: var(--color-surface-hover);
-  --secondary-foreground: var(--color-text-primary);
-  --muted: var(--color-surface-hover);
-  --muted-foreground: var(--color-text-secondary);
-  --accent: var(--color-accent);
-  --accent-foreground: #EFF1F5;
+  /* shadcn/Radix Mapping */
+  --background: var(--bg-page);
+  --foreground: var(--text-heading);
+  --card: var(--bg-surface);
+  --card-foreground: var(--text-heading);
+  --popover: var(--bg-surface);
+  --popover-foreground: var(--text-heading);
+  --primary: var(--brand-teal);
+  --primary-foreground: #FFFFFF;
+  --secondary: var(--bg-subtle);
+  --secondary-foreground: var(--text-heading);
+  --muted: var(--bg-subtle);
+  --muted-foreground: var(--text-muted);
+  --accent: var(--brand-teal);
+  --accent-foreground: #FFFFFF;
   --destructive: var(--color-status-error);
-  --destructive-foreground: #EFF1F5;
-  --border: var(--color-border);
-  --input: var(--color-border);
-  --ring: var(--color-accent);
+  --destructive-foreground: #FFFFFF;
+  --border: var(--border-subtle);
+  --input: var(--border-subtle);
+  --ring: var(--brand-teal);
   --radius: 0.85rem;
 }
 
 /* ── Light Mode Token Overrides ── */
 html[data-theme="light"],
 html.light {
-  --color-bg: #EFF1F5;
-  --color-surface: #FFFFFF;
-  --color-surface-hover: color-mix(in srgb, #FFFFFF 92%, #E1E5F2);
-  --color-border: #E1E5F2;
-  --color-border-hover: color-mix(in srgb, #E1E5F2 75%, #1F7A8C);
-  --color-border-solid: #E1E5F2;
-
-  --color-text-primary: #022B3A;
-  --color-text-secondary: rgba(2, 43, 58, 0.72);
-  --color-text-muted: rgba(2, 43, 58, 0.48);
-
-  --color-accent: #1F7A8C;
-  --color-accent-fill: color-mix(in srgb, #1F7A8C 88%, #022B3A);
-  --color-accent-hover: color-mix(in srgb, #1F7A8C 78%, #022B3A);
-  --color-accent-muted: rgba(31, 122, 140, 0.12);
+  --bg-page: #EFF3F6;
+  --bg-surface: #FFFFFF;
+  --bg-subtle: #E2EAF0;
+  --bg-muted: #D8E2E8;
+  --border-subtle: #D0DCE5;
+  --border-hover: #1F7A8C;
+  --border-strong: #1F7A8C;
+  --text-heading: #022B3A;
+  --text-body: #163C4A;
+  --text-muted: #4E6E7E;
+  --text-dim: #7A96A6;
+  --brand-teal: #1F7A8C;
+  --brand-teal-hover: #14535F;
+  --brand-teal-text: #FFFFFF;
+  --brand-teal-subtle: rgba(31, 122, 140, 0.12);
+  --color-status-error: #A85C4A;
+  --color-status-success: #1F7A8C;
+  --color-status-warning: #B08D57;
 
   --canvas-particle: #1F7A8C;
   --canvas-line: rgba(31, 122, 140, 0.15);
-  --orbit-ring: rgba(225, 229, 242, 0.95);
+  --orbit-ring: rgba(208, 220, 229, 0.95);
   --orbit-ring-dashed: rgba(31, 122, 140, 0.28);
 
-  /* Legacy Backward-Compatibility Variables */
-  --bg-main: var(--color-bg);
-  --bg-secondary: var(--color-surface);
-  --surface-bg: var(--color-surface);
-  --surface-border: var(--color-border);
-  --surface-hover: var(--color-surface-hover);
-  --accent-teal: var(--color-accent);
-  --accent-teal-dark: var(--color-accent-hover);
-  --accent-sky: var(--color-sea-teal);
-  --text-main: var(--color-text-primary);
-  --text-muted: var(--color-text-secondary);
+  /* Legacy Backward Compatibility Mappings */
+  --color-bg: var(--bg-page);
+  --color-surface: var(--bg-surface);
+  --color-surface-hover: var(--bg-subtle);
+  --color-border: var(--border-subtle);
+  --color-border-hover: var(--border-hover);
+  --color-text-primary: var(--text-heading);
+  --color-text-secondary: var(--text-body);
+  --color-text-muted: var(--text-muted);
+  --color-accent: var(--brand-teal);
+  --color-accent-fill: var(--brand-teal);
+  --color-accent-hover: var(--brand-teal-hover);
+  --color-accent-muted: var(--brand-teal-subtle);
+  --color-soft-periwinkle: #E1E5F2;
+  --color-deep-navy: #022B3A;
 
-  /* shadcn/ui Remapping for Light Mode */
-  --background: var(--color-bg);
-  --foreground: var(--color-text-primary);
-  --card: var(--color-surface);
-  --card-foreground: var(--color-text-primary);
-  --popover: var(--color-surface);
-  --popover-foreground: var(--color-text-primary);
-  --primary: var(--color-accent-fill);
+  /* shadcn/Radix Mapping for Light Mode */
+  --background: var(--bg-page);
+  --foreground: var(--text-heading);
+  --card: var(--bg-surface);
+  --card-foreground: var(--text-heading);
+  --popover: var(--bg-surface);
+  --popover-foreground: var(--text-heading);
+  --primary: var(--brand-teal);
   --primary-foreground: #FFFFFF;
-  --secondary: var(--color-surface-hover);
-  --secondary-foreground: var(--color-text-primary);
-  --muted: var(--color-surface-hover);
-  --muted-foreground: var(--color-text-secondary);
-  --accent: var(--color-accent);
+  --secondary: var(--bg-subtle);
+  --secondary-foreground: var(--text-heading);
+  --muted: var(--bg-subtle);
+  --muted-foreground: var(--text-muted);
+  --accent: var(--brand-teal);
   --accent-foreground: #FFFFFF;
   --destructive: var(--color-status-error);
   --destructive-foreground: #FFFFFF;
-  --border: var(--color-border);
-  --input: var(--color-border);
-  --ring: var(--color-accent);
+  --border: var(--border-subtle);
+  --input: var(--border-subtle);
+  --ring: var(--brand-teal);
 }
 
-/* Base Body Styles with Matte Texture */
+/* Base Body Styles */
 body {
-  background-color: var(--color-bg);
-  color: var(--color-text-primary);
+  background-color: var(--bg-page);
+  color: var(--text-body);
   transition: background-color 0.25s ease, color 0.25s ease;
   overflow-x: hidden;
 }
 
-/* Matte Card Surface Utilities */
+/* Headings auto-inherit heading color */
+h1, h2, h3, h4, h5, h6 {
+  color: var(--text-heading);
+}
+
+/* Universal Card Class */
+.card-surface,
 .matte-card,
 .breeze-card {
-  background-color: var(--color-surface);
-  border: 1px solid var(--color-border);
-  box-shadow: 0 4px 20px rgba(2, 43, 58, 0.12);
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-body);
+  box-shadow: 0 4px 20px rgba(2, 43, 58, 0.08);
   border-radius: 1.25rem;
-  transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, color 0.2s ease;
 }
 
+.card-surface:hover,
 .matte-card:hover,
 .breeze-card-hover:hover {
-  border-color: var(--color-border-hover);
-  box-shadow: 0 8px 30px rgba(2, 43, 58, 0.20);
+  border-color: var(--border-hover);
+  box-shadow: 0 8px 30px rgba(2, 43, 58, 0.16);
 }
 
-/* Primary Button with Darken-On-Hover Rule */
+/* Primary Button */
+.btn-brand-primary,
 .matte-btn-primary,
 .breeze-btn-primary {
-  background-color: var(--color-accent-fill);
-  color: #EFF1F5;
+  background-color: var(--brand-teal);
+  color: #FFFFFF !important;
   font-weight: 700;
+  border-radius: 0.75rem;
   transition: background-color 0.15s ease, transform 0.15s ease;
 }
 
+.btn-brand-primary:hover,
 .matte-btn-primary:hover,
 .breeze-btn-primary:hover {
-  background-color: var(--color-accent-hover);
+  background-color: var(--brand-teal-hover);
   transform: translateY(-1px);
 }
 
-/* Secondary Button with Matte Border */
+/* Secondary Button */
+.btn-brand-secondary,
 .matte-btn-secondary {
-  background-color: transparent;
-  border: 1px solid var(--color-border);
-  color: var(--color-text-primary);
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-heading) !important;
   font-weight: 700;
-  transition: background-color 0.15s ease, border-color 0.15s ease;
+  border-radius: 0.75rem;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
 }
 
+.btn-brand-secondary:hover,
 .matte-btn-secondary:hover {
-  background-color: var(--color-surface-hover);
-  border-color: var(--color-border-hover);
+  background-color: var(--bg-subtle);
+  border-color: var(--border-hover);
 }
 
-/* Safe Area Inset Support for PWA / Notched Devices */
+/* Safe Area Insets for Mobile/PWA */
 .safe-top {
   padding-top: env(safe-area-inset-top, 0px);
 }
@@ -195,23 +210,23 @@ body {
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
-/* Custom Matte Scrollbar */
+/* Custom Scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--color-bg);
+  background: var(--bg-page);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--color-border);
+  background: var(--border-subtle);
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--color-accent);
+  background: var(--brand-teal);
 }
 
 /* Reduced Motion Override */
@@ -224,7 +239,7 @@ body {
   }
 }
 
-/* Print-Friendly Styles */
+/* Print Styles */
 @media print {
   body {
     background: #ffffff !important;

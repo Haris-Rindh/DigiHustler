@@ -6,7 +6,7 @@ import { SEOHead } from '../seo/SEOHead';
 
 export const UnauthorizedPage: React.FC = () => {
   return (
-    <div className="pt-24 pb-20 min-h-[85vh] flex items-center justify-center px-6 lg:px-8 bg-[var(--color-bg)] relative overflow-hidden">
+    <div className="pt-24 pb-20 min-h-[85vh] flex items-center justify-center px-6 lg:px-8 bg-[var(--bg-page)] relative overflow-hidden">
       <SEOHead
         title="401 — Authentication Required"
         description="Please authenticate with your DigiHust credentials to access this internal portal workspace."
@@ -17,16 +17,16 @@ export const UnauthorizedPage: React.FC = () => {
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5, ease: 'easeOut' }}
-          className="inline-flex items-center justify-center w-24 h-24 rounded-3xl bg-[var(--color-surface)] border border-[var(--color-accent)]/40 shadow-2xl mb-8"
+          className="inline-flex items-center justify-center w-24 h-24 rounded-3xl bg-[var(--bg-surface)] border border-[var(--brand-teal)]/40 shadow-2xl mb-8"
         >
-          <KeyRound className="w-12 h-12 text-[var(--color-text-primary)]" />
+          <KeyRound className="w-12 h-12 text-[var(--text-heading)]" />
         </motion.div>
 
         <motion.p
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1, duration: 0.4 }}
-          className="text-xs font-black text-[var(--color-accent)] uppercase tracking-widest mb-3"
+          className="text-xs font-black text-[var(--brand-teal)] uppercase tracking-widest mb-3"
         >
           Error 401 · Credentials Required
         </motion.p>
@@ -44,7 +44,7 @@ export const UnauthorizedPage: React.FC = () => {
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3, duration: 0.4 }}
-          className="text-base sm:text-lg text-slate-300 max-w-lg mx-auto leading-relaxed mb-10"
+          className="text-base sm:text-lg text-[var(--text-body)] max-w-lg mx-auto leading-relaxed mb-10"
         >
           This workspace is protected for DigiHust clients and team members. Please verify your session identity or access the internal portal switcher.
         </motion.p>
@@ -57,14 +57,14 @@ export const UnauthorizedPage: React.FC = () => {
         >
           <Link
             to="/dashboard"
-            className="w-full sm:w-auto flex items-center justify-center space-x-2 px-8 py-4 rounded-xl bg-[var(--color-accent-fill)] hover:bg-[var(--color-accent-hover)] text-white font-bold shadow-lg transition-all"
+            className="w-full sm:w-auto flex items-center justify-center space-x-2 px-8 py-4 rounded-xl bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-white font-bold shadow-lg transition-all"
           >
             <UserCheck className="w-4 h-4" />
             <span>Launch Client Portal</span>
           </Link>
           <Link
             to="/"
-            className="w-full sm:w-auto flex items-center justify-center space-x-2 px-8 py-4 rounded-xl border border-[var(--color-border)] hover:border-[var(--color-accent)] text-slate-200 font-bold hover:bg-[var(--color-accent-fill)]/10 transition-all"
+            className="w-full sm:w-auto flex items-center justify-center space-x-2 px-8 py-4 rounded-xl border border-[var(--border-subtle)] hover:border-[var(--brand-teal)] text-[var(--text-body)] font-bold hover:bg-[var(--brand-teal)]/10 transition-all"
           >
             <span>Explore Public Site</span>
             <ArrowRight className="w-4 h-4" />

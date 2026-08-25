@@ -10,8 +10,8 @@ import { NewLeadModal } from './NewLeadModal';
 const STAGES: { id: PipelineStage; label: string; badgeBg: string; textCol: string }[] = [
   { id: 'new_lead', label: '1. New Lead', badgeBg: 'bg-amber-500/15 border-amber-500/30', textCol: 'text-amber-300' },
   { id: 'under_review', label: '2. Under Review', badgeBg: 'bg-indigo-500/15 border-indigo-500/30', textCol: 'text-indigo-300' },
-  { id: 'assigned', label: '3. Assigned', badgeBg: 'bg-breeze-teal/20 border-breeze-teal/40', textCol: 'text-breeze-sky' },
-  { id: 'in_progress', label: '4. In Progress', badgeBg: 'bg-breeze-sky/15 border-breeze-sky/30', textCol: 'text-breeze-sky' },
+  { id: 'assigned', label: '3. Assigned', badgeBg: 'bg-[var(--brand-teal)]/20 border-[var(--brand-teal)]/40', textCol: 'text-[var(--brand-teal)]' },
+  { id: 'in_progress', label: '4. In Progress', badgeBg: 'bg-breeze-sky/15 border-breeze-sky/30', textCol: 'text-[var(--brand-teal)]' },
   { id: 'completed', label: '5. Completed', badgeBg: 'bg-emerald-500/15 border-emerald-500/30', textCol: 'text-emerald-300' },
   { id: 'paid', label: '6. Paid & Ledgered', badgeBg: 'bg-purple-500/15 border-purple-500/30', textCol: 'text-purple-300' }
 ];
@@ -61,26 +61,26 @@ export const KanbanPipeline: React.FC = () => {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 breeze-card p-6 rounded-2xl">
         <div>
           <div className="flex items-center space-x-2">
-            <span className="text-[10px] font-bold px-2.5 py-0.5 rounded bg-breeze-surface border border-breeze-border text-breeze-sky uppercase tracking-widest">
+            <span className="text-[10px] font-bold px-2.5 py-0.5 rounded bg-[var(--bg-surface)] border border-[var(--border-subtle)] text-[var(--brand-teal)] uppercase tracking-widest">
               Live Pipeline Dashboard
             </span>
-            <span className="text-xs text-slate-400">
-              Role: <strong className="text-white capitalize">{currentUser.role.replace('_', ' ')}</strong> ({currentUser.name})
+            <span className="text-xs text-[var(--text-muted)]">
+              Role: <strong className="text-[var(--text-heading)] capitalize">{currentUser.role.replace('_', ' ')}</strong> ({currentUser.name})
             </span>
           </div>
-          <h1 className="font-display font-extrabold text-3xl text-white mt-1">Leads & Projects Kanban</h1>
-          <p className="text-xs text-slate-400 max-w-2xl mt-1">
+          <h1 className="font-display font-extrabold text-3xl text-[var(--text-heading)] mt-1">Leads & Projects Kanban</h1>
+          <p className="text-xs text-[var(--text-muted)] max-w-2xl mt-1">
             Centralized pipeline routing client leads from Growth & Client Acquisition down to Group Leaders and Freelancers.
           </p>
         </div>
 
         <div className="flex items-center space-x-3">
           {/* Group Filter Pill Select */}
-          <div className="flex items-center space-x-1 bg-breeze-dark p-1 rounded-xl border border-breeze-border text-xs">
-            <Filter className="w-3.5 h-3.5 text-slate-400 ml-2" />
+          <div className="flex items-center space-x-1 bg-[var(--bg-page)] p-1 rounded-xl border border-[var(--border-subtle)] text-xs">
+            <Filter className="w-3.5 h-3.5 text-[var(--text-muted)] ml-2" />
             <button
               onClick={() => setSelectedGroupFilter('all')}
-              className={`px-3 py-1.5 rounded-lg font-semibold transition-all ${selectedGroupFilter === 'all' ? 'bg-breeze-teal text-white font-bold' : 'text-slate-400 hover:text-white'}`}
+              className={`px-3 py-1.5 rounded-lg font-semibold transition-all ${selectedGroupFilter === 'all' ? 'bg-[var(--brand-teal)] text-white font-bold' : 'text-[var(--text-muted)] hover:text-white'}`}
             >
               All Groups
             </button>
@@ -88,7 +88,7 @@ export const KanbanPipeline: React.FC = () => {
               <button
                 key={g.id}
                 onClick={() => setSelectedGroupFilter(g.id)}
-                className={`px-2.5 py-1.5 rounded-lg font-semibold transition-all ${selectedGroupFilter === g.id ? 'bg-breeze-teal text-white font-bold' : 'text-slate-400 hover:text-white'}`}
+                className={`px-2.5 py-1.5 rounded-lg font-semibold transition-all ${selectedGroupFilter === g.id ? 'bg-[var(--brand-teal)] text-white font-bold' : 'text-[var(--text-muted)] hover:text-white'}`}
               >
                 {g.id.toUpperCase()}
               </button>
@@ -97,7 +97,7 @@ export const KanbanPipeline: React.FC = () => {
 
           <button
             onClick={() => setIsNewLeadOpen(true)}
-            className="flex items-center space-x-1.5 px-4 py-2 rounded-xl bg-breeze-teal hover:bg-breeze-teal-hover text-xs font-bold text-white shadow transition-all"
+            className="flex items-center space-x-1.5 px-4 py-2 rounded-xl bg-[var(--brand-teal)] hover:bg-[var(--brand-teal)]-hover text-xs font-bold text-white shadow transition-all"
           >
             <PlusCircle className="w-4 h-4" />
             <span>New Lead</span>
@@ -113,12 +113,12 @@ export const KanbanPipeline: React.FC = () => {
           return (
             <div 
               key={stage.id}
-              className="flex flex-col rounded-2xl bg-breeze-dark/80 border border-breeze-border p-3 min-w-[220px]"
+              className="flex flex-col rounded-2xl bg-[var(--bg-page)]/80 border border-[var(--border-subtle)] p-3 min-w-[220px]"
             >
               {/* Stage Header */}
               <div className={`p-3 rounded-xl ${stage.badgeBg} border flex items-center justify-between mb-3`}>
                 <span className={`text-xs font-bold font-display ${stage.textCol}`}>{stage.label}</span>
-                <span className="text-[11px] font-extrabold px-2 py-0.5 rounded bg-breeze-dark/80 text-white">
+                <span className="text-[11px] font-extrabold px-2 py-0.5 rounded bg-[var(--bg-page)]/80 text-[var(--text-heading)]">
                   {items.length}
                 </span>
               </div>
@@ -126,7 +126,7 @@ export const KanbanPipeline: React.FC = () => {
               {/* Items List */}
               <div className="space-y-3 flex-1 overflow-y-auto">
                 {items.length === 0 ? (
-                  <div className="p-4 text-center border border-dashed border-breeze-border rounded-xl text-[11px] text-slate-500">
+                  <div className="p-4 text-center border border-dashed border-[var(--border-subtle)] rounded-xl text-[11px] text-[var(--text-dim)]">
                     No items in stage
                   </div>
                 ) : (
@@ -165,10 +165,10 @@ export const KanbanPipeline: React.FC = () => {
                             });
                           }
                         }}
-                        className="p-3.5 rounded-xl bg-breeze-surface border border-breeze-border hover:border-breeze-teal transition-all cursor-pointer space-y-2 shadow group"
+                        className="p-3.5 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] hover:border-[var(--brand-teal)] transition-all cursor-pointer space-y-2 shadow group"
                       >
                         <div className="flex items-center justify-between">
-                          <span className="text-[9px] uppercase font-extrabold px-2 py-0.5 rounded bg-breeze-dark text-breeze-sky border border-breeze-border">
+                          <span className="text-[9px] uppercase font-extrabold px-2 py-0.5 rounded bg-[var(--bg-page)] text-[var(--brand-teal)] border border-[var(--border-subtle)]">
                             {item.groupId}
                           </span>
                           <span className="text-[10px] font-bold text-emerald-400">
@@ -176,17 +176,17 @@ export const KanbanPipeline: React.FC = () => {
                           </span>
                         </div>
 
-                        <h4 className="text-xs font-bold text-white group-hover:text-breeze-sky transition-colors line-clamp-2">
+                        <h4 className="text-xs font-bold text-[var(--text-heading)] group-hover:text-[var(--brand-teal)] transition-colors line-clamp-2">
                           {item.title}
                         </h4>
 
-                        <p className="text-[11px] text-slate-400 truncate">
+                        <p className="text-[11px] text-[var(--text-muted)] truncate">
                           Client: {item.clientName}
                         </p>
 
-                        <div className="pt-2 border-t border-breeze-border flex items-center justify-between text-[10px] text-slate-500">
+                        <div className="pt-2 border-t border-[var(--border-subtle)] flex items-center justify-between text-[10px] text-[var(--text-dim)]">
                           <span className="truncate max-w-[100px]">{item.submittedBy}</span>
-                          <ChevronRight className="w-3.5 h-3.5 text-slate-400 group-hover:translate-x-1 transition-transform" />
+                          <ChevronRight className="w-3.5 h-3.5 text-[var(--text-muted)] group-hover:translate-x-1 transition-transform" />
                         </div>
                       </div>
                     );

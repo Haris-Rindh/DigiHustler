@@ -28,42 +28,42 @@ export const PeopleAnalyticsView: React.FC<PeopleAnalyticsViewProps> = ({ onSele
     <div className="space-y-8">
       {/* Metric Cards Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="p-6 rounded-3xl bg-[var(--color-surface)] border border-[var(--color-border)] shadow-xl">
-          <span className="text-[10px] uppercase font-bold text-slate-400">Total Talent Pool</span>
-          <p className="font-display font-extrabold text-3xl text-white mt-1">{totalHeadcount}</p>
-          <div className="flex items-center space-x-2 text-xs text-slate-400 mt-2">
+        <div className="p-6 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] shadow-xl">
+          <span className="text-[10px] uppercase font-bold text-[var(--text-muted)]">Total Talent Pool</span>
+          <p className="font-display font-extrabold text-3xl text-[var(--text-heading)] mt-1">{totalHeadcount}</p>
+          <div className="flex items-center space-x-2 text-xs text-[var(--text-muted)] mt-2">
             <span className="text-emerald-400 font-bold">{activeCount} Active</span>
             <span>·</span>
             <span>{onLeaveCount} Leave</span>
           </div>
         </div>
 
-        <div className="p-6 rounded-3xl bg-[var(--color-surface)] border border-[var(--color-border)] shadow-xl">
-          <span className="text-[10px] uppercase font-bold text-slate-400">Average CSAT Rating</span>
+        <div className="p-6 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] shadow-xl">
+          <span className="text-[10px] uppercase font-bold text-[var(--text-muted)]">Average CSAT Rating</span>
           <p className="font-display font-extrabold text-3xl text-emerald-400 mt-1 flex items-center gap-1">
             <Star className="w-6 h-6 fill-emerald-400" />
             <span>{avgRating}</span>
           </p>
-          <p className="text-xs text-slate-400 mt-2">Across 120+ client reviews</p>
+          <p className="text-xs text-[var(--text-muted)] mt-2">Across 120+ client reviews</p>
         </div>
 
-        <div className="p-6 rounded-3xl bg-[var(--color-surface)] border border-[var(--color-border)] shadow-xl">
-          <span className="text-[10px] uppercase font-bold text-slate-400">Applicant Conversion</span>
-          <p className="font-display font-extrabold text-3xl text-[var(--color-text-primary)] mt-1">{conversionRate}%</p>
-          <p className="text-xs text-slate-400 mt-2">{approvedApplicants} approved to date</p>
+        <div className="p-6 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] shadow-xl">
+          <span className="text-[10px] uppercase font-bold text-[var(--text-muted)]">Applicant Conversion</span>
+          <p className="font-display font-extrabold text-3xl text-[var(--text-heading)] mt-1">{conversionRate}%</p>
+          <p className="text-xs text-[var(--text-muted)] mt-2">{approvedApplicants} approved to date</p>
         </div>
 
-        <div className="p-6 rounded-3xl bg-[var(--color-surface)] border border-[var(--color-border)] shadow-xl">
-          <span className="text-[10px] uppercase font-bold text-slate-400">Total Talent Disbursed</span>
+        <div className="p-6 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] shadow-xl">
+          <span className="text-[10px] uppercase font-bold text-[var(--text-muted)]">Total Talent Disbursed</span>
           <p className="font-display font-extrabold text-3xl text-cyan-400 mt-1">${totalPaidOut.toLocaleString()}</p>
-          <p className="text-xs text-slate-400 mt-2">100% verified ledger settlement</p>
+          <p className="text-xs text-[var(--text-muted)] mt-2">100% verified ledger settlement</p>
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Squad Headcount Distribution */}
-        <div className="p-6 rounded-3xl bg-[var(--color-surface)] border border-[var(--color-border)] shadow-xl space-y-4">
-          <h3 className="font-display font-bold text-lg text-white">Squad Headcount Distribution</h3>
+        <div className="p-6 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] shadow-xl space-y-4">
+          <h3 className="font-display font-bold text-lg text-[var(--text-heading)]">Squad Headcount Distribution</h3>
           <div className="space-y-3 pt-2">
             {groups.map((g) => {
               const count = users.filter((u) => u.groupId === g.id).length;
@@ -71,11 +71,11 @@ export const PeopleAnalyticsView: React.FC<PeopleAnalyticsViewProps> = ({ onSele
 
               return (
                 <div key={g.id} className="space-y-1">
-                  <div className="flex justify-between text-xs font-semibold text-slate-300">
+                  <div className="flex justify-between text-xs font-semibold text-[var(--text-body)]">
                     <span>{g.name}</span>
-                    <span className="text-[var(--color-text-primary)]">{count} members ({pct}%)</span>
+                    <span className="text-[var(--text-heading)]">{count} members ({pct}%)</span>
                   </div>
-                  <div className="w-full h-2 rounded-full bg-[var(--color-bg)] overflow-hidden">
+                  <div className="w-full h-2 rounded-full bg-[var(--bg-page)] overflow-hidden">
                     <div
                       className="h-full bg-gradient-to-r from-[#022B3A] via-[#1F7A8C] to-[#E1E5F2] rounded-full"
                       style={{ width: `${pct}%` }}
@@ -88,17 +88,17 @@ export const PeopleAnalyticsView: React.FC<PeopleAnalyticsViewProps> = ({ onSele
         </div>
 
         {/* Top Community Performers */}
-        <div className="p-6 rounded-3xl bg-[var(--color-surface)] border border-[var(--color-border)] shadow-xl space-y-4">
-          <h3 className="font-display font-bold text-lg text-white">Top Community Earners</h3>
+        <div className="p-6 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] shadow-xl space-y-4">
+          <h3 className="font-display font-bold text-lg text-[var(--text-heading)]">Top Community Earners</h3>
           <div className="space-y-3 pt-2">
             {topEarners.map((earner, idx) => (
               <div
                 key={earner.id}
                 onClick={() => onSelectUser(earner)}
-                className="p-3 rounded-2xl bg-[var(--color-bg)] border border-[var(--color-border)] hover:border-[var(--color-accent)] flex items-center justify-between cursor-pointer transition-colors"
+                className="p-3 rounded-2xl bg-[var(--bg-page)] border border-[var(--border-subtle)] hover:border-[var(--brand-teal)] flex items-center justify-between cursor-pointer transition-colors"
               >
                 <div className="flex items-center space-x-3">
-                  <div className="w-7 h-7 rounded-xl bg-[var(--color-accent-fill)]/20 text-[var(--color-text-primary)] font-extrabold text-xs flex items-center justify-center">
+                  <div className="w-7 h-7 rounded-xl bg-[var(--brand-teal)]/20 text-[var(--text-heading)] font-extrabold text-xs flex items-center justify-center">
                     #{idx + 1}
                   </div>
                   <img
@@ -107,8 +107,8 @@ export const PeopleAnalyticsView: React.FC<PeopleAnalyticsViewProps> = ({ onSele
                     className="w-9 h-9 rounded-xl object-cover ring-1 ring-[#1e4a5d]"
                   />
                   <div>
-                    <h4 className="font-bold text-xs text-white">{earner.name}</h4>
-                    <p className="text-[10px] text-slate-400">{earner.title}</p>
+                    <h4 className="font-bold text-xs text-[var(--text-heading)]">{earner.name}</h4>
+                    <p className="text-[10px] text-[var(--text-muted)]">{earner.title}</p>
                   </div>
                 </div>
 
@@ -116,7 +116,7 @@ export const PeopleAnalyticsView: React.FC<PeopleAnalyticsViewProps> = ({ onSele
                   <span className="font-extrabold text-xs text-emerald-400 block">
                     ${earner.totalEarnings.toLocaleString()}
                   </span>
-                  <span className="text-[10px] text-slate-400">
+                  <span className="text-[10px] text-[var(--text-muted)]">
                     {earner.completedProjectsCount} projects
                   </span>
                 </div>
