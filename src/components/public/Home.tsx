@@ -15,9 +15,11 @@ import {
   Zap,
   Layers,
   Users2,
+  Orbit,
 } from 'lucide-react';
 import { SEOHead } from '../seo/SEOHead';
 import { InteractiveCanvas } from '../ui/InteractiveCanvas';
+import RadialOrbitalTimeline, { defaultServicesTimelineData } from '../ui/radial-orbital-timeline';
 
 // ── Service categories ──────────────────────────────────────────────────────
 const SERVICES = [
@@ -176,83 +178,117 @@ export const Home: React.FC = () => {
         description="One company. Coordinated specialized talent. DigiHust delivers web engineering, design systems, AI automations, and cybersecurity under one managed roof."
       />
 
-      {/* ── SECTION 1: HERO (Interactive Canvas + Motion) ── */}
-      <section className="relative min-h-[92vh] flex items-center px-6 lg:px-8 bg-[#071e26] border-b border-[#1e4a5d]/50">
+      {/* ── SECTION 1: HERO (Interactive Canvas + Orbital Timeline + Motion) ── */}
+      <section className="relative min-h-[95vh] flex items-center px-6 lg:px-8 bg-[#071e26] border-b border-[#1e4a5d]/50 overflow-hidden">
         {/* Interactive Canvas Background */}
-        <InteractiveCanvas particleCount={50} className="absolute inset-0 pointer-events-none opacity-60" />
+        <InteractiveCanvas particleCount={40} className="absolute inset-0 pointer-events-none opacity-50" />
 
         {/* Ambient radial glow */}
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-br from-[#1a7a8c]/15 via-[#0ea5e9]/5 to-transparent rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute top-1/4 left-1/3 -translate-x-1/2 -translate-y-1/2 w-[650px] h-[650px] bg-gradient-to-br from-[#1a7a8c]/15 via-[#0ea5e9]/5 to-transparent rounded-full blur-3xl pointer-events-none" />
 
-        <div className="max-w-7xl mx-auto w-full py-28 lg:py-36 relative z-10">
-          <motion.div
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible"
-            className="max-w-3xl"
-          >
-            {/* Trust Pill */}
-            <motion.div variants={itemVariants} className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full border border-[#1e4a5d] bg-[#0d2833]/80 backdrop-blur-md text-[#bde0fe] text-xs font-semibold uppercase tracking-wider mb-8 shadow-sm">
-              <span className="w-2 h-2 rounded-full bg-[#1a7a8c] animate-pulse" />
-              <span>Coordinated Specialized Talent</span>
-            </motion.div>
-
-            {/* Headline */}
-            <motion.h1
-              variants={itemVariants}
-              className="font-display font-extrabold text-5xl sm:text-6xl lg:text-7xl text-white leading-[1.05] tracking-tight mb-6"
-            >
-              Your Digital Work.<br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#bde0fe] via-[#8ecae6] to-[#1a7a8c]">
-                Handled by Skilled People.
-              </span>
-            </motion.h1>
-
-            {/* Subtitle */}
-            <motion.p
-              variants={itemVariants}
-              className="text-lg sm:text-xl text-slate-300 max-w-2xl leading-relaxed mb-10"
-            >
-              From custom web development and UI/UX design to AI automations, growth marketing, and cybersecurity — DigiHust unites verified specialists into unified project squads.
-            </motion.p>
-
-            {/* Action Buttons */}
+        <div className="max-w-7xl mx-auto w-full py-24 lg:py-32 relative z-10">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
+            
+            {/* Left Column: Headlines & Pitch */}
             <motion.div
-              variants={itemVariants}
-              className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-14"
+              variants={containerVariants}
+              initial="hidden"
+              animate="visible"
+              className="lg:col-span-6 xl:col-span-7"
             >
-              <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-                <Link
-                  to="/contact"
-                  className="flex items-center space-x-2.5 px-8 py-4 rounded-xl bg-[#1a7a8c] hover:bg-[#156575] text-white font-bold text-base shadow-xl shadow-[#1a7a8c]/25 transition-colors"
-                >
-                  <span>Get a Scoped Quote</span>
-                  <ArrowRight className="w-4 h-4" />
-                </Link>
+              {/* Trust Pill */}
+              <motion.div variants={itemVariants} className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full border border-[#1e4a5d] bg-[#0d2833]/80 backdrop-blur-md text-[#bde0fe] text-xs font-semibold uppercase tracking-wider mb-6 shadow-sm">
+                <span className="w-2 h-2 rounded-full bg-[#1a7a8c] animate-pulse" />
+                <span>Coordinated Specialized Talent</span>
               </motion.div>
-              <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-                <Link
-                  to="/services"
-                  className="flex items-center space-x-2 px-8 py-4 rounded-xl border border-[#1e4a5d] hover:border-[#1a7a8c] text-slate-200 font-bold text-base bg-[#0d2833]/60 hover:bg-[#1a7a8c]/15 transition-all"
-                >
-                  <span>Explore Capabilities</span>
-                </Link>
+
+              {/* Headline */}
+              <motion.h1
+                variants={itemVariants}
+                className="font-display font-extrabold text-4xl sm:text-5xl lg:text-6xl text-white leading-[1.08] tracking-tight mb-5"
+              >
+                Your Digital Work.<br />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#bde0fe] via-[#8ecae6] to-[#1a7a8c]">
+                  Handled by Skilled People.
+                </span>
+              </motion.h1>
+
+              {/* Subtitle */}
+              <motion.p
+                variants={itemVariants}
+                className="text-base sm:text-lg text-slate-300 max-w-xl leading-relaxed mb-8"
+              >
+                From custom web development and UI/UX design to AI automations, growth marketing, and cybersecurity — DigiHust unites verified specialists into unified project squads.
+              </motion.p>
+
+              {/* Action Buttons */}
+              <motion.div
+                variants={itemVariants}
+                className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-10"
+              >
+                <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                  <Link
+                    to="/contact"
+                    className="flex items-center space-x-2.5 px-7 py-3.5 rounded-xl bg-[#1a7a8c] hover:bg-[#156575] text-white font-bold text-sm sm:text-base shadow-xl shadow-[#1a7a8c]/25 transition-colors"
+                  >
+                    <span>Get a Scoped Quote</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </Link>
+                </motion.div>
+                <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                  <Link
+                    to="/services"
+                    className="flex items-center space-x-2 px-7 py-3.5 rounded-xl border border-[#1e4a5d] hover:border-[#1a7a8c] text-slate-200 font-bold text-sm sm:text-base bg-[#0d2833]/60 hover:bg-[#1a7a8c]/15 transition-all"
+                  >
+                    <span>Explore Capabilities</span>
+                  </Link>
+                </motion.div>
+              </motion.div>
+
+              {/* Service tags strip */}
+              <motion.div
+                variants={itemVariants}
+                className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs font-semibold text-slate-400"
+              >
+                <span className="text-[#bde0fe] flex items-center gap-1 font-bold">
+                  <Orbit className="w-3.5 h-3.5 text-[#1a7a8c]" />
+                  Active Squads:
+                </span>
+                {['Web Engineering', 'Design Systems', 'AI Automations', 'Growth Marketing', 'Cybersecurity', 'BI Dashboards'].map((t, i) => (
+                  <React.Fragment key={t}>
+                    {i > 0 && <span className="text-[#1e4a5d] hidden sm:inline">·</span>}
+                    <span className="hover:text-[#bde0fe] transition-colors">{t}</span>
+                  </React.Fragment>
+                ))}
               </motion.div>
             </motion.div>
 
-            {/* Skill tags strip */}
+            {/* Right Column: Radial Orbital Timeline Component */}
             <motion.div
-              variants={itemVariants}
-              className="flex flex-wrap items-center gap-x-6 gap-y-2 text-xs sm:text-sm font-medium text-slate-400"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.7, delay: 0.2 }}
+              className="lg:col-span-6 xl:col-span-5 relative flex flex-col items-center justify-center"
             >
-              {['Web Engineering', 'Design Systems', 'AI Automations', 'Growth Marketing', 'Cybersecurity', 'BI Dashboards'].map((t, i) => (
-                <React.Fragment key={t}>
-                  {i > 0 && <span className="text-[#1e4a5d] hidden sm:inline">·</span>}
-                  <span className="hover:text-[#bde0fe] transition-colors">{t}</span>
-                </React.Fragment>
-              ))}
+              <div className="w-full relative rounded-3xl bg-[#0d2833]/40 border border-[#1e4a5d]/50 backdrop-blur-sm p-2 sm:p-4 shadow-2xl">
+                {/* Orbital timeline container */}
+                <RadialOrbitalTimeline
+                  timelineData={defaultServicesTimelineData}
+                  embedded={true}
+                  className="w-full"
+                />
+                
+                {/* Interactive hint */}
+                <div className="text-center pt-2 pb-1">
+                  <p className="text-[11px] font-bold text-slate-400 flex items-center justify-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#1a7a8c] animate-ping" />
+                    <span>Click any orbiting service node or central hub to explore</span>
+                  </p>
+                </div>
+              </div>
             </motion.div>
-          </motion.div>
+
+          </div>
         </div>
       </section>
 

@@ -24,7 +24,7 @@ body {
   color: #ffffff;
 }
 
-/* Premium Agency Card Styling (Clean, non-AI) */
+/* Premium Agency Card Styling */
 .breeze-card {
   background-color: #0d2833;
   border: 1px solid #1e4a5d;
@@ -71,4 +71,16 @@ body {
 
 ::-webkit-scrollbar-thumb:hover {
   background: #1a7a8c;
+}
+
+/* Orbital Animations & Shadows */
+@keyframes pingSlow {
+  75%, 100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+.animate-ping-slow {
+  animation: pingSlow 2s cubic-bezier(0, 0, 0.2, 1) infinite;
 }
