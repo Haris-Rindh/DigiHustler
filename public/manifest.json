@@ -1,0 +1,19 @@
+{
+  "short_name": "DigiHust",
+  "name": "DigiHust — Managed Digital Services Platform",
+  "description": "Digital Services Handled by Specialized Talent. One Company. One Point of Contact.",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "type": "image/svg+xml",
+      "sizes": "192x192 512x512",
+      "purpose": "any maskable"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#071e26",
+  "theme_color": "#071e26",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "scope": "/"
+}

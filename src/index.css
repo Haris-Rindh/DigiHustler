@@ -15,6 +15,17 @@
   --text-muted: #94a3b8;
 }
 
+/* Light Theme Overrides */
+html.light {
+  --bg-dark: #f8fafc;
+  --surface-bg: #ffffff;
+  --surface-border: #e2e8f0;
+  --accent-teal: #1a7a8c;
+  --accent-sky: #0284c7;
+  --text-main: #0f172a;
+  --text-muted: #64748b;
+}
+
 body {
   background-color: var(--bg-dark);
   background-image: 
@@ -22,6 +33,15 @@ body {
     radial-gradient(circle at 50% 0%, rgba(26, 122, 140, 0.12) 0%, transparent 60%);
   background-attachment: fixed;
   color: #ffffff;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+html.light body {
+  background-color: #f8fafc;
+  background-image: 
+    linear-gradient(to bottom, rgba(248, 250, 252, 0.95), rgba(248, 250, 252, 1)),
+    radial-gradient(circle at 50% 0%, rgba(26, 122, 140, 0.08) 0%, transparent 60%);
+  color: #0f172a;
 }
 
 /* Premium Agency Card Styling */
@@ -30,6 +50,12 @@ body {
   border: 1px solid #1e4a5d;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
   border-radius: 1rem;
+}
+
+html.light .breeze-card {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
 }
 
 .breeze-card-hover {
@@ -64,16 +90,24 @@ body {
   background: #071e26;
 }
 
+html.light ::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
 ::-webkit-scrollbar-thumb {
   background: #1e4a5d;
   border-radius: 3px;
+}
+
+html.light ::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
 }
 
 ::-webkit-scrollbar-thumb:hover {
   background: #1a7a8c;
 }
 
-/* Orbital Animations & Shadows */
+/* Orbital Animations */
 @keyframes pingSlow {
   75%, 100% {
     transform: scale(2);
@@ -83,4 +117,33 @@ body {
 
 .animate-ping-slow {
   animation: pingSlow 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+/* Print-Friendly Proposal & Case Study Export Styles */
+@media print {
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+
+  header, footer, .fixed, nav, button, [data-cursor] {
+    display: none !important;
+  }
+
+  main {
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  article, .max-w-7xl, .max-w-4xl {
+    max-width: 100% !important;
+    width: 100% !important;
+    box-shadow: none !important;
+    border: none !important;
+  }
+
+  a {
+    text-decoration: underline !important;
+    color: #000000 !important;
+  }
 }
