@@ -234,11 +234,11 @@ export const Home: React.FC = () => {
 
       {/* ── SECTION 1: FULL-SCREEN HERO (100dvh + 100vh fallback + Scroll Cue) ── */}
       <section className="relative min-h-screen min-h-[100dvh] min-h-[640px] flex flex-col justify-center px-6 lg:px-8 border-b border-[var(--border-subtle)] overflow-hidden pt-20 lg:pt-24 pb-8 safe-top bg-[var(--bg-page)]">
-        {/* Interactive Canvas Background */}
-        <InteractiveCanvas particleCount={45} className="absolute inset-0 pointer-events-none opacity-60" />
+        {/* Interactive Canvas Background with high-clarity 3D particles */}
+        <InteractiveCanvas particleCount={55} className="absolute inset-0 pointer-events-none opacity-90" />
 
-        {/* Ambient subtle glow */}
-        <div className="absolute top-1/3 left-1/3 -translate-x-1/2 -translate-y-1/2 w-[650px] h-[650px] bg-gradient-to-br from-[var(--brand-teal)]/10 to-transparent rounded-full blur-3xl pointer-events-none" />
+        {/* Ambient celestial glow for depth */}
+        <div className="absolute top-1/3 left-1/3 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-gradient-to-br from-[var(--brand-teal)]/15 to-transparent rounded-full blur-3xl pointer-events-none" />
 
         <div className="max-w-7xl mx-auto w-full my-auto py-8 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8 items-center">

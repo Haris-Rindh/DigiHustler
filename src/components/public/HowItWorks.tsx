@@ -190,7 +190,7 @@ export const HowItWorks: React.FC = () => {
                   <th className="p-4 sm:p-5">Comparison Metric</th>
                   <th className="p-4 sm:p-5 text-[var(--text-heading)]">DigiHust Managed Model</th>
                   <th className="p-4 sm:p-5 text-[var(--text-dim)]">Individual Freelancers</th>
-                </tr>
+                </tr> 
               </thead>
               <tbody className="divide-y divide-[#1e4a5d] text-xs sm:text-sm">
                 {[
@@ -201,7 +201,7 @@ export const HowItWorks: React.FC = () => {
                   ['Billing & Contracts', 'Single consolidated contract & invoices', 'Multiple separate invoices & fees'],
                 ].map(([metric, digi, free]) => (
                   <tr key={metric} className="hover:bg-[var(--bg-subtle)] transition-colors">
-                    <td className="p-4 sm:p-5 font-bold text-white">{metric}</td>
+                    <td className="p-4 sm:p-5 font-bold text-[var(--text-dim)]">{metric}</td>
                     <td className="p-4 sm:p-5 font-semibold text-emerald-400 flex items-center space-x-1.5">
                       <CheckCircle2 className="w-4 h-4 flex-shrink-0" />
                       <span>{digi}</span>

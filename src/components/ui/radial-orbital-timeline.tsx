@@ -15,6 +15,13 @@ export interface TimelineItem {
   relatedIds: number[];
   status: "completed" | "in-progress" | "pending";
   energy: number;
+  colorDark: string;
+  colorLight: string;
+  bgDark: string;
+  bgLight: string;
+  borderDark: string;
+  borderLight: string;
+  glowColor: string;
 }
 
 export const defaultServicesTimelineData: TimelineItem[] = [
@@ -28,6 +35,13 @@ export const defaultServicesTimelineData: TimelineItem[] = [
     relatedIds: [2, 3, 5],
     status: "completed",
     energy: 98,
+    colorDark: "#22D3EE", // Electric Cyan
+    colorLight: "#0891B2",
+    bgDark: "rgba(6, 182, 212, 0.22)",
+    bgLight: "rgba(6, 182, 212, 0.12)",
+    borderDark: "rgba(34, 211, 238, 0.60)",
+    borderLight: "rgba(8, 145, 178, 0.45)",
+    glowColor: "rgba(34, 211, 238, 0.35)",
   },
   {
     id: 2,
@@ -39,6 +53,13 @@ export const defaultServicesTimelineData: TimelineItem[] = [
     relatedIds: [1, 4],
     status: "completed",
     energy: 94,
+    colorDark: "#C084FC", // Vibrant Violet / Fuchsia
+    colorLight: "#9333EA",
+    bgDark: "rgba(168, 85, 247, 0.22)",
+    bgLight: "rgba(168, 85, 247, 0.12)",
+    borderDark: "rgba(192, 132, 252, 0.60)",
+    borderLight: "rgba(147, 51, 234, 0.45)",
+    glowColor: "rgba(192, 132, 252, 0.35)",
   },
   {
     id: 3,
@@ -50,6 +71,13 @@ export const defaultServicesTimelineData: TimelineItem[] = [
     relatedIds: [1, 6],
     status: "completed",
     energy: 96,
+    colorDark: "#34D399", // Emerald Mint Green
+    colorLight: "#059669",
+    bgDark: "rgba(16, 185, 129, 0.22)",
+    bgLight: "rgba(16, 185, 129, 0.12)",
+    borderDark: "rgba(52, 211, 153, 0.60)",
+    borderLight: "rgba(5, 150, 105, 0.45)",
+    glowColor: "rgba(52, 211, 153, 0.35)",
   },
   {
     id: 4,
@@ -61,6 +89,13 @@ export const defaultServicesTimelineData: TimelineItem[] = [
     relatedIds: [2, 6],
     status: "completed",
     energy: 91,
+    colorDark: "#FBBF24", // Golden Amber Sun
+    colorLight: "#D97706",
+    bgDark: "rgba(245, 158, 11, 0.22)",
+    bgLight: "rgba(245, 158, 11, 0.12)",
+    borderDark: "rgba(251, 191, 36, 0.60)",
+    borderLight: "rgba(217, 119, 6, 0.45)",
+    glowColor: "rgba(251, 191, 36, 0.35)",
   },
   {
     id: 5,
@@ -72,6 +107,13 @@ export const defaultServicesTimelineData: TimelineItem[] = [
     relatedIds: [1],
     status: "completed",
     energy: 95,
+    colorDark: "#FB7185", // Crimson Rose / Coral
+    colorLight: "#E11D48",
+    bgDark: "rgba(244, 63, 94, 0.22)",
+    bgLight: "rgba(244, 63, 94, 0.12)",
+    borderDark: "rgba(251, 113, 133, 0.60)",
+    borderLight: "rgba(225, 29, 72, 0.45)",
+    glowColor: "rgba(251, 113, 133, 0.35)",
   },
   {
     id: 6,
@@ -83,6 +125,13 @@ export const defaultServicesTimelineData: TimelineItem[] = [
     relatedIds: [3, 4],
     status: "completed",
     energy: 92,
+    colorDark: "#818CF8", // Royal Indigo Blue
+    colorLight: "#4F46E5",
+    bgDark: "rgba(99, 102, 241, 0.22)",
+    bgLight: "rgba(99, 102, 241, 0.12)",
+    borderDark: "rgba(129, 140, 248, 0.60)",
+    borderLight: "rgba(79, 70, 229, 0.45)",
+    glowColor: "rgba(129, 140, 248, 0.35)",
   },
 ];
 
@@ -107,9 +156,23 @@ export default function RadialOrbitalTimeline({
     y: 0,
   });
   const [activeNodeId, setActiveNodeId] = useState<number | null>(null);
+  const [isLight, setIsLight] = useState<boolean>(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const orbitRef = useRef<HTMLDivElement>(null);
   const nodeRefs = useRef<Record<number, HTMLDivElement | null>>({});
+
+  useEffect(() => {
+    const checkTheme = () => {
+      const light =
+        document.documentElement.getAttribute("data-theme") === "light" ||
+        document.documentElement.classList.contains("light");
+      setIsLight(light);
+    };
+    checkTheme();
+    const observer = new MutationObserver(checkTheme);
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme", "class"] });
+    return () => observer.disconnect();
+  }, []);
 
   const handleContainerClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (e.target === containerRef.current || e.target === orbitRef.current) {
@@ -120,103 +183,60 @@ export default function RadialOrbitalTimeline({
     }
   };
 
-  const getRelatedItems = (itemId: number): number[] => {
-    const currentItem = timelineData.find((item) => item.id === itemId);
-    return currentItem ? currentItem.relatedIds : [];
-  };
-
-  const isRelatedToActive = (itemId: number): boolean => {
-    if (!activeNodeId) return false;
-    const relatedItems = getRelatedItems(activeNodeId);
-    return relatedItems.includes(itemId);
-  };
-
-  const centerViewOnNode = (nodeId: number) => {
-    if (viewMode !== "orbital" || !nodeRefs.current[nodeId]) return;
-
-    const nodeIndex = timelineData.findIndex((item) => item.id === nodeId);
-    const totalNodes = timelineData.length;
-    const targetAngle = (nodeIndex / totalNodes) * 360;
-
-    setRotationAngle(270 - targetAngle);
-  };
-
   const toggleItem = (id: number) => {
     setExpandedItems((prev) => {
-      const newState = { ...prev };
+      const newState = { ...prev, [id]: !prev[id] };
       Object.keys(newState).forEach((key) => {
-        if (parseInt(key) !== id) {
-          newState[parseInt(key)] = false;
+        if (Number(key) !== id) {
+          newState[Number(key)] = false;
         }
       });
-
-      newState[id] = !prev[id];
-
-      if (!prev[id]) {
-        setActiveNodeId(id);
-        setAutoRotate(false);
-
-        const relatedItems = getRelatedItems(id);
-        const newPulseEffect: Record<number, boolean> = {};
-        relatedItems.forEach((relId) => {
-          newPulseEffect[relId] = true;
-        });
-        setPulseEffect(newPulseEffect);
-
-        centerViewOnNode(id);
-      } else {
-        setActiveNodeId(null);
-        setAutoRotate(true);
-        setPulseEffect({});
-      }
-
       return newState;
     });
+
+    setActiveNodeId((prev) => (prev === id ? null : id));
+    setAutoRotate(false);
+
+    setPulseEffect((prev) => ({ ...prev, [id]: true }));
+    setTimeout(() => {
+      setPulseEffect((prev) => ({ ...prev, [id]: false }));
+    }, 600);
   };
 
   useEffect(() => {
-    let rotationTimer: ReturnType<typeof setInterval>;
+    if (!autoRotate) return;
+    const interval = setInterval(() => {
+      setRotationAngle((prev) => (prev + 0.35) % 360);
+    }, 50);
+    return () => clearInterval(interval);
+  }, [autoRotate]);
 
-    if (autoRotate && viewMode === "orbital") {
-      rotationTimer = setInterval(() => {
-        setRotationAngle((prev) => {
-          const newAngle = (prev + 0.35) % 360;
-          return Number(newAngle.toFixed(3));
-        });
-      }, 50);
-    }
+  const calculateNodePosition = (index: number, totalNodes: number) => {
+    const angleStep = (2 * Math.PI) / totalNodes;
+    const currentAngle = angleStep * index + (rotationAngle * Math.PI) / 180;
+    const radius = embedded ? 150 : 190;
+    const x = radius * Math.cos(currentAngle);
+    const y = radius * Math.sin(currentAngle);
+    const zIndex = Math.round(100 + 50 * Math.sin(currentAngle));
+    const opacity = 0.85 + 0.15 * Math.sin(currentAngle);
 
-    return () => {
-      if (rotationTimer) {
-        clearInterval(rotationTimer);
-      }
-    };
-  }, [autoRotate, viewMode]);
+    return { x, y, zIndex, opacity };
+  };
 
-  const calculateNodePosition = (index: number, total: number) => {
-    const angle = ((index / total) * 360 + rotationAngle) % 360;
-    const radius = embedded ? 165 : 200;
-    const radian = (angle * Math.PI) / 180;
-
-    const x = radius * Math.cos(radian) + centerOffset.x;
-    const y = radius * Math.sin(radian) + centerOffset.y;
-
-    const zIndex = Math.round(100 + 50 * Math.cos(radian));
-    const opacity = Math.max(
-      0.65,
-      Math.min(1, 0.55 + 0.45 * ((1 + Math.sin(radian)) / 2))
-    );
-
-    return { x, y, angle, zIndex, opacity };
+  const isRelatedToActive = (nodeId: number) => {
+    if (!activeNodeId) return false;
+    const activeItem = timelineData.find((item) => item.id === activeNodeId);
+    return activeItem?.relatedIds.includes(nodeId) || false;
   };
 
   return (
     <div
-      className={`w-full relative flex flex-col items-center justify-center overflow-visible select-none ${
-        embedded ? "h-[500px] sm:h-[560px]" : "h-screen bg-[var(--bg-page)]"
-      } ${className}`}
       ref={containerRef}
+      className={`relative w-full overflow-hidden flex items-center justify-center select-none ${
+        embedded ? "h-[420px] sm:h-[460px]" : "h-[540px] sm:h-[620px]"
+      } ${className}`}
       onClick={handleContainerClick}
+      aria-label="Interactive Radial Orbital Timeline for DigiHust Capabilities"
     >
       <div className="relative w-full max-w-4xl h-full flex items-center justify-center">
         <div
@@ -227,9 +247,9 @@ export default function RadialOrbitalTimeline({
             transform: `translate(${centerOffset.x}px, ${centerOffset.y}px)`,
           }}
         >
-          {/* Central Hub Core (Locked Matte Gradient: Deep Navy -> Sea Teal -> Soft Periwinkle) */}
+          {/* Central Hub Core */}
           <div
-            className="absolute w-16 h-16 rounded-full bg-gradient-to-br from-[#022B3A] via-[#1F7A8C] to-[#E1E5F2] border border-[var(--border-subtle)] shadow-lg flex items-center justify-center z-10 cursor-pointer"
+            className="absolute w-16 h-16 rounded-full bg-gradient-to-br from-[#022B3A] via-[#1F7A8C] to-[#E1E5F2] border-2 border-[var(--border-subtle)] shadow-xl flex items-center justify-center z-10 cursor-pointer transition-transform hover:scale-105"
             onClick={() => setAutoRotate(!autoRotate)}
             title={autoRotate ? "Click to pause rotation" : "Click to auto-rotate"}
           >
@@ -240,14 +260,14 @@ export default function RadialOrbitalTimeline({
 
           {/* Primary Orbit Rings */}
           <div
-            className={`absolute rounded-full border pointer-events-none ${
-              embedded ? "w-[330px] h-[330px]" : "w-[400px] h-[400px]"
+            className={`absolute rounded-full border pointer-events-none transition-colors ${
+              embedded ? "w-[300px] h-[300px]" : "w-[380px] h-[380px]"
             }`}
             style={{ borderColor: "var(--orbit-ring)" }}
           />
           <div
-            className={`absolute rounded-full border border-dashed pointer-events-none ${
-              embedded ? "w-[360px] h-[360px]" : "w-[440px] h-[440px]"
+            className={`absolute rounded-full border border-dashed pointer-events-none transition-colors ${
+              embedded ? "w-[330px] h-[330px]" : "w-[420px] h-[420px]"
             }`}
             style={{ borderColor: "var(--orbit-ring-dashed)" }}
           />
@@ -258,6 +278,18 @@ export default function RadialOrbitalTimeline({
             const isExpanded = expandedItems[item.id];
             const isRelated = isRelatedToActive(item.id);
             const Icon = item.icon;
+
+            const iconColor = isLight ? item.colorLight : item.colorDark;
+            const nodeBg = isExpanded
+              ? iconColor
+              : isRelated
+              ? (isLight ? item.bgLight : item.bgDark)
+              : (isLight ? "rgba(255, 255, 255, 0.95)" : "rgba(7, 53, 71, 0.95)");
+            const nodeBorder = isExpanded
+              ? (isLight ? item.colorLight : "#FFFFFF")
+              : isRelated
+              ? (isLight ? item.borderLight : item.borderDark)
+              : (isLight ? item.borderLight : item.borderDark);
 
             const nodeStyle = {
               transform: `translate(${position.x}px, ${position.y}px)`,
@@ -273,7 +305,7 @@ export default function RadialOrbitalTimeline({
                 role="button"
                 aria-label={`${item.title} capability node - ${item.energy}%`}
                 aria-expanded={isExpanded}
-                className="absolute transition-all duration-700 cursor-pointer focus:outline-none focus:ring-2 focus:ring-[var(--brand-teal)] rounded-2xl"
+                className="absolute transition-all duration-700 cursor-pointer focus:outline-none rounded-2xl group"
                 style={nodeStyle}
                 onKeyDown={(e) => {
                   if (e.key === "Enter" || e.key === " ") {
@@ -286,48 +318,58 @@ export default function RadialOrbitalTimeline({
                   toggleItem(item.id);
                 }}
               >
-                {/* Node Icon Circle */}
+                {/* Node Icon Circle with Individual Color Signature */}
                 <div
-                  className={`
-                  w-10 h-10 sm:w-11 sm:h-11 rounded-2xl flex items-center justify-center shadow-md
-                  ${
-                    isExpanded
-                      ? "bg-[var(--brand-teal)] text-[#EFF1F5] border-2 border-[var(--color-soft-periwinkle)] scale-115"
-                      : isRelated
-                      ? "bg-[var(--brand-teal-subtle)] text-[var(--text-heading)] border border-[var(--brand-teal)]"
-                      : "bg-[var(--bg-surface)] text-[var(--brand-teal)] border border-[var(--border-subtle)] hover:border-[var(--border-hover)]"
-                  }
-                  transition-all duration-300 transform
-                `}
+                  className={`w-11 h-11 sm:w-12 sm:h-12 rounded-2xl flex items-center justify-center shadow-lg transition-all duration-300 transform ${
+                    isExpanded ? "scale-120 shadow-2xl" : "hover:scale-110"
+                  }`}
+                  style={{
+                    backgroundColor: nodeBg,
+                    borderWidth: "1.5px",
+                    borderStyle: "solid",
+                    borderColor: nodeBorder,
+                    color: isExpanded ? "#FFFFFF" : iconColor,
+                    boxShadow: isExpanded
+                      ? `0 0 25px ${item.glowColor}`
+                      : `0 4px 15px ${item.glowColor}`,
+                  }}
                 >
-                  <Icon size={18} />
+                  <Icon size={20} style={{ color: isExpanded ? "#FFFFFF" : iconColor }} strokeWidth={2.2} />
                 </div>
 
                 {/* Node Title Label */}
                 <div
-                  className={`
-                  absolute top-12 left-1/2 -translate-x-1/2 whitespace-nowrap
-                  text-[11px] font-bold tracking-tight px-2 py-0.5 rounded-md
-                  transition-all duration-300
-                  ${
+                  className={`absolute top-13 left-1/2 -translate-x-1/2 whitespace-nowrap text-[11px] font-bold tracking-tight px-2.5 py-0.5 rounded-lg transition-all duration-300 shadow-sm ${
                     isExpanded
-                      ? "text-[#EFF1F5] bg-[var(--brand-teal)] shadow-sm scale-105"
-                      : isRelated
-                      ? "text-[var(--text-heading)] bg-[var(--bg-surface)] border border-[var(--brand-teal)]"
-                      : "text-[var(--text-body)] bg-[var(--bg-surface)] border border-[var(--border-subtle)] hover:text-[var(--text-heading)]"
-                  }
-                `}
+                      ? "text-white scale-105 font-black"
+                      : "text-[var(--text-heading)] bg-[var(--bg-surface)]/95 border border-[var(--border-subtle)] group-hover:border-[var(--border-hover)]"
+                  }`}
+                  style={{
+                    backgroundColor: isExpanded ? iconColor : undefined,
+                  }}
                 >
                   {item.title}
                 </div>
 
                 {/* Expanded Details Card */}
                 {isExpanded && (
-                  <Card className="absolute top-20 left-1/2 -translate-x-1/2 w-72 bg-[var(--bg-surface)] border border-[var(--border-subtle)] shadow-xl z-[300] overflow-visible text-[var(--text-heading)]">
-                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-px h-3 bg-[var(--brand-teal)]" />
+                  <Card className="absolute top-22 left-1/2 -translate-x-1/2 w-72 bg-[var(--bg-surface)] border-2 shadow-2xl z-[300] overflow-visible text-[var(--text-heading)]"
+                    style={{ borderColor: iconColor }}
+                  >
+                    <div
+                      className="absolute -top-3 left-1/2 -translate-x-1/2 w-px h-3"
+                      style={{ backgroundColor: iconColor }}
+                    />
                     <CardHeader className="pb-2 pt-4 px-4">
                       <div className="flex justify-between items-center">
-                        <Badge className="px-2 py-0.5 text-[10px] font-bold bg-[var(--brand-teal-subtle)] text-[var(--brand-teal)] border border-[var(--brand-teal)]">
+                        <Badge
+                          className="px-2.5 py-0.5 text-[10px] font-bold border"
+                          style={{
+                            backgroundColor: isLight ? item.bgLight : item.bgDark,
+                            borderColor: isLight ? item.borderLight : item.borderDark,
+                            color: iconColor,
+                          }}
+                        >
                           {item.category.toUpperCase()}
                         </Badge>
                         <span className="text-[10px] font-mono text-[var(--text-muted)]">
@@ -335,7 +377,7 @@ export default function RadialOrbitalTimeline({
                         </span>
                       </div>
                       <CardTitle className="text-sm font-extrabold text-[var(--text-heading)] mt-1.5 flex items-center gap-1.5">
-                        <Icon size={14} className="text-[var(--brand-teal)]" />
+                        <Icon size={16} style={{ color: iconColor }} />
                         <span>{item.title}</span>
                       </CardTitle>
                     </CardHeader>
@@ -345,15 +387,18 @@ export default function RadialOrbitalTimeline({
                       <div className="mt-3 pt-3 border-t border-[var(--border-subtle)]">
                         <div className="flex justify-between items-center text-[10px] mb-1 font-bold text-[var(--text-muted)]">
                           <span className="flex items-center text-[var(--text-heading)]">
-                            <Zap size={10} className="mr-1 text-[var(--color-status-warning)]" />
+                            <Zap size={11} className="mr-1" style={{ color: iconColor }} />
                             Squad Capability Level
                           </span>
                           <span className="font-mono text-[var(--text-heading)]">{item.energy}%</span>
                         </div>
-                        <div className="w-full h-1.5 bg-[var(--color-surface-hover)] rounded-full overflow-hidden border border-[var(--border-subtle)]">
+                        <div className="w-full h-1.5 bg-[var(--bg-subtle)] rounded-full overflow-hidden border border-[var(--border-subtle)]">
                           <div
-                            className="h-full bg-[var(--brand-teal)]"
-                            style={{ width: `${item.energy}%` }}
+                            className="h-full rounded-full transition-all duration-500"
+                            style={{
+                              width: `${item.energy}%`,
+                              backgroundColor: iconColor,
+                            }}
                           />
                         </div>
                       </div>
@@ -374,7 +419,7 @@ export default function RadialOrbitalTimeline({
                                   key={relatedId}
                                   variant="outline"
                                   size="sm"
-                                  className="flex items-center h-6 px-2 py-0 text-[10px] rounded-lg border-[var(--border-subtle)] bg-[var(--bg-surface)] hover:bg-[var(--color-surface-hover)] text-[var(--text-heading)] transition-all font-semibold"
+                                  className="flex items-center h-6 px-2 py-0 text-[10px] rounded-lg border-[var(--border-subtle)] bg-[var(--bg-surface)] hover:bg-[var(--bg-subtle)] text-[var(--text-heading)] transition-all font-semibold"
                                   onClick={(e) => {
                                     e.stopPropagation();
                                     toggleItem(relatedId);
