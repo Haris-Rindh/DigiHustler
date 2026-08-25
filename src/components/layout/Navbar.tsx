@@ -1,26 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, ArrowRight, Shield, Sun, Moon } from 'lucide-react';
+import { Menu, X, ArrowRight, Shield } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { LanguageSelector } from '../ui/LanguageSelector';
-import { useTheme } from '../../context/ThemeContext';
-
-export const ThemeToggle: React.FC = () => {
-  const { theme, toggleTheme } = useTheme();
-
-  return (
-    <motion.button
-      whileHover={{ scale: 1.08 }}
-      whileTap={{ scale: 0.92 }}
-      onClick={toggleTheme}
-      className="p-2 rounded-xl border border-[#1e4a5d] bg-[#0d2833]/80 hover:border-[#1a7a8c] text-[#bde0fe] hover:text-white transition-colors"
-      aria-label={`Switch to ${theme === 'dark' ? 'Light' : 'Dark'} theme`}
-      title={`Switch to ${theme === 'dark' ? 'Light' : 'Dark'} theme`}
-    >
-      {theme === 'dark' ? <Sun className="w-4 h-4 text-amber-300" /> : <Moon className="w-4 h-4 text-slate-700" />}
-    </motion.button>
-  );
-};
+import { ThemeToggle } from '../ui/ThemeToggle';
 
 export const Navbar: React.FC = () => {
   const location = useLocation();
@@ -151,6 +134,13 @@ export const Navbar: React.FC = () => {
                 {link.label}
               </Link>
             ))}
+            <div className="flex items-center justify-between pt-3 pb-1 px-1 border-t border-[#1e4a5d]/60">
+              <span className="text-xs font-bold text-slate-400">Preferences:</span>
+              <div className="flex items-center space-x-2">
+                <LanguageSelector />
+                <ThemeToggle />
+              </div>
+            </div>
             <Link
               to="/contact"
               onClick={() => setMobileOpen(false)}

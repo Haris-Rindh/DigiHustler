@@ -2,60 +2,83 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --bg-dark: #071e26;
+:root,
+html[data-theme="dark"],
+html.dark {
+  --bg-main: #071e26;
+  --bg-secondary: #0a2530;
   --surface-bg: #0d2833;
   --surface-border: #1e4a5d;
+  --surface-hover: #153846;
   --accent-teal: #1a7a8c;
+  --accent-teal-dark: #156575;
   --accent-sky: #bde0fe;
   --accent-emerald: #10b981;
   --accent-amber: #f59e0b;
   --accent-rose: #f43f5e;
+  --accent-glow: rgba(26, 122, 140, 0.35);
   --text-main: #ffffff;
   --text-muted: #94a3b8;
+  --canvas-particle: #1a7a8c;
+  --canvas-line: rgba(189, 224, 254, 0.12);
+  --orbit-ring: rgba(30, 74, 93, 0.6);
+  --orbit-ring-dashed: rgba(26, 122, 140, 0.3);
 }
 
-/* Light Theme Overrides */
+/* Gentle Sea Breeze Oceanic Light Theme */
+html[data-theme="light"],
 html.light {
-  --bg-dark: #f8fafc;
+  --bg-main: #f0f7f9;
+  --bg-secondary: #e5eff2;
   --surface-bg: #ffffff;
-  --surface-border: #e2e8f0;
-  --accent-teal: #1a7a8c;
+  --surface-border: #cbdfe6;
+  --surface-hover: #f4f9fb;
+  --accent-teal: #0e6070;
+  --accent-teal-dark: #0b4a57;
   --accent-sky: #0284c7;
-  --text-main: #0f172a;
-  --text-muted: #64748b;
+  --accent-emerald: #059669;
+  --accent-amber: #d97706;
+  --accent-rose: #e11d48;
+  --accent-glow: rgba(14, 96, 112, 0.18);
+  --text-main: #071e26;
+  --text-muted: #4b6a75;
+  --canvas-particle: #0e6070;
+  --canvas-line: rgba(14, 96, 112, 0.16);
+  --orbit-ring: rgba(203, 223, 230, 0.9);
+  --orbit-ring-dashed: rgba(14, 96, 112, 0.35);
 }
 
+/* Base Body Styles with Smooth Theme Crossfade */
 body {
-  background-color: var(--bg-dark);
+  background-color: var(--bg-main);
   background-image: 
     linear-gradient(to bottom, rgba(7, 30, 38, 0.95), rgba(7, 30, 38, 1)),
     radial-gradient(circle at 50% 0%, rgba(26, 122, 140, 0.12) 0%, transparent 60%);
   background-attachment: fixed;
-  color: #ffffff;
-  transition: background-color 0.3s ease, color 0.3s ease;
+  color: var(--text-main);
+  transition: background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1), color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow-x: hidden;
 }
 
-html.light body {
-  background-color: #f8fafc;
+html[data-theme="light"] body {
+  background-color: var(--bg-main);
   background-image: 
-    linear-gradient(to bottom, rgba(248, 250, 252, 0.95), rgba(248, 250, 252, 1)),
-    radial-gradient(circle at 50% 0%, rgba(26, 122, 140, 0.08) 0%, transparent 60%);
-  color: #0f172a;
+    linear-gradient(to bottom, rgba(240, 247, 249, 0.96), rgba(240, 247, 249, 1)),
+    radial-gradient(circle at 50% 0%, rgba(14, 96, 112, 0.08) 0%, transparent 60%);
+  color: var(--text-main);
 }
 
-/* Premium Agency Card Styling */
+/* Card Surface Utilities */
 .breeze-card {
-  background-color: #0d2833;
-  border: 1px solid #1e4a5d;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
-  border-radius: 1rem;
+  background-color: var(--surface-bg);
+  border: 1px solid var(--surface-border);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.18);
+  border-radius: 1.25rem;
+  transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
-html.light .breeze-card {
-  background-color: #ffffff;
-  border: 1px solid #e2e8f0;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+html[data-theme="light"] .breeze-card {
+  box-shadow: 0 4px 20px rgba(7, 30, 38, 0.06);
 }
 
 .breeze-card-hover {
@@ -63,21 +86,18 @@ html.light .breeze-card {
 }
 
 .breeze-card-hover:hover {
-  border-color: #2b657e;
+  border-color: var(--accent-teal);
   transform: translateY(-2px);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
 }
 
-.breeze-btn-primary {
-  background-color: #1a7a8c;
-  color: #ffffff;
-  font-weight: 700;
-  transition: background-color 0.2s ease, transform 0.15s ease;
+/* Safe Area Inset Support for PWA / Notched Devices */
+.safe-top {
+  padding-top: env(safe-area-inset-top, 0px);
 }
 
-.breeze-btn-primary:hover {
-  background-color: #156575;
-  transform: translateY(-1px);
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
 /* Custom Scrollbar */
@@ -87,36 +107,26 @@ html.light .breeze-card {
 }
 
 ::-webkit-scrollbar-track {
-  background: #071e26;
-}
-
-html.light ::-webkit-scrollbar-track {
-  background: #f1f5f9;
+  background: var(--bg-main);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #1e4a5d;
+  background: var(--surface-border);
   border-radius: 3px;
 }
 
-html.light ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-}
-
 ::-webkit-scrollbar-thumb:hover {
-  background: #1a7a8c;
+  background: var(--accent-teal);
 }
 
-/* Orbital Animations */
-@keyframes pingSlow {
-  75%, 100% {
-    transform: scale(2);
-    opacity: 0;
+/* Reduced Motion Override */
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
-}
-
-.animate-ping-slow {
-  animation: pingSlow 2s cubic-bezier(0, 0, 0.2, 1) infinite;
 }
 
 /* Print-Friendly Proposal & Case Study Export Styles */
@@ -126,7 +136,7 @@ html.light ::-webkit-scrollbar-thumb {
     color: #000000 !important;
   }
 
-  header, footer, .fixed, nav, button, [data-cursor] {
+  header, footer, .fixed, nav, button, [data-cursor], .scroll-cue {
     display: none !important;
   }
 

@@ -257,8 +257,8 @@ export default function RadialOrbitalTimeline({
           </div>
 
           {/* Primary Orbit Rings */}
-          <div className={`absolute rounded-full border border-[#1e4a5d]/60 pointer-events-none ${embedded ? "w-[330px] h-[330px]" : "w-[400px] h-[400px]"}`}></div>
-          <div className={`absolute rounded-full border border-[#1a7a8c]/20 border-dashed pointer-events-none ${embedded ? "w-[360px] h-[360px]" : "w-[440px] h-[440px]"}`}></div>
+          <div className={`absolute rounded-full border pointer-events-none ${embedded ? "w-[330px] h-[330px]" : "w-[400px] h-[400px]"}`} style={{ borderColor: 'var(--orbit-ring)' }}></div>
+          <div className={`absolute rounded-full border border-dashed pointer-events-none ${embedded ? "w-[360px] h-[360px]" : "w-[440px] h-[440px]"}`} style={{ borderColor: 'var(--orbit-ring-dashed)' }}></div>
 
           {/* Orbit Nodes */}
           {timelineData.map((item, index) => {

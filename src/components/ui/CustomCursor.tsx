@@ -91,19 +91,19 @@ export const CustomCursor: React.FC = () => {
           height: cursorVariant === 'card' || cursorVariant === 'orbit' ? 68 : cursorVariant === 'hover' ? 44 : 28,
           backgroundColor:
             cursorVariant === 'card'
-              ? 'rgba(26, 122, 140, 0.9)'
+              ? 'var(--accent-teal)'
               : cursorVariant === 'orbit'
-              ? 'rgba(14, 165, 233, 0.9)'
+              ? 'rgba(14, 165, 233, 0.92)'
               : cursorVariant === 'hover'
-              ? 'rgba(189, 224, 254, 0.15)'
+              ? 'var(--accent-glow)'
               : 'transparent',
-          borderColor: cursorVariant === 'default' ? '#1a7a8c' : '#bde0fe',
+          borderColor: cursorVariant === 'default' ? 'var(--accent-teal)' : 'var(--accent-sky)',
         }}
         transition={{ type: 'spring', stiffness: 450, damping: 28 }}
-        className="rounded-full border border-[#1a7a8c] flex items-center justify-center backdrop-blur-[1px] shadow-sm"
+        className="rounded-full border flex items-center justify-center backdrop-blur-[1px] shadow-sm"
       >
         {cursorText && (
-          <span className="text-[9px] font-black tracking-widest text-white uppercase select-none">
+          <span className="text-[9px] font-black tracking-widest text-white uppercase select-none drop-shadow-sm">
             {cursorText}
           </span>
         )}
@@ -119,9 +119,9 @@ export const CustomCursor: React.FC = () => {
         }}
         animate={{
           scale: cursorVariant === 'card' || cursorVariant === 'orbit' ? 0 : cursorVariant === 'hover' ? 1.5 : 1,
-          backgroundColor: cursorVariant === 'hover' ? '#bde0fe' : '#1a7a8c',
+          backgroundColor: cursorVariant === 'hover' ? 'var(--accent-sky)' : 'var(--accent-teal)',
         }}
-        className="w-1.5 h-1.5 rounded-full bg-[#1a7a8c] shadow-sm"
+        className="w-1.5 h-1.5 rounded-full shadow-sm"
       />
     </div>
   );

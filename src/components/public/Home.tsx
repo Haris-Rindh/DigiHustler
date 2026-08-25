@@ -10,6 +10,7 @@ import {
   Shield,
   Database,
   ChevronRight,
+  ChevronDown,
   CheckCircle2,
   Sparkles,
   Zap,
@@ -231,16 +232,16 @@ export const Home: React.FC = () => {
         description="One company. Coordinated specialized talent. DigiHust delivers web engineering, design systems, AI automations, and cybersecurity under one managed roof."
       />
 
-      {/* ── SECTION 1: HERO (Interactive Canvas + Orbital Timeline + Motion) ── */}
-      <section className="relative min-h-[95vh] flex items-center px-6 lg:px-8 bg-[#071e26] border-b border-[#1e4a5d]/50 overflow-hidden">
+      {/* ── SECTION 1: FULL-SCREEN HERO (100dvh + 100vh fallback + Scroll Cue) ── */}
+      <section className="relative min-h-screen min-h-[100dvh] min-h-[640px] flex flex-col justify-center px-6 lg:px-8 border-b border-[var(--surface-border)] overflow-hidden pt-20 lg:pt-24 pb-8 safe-top">
         {/* Interactive Canvas Background */}
-        <InteractiveCanvas particleCount={40} className="absolute inset-0 pointer-events-none opacity-50" />
+        <InteractiveCanvas particleCount={45} className="absolute inset-0 pointer-events-none opacity-60" />
 
         {/* Ambient radial glow */}
-        <div className="absolute top-1/4 left-1/3 -translate-x-1/2 -translate-y-1/2 w-[650px] h-[650px] bg-gradient-to-br from-[#1a7a8c]/15 via-[#0ea5e9]/5 to-transparent rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute top-1/3 left-1/3 -translate-x-1/2 -translate-y-1/2 w-[650px] h-[650px] bg-gradient-to-br from-[#1a7a8c]/15 via-[#0ea5e9]/5 to-transparent rounded-full blur-3xl pointer-events-none" />
 
-        <div className="max-w-7xl mx-auto w-full py-24 lg:py-32 relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
+        <div className="max-w-7xl mx-auto w-full my-auto py-8 relative z-10">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8 items-center">
             
             {/* Left Column: Headlines & Pitch */}
             <motion.div
@@ -250,7 +251,7 @@ export const Home: React.FC = () => {
               className="lg:col-span-6 xl:col-span-7"
             >
               {/* Trust Pill */}
-              <motion.div variants={itemVariants} className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full border border-[#1e4a5d] bg-[#0d2833]/80 backdrop-blur-md text-[#bde0fe] text-xs font-semibold uppercase tracking-wider mb-6 shadow-sm">
+              <motion.div variants={itemVariants} className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full border border-[var(--surface-border)] bg-[var(--surface-bg)] text-[var(--accent-teal)] text-xs font-semibold uppercase tracking-wider mb-6 shadow-sm">
                 <span className="w-2 h-2 rounded-full bg-[#1a7a8c] animate-pulse" />
                 <span>Coordinated Specialized Talent</span>
               </motion.div>
@@ -258,10 +259,10 @@ export const Home: React.FC = () => {
               {/* Headline */}
               <motion.h1
                 variants={itemVariants}
-                className="font-display font-extrabold text-4xl sm:text-5xl lg:text-6xl text-white leading-[1.08] tracking-tight mb-5"
+                className="font-display font-extrabold text-4xl sm:text-5xl lg:text-6xl text-[var(--text-main)] leading-[1.08] tracking-tight mb-5"
               >
                 Your Digital Work.<br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#bde0fe] via-[#8ecae6] to-[#1a7a8c]">
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#0ea5e9] via-[#1a7a8c] to-[#0284c7]">
                   Handled by Skilled People.
                 </span>
               </motion.h1>
@@ -269,7 +270,7 @@ export const Home: React.FC = () => {
               {/* Subtitle */}
               <motion.p
                 variants={itemVariants}
-                className="text-base sm:text-lg text-slate-300 max-w-xl leading-relaxed mb-8"
+                className="text-base sm:text-lg text-[var(--text-muted)] max-w-xl leading-relaxed mb-8"
               >
                 From custom web development and UI/UX design to AI automations, growth marketing, and cybersecurity — DigiHust unites verified specialists into unified project squads.
               </motion.p>
@@ -291,7 +292,7 @@ export const Home: React.FC = () => {
                 <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                   <Link
                     to="/services"
-                    className="flex items-center space-x-2 px-7 py-3.5 rounded-xl border border-[#1e4a5d] hover:border-[#1a7a8c] text-slate-200 font-bold text-sm sm:text-base bg-[#0d2833]/60 hover:bg-[#1a7a8c]/15 transition-all"
+                    className="flex items-center space-x-2 px-7 py-3.5 rounded-xl border border-[var(--surface-border)] hover:border-[#1a7a8c] text-[var(--text-main)] font-bold text-sm sm:text-base bg-[var(--surface-bg)] hover:bg-[#1a7a8c]/15 transition-all"
                   >
                     <span>Explore Capabilities</span>
                   </Link>
@@ -301,16 +302,16 @@ export const Home: React.FC = () => {
               {/* Service tags strip */}
               <motion.div
                 variants={itemVariants}
-                className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs font-semibold text-slate-400"
+                className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs font-semibold text-[var(--text-muted)]"
               >
-                <span className="text-[#bde0fe] flex items-center gap-1 font-bold">
+                <span className="text-[#1a7a8c] flex items-center gap-1 font-bold">
                   <Orbit className="w-3.5 h-3.5 text-[#1a7a8c]" />
                   Active Squads:
                 </span>
                 {['Web Engineering', 'Design Systems', 'AI Automations', 'Growth Marketing', 'Cybersecurity', 'BI Dashboards'].map((t, i) => (
                   <React.Fragment key={t}>
-                    {i > 0 && <span className="text-[#1e4a5d] hidden sm:inline">·</span>}
-                    <span className="hover:text-[#bde0fe] transition-colors">{t}</span>
+                    {i > 0 && <span className="text-[var(--surface-border)] hidden sm:inline">·</span>}
+                    <span className="hover:text-[var(--accent-teal)] transition-colors">{t}</span>
                   </React.Fragment>
                 ))}
               </motion.div>
@@ -324,7 +325,7 @@ export const Home: React.FC = () => {
               data-cursor="orbit"
               className="lg:col-span-6 xl:col-span-5 relative flex flex-col items-center justify-center"
             >
-              <div className="w-full relative rounded-3xl bg-[#0d2833]/40 border border-[#1e4a5d]/50 backdrop-blur-sm p-2 sm:p-4 shadow-2xl">
+              <div className="w-full relative rounded-3xl bg-[var(--surface-bg)] border border-[var(--surface-border)] backdrop-blur-sm p-2 sm:p-4 shadow-2xl">
                 <RadialOrbitalTimeline
                   timelineData={defaultServicesTimelineData}
                   embedded={true}
@@ -332,7 +333,7 @@ export const Home: React.FC = () => {
                 />
                 
                 <div className="text-center pt-2 pb-1">
-                  <p className="text-[11px] font-bold text-slate-400 flex items-center justify-center gap-1.5">
+                  <p className="text-[11px] font-bold text-[var(--text-muted)] flex items-center justify-center gap-1.5">
                     <span className="w-1.5 h-1.5 rounded-full bg-[#1a7a8c] animate-ping" />
                     <span>Click any orbiting service node or central hub to explore</span>
                   </p>
@@ -342,13 +343,38 @@ export const Home: React.FC = () => {
 
           </div>
         </div>
+
+        {/* Animated Floating Scroll Cue */}
+        <motion.div
+          initial={{ opacity: 0, y: -8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.9, duration: 0.5 }}
+          className="w-full flex flex-col items-center justify-center pt-4 pb-2 relative z-20 scroll-cue"
+        >
+          <a
+            href="#capabilities"
+            aria-label="Scroll to core capabilities"
+            className="flex flex-col items-center space-y-1.5 text-xs text-[var(--text-muted)] hover:text-[#1a7a8c] transition-colors group cursor-pointer"
+          >
+            <div className="w-5 h-8 rounded-full border-2 border-[var(--surface-border)] group-hover:border-[#1a7a8c] flex items-start justify-center p-1 transition-colors shadow-sm">
+              <motion.div
+                animate={{ y: [0, 10, 0] }}
+                transition={{ duration: 1.6, repeat: Infinity, ease: 'easeInOut' }}
+                className="w-1 h-2 rounded-full bg-[#1a7a8c]"
+              />
+            </div>
+            <span className="text-[10px] font-bold uppercase tracking-widest opacity-70 group-hover:opacity-100 transition-opacity">
+              Scroll Down
+            </span>
+          </a>
+        </motion.div>
       </section>
 
       {/* ── CLIENT LOGO TRUST STRIP ── */}
-      <section className="bg-[#0a2530] border-b border-[#1e4a5d] py-6 px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-400">
-          <span className="font-bold uppercase tracking-wider text-[#bde0fe]">Trusted by Growing Global Brands:</span>
-          <div className="flex flex-wrap items-center gap-8 font-display font-extrabold text-sm text-slate-300 opacity-80">
+      <section className="bg-[var(--bg-secondary)] border-b border-[var(--surface-border)] py-6 px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[var(--text-muted)]">
+          <span className="font-bold uppercase tracking-wider text-[#1a7a8c]">Trusted by Growing Global Brands:</span>
+          <div className="flex flex-wrap items-center gap-8 font-display font-extrabold text-sm text-[var(--text-main)] opacity-85">
             <span>Estates Direct UK</span>
             <span>Veloce Motors</span>
             <span>Titan Healthcare</span>
@@ -359,7 +385,7 @@ export const Home: React.FC = () => {
       </section>
 
       {/* ── METRICS STRIP ── */}
-      <section className="bg-[#0d2833] border-b border-[#1e4a5d] py-10 px-6 lg:px-8">
+      <section className="bg-[var(--surface-bg)] border-b border-[var(--surface-border)] py-10 px-6 lg:px-8">
         <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8">
           {[
             { metric: '99.4%', label: 'On-Time Milestone Delivery', sub: 'Disciplined sprint management' },
@@ -375,22 +401,22 @@ export const Home: React.FC = () => {
               transition={{ duration: 0.4 }}
               className="text-center sm:text-left"
             >
-              <p className="font-display font-black text-3xl sm:text-4xl text-[#bde0fe] mb-1">{item.metric}</p>
-              <p className="text-sm font-bold text-white mb-0.5">{item.label}</p>
-              <p className="text-xs text-slate-400">{item.sub}</p>
+              <p className="font-display font-black text-3xl sm:text-4xl text-[#1a7a8c] mb-1">{item.metric}</p>
+              <p className="text-sm font-bold text-[var(--text-main)] mb-0.5">{item.label}</p>
+              <p className="text-xs text-[var(--text-muted)]">{item.sub}</p>
             </motion.div>
           ))}
         </div>
       </section>
 
-      {/* ── SECTION 2: SERVICES OVERVIEW (Light mood contrast) ── */}
-      <section className="bg-white py-24 px-6 lg:px-8 relative">
+      {/* ── SECTION 2: SERVICES OVERVIEW ── */}
+      <section id="capabilities" className="py-24 px-6 lg:px-8 relative">
         <div className="max-w-7xl mx-auto">
           <div className="mb-14 flex flex-col md:flex-row md:items-end md:justify-between gap-4">
             <div>
               <p className="text-xs font-extrabold text-[#1a7a8c] uppercase tracking-widest mb-3">Core Capabilities</p>
-              <h2 className="font-display font-extrabold text-4xl text-gray-900 mb-2">One Company. Every Digital Need.</h2>
-              <p className="text-base text-gray-500 max-w-xl">
+              <h2 className="font-display font-extrabold text-4xl text-[var(--text-main)] mb-2">One Company. Every Digital Need.</h2>
+              <p className="text-base text-[var(--text-muted)] max-w-xl">
                 Instead of hiring and managing 5 separate freelance silos, DigiHust executes your complete vision under one unified scope.
               </p>
             </div>
@@ -409,7 +435,7 @@ export const Home: React.FC = () => {
                 viewport={{ once: true }}
                 whileHover={{ y: -4 }}
                 transition={{ duration: 0.3 }}
-                className="group border border-gray-100 rounded-2xl p-7 hover:border-[#1a7a8c]/40 hover:shadow-xl transition-all bg-white flex flex-col justify-between"
+                className="group border border-[var(--surface-border)] rounded-2xl p-7 hover:border-[#1a7a8c]/50 hover:shadow-xl transition-all bg-[var(--surface-bg)] flex flex-col justify-between"
               >
                 <div>
                   <div
@@ -418,14 +444,14 @@ export const Home: React.FC = () => {
                   >
                     {svc.icon}
                   </div>
-                  <h3 className="font-display font-extrabold text-xl text-gray-900 mb-1">{svc.title}</h3>
-                  <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3">{svc.summary}</p>
-                  <p className="text-sm text-gray-600 leading-relaxed mb-5">{svc.description}</p>
+                  <h3 className="font-display font-extrabold text-xl text-[var(--text-main)] mb-1">{svc.title}</h3>
+                  <p className="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wide mb-3">{svc.summary}</p>
+                  <p className="text-sm text-[var(--text-muted)] leading-relaxed mb-5">{svc.description}</p>
                 </div>
                 <div>
                   <div className="flex flex-wrap gap-1.5 mb-5">
                     {svc.tags.map((t) => (
-                      <span key={t} className="text-[11px] px-2.5 py-1 rounded-lg bg-gray-50 text-gray-600 border border-gray-100 font-medium">
+                      <span key={t} className="text-[11px] px-2.5 py-1 rounded-lg bg-[var(--bg-main)] text-[var(--text-muted)] border border-[var(--surface-border)] font-medium">
                         {t}
                       </span>
                     ))}
@@ -444,8 +470,8 @@ export const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* ── SECTION 3: WHY DIGIHUST (Visual Model Diagram) ── */}
-      <section className="bg-[#071e26] py-24 px-6 lg:px-8 border-t border-[#1e4a5d]/60 relative">
+      {/* ── SECTION 3: WHY DIGIHUST ── */}
+      <section className="py-24 px-6 lg:px-8 border-t border-[var(--surface-border)] bg-[var(--bg-secondary)] relative">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <motion.div
@@ -455,13 +481,13 @@ export const Home: React.FC = () => {
               transition={{ duration: 0.5 }}
             >
               <p className="text-xs font-extrabold text-[#1a7a8c] uppercase tracking-widest mb-3">The Model Advantage</p>
-              <h2 className="font-display font-extrabold text-3xl sm:text-4xl text-white mb-6 leading-tight">
+              <h2 className="font-display font-extrabold text-3xl sm:text-4xl text-[var(--text-main)] mb-6 leading-tight">
                 A Managed Digital Company — Not a Random Freelancer Roll.
               </h2>
-              <p className="text-base text-slate-300 leading-relaxed mb-6">
+              <p className="text-base text-[var(--text-muted)] leading-relaxed mb-6">
                 Directly managing five independent freelancers means five separate negotiations, misaligned timelines, blame-shifting, and inconsistent quality.
               </p>
-              <p className="text-base text-slate-300 leading-relaxed mb-8">
+              <p className="text-base text-[var(--text-muted)] leading-relaxed mb-8">
                 With DigiHust, you engage one professional entity. We architect the scope, assign verified specialists to their respective domains, and guarantee delivery under a single service-level agreement.
               </p>
               <div className="space-y-3.5">
@@ -473,7 +499,7 @@ export const Home: React.FC = () => {
                 ].map((point) => (
                   <div key={point} className="flex items-start space-x-3">
                     <CheckCircle2 className="w-5 h-5 text-[#1a7a8c] flex-shrink-0 mt-0.5" />
-                    <p className="text-sm text-slate-300">{point}</p>
+                    <p className="text-sm text-[var(--text-main)]">{point}</p>
                   </div>
                 ))}
               </div>
@@ -485,13 +511,13 @@ export const Home: React.FC = () => {
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5 }}
-              className="flex flex-col items-center select-none bg-[#0d2833] p-8 rounded-3xl border border-[#1e4a5d] shadow-2xl"
+              className="flex flex-col items-center select-none bg-[var(--surface-bg)] p-8 rounded-3xl border border-[var(--surface-border)] shadow-2xl"
             >
               {/* Client Box */}
-              <div className="w-48 py-3 px-6 rounded-xl bg-white text-gray-900 text-center font-bold text-sm shadow-md">
+              <div className="w-48 py-3 px-6 rounded-xl bg-[var(--bg-main)] text-[var(--text-main)] border border-[var(--surface-border)] text-center font-bold text-sm shadow-md">
                 Client Organization
               </div>
-              <div className="w-px h-6 bg-[#1e4a5d]" />
+              <div className="w-px h-6 bg-[var(--surface-border)]" />
 
               {/* DigiHust Core */}
               <div className="w-64 py-4 px-6 rounded-2xl bg-gradient-to-br from-[#1a7a8c] to-[#0d5966] text-white text-center font-extrabold text-base shadow-xl border border-[#1a7a8c]">
@@ -500,7 +526,7 @@ export const Home: React.FC = () => {
                   Single Accountable Entity
                 </p>
               </div>
-              <div className="w-px h-6 bg-[#1e4a5d]" />
+              <div className="w-px h-6 bg-[var(--surface-border)]" />
 
               {/* Specialized Squads */}
               <div className="grid grid-cols-3 gap-3 w-full">
@@ -532,10 +558,10 @@ export const Home: React.FC = () => {
                   </div>
                 ))}
               </div>
-              <div className="w-px h-6 bg-[#1e4a5d] mt-3" />
+              <div className="w-px h-6 bg-[var(--surface-border)] mt-3" />
 
               {/* Final Delivered Output */}
-              <div className="w-60 py-3.5 px-6 rounded-xl bg-emerald-500/20 border border-emerald-500/50 text-emerald-300 text-center font-bold text-sm shadow-inner">
+              <div className="w-60 py-3.5 px-6 rounded-xl bg-emerald-500/20 border border-emerald-500/50 text-emerald-400 text-center font-bold text-sm shadow-inner">
                 ✓ Unified Delivered Solution
               </div>
             </motion.div>
@@ -543,13 +569,13 @@ export const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* ── SECTION 4: SELECTED WORK (Case Studies with data-cursor) ── */}
-      <section className="bg-white py-24 px-6 lg:px-8">
+      {/* ── SECTION 4: SELECTED WORK ── */}
+      <section className="py-24 px-6 lg:px-8 bg-[var(--bg-main)]">
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between mb-12 gap-4">
             <div>
               <p className="text-xs font-extrabold text-[#1a7a8c] uppercase tracking-widest mb-3">Case Studies</p>
-              <h2 className="font-display font-extrabold text-4xl text-gray-900">Selected Work</h2>
+              <h2 className="font-display font-extrabold text-4xl text-[var(--text-main)]">Selected Work</h2>
             </div>
             <Link
               to="/work"
@@ -570,7 +596,7 @@ export const Home: React.FC = () => {
                 whileHover={{ y: -4 }}
                 transition={{ duration: 0.3 }}
                 data-cursor="view"
-                className="group border border-gray-200/80 rounded-2xl overflow-hidden bg-white hover:border-[#1a7a8c] hover:shadow-xl transition-all cursor-pointer flex flex-col justify-between"
+                className="group border border-[var(--surface-border)] rounded-2xl overflow-hidden bg-[var(--surface-bg)] hover:border-[#1a7a8c] hover:shadow-xl transition-all cursor-pointer flex flex-col justify-between"
               >
                 <div>
                   <div className="aspect-video overflow-hidden relative bg-gray-100">
@@ -587,14 +613,14 @@ export const Home: React.FC = () => {
                     <p className="text-[11px] font-bold text-[#1a7a8c] uppercase tracking-wider mb-1">
                       {project.category}
                     </p>
-                    <h3 className="font-display font-bold text-lg text-gray-900 mb-3 group-hover:text-[#1a7a8c] transition-colors">
+                    <h3 className="font-display font-bold text-lg text-[var(--text-main)] mb-3 group-hover:text-[#1a7a8c] transition-colors">
                       {project.title}
                     </h3>
                     <div className="flex flex-wrap gap-1.5 mb-4">
                       {project.tags.map((t) => (
                         <span
                           key={t}
-                          className="text-[10px] px-2 py-0.5 rounded bg-gray-50 text-gray-600 border border-gray-100"
+                          className="text-[10px] px-2 py-0.5 rounded bg-[var(--bg-main)] text-[var(--text-muted)] border border-[var(--surface-border)]"
                         >
                           {t}
                         </span>
@@ -617,15 +643,15 @@ export const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* ── SECTION 5: VERIFIED TESTIMONIALS (Trust & Review Signals) ── */}
-      <section className="bg-[#071e26] py-24 px-6 lg:px-8 border-t border-[#1e4a5d]">
+      {/* ── SECTION 5: VERIFIED TESTIMONIALS ── */}
+      <section className="py-24 px-6 lg:px-8 border-t border-[var(--surface-border)] bg-[var(--bg-secondary)]">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16 max-w-2xl mx-auto">
             <p className="text-xs font-extrabold text-[#1a7a8c] uppercase tracking-widest mb-3">Client Feedback</p>
-            <h2 className="font-display font-extrabold text-3xl sm:text-4xl text-white mb-4">
+            <h2 className="font-display font-extrabold text-3xl sm:text-4xl text-[var(--text-main)] mb-4">
               What Founders Say About DigiHust
             </h2>
-            <p className="text-slate-300 text-sm">
+            <p className="text-[var(--text-muted)] text-sm">
               Real reviews from international organizations who trusted our managed talent squads.
             </p>
           </div>
@@ -637,7 +663,7 @@ export const Home: React.FC = () => {
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                className="p-8 rounded-3xl bg-[#0d2833] border border-[#1e4a5d] flex flex-col justify-between shadow-xl"
+                className="p-8 rounded-3xl bg-[var(--surface-bg)] border border-[var(--surface-border)] flex flex-col justify-between shadow-xl"
               >
                 <div>
                   <div className="flex items-center space-x-1 text-amber-400 mb-4">
@@ -645,16 +671,16 @@ export const Home: React.FC = () => {
                       <Star key={i} className="w-4 h-4 fill-amber-400" />
                     ))}
                   </div>
-                  <p className="text-sm text-slate-200 leading-relaxed italic mb-6">
+                  <p className="text-sm text-[var(--text-main)] leading-relaxed italic mb-6">
                     "{t.quote}"
                   </p>
                 </div>
 
-                <div className="flex items-center space-x-3.5 pt-4 border-t border-[#1e4a5d]">
+                <div className="flex items-center space-x-3.5 pt-4 border-t border-[var(--surface-border)]">
                   <img src={t.avatar} alt={t.name} className="w-10 h-10 rounded-full object-cover ring-2 ring-[#1a7a8c]/40" />
                   <div>
-                    <h4 className="font-bold text-white text-sm">{t.name}</h4>
-                    <p className="text-xs text-[#bde0fe]">{t.role}, {t.company}</p>
+                    <h4 className="font-bold text-[var(--text-main)] text-sm">{t.name}</h4>
+                    <p className="text-xs text-[#1a7a8c]">{t.role}, {t.company}</p>
                   </div>
                 </div>
               </motion.div>
@@ -664,14 +690,14 @@ export const Home: React.FC = () => {
       </section>
 
       {/* ── SECTION 6: TRANSPARENT INVESTMENT / PRICING PACKAGES ── */}
-      <section className="bg-white py-24 px-6 lg:px-8">
+      <section className="py-24 px-6 lg:px-8 bg-[var(--bg-main)]">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16 max-w-2xl mx-auto">
             <p className="text-xs font-extrabold text-[#1a7a8c] uppercase tracking-widest mb-3">Transparent Engagements</p>
-            <h2 className="font-display font-extrabold text-3xl sm:text-4xl text-gray-900 mb-4">
+            <h2 className="font-display font-extrabold text-3xl sm:text-4xl text-[var(--text-main)] mb-4">
               Project Investment Guide
             </h2>
-            <p className="text-gray-500 text-sm">
+            <p className="text-[var(--text-muted)] text-sm">
               Clear scope packages with milestone sign-offs. Custom enterprise scopes quoted within 24 hours.
             </p>
           </div>
@@ -686,8 +712,8 @@ export const Home: React.FC = () => {
                 whileHover={{ y: -4 }}
                 className={`rounded-3xl p-8 border flex flex-col justify-between transition-all ${
                   pkg.popular
-                    ? 'border-[#1a7a8c] bg-white shadow-2xl ring-2 ring-[#1a7a8c]/20 relative'
-                    : 'border-gray-200 bg-gray-50/50 hover:bg-white hover:shadow-lg'
+                    ? 'border-[#1a7a8c] bg-[var(--surface-bg)] shadow-2xl ring-2 ring-[#1a7a8c]/20 relative'
+                    : 'border-[var(--surface-border)] bg-[var(--surface-bg)] hover:shadow-lg'
                 }`}
               >
                 <div>
@@ -696,13 +722,13 @@ export const Home: React.FC = () => {
                       Most Popular
                     </span>
                   )}
-                  <h3 className="font-display font-bold text-xl text-gray-900 mb-1">{pkg.name}</h3>
+                  <h3 className="font-display font-bold text-xl text-[var(--text-main)] mb-1">{pkg.name}</h3>
                   <p className="text-2xl font-black text-[#1a7a8c] my-3">{pkg.price}</p>
-                  <p className="text-xs text-gray-500 leading-relaxed mb-6">{pkg.desc}</p>
+                  <p className="text-xs text-[var(--text-muted)] leading-relaxed mb-6">{pkg.desc}</p>
 
                   <div className="space-y-3 mb-8">
                     {pkg.features.map((feat) => (
-                      <div key={feat} className="flex items-start space-x-2.5 text-xs text-gray-700 font-medium">
+                      <div key={feat} className="flex items-start space-x-2.5 text-xs text-[var(--text-main)] font-medium">
                         <Check className="w-4 h-4 text-[#1a7a8c] flex-shrink-0 mt-0.5" />
                         <span>{feat}</span>
                       </div>
@@ -715,7 +741,7 @@ export const Home: React.FC = () => {
                   className={`w-full py-3.5 rounded-xl text-center font-bold text-xs sm:text-sm transition-all ${
                     pkg.popular
                       ? 'bg-[#1a7a8c] hover:bg-[#156575] text-white shadow-md'
-                      : 'border border-gray-300 hover:border-[#1a7a8c] text-gray-800 hover:text-[#1a7a8c] bg-white'
+                      : 'border border-[var(--surface-border)] hover:border-[#1a7a8c] text-[var(--text-main)] hover:text-[#1a7a8c] bg-[var(--bg-main)]'
                   }`}
                 >
                   Request Proposal for Scope
@@ -727,7 +753,7 @@ export const Home: React.FC = () => {
       </section>
 
       {/* ── SECTION 7: CALL TO ACTION ── */}
-      <section className="bg-[#071e26] py-24 px-6 lg:px-8 border-t border-[#1e4a5d] text-center relative overflow-hidden">
+      <section className="py-24 px-6 lg:px-8 border-t border-[var(--surface-border)] bg-[var(--bg-secondary)] text-center relative overflow-hidden">
         <div className="max-w-3xl mx-auto relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -735,10 +761,10 @@ export const Home: React.FC = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
           >
-            <h2 className="font-display font-extrabold text-4xl sm:text-5xl text-white mb-4">
+            <h2 className="font-display font-extrabold text-4xl sm:text-5xl text-[var(--text-main)] mb-4">
               Have a Project in Mind?
             </h2>
-            <p className="text-lg text-slate-300 mb-10 max-w-xl mx-auto">
+            <p className="text-lg text-[var(--text-muted)] mb-10 max-w-xl mx-auto">
               Submit your project scope today. We will review requirements and deliver a structured pricing proposal within 24 hours.
             </p>
             <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }} className="inline-block">

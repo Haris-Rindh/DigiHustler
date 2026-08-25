@@ -23,7 +23,6 @@ export const InteractiveCanvas: React.FC<InteractiveCanvasProps> = ({
     // Check for prefers-reduced-motion
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (prefersReducedMotion) {
-      // Just render static subtle gradient or sparse dots and exit
       return;
     }
 
@@ -35,7 +34,7 @@ export const InteractiveCanvas: React.FC<InteractiveCanvasProps> = ({
     const mouse = {
       x: -1000,
       y: -1000,
-      radius: 120,
+      radius: 130,
     };
 
     const handleMouseMove = (e: MouseEvent) => {
@@ -54,6 +53,7 @@ export const InteractiveCanvas: React.FC<InteractiveCanvasProps> = ({
       window.addEventListener('mouseleave', handleMouseLeave);
     }
 
+    // Adaptive resize with density recalculation
     const handleResize = () => {
       if (!canvas) return;
       width = canvas.width = canvas.parentElement?.clientWidth || window.innerWidth;
@@ -61,6 +61,7 @@ export const InteractiveCanvas: React.FC<InteractiveCanvasProps> = ({
     };
 
     window.addEventListener('resize', handleResize);
+    window.addEventListener('orientationchange', handleResize);
 
     // Particle class
     interface Particle {
@@ -73,8 +74,10 @@ export const InteractiveCanvas: React.FC<InteractiveCanvasProps> = ({
       baseAlpha: number;
     }
 
+    // Adjust particle count for screen width
+    const targetCount = width < 640 ? Math.round(particleCount * 0.6) : particleCount;
     const particles: Particle[] = [];
-    for (let i = 0; i < particleCount; i++) {
+    for (let i = 0; i < targetCount; i++) {
       const baseAlpha = Math.random() * 0.4 + 0.15;
       particles.push({
         x: Math.random() * width,
@@ -90,6 +93,9 @@ export const InteractiveCanvas: React.FC<InteractiveCanvasProps> = ({
     const render = () => {
       ctx.clearRect(0, 0, width, height);
 
+      // Check current theme
+      const isLight = document.documentElement.getAttribute('data-theme') === 'light' || document.documentElement.classList.contains('light');
+
       // Connect near particles
       for (let i = 0; i < particles.length; i++) {
         for (let j = i + 1; j < particles.length; j++) {
@@ -98,12 +104,14 @@ export const InteractiveCanvas: React.FC<InteractiveCanvasProps> = ({
           const dist = Math.sqrt(dx * dx + dy * dy);
 
           if (dist < 130) {
-            const lineAlpha = (1 - dist / 130) * 0.22;
+            const lineAlpha = (1 - dist / 130) * (isLight ? 0.18 : 0.22);
             ctx.beginPath();
             ctx.moveTo(particles[i].x, particles[i].y);
             ctx.lineTo(particles[j].x, particles[j].y);
-            ctx.strokeStyle = `rgba(189, 224, 254, ${lineAlpha})`;
-            ctx.lineWidth = 0.75;
+            ctx.strokeStyle = isLight
+              ? `rgba(14, 96, 112, ${lineAlpha})`
+              : `rgba(189, 224, 254, ${lineAlpha})`;
+            ctx.lineWidth = isLight ? 0.9 : 0.75;
             ctx.stroke();
           }
         }
@@ -141,13 +149,17 @@ export const InteractiveCanvas: React.FC<InteractiveCanvasProps> = ({
         // Draw node
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(26, 122, 140, ${p.alpha * 1.5})`;
+        ctx.fillStyle = isLight
+          ? `rgba(14, 96, 112, ${p.alpha * 1.8})`
+          : `rgba(26, 122, 140, ${p.alpha * 1.5})`;
         ctx.fill();
 
         // Inner glowing core
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.size * 0.5, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(189, 224, 254, ${p.alpha * 2})`;
+        ctx.fillStyle = isLight
+          ? `rgba(2, 132, 199, ${p.alpha * 2})`
+          : `rgba(189, 224, 254, ${p.alpha * 2})`;
         ctx.fill();
       }
 
@@ -159,6 +171,7 @@ export const InteractiveCanvas: React.FC<InteractiveCanvasProps> = ({
     return () => {
       cancelAnimationFrame(animationFrameId);
       window.removeEventListener('resize', handleResize);
+      window.removeEventListener('orientationchange', handleResize);
       if (interactive) {
         window.removeEventListener('mousemove', handleMouseMove);
         window.removeEventListener('mouseleave', handleMouseLeave);
