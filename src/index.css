@@ -2,93 +2,188 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ── LOCKED 5-HEX PALETTE & SEMANTIC TOKENS ── */
 :root,
 html[data-theme="dark"],
 html.dark {
-  --bg-main: #071e26;
-  --bg-secondary: #0a2530;
-  --surface-bg: #0d2833;
-  --surface-border: #1e4a5d;
-  --surface-hover: #153846;
-  --accent-teal: #1a7a8c;
-  --accent-teal-dark: #156575;
-  --accent-sky: #bde0fe;
-  --accent-emerald: #10b981;
-  --accent-amber: #f59e0b;
-  --accent-rose: #f43f5e;
-  --accent-glow: rgba(26, 122, 140, 0.35);
-  --text-main: #ffffff;
-  --text-muted: #94a3b8;
-  --canvas-particle: #1a7a8c;
-  --canvas-line: rgba(189, 224, 254, 0.12);
-  --orbit-ring: rgba(30, 74, 93, 0.6);
-  --orbit-ring-dashed: rgba(26, 122, 140, 0.3);
+  /* Base Palette */
+  --color-deep-navy: #022B3A;
+  --color-sea-teal: #1F7A8C;
+  --color-soft-periwinkle: #E1E5F2;
+  --color-cool-mist: #EFF1F5;
+  --color-white: #FFFFFF;
+
+  /* Status Tokens (Muted / In-Family) */
+  --color-status-error: #A85C4A;
+  --color-status-success: #1F7A8C;
+  --color-status-warning: #B08D57;
+
+  /* Semantic Resolved Tokens - Dark Mode */
+  --color-bg: #022B3A;
+  --color-surface: color-mix(in srgb, #022B3A 92%, #FFFFFF);
+  --color-surface-hover: color-mix(in srgb, #022B3A 86%, #FFFFFF);
+  --color-border: rgba(31, 122, 140, 0.22);
+  --color-border-hover: rgba(31, 122, 140, 0.45);
+  --color-border-solid: color-mix(in srgb, #022B3A 75%, #1F7A8C);
+  
+  --color-text-primary: #EFF1F5;
+  --color-text-secondary: rgba(239, 241, 245, 0.70);
+  --color-text-muted: rgba(239, 241, 245, 0.45);
+  
+  --color-accent: #1F7A8C;
+  --color-accent-fill: #1F7A8C;
+  --color-accent-hover: color-mix(in srgb, #1F7A8C 88%, #022B3A);
+  --color-accent-muted: rgba(31, 122, 140, 0.18);
+
+  --canvas-particle: #1F7A8C;
+  --canvas-line: rgba(225, 229, 242, 0.12);
+  --orbit-ring: rgba(31, 122, 140, 0.35);
+  --orbit-ring-dashed: rgba(31, 122, 140, 0.22);
+
+  /* Legacy Backward-Compatibility Variables (Points strictly to locked tokens) */
+  --bg-main: var(--color-bg);
+  --bg-secondary: var(--color-surface);
+  --surface-bg: var(--color-surface);
+  --surface-border: var(--color-border);
+  --surface-hover: var(--color-surface-hover);
+  --accent-teal: var(--color-accent);
+  --accent-teal-dark: var(--color-accent-hover);
+  --accent-sky: var(--color-soft-periwinkle);
+  --text-main: var(--color-text-primary);
+  --text-muted: var(--color-text-secondary);
+
+  /* ── shadcn/ui & Radix Semantic Variable Mapping ── */
+  --background: var(--color-bg);
+  --foreground: var(--color-text-primary);
+  --card: var(--color-surface);
+  --card-foreground: var(--color-text-primary);
+  --popover: var(--color-surface);
+  --popover-foreground: var(--color-text-primary);
+  --primary: var(--color-accent-fill);
+  --primary-foreground: #EFF1F5;
+  --secondary: var(--color-surface-hover);
+  --secondary-foreground: var(--color-text-primary);
+  --muted: var(--color-surface-hover);
+  --muted-foreground: var(--color-text-secondary);
+  --accent: var(--color-accent);
+  --accent-foreground: #EFF1F5;
+  --destructive: var(--color-status-error);
+  --destructive-foreground: #EFF1F5;
+  --border: var(--color-border);
+  --input: var(--color-border);
+  --ring: var(--color-accent);
+  --radius: 0.85rem;
 }
 
-/* Gentle Sea Breeze Oceanic Light Theme */
+/* ── Light Mode Token Overrides ── */
 html[data-theme="light"],
 html.light {
-  --bg-main: #f0f7f9;
-  --bg-secondary: #e5eff2;
-  --surface-bg: #ffffff;
-  --surface-border: #cbdfe6;
-  --surface-hover: #f4f9fb;
-  --accent-teal: #0e6070;
-  --accent-teal-dark: #0b4a57;
-  --accent-sky: #0284c7;
-  --accent-emerald: #059669;
-  --accent-amber: #d97706;
-  --accent-rose: #e11d48;
-  --accent-glow: rgba(14, 96, 112, 0.18);
-  --text-main: #071e26;
-  --text-muted: #4b6a75;
-  --canvas-particle: #0e6070;
-  --canvas-line: rgba(14, 96, 112, 0.16);
-  --orbit-ring: rgba(203, 223, 230, 0.9);
-  --orbit-ring-dashed: rgba(14, 96, 112, 0.35);
+  --color-bg: #EFF1F5;
+  --color-surface: #FFFFFF;
+  --color-surface-hover: color-mix(in srgb, #FFFFFF 92%, #E1E5F2);
+  --color-border: #E1E5F2;
+  --color-border-hover: color-mix(in srgb, #E1E5F2 75%, #1F7A8C);
+  --color-border-solid: #E1E5F2;
+
+  --color-text-primary: #022B3A;
+  --color-text-secondary: rgba(2, 43, 58, 0.72);
+  --color-text-muted: rgba(2, 43, 58, 0.48);
+
+  --color-accent: #1F7A8C;
+  --color-accent-fill: color-mix(in srgb, #1F7A8C 88%, #022B3A);
+  --color-accent-hover: color-mix(in srgb, #1F7A8C 78%, #022B3A);
+  --color-accent-muted: rgba(31, 122, 140, 0.12);
+
+  --canvas-particle: #1F7A8C;
+  --canvas-line: rgba(31, 122, 140, 0.15);
+  --orbit-ring: rgba(225, 229, 242, 0.95);
+  --orbit-ring-dashed: rgba(31, 122, 140, 0.28);
+
+  /* Legacy Backward-Compatibility Variables */
+  --bg-main: var(--color-bg);
+  --bg-secondary: var(--color-surface);
+  --surface-bg: var(--color-surface);
+  --surface-border: var(--color-border);
+  --surface-hover: var(--color-surface-hover);
+  --accent-teal: var(--color-accent);
+  --accent-teal-dark: var(--color-accent-hover);
+  --accent-sky: var(--color-sea-teal);
+  --text-main: var(--color-text-primary);
+  --text-muted: var(--color-text-secondary);
+
+  /* shadcn/ui Remapping for Light Mode */
+  --background: var(--color-bg);
+  --foreground: var(--color-text-primary);
+  --card: var(--color-surface);
+  --card-foreground: var(--color-text-primary);
+  --popover: var(--color-surface);
+  --popover-foreground: var(--color-text-primary);
+  --primary: var(--color-accent-fill);
+  --primary-foreground: #FFFFFF;
+  --secondary: var(--color-surface-hover);
+  --secondary-foreground: var(--color-text-primary);
+  --muted: var(--color-surface-hover);
+  --muted-foreground: var(--color-text-secondary);
+  --accent: var(--color-accent);
+  --accent-foreground: #FFFFFF;
+  --destructive: var(--color-status-error);
+  --destructive-foreground: #FFFFFF;
+  --border: var(--color-border);
+  --input: var(--color-border);
+  --ring: var(--color-accent);
 }
 
-/* Base Body Styles with Smooth Theme Crossfade */
+/* Base Body Styles with Matte Texture */
 body {
-  background-color: var(--bg-main);
-  background-image: 
-    linear-gradient(to bottom, rgba(7, 30, 38, 0.95), rgba(7, 30, 38, 1)),
-    radial-gradient(circle at 50% 0%, rgba(26, 122, 140, 0.12) 0%, transparent 60%);
-  background-attachment: fixed;
-  color: var(--text-main);
-  transition: background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1), color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background-color: var(--color-bg);
+  color: var(--color-text-primary);
+  transition: background-color 0.25s ease, color 0.25s ease;
   overflow-x: hidden;
 }
 
-html[data-theme="light"] body {
-  background-color: var(--bg-main);
-  background-image: 
-    linear-gradient(to bottom, rgba(240, 247, 249, 0.96), rgba(240, 247, 249, 1)),
-    radial-gradient(circle at 50% 0%, rgba(14, 96, 112, 0.08) 0%, transparent 60%);
-  color: var(--text-main);
-}
-
-/* Card Surface Utilities */
+/* Matte Card Surface Utilities */
+.matte-card,
 .breeze-card {
-  background-color: var(--surface-bg);
-  border: 1px solid var(--surface-border);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.18);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  box-shadow: 0 4px 20px rgba(2, 43, 58, 0.12);
   border-radius: 1.25rem;
-  transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+  transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-html[data-theme="light"] .breeze-card {
-  box-shadow: 0 4px 20px rgba(7, 30, 38, 0.06);
-}
-
-.breeze-card-hover {
-  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
-}
-
+.matte-card:hover,
 .breeze-card-hover:hover {
-  border-color: var(--accent-teal);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+  border-color: var(--color-border-hover);
+  box-shadow: 0 8px 30px rgba(2, 43, 58, 0.20);
+}
+
+/* Primary Button with Darken-On-Hover Rule */
+.matte-btn-primary,
+.breeze-btn-primary {
+  background-color: var(--color-accent-fill);
+  color: #EFF1F5;
+  font-weight: 700;
+  transition: background-color 0.15s ease, transform 0.15s ease;
+}
+
+.matte-btn-primary:hover,
+.breeze-btn-primary:hover {
+  background-color: var(--color-accent-hover);
+  transform: translateY(-1px);
+}
+
+/* Secondary Button with Matte Border */
+.matte-btn-secondary {
+  background-color: transparent;
+  border: 1px solid var(--color-border);
+  color: var(--color-text-primary);
+  font-weight: 700;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.matte-btn-secondary:hover {
+  background-color: var(--color-surface-hover);
+  border-color: var(--color-border-hover);
 }
 
 /* Safe Area Inset Support for PWA / Notched Devices */
@@ -100,23 +195,23 @@ html[data-theme="light"] .breeze-card {
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
-/* Custom Scrollbar */
+/* Custom Matte Scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--bg-main);
+  background: var(--color-bg);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--surface-border);
+  background: var(--color-border);
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--accent-teal);
+  background: var(--color-accent);
 }
 
 /* Reduced Motion Override */
@@ -129,11 +224,11 @@ html[data-theme="light"] .breeze-card {
   }
 }
 
-/* Print-Friendly Proposal & Case Study Export Styles */
+/* Print-Friendly Styles */
 @media print {
   body {
     background: #ffffff !important;
-    color: #000000 !important;
+    color: #022B3A !important;
   }
 
   header, footer, .fixed, nav, button, [data-cursor], .scroll-cue {
@@ -154,6 +249,6 @@ html[data-theme="light"] .breeze-card {
 
   a {
     text-decoration: underline !important;
-    color: #000000 !important;
+    color: #022B3A !important;
   }
 }

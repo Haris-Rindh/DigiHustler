@@ -21,7 +21,7 @@ export const OfflinePage: React.FC = () => {
   };
 
   return (
-    <div className="pt-24 pb-20 min-h-[85vh] flex items-center justify-center px-6 lg:px-8 bg-[#071e26] relative overflow-hidden">
+    <div className="pt-24 pb-20 min-h-[85vh] flex items-center justify-center px-6 lg:px-8 bg-[var(--color-bg)] relative overflow-hidden">
       <SEOHead
         title="Offline — Network Connection Lost"
         description="Your internet connection appears to be offline. Reconnect to browse DigiHust."
@@ -32,7 +32,7 @@ export const OfflinePage: React.FC = () => {
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5, ease: 'easeOut' }}
-          className="inline-flex items-center justify-center w-24 h-24 rounded-3xl bg-[#0d2833] border border-amber-500/40 shadow-2xl mb-8"
+          className="inline-flex items-center justify-center w-24 h-24 rounded-3xl bg-[var(--color-surface)] border border-amber-500/40 shadow-2xl mb-8"
         >
           <WifiOff className="w-12 h-12 text-amber-400" />
         </motion.div>
@@ -73,7 +73,7 @@ export const OfflinePage: React.FC = () => {
           <button
             onClick={checkConnection}
             disabled={checking}
-            className="w-full sm:w-auto flex items-center justify-center space-x-2 px-8 py-4 rounded-xl bg-[#1a7a8c] hover:bg-[#156575] text-white font-bold shadow-lg transition-all disabled:opacity-50"
+            className="w-full sm:w-auto flex items-center justify-center space-x-2 px-8 py-4 rounded-xl bg-[var(--color-accent-fill)] hover:bg-[var(--color-accent-hover)] text-white font-bold shadow-lg transition-all disabled:opacity-50"
           >
             <RotateCw className={`w-4 h-4 ${checking ? 'animate-spin' : ''}`} />
             <span>{checking ? 'Testing Connection...' : 'Test Connection Again'}</span>
@@ -86,7 +86,7 @@ export const OfflinePage: React.FC = () => {
             <span>Connection restored! Redirecting...</span>
           </div>
         ) : (
-          <div className="p-3 rounded-xl bg-[#0d2833] border border-[#1e4a5d] inline-flex items-center space-x-2 text-xs text-slate-400">
+          <div className="p-3 rounded-xl bg-[var(--color-surface)] border border-[var(--color-border)] inline-flex items-center space-x-2 text-xs text-slate-400">
             <AlertCircle className="w-4 h-4 text-amber-400" />
             <span>Cached project brief drafts remain safe in your local browser storage.</span>
           </div>

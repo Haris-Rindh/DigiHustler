@@ -30,12 +30,12 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       root.classList.remove('dark');
       root.classList.add('light');
       const meta = document.getElementById('theme-color-meta') || document.querySelector('meta[name="theme-color"]');
-      if (meta) meta.setAttribute('content', '#f0f7f9');
+      if (meta) meta.setAttribute('content', '#EFF1F5');
     } else {
       root.classList.remove('light');
       root.classList.add('dark');
       const meta = document.getElementById('theme-color-meta') || document.querySelector('meta[name="theme-color"]');
-      if (meta) meta.setAttribute('content', '#071e26');
+      if (meta) meta.setAttribute('content', '#022B3A');
     }
 
     localStorage.setItem(THEME_STORAGE_KEY, theme);

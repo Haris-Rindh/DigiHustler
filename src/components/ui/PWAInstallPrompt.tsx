@@ -54,10 +54,10 @@ export const PWAInstallPrompt: React.FC = () => {
         initial={{ opacity: 0, y: 30, scale: 0.95 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         exit={{ opacity: 0, y: 30, scale: 0.95 }}
-        className="fixed bottom-4 left-4 z-50 p-4 rounded-2xl bg-[#0d2833]/95 backdrop-blur-md border border-[#1a7a8c] shadow-2xl text-white max-w-sm flex items-center justify-between gap-3.5"
+        className="fixed bottom-4 left-4 z-50 p-4 rounded-2xl bg-[var(--color-surface)]/95 backdrop-blur-md border border-[var(--color-accent)] shadow-2xl text-white max-w-sm flex items-center justify-between gap-3.5"
       >
         <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#1a7a8c] to-[#0ea5e9] flex items-center justify-center text-white shadow-md flex-shrink-0">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#022B3A] via-[#1F7A8C] to-[#E1E5F2] flex items-center justify-center text-white shadow-md flex-shrink-0">
             <Download className="w-5 h-5" />
           </div>
           <div>
@@ -72,7 +72,7 @@ export const PWAInstallPrompt: React.FC = () => {
         <div className="flex items-center space-x-1.5 flex-shrink-0">
           <button
             onClick={handleInstallClick}
-            className="px-3 py-1.5 rounded-lg bg-[#1a7a8c] hover:bg-[#156575] text-white font-bold text-xs shadow transition-colors"
+            className="px-3 py-1.5 rounded-lg bg-[var(--color-accent-fill)] hover:bg-[var(--color-accent-hover)] text-white font-bold text-xs shadow transition-colors"
           >
             Install
           </button>

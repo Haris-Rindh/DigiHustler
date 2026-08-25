@@ -69,7 +69,7 @@ export const ApplicantWorkflowQueue: React.FC = () => {
     <div className="space-y-6">
 
       {/* Filter Tabs */}
-      <div className="flex flex-wrap items-center justify-between gap-4 p-4 rounded-3xl bg-[#0d2833] border border-[#1e4a5d]">
+      <div className="flex flex-wrap items-center justify-between gap-4 p-4 rounded-3xl bg-[var(--color-surface)] border border-[var(--color-border)]">
         <div className="flex flex-wrap gap-2">
           {[
             { id: 'pending', label: 'Pending Review', count: applicants.filter((a) => a.status === 'pending').length },
@@ -83,8 +83,8 @@ export const ApplicantWorkflowQueue: React.FC = () => {
               onClick={() => setFilterTab(tab.id as any)}
               className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center space-x-1.5 ${
                 filterTab === tab.id
-                  ? 'bg-[#1a7a8c] text-white shadow-md'
-                  : 'bg-[#071e26] text-slate-400 hover:text-white border border-[#1e4a5d]'
+                  ? 'bg-[var(--color-accent-fill)] text-white shadow-md'
+                  : 'bg-[var(--color-bg)] text-slate-400 hover:text-white border border-[var(--color-border)]'
               }`}
             >
               <span>{tab.label}</span>
@@ -102,7 +102,7 @@ export const ApplicantWorkflowQueue: React.FC = () => {
 
       {/* Applicant Cards Grid */}
       {filteredApplicants.length === 0 ? (
-        <div className="p-12 text-center rounded-3xl bg-[#0d2833] border border-[#1e4a5d] text-slate-400 text-xs">
+        <div className="p-12 text-center rounded-3xl bg-[var(--color-surface)] border border-[var(--color-border)] text-slate-400 text-xs">
           No applicants currently in this review stage.
         </div>
       ) : (
@@ -115,7 +115,7 @@ export const ApplicantWorkflowQueue: React.FC = () => {
                 key={app.id}
                 initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="p-6 rounded-3xl bg-[#0d2833] border border-[#1e4a5d] flex flex-col justify-between shadow-xl space-y-4"
+                className="p-6 rounded-3xl bg-[var(--color-surface)] border border-[var(--color-border)] flex flex-col justify-between shadow-xl space-y-4"
               >
                 <div>
                   <div className="flex items-start justify-between gap-3 mb-2">
@@ -131,13 +131,13 @@ export const ApplicantWorkflowQueue: React.FC = () => {
                     </div>
 
                     {group && (
-                      <span className="text-[11px] font-bold text-[#bde0fe] bg-[#1a7a8c]/20 px-2.5 py-1 rounded-xl border border-[#1a7a8c]/40">
+                      <span className="text-[11px] font-bold text-[var(--color-text-primary)] bg-[var(--color-accent-fill)]/20 px-2.5 py-1 rounded-xl border border-[var(--color-accent)]/40">
                         {group.name}
                       </span>
                     )}
                   </div>
 
-                  <div className="grid grid-cols-2 gap-2 text-xs text-slate-300 my-3 p-3 rounded-xl bg-[#071e26] border border-[#1e4a5d]">
+                  <div className="grid grid-cols-2 gap-2 text-xs text-slate-300 my-3 p-3 rounded-xl bg-[var(--color-bg)] border border-[var(--color-border)]">
                     <div>
                       <span className="text-slate-500 block text-[10px]">Email:</span>
                       <span className="font-semibold text-white">{app.email}</span>
@@ -159,7 +159,7 @@ export const ApplicantWorkflowQueue: React.FC = () => {
                     {app.specialties.map((s) => (
                       <span
                         key={s}
-                        className="px-2 py-0.5 rounded bg-[#071e26] text-slate-300 text-[10px] border border-[#1e4a5d]"
+                        className="px-2 py-0.5 rounded bg-[var(--color-bg)] text-slate-300 text-[10px] border border-[var(--color-border)]"
                       >
                         {s}
                       </span>
@@ -172,7 +172,7 @@ export const ApplicantWorkflowQueue: React.FC = () => {
                       href={app.portfolioUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center space-x-1 text-xs font-bold text-[#1a7a8c] hover:underline"
+                      className="inline-flex items-center space-x-1 text-xs font-bold text-[var(--color-accent)] hover:underline"
                     >
                       <span>View Portfolio / GitHub</span>
                       <ExternalLink className="w-3 h-3" />
@@ -195,7 +195,7 @@ export const ApplicantWorkflowQueue: React.FC = () => {
 
                 {/* Workflow Actions (Management Only) */}
                 {isManagement && app.status !== 'approved' && (
-                  <div className="pt-4 border-t border-[#1e4a5d] flex flex-wrap items-center justify-between gap-2">
+                  <div className="pt-4 border-t border-[var(--color-border)] flex flex-wrap items-center justify-between gap-2">
                     <div className="flex items-center space-x-2">
                       <button
                         onClick={() => handleApprove(app.id, app.preferredGroupId)}
@@ -235,7 +235,7 @@ export const ApplicantWorkflowQueue: React.FC = () => {
           <motion.div
             initial={{ scale: 0.95, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className="bg-[#0d2833] border border-[#1e4a5d] rounded-2xl p-6 max-w-md w-full shadow-2xl space-y-4"
+            className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-6 max-w-md w-full shadow-2xl space-y-4"
           >
             <h3 className="font-bold text-lg text-white">Record Rejection Reason</h3>
             <p className="text-xs text-slate-300">
@@ -248,14 +248,14 @@ export const ApplicantWorkflowQueue: React.FC = () => {
               value={rejectReason}
               onChange={(e) => setRejectReason(e.target.value)}
               placeholder="e.g. Portfolio does not contain live React production samples."
-              className="w-full px-3 py-2 rounded-xl bg-[#071e26] border border-[#1e4a5d] text-white text-xs focus:outline-none focus:border-[#1a7a8c]"
+              className="w-full px-3 py-2 rounded-xl bg-[var(--color-bg)] border border-[var(--color-border)] text-white text-xs focus:outline-none focus:border-[var(--color-accent)]"
             />
 
             <div className="flex justify-end space-x-2 pt-2">
               <button
                 type="button"
                 onClick={() => setRejectModalAppId(null)}
-                className="px-4 py-2 rounded-xl border border-[#1e4a5d] text-xs text-slate-300"
+                className="px-4 py-2 rounded-xl border border-[var(--color-border)] text-xs text-slate-300"
               >
                 Cancel
               </button>
@@ -277,7 +277,7 @@ export const ApplicantWorkflowQueue: React.FC = () => {
           <motion.div
             initial={{ scale: 0.95, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className="bg-[#0d2833] border border-[#1e4a5d] rounded-2xl p-6 max-w-md w-full shadow-2xl space-y-4"
+            className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-6 max-w-md w-full shadow-2xl space-y-4"
           >
             <h3 className="font-bold text-lg text-white">Request More Information</h3>
             <p className="text-xs text-slate-300">
@@ -290,21 +290,21 @@ export const ApplicantWorkflowQueue: React.FC = () => {
               value={infoNotes}
               onChange={(e) => setInfoNotes(e.target.value)}
               placeholder="e.g. Please provide your live Figma link or GitHub profile."
-              className="w-full px-3 py-2 rounded-xl bg-[#071e26] border border-[#1e4a5d] text-white text-xs focus:outline-none focus:border-[#1a7a8c]"
+              className="w-full px-3 py-2 rounded-xl bg-[var(--color-bg)] border border-[var(--color-border)] text-white text-xs focus:outline-none focus:border-[var(--color-accent)]"
             />
 
             <div className="flex justify-end space-x-2 pt-2">
               <button
                 type="button"
                 onClick={() => setInfoModalAppId(null)}
-                className="px-4 py-2 rounded-xl border border-[#1e4a5d] text-xs text-slate-300"
+                className="px-4 py-2 rounded-xl border border-[var(--color-border)] text-xs text-slate-300"
               >
                 Cancel
               </button>
               <button
                 type="button"
                 onClick={handleInfoSubmit}
-                className="px-5 py-2 rounded-xl bg-[#1a7a8c] hover:bg-[#156575] text-white font-bold text-xs"
+                className="px-5 py-2 rounded-xl bg-[var(--color-accent-fill)] hover:bg-[var(--color-accent-hover)] text-white font-bold text-xs"
               >
                 Flag for Follow-up
               </button>

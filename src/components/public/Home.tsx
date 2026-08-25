@@ -34,7 +34,7 @@ const SERVICES = [
     summary: 'Websites · Web Apps · APIs · Full Stack',
     description: 'Fast, scalable, and responsive digital products built with React, Next.js, Node.js, and modern cloud architecture.',
     tags: ['React', 'Next.js', 'Node.js', 'PostgreSQL'],
-    color: '#1a7a8c',
+    color: '#1F7A8C',
   },
   {
     icon: <Palette className="w-6 h-6" />,
@@ -42,7 +42,7 @@ const SERVICES = [
     summary: 'Brand Identity · UI/UX · Figma · Motion',
     description: 'Visual identities and user-friendly interfaces designed to elevate brand authority and convert visitors into customers.',
     tags: ['Brand Identity', 'UI/UX Design', 'Figma', 'Motion'],
-    color: '#8b5cf6',
+    color: '#1F7A8C',
   },
   {
     icon: <Cpu className="w-6 h-6" />,
@@ -50,7 +50,7 @@ const SERVICES = [
     summary: 'LLM Solutions · Chatbots · n8n · Workflows',
     description: 'Integrating customized AI models, workflow automations, and intelligent bots to eliminate repetitive business overhead.',
     tags: ['OpenAI', 'Python', 'n8n', 'Zapier'],
-    color: '#0ea5e9',
+    color: '#1F7A8C',
   },
   {
     icon: <TrendingUp className="w-6 h-6" />,
@@ -58,7 +58,7 @@ const SERVICES = [
     summary: 'Search Optimization · Ads · Content Growth',
     description: 'Targeted search engine optimization, performance ad campaigns, and authoritative content strategies that drive revenue.',
     tags: ['Technical SEO', 'Google Ads', 'Meta Ads', 'Copywriting'],
-    color: '#f59e0b',
+    color: '#B08D57',
   },
   {
     icon: <Shield className="w-6 h-6" />,
@@ -66,7 +66,7 @@ const SERVICES = [
     summary: 'Security Audits · Pen Testing · Hardening',
     description: 'Comprehensive vulnerability assessments, penetration testing, and security hardening for web applications and cloud servers.',
     tags: ['Pen Testing', 'OWASP Audit', 'Cloud Security'],
-    color: '#ef4444',
+    color: '#A85C4A',
   },
   {
     icon: <Database className="w-6 h-6" />,
@@ -74,7 +74,7 @@ const SERVICES = [
     summary: 'PowerBI · ETL · Analytics · Automation',
     description: 'Converting siloed data into actionable executive dashboards, automated reporting, and structured business insights.',
     tags: ['PowerBI', 'Data Pipelines', 'SQL', 'Analytics'],
-    color: '#10b981',
+    color: '#1F7A8C',
   },
 ];
 
@@ -84,13 +84,13 @@ const STEPS = [
     num: '01',
     title: 'Tell Us What You Need',
     desc: 'Submit your requirements via our structured quote intake. Whether you have a full functional specification or a preliminary concept, we refine the scope together.',
-    icon: <Zap className="w-5 h-5 text-[#bde0fe]" />,
+    icon: <Zap className="w-5 h-5 text-[var(--color-text-primary)]" />,
   },
   {
     num: '02',
     title: 'We Build the Right Team',
     desc: 'DigiHust identifies the exact disciplines needed and assembles verified Digiskill specialists under a single accountable lead. No generalist guesswork.',
-    icon: <Users2 className="w-5 h-5 text-[#1a7a8c]" />,
+    icon: <Users2 className="w-5 h-5 text-[var(--color-accent)]" />,
   },
   {
     num: '03',
@@ -176,7 +176,7 @@ const PACKAGES = [
       '14-Day Post-Launch Support & Warranty',
     ],
     popular: false,
-    color: '#1a7a8c',
+    color: '#1F7A8C',
   },
   {
     name: 'Complete Brand & Digital Suite',
@@ -190,7 +190,7 @@ const PACKAGES = [
       '30-Day Post-Launch Warranty & Staging Previews',
     ],
     popular: true,
-    color: '#0ea5e9',
+    color: '#1F7A8C',
   },
   {
     name: 'Dedicated Fractional Squad',
@@ -204,7 +204,7 @@ const PACKAGES = [
       'Monthly Retainer with Flexible Scope Shifts',
     ],
     popular: false,
-    color: '#8b5cf6',
+    color: '#1F7A8C',
   },
 ];
 
@@ -238,7 +238,7 @@ export const Home: React.FC = () => {
         <InteractiveCanvas particleCount={45} className="absolute inset-0 pointer-events-none opacity-60" />
 
         {/* Ambient radial glow */}
-        <div className="absolute top-1/3 left-1/3 -translate-x-1/2 -translate-y-1/2 w-[650px] h-[650px] bg-gradient-to-br from-[#1a7a8c]/15 via-[#0ea5e9]/5 to-transparent rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute top-1/3 left-1/3 -translate-x-1/2 -translate-y-1/2 w-[650px] h-[650px] bg-gradient-to-br from-[var(--color-accent)]/10 to-transparent rounded-full blur-3xl pointer-events-none" />
 
         <div className="max-w-7xl mx-auto w-full my-auto py-8 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8 items-center">
@@ -252,7 +252,7 @@ export const Home: React.FC = () => {
             >
               {/* Trust Pill */}
               <motion.div variants={itemVariants} className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full border border-[var(--surface-border)] bg-[var(--surface-bg)] text-[var(--accent-teal)] text-xs font-semibold uppercase tracking-wider mb-6 shadow-sm">
-                <span className="w-2 h-2 rounded-full bg-[#1a7a8c] animate-pulse" />
+                <span className="w-2 h-2 rounded-full bg-[var(--color-accent-fill)] animate-pulse" />
                 <span>Coordinated Specialized Talent</span>
               </motion.div>
 
@@ -262,7 +262,7 @@ export const Home: React.FC = () => {
                 className="font-display font-extrabold text-4xl sm:text-5xl lg:text-6xl text-[var(--text-main)] leading-[1.08] tracking-tight mb-5"
               >
                 Your Digital Work.<br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#0ea5e9] via-[#1a7a8c] to-[#0284c7]">
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#1F7A8C] to-[#022B3A]">
                   Handled by Skilled People.
                 </span>
               </motion.h1>
@@ -283,7 +283,7 @@ export const Home: React.FC = () => {
                 <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                   <Link
                     to="/contact"
-                    className="flex items-center space-x-2.5 px-7 py-3.5 rounded-xl bg-[#1a7a8c] hover:bg-[#156575] text-white font-bold text-sm sm:text-base shadow-xl shadow-[#1a7a8c]/25 transition-colors"
+                    className="flex items-center space-x-2.5 px-7 py-3.5 rounded-xl bg-[var(--color-accent-fill)] hover:bg-[var(--color-accent-hover)] text-white font-bold text-sm sm:text-base shadow-xl shadow-md transition-colors"
                   >
                     <span>Get a Scoped Quote</span>
                     <ArrowRight className="w-4 h-4" />
@@ -292,7 +292,7 @@ export const Home: React.FC = () => {
                 <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                   <Link
                     to="/services"
-                    className="flex items-center space-x-2 px-7 py-3.5 rounded-xl border border-[var(--surface-border)] hover:border-[#1a7a8c] text-[var(--text-main)] font-bold text-sm sm:text-base bg-[var(--surface-bg)] hover:bg-[#1a7a8c]/15 transition-all"
+                    className="flex items-center space-x-2 px-7 py-3.5 rounded-xl border border-[var(--surface-border)] hover:border-[var(--color-accent)] text-[var(--text-main)] font-bold text-sm sm:text-base bg-[var(--surface-bg)] hover:bg-[var(--color-accent-fill)]/15 transition-all"
                   >
                     <span>Explore Capabilities</span>
                   </Link>
@@ -304,8 +304,8 @@ export const Home: React.FC = () => {
                 variants={itemVariants}
                 className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs font-semibold text-[var(--text-muted)]"
               >
-                <span className="text-[#1a7a8c] flex items-center gap-1 font-bold">
-                  <Orbit className="w-3.5 h-3.5 text-[#1a7a8c]" />
+                <span className="text-[var(--color-accent)] flex items-center gap-1 font-bold">
+                  <Orbit className="w-3.5 h-3.5 text-[var(--color-accent)]" />
                   Active Squads:
                 </span>
                 {['Web Engineering', 'Design Systems', 'AI Automations', 'Growth Marketing', 'Cybersecurity', 'BI Dashboards'].map((t, i) => (
@@ -334,7 +334,7 @@ export const Home: React.FC = () => {
                 
                 <div className="text-center pt-2 pb-1">
                   <p className="text-[11px] font-bold text-[var(--text-muted)] flex items-center justify-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#1a7a8c] animate-ping" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-accent-fill)] animate-ping" />
                     <span>Click any orbiting service node or central hub to explore</span>
                   </p>
                 </div>
@@ -354,13 +354,13 @@ export const Home: React.FC = () => {
           <a
             href="#capabilities"
             aria-label="Scroll to core capabilities"
-            className="flex flex-col items-center space-y-1.5 text-xs text-[var(--text-muted)] hover:text-[#1a7a8c] transition-colors group cursor-pointer"
+            className="flex flex-col items-center space-y-1.5 text-xs text-[var(--text-muted)] hover:text-[var(--color-accent)] transition-colors group cursor-pointer"
           >
-            <div className="w-5 h-8 rounded-full border-2 border-[var(--surface-border)] group-hover:border-[#1a7a8c] flex items-start justify-center p-1 transition-colors shadow-sm">
+            <div className="w-5 h-8 rounded-full border-2 border-[var(--surface-border)] group-hover:border-[var(--color-accent)] flex items-start justify-center p-1 transition-colors shadow-sm">
               <motion.div
                 animate={{ y: [0, 10, 0] }}
                 transition={{ duration: 1.6, repeat: Infinity, ease: 'easeInOut' }}
-                className="w-1 h-2 rounded-full bg-[#1a7a8c]"
+                className="w-1 h-2 rounded-full bg-[var(--color-accent-fill)]"
               />
             </div>
             <span className="text-[10px] font-bold uppercase tracking-widest opacity-70 group-hover:opacity-100 transition-opacity">
@@ -373,7 +373,7 @@ export const Home: React.FC = () => {
       {/* ── CLIENT LOGO TRUST STRIP ── */}
       <section className="bg-[var(--bg-secondary)] border-b border-[var(--surface-border)] py-6 px-6 lg:px-8">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[var(--text-muted)]">
-          <span className="font-bold uppercase tracking-wider text-[#1a7a8c]">Trusted by Growing Global Brands:</span>
+          <span className="font-bold uppercase tracking-wider text-[var(--color-accent)]">Trusted by Growing Global Brands:</span>
           <div className="flex flex-wrap items-center gap-8 font-display font-extrabold text-sm text-[var(--text-main)] opacity-85">
             <span>Estates Direct UK</span>
             <span>Veloce Motors</span>
@@ -401,7 +401,7 @@ export const Home: React.FC = () => {
               transition={{ duration: 0.4 }}
               className="text-center sm:text-left"
             >
-              <p className="font-display font-black text-3xl sm:text-4xl text-[#1a7a8c] mb-1">{item.metric}</p>
+              <p className="font-display font-black text-3xl sm:text-4xl text-[var(--color-accent)] mb-1">{item.metric}</p>
               <p className="text-sm font-bold text-[var(--text-main)] mb-0.5">{item.label}</p>
               <p className="text-xs text-[var(--text-muted)]">{item.sub}</p>
             </motion.div>
@@ -414,13 +414,13 @@ export const Home: React.FC = () => {
         <div className="max-w-7xl mx-auto">
           <div className="mb-14 flex flex-col md:flex-row md:items-end md:justify-between gap-4">
             <div>
-              <p className="text-xs font-extrabold text-[#1a7a8c] uppercase tracking-widest mb-3">Core Capabilities</p>
+              <p className="text-xs font-extrabold text-[var(--color-accent)] uppercase tracking-widest mb-3">Core Capabilities</p>
               <h2 className="font-display font-extrabold text-4xl text-[var(--text-main)] mb-2">One Company. Every Digital Need.</h2>
               <p className="text-base text-[var(--text-muted)] max-w-xl">
                 Instead of hiring and managing 5 separate freelance silos, DigiHust executes your complete vision under one unified scope.
               </p>
             </div>
-            <Link to="/services" className="inline-flex items-center space-x-1.5 text-sm font-bold text-[#1a7a8c] hover:underline">
+            <Link to="/services" className="inline-flex items-center space-x-1.5 text-sm font-bold text-[var(--color-accent)] hover:underline">
               <span>View all services in detail</span>
               <ArrowRight className="w-4 h-4" />
             </Link>
@@ -435,7 +435,7 @@ export const Home: React.FC = () => {
                 viewport={{ once: true }}
                 whileHover={{ y: -4 }}
                 transition={{ duration: 0.3 }}
-                className="group border border-[var(--surface-border)] rounded-2xl p-7 hover:border-[#1a7a8c]/50 hover:shadow-xl transition-all bg-[var(--surface-bg)] flex flex-col justify-between"
+                className="group border border-[var(--surface-border)] rounded-2xl p-7 hover:border-[var(--color-accent)]/50 hover:shadow-xl transition-all bg-[var(--surface-bg)] flex flex-col justify-between"
               >
                 <div>
                   <div
@@ -458,7 +458,7 @@ export const Home: React.FC = () => {
                   </div>
                   <Link
                     to="/services"
-                    className="inline-flex items-center space-x-1 text-sm font-bold text-[#1a7a8c] group-hover:translate-x-1 transition-transform"
+                    className="inline-flex items-center space-x-1 text-sm font-bold text-[var(--color-accent)] group-hover:translate-x-1 transition-transform"
                   >
                     <span>Explore Service</span>
                     <ChevronRight className="w-4 h-4" />
@@ -480,7 +480,7 @@ export const Home: React.FC = () => {
               viewport={{ once: true }}
               transition={{ duration: 0.5 }}
             >
-              <p className="text-xs font-extrabold text-[#1a7a8c] uppercase tracking-widest mb-3">The Model Advantage</p>
+              <p className="text-xs font-extrabold text-[var(--color-accent)] uppercase tracking-widest mb-3">The Model Advantage</p>
               <h2 className="font-display font-extrabold text-3xl sm:text-4xl text-[var(--text-main)] mb-6 leading-tight">
                 A Managed Digital Company — Not a Random Freelancer Roll.
               </h2>
@@ -498,7 +498,7 @@ export const Home: React.FC = () => {
                   'Talent sourced and vetted directly through the Digiskill program',
                 ].map((point) => (
                   <div key={point} className="flex items-start space-x-3">
-                    <CheckCircle2 className="w-5 h-5 text-[#1a7a8c] flex-shrink-0 mt-0.5" />
+                    <CheckCircle2 className="w-5 h-5 text-[var(--color-accent)] flex-shrink-0 mt-0.5" />
                     <p className="text-sm text-[var(--text-main)]">{point}</p>
                   </div>
                 ))}
@@ -520,9 +520,9 @@ export const Home: React.FC = () => {
               <div className="w-px h-6 bg-[var(--surface-border)]" />
 
               {/* DigiHust Core */}
-              <div className="w-64 py-4 px-6 rounded-2xl bg-gradient-to-br from-[#1a7a8c] to-[#0d5966] text-white text-center font-extrabold text-base shadow-xl border border-[#1a7a8c]">
+              <div className="w-64 py-4 px-6 rounded-2xl bg-gradient-to-br from-[#022B3A] to-[#1F7A8C] text-white text-center font-extrabold text-base shadow-md border border-[var(--color-accent)]">
                 DigiHust Management
-                <p className="text-[10px] font-normal text-[#bde0fe] mt-0.5 tracking-wider uppercase">
+                <p className="text-[10px] font-normal text-[#E1E5F2] mt-0.5 tracking-wider uppercase">
                   Single Accountable Entity
                 </p>
               </div>
@@ -530,29 +530,20 @@ export const Home: React.FC = () => {
 
               {/* Specialized Squads */}
               <div className="grid grid-cols-3 gap-3 w-full">
-                {[
-                  ['Engineering', '#1a7a8c'],
-                  ['Design & UX', '#8b5cf6'],
-                  ['AI & Data', '#0ea5e9'],
-                ].map(([label, col]) => (
+                {['Engineering', 'Design & UX', 'AI & Data'].map((label) => (
                   <div
                     key={label}
-                    className="py-2.5 px-2 rounded-xl border text-center text-xs font-bold"
-                    style={{ borderColor: col + '60', color: col, backgroundColor: col + '15' }}
+                    className="py-2.5 px-2 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text-primary)] text-center text-xs font-bold shadow-sm"
                   >
                     {label}
                   </div>
                 ))}
               </div>
               <div className="grid grid-cols-2 gap-3 w-2/3 mt-3">
-                {[
-                  ['Growth / SEO', '#f59e0b'],
-                  ['Cybersecurity', '#ef4444'],
-                ].map(([label, col]) => (
+                {['Growth / SEO', 'Cybersecurity'].map((label) => (
                   <div
                     key={label}
-                    className="py-2.5 px-2 rounded-xl border text-center text-xs font-bold"
-                    style={{ borderColor: col + '60', color: col, backgroundColor: col + '15' }}
+                    className="py-2.5 px-2 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text-primary)] text-center text-xs font-bold shadow-sm"
                   >
                     {label}
                   </div>
@@ -561,7 +552,7 @@ export const Home: React.FC = () => {
               <div className="w-px h-6 bg-[var(--surface-border)] mt-3" />
 
               {/* Final Delivered Output */}
-              <div className="w-60 py-3.5 px-6 rounded-xl bg-emerald-500/20 border border-emerald-500/50 text-emerald-400 text-center font-bold text-sm shadow-inner">
+              <div className="w-60 py-3.5 px-6 rounded-xl bg-[var(--color-surface)] border border-[var(--color-accent)] text-[var(--color-accent)] text-center font-bold text-sm shadow-sm">
                 ✓ Unified Delivered Solution
               </div>
             </motion.div>
@@ -574,12 +565,12 @@ export const Home: React.FC = () => {
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between mb-12 gap-4">
             <div>
-              <p className="text-xs font-extrabold text-[#1a7a8c] uppercase tracking-widest mb-3">Case Studies</p>
+              <p className="text-xs font-extrabold text-[var(--color-accent)] uppercase tracking-widest mb-3">Case Studies</p>
               <h2 className="font-display font-extrabold text-4xl text-[var(--text-main)]">Selected Work</h2>
             </div>
             <Link
               to="/work"
-              className="inline-flex items-center space-x-2 text-sm font-bold text-[#1a7a8c] hover:underline"
+              className="inline-flex items-center space-x-2 text-sm font-bold text-[var(--color-accent)] hover:underline"
             >
               <span>View all portfolio projects</span>
               <ArrowRight className="w-4 h-4" />
@@ -596,7 +587,7 @@ export const Home: React.FC = () => {
                 whileHover={{ y: -4 }}
                 transition={{ duration: 0.3 }}
                 data-cursor="view"
-                className="group border border-[var(--surface-border)] rounded-2xl overflow-hidden bg-[var(--surface-bg)] hover:border-[#1a7a8c] hover:shadow-xl transition-all cursor-pointer flex flex-col justify-between"
+                className="group border border-[var(--surface-border)] rounded-2xl overflow-hidden bg-[var(--surface-bg)] hover:border-[var(--color-accent)] hover:shadow-xl transition-all cursor-pointer flex flex-col justify-between"
               >
                 <div>
                   <div className="aspect-video overflow-hidden relative bg-gray-100">
@@ -605,15 +596,15 @@ export const Home: React.FC = () => {
                       alt={project.title}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     />
-                    <div className="absolute top-3 right-3 px-2.5 py-1 rounded-md bg-[#071e26]/90 backdrop-blur-sm border border-[#1e4a5d] text-[10px] font-bold text-[#bde0fe]">
+                    <div className="absolute top-3 right-3 px-2.5 py-1 rounded-md bg-[var(--color-bg)]/90 backdrop-blur-sm border border-[var(--color-border)] text-[10px] font-bold text-[var(--color-text-primary)]">
                       {project.stat}
                     </div>
                   </div>
                   <div className="p-6">
-                    <p className="text-[11px] font-bold text-[#1a7a8c] uppercase tracking-wider mb-1">
+                    <p className="text-[11px] font-bold text-[var(--color-accent)] uppercase tracking-wider mb-1">
                       {project.category}
                     </p>
-                    <h3 className="font-display font-bold text-lg text-[var(--text-main)] mb-3 group-hover:text-[#1a7a8c] transition-colors">
+                    <h3 className="font-display font-bold text-lg text-[var(--text-main)] mb-3 group-hover:text-[var(--color-accent)] transition-colors">
                       {project.title}
                     </h3>
                     <div className="flex flex-wrap gap-1.5 mb-4">
@@ -631,7 +622,7 @@ export const Home: React.FC = () => {
                 <div className="px-6 pb-6">
                   <Link
                     to={`/work/${project.slug}`}
-                    className="inline-flex items-center space-x-1 text-xs font-bold text-[#1a7a8c] group-hover:translate-x-1 transition-transform"
+                    className="inline-flex items-center space-x-1 text-xs font-bold text-[var(--color-accent)] group-hover:translate-x-1 transition-transform"
                   >
                     <span>Read Full Case Study</span>
                     <ArrowRight className="w-3.5 h-3.5" />
@@ -647,7 +638,7 @@ export const Home: React.FC = () => {
       <section className="py-24 px-6 lg:px-8 border-t border-[var(--surface-border)] bg-[var(--bg-secondary)]">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16 max-w-2xl mx-auto">
-            <p className="text-xs font-extrabold text-[#1a7a8c] uppercase tracking-widest mb-3">Client Feedback</p>
+            <p className="text-xs font-extrabold text-[var(--color-accent)] uppercase tracking-widest mb-3">Client Feedback</p>
             <h2 className="font-display font-extrabold text-3xl sm:text-4xl text-[var(--text-main)] mb-4">
               What Founders Say About DigiHust
             </h2>
@@ -677,10 +668,10 @@ export const Home: React.FC = () => {
                 </div>
 
                 <div className="flex items-center space-x-3.5 pt-4 border-t border-[var(--surface-border)]">
-                  <img src={t.avatar} alt={t.name} className="w-10 h-10 rounded-full object-cover ring-2 ring-[#1a7a8c]/40" />
+                  <img src={t.avatar} alt={t.name} className="w-10 h-10 rounded-full object-cover ring-2 ring-[var(--color-accent)]/40" />
                   <div>
                     <h4 className="font-bold text-[var(--text-main)] text-sm">{t.name}</h4>
-                    <p className="text-xs text-[#1a7a8c]">{t.role}, {t.company}</p>
+                    <p className="text-xs text-[var(--color-accent)]">{t.role}, {t.company}</p>
                   </div>
                 </div>
               </motion.div>
@@ -693,7 +684,7 @@ export const Home: React.FC = () => {
       <section className="py-24 px-6 lg:px-8 bg-[var(--bg-main)]">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16 max-w-2xl mx-auto">
-            <p className="text-xs font-extrabold text-[#1a7a8c] uppercase tracking-widest mb-3">Transparent Engagements</p>
+            <p className="text-xs font-extrabold text-[var(--color-accent)] uppercase tracking-widest mb-3">Transparent Engagements</p>
             <h2 className="font-display font-extrabold text-3xl sm:text-4xl text-[var(--text-main)] mb-4">
               Project Investment Guide
             </h2>
@@ -712,24 +703,24 @@ export const Home: React.FC = () => {
                 whileHover={{ y: -4 }}
                 className={`rounded-3xl p-8 border flex flex-col justify-between transition-all ${
                   pkg.popular
-                    ? 'border-[#1a7a8c] bg-[var(--surface-bg)] shadow-2xl ring-2 ring-[#1a7a8c]/20 relative'
+                    ? 'border-[var(--color-accent)] bg-[var(--surface-bg)] shadow-2xl ring-2 ring-[var(--color-accent)]/20 relative'
                     : 'border-[var(--surface-border)] bg-[var(--surface-bg)] hover:shadow-lg'
                 }`}
               >
                 <div>
                   {pkg.popular && (
-                    <span className="inline-block px-3 py-1 rounded-full bg-[#1a7a8c] text-white text-[10px] font-black uppercase tracking-wider mb-4">
+                    <span className="inline-block px-3 py-1 rounded-full bg-[var(--color-accent-fill)] text-white text-[10px] font-black uppercase tracking-wider mb-4">
                       Most Popular
                     </span>
                   )}
                   <h3 className="font-display font-bold text-xl text-[var(--text-main)] mb-1">{pkg.name}</h3>
-                  <p className="text-2xl font-black text-[#1a7a8c] my-3">{pkg.price}</p>
+                  <p className="text-2xl font-black text-[var(--color-accent)] my-3">{pkg.price}</p>
                   <p className="text-xs text-[var(--text-muted)] leading-relaxed mb-6">{pkg.desc}</p>
 
                   <div className="space-y-3 mb-8">
                     {pkg.features.map((feat) => (
                       <div key={feat} className="flex items-start space-x-2.5 text-xs text-[var(--text-main)] font-medium">
-                        <Check className="w-4 h-4 text-[#1a7a8c] flex-shrink-0 mt-0.5" />
+                        <Check className="w-4 h-4 text-[var(--color-accent)] flex-shrink-0 mt-0.5" />
                         <span>{feat}</span>
                       </div>
                     ))}
@@ -740,8 +731,8 @@ export const Home: React.FC = () => {
                   to="/contact"
                   className={`w-full py-3.5 rounded-xl text-center font-bold text-xs sm:text-sm transition-all ${
                     pkg.popular
-                      ? 'bg-[#1a7a8c] hover:bg-[#156575] text-white shadow-md'
-                      : 'border border-[var(--surface-border)] hover:border-[#1a7a8c] text-[var(--text-main)] hover:text-[#1a7a8c] bg-[var(--bg-main)]'
+                      ? 'bg-[var(--color-accent-fill)] hover:bg-[var(--color-accent-hover)] text-white shadow-md'
+                      : 'border border-[var(--surface-border)] hover:border-[var(--color-accent)] text-[var(--text-main)] hover:text-[var(--color-accent)] bg-[var(--bg-main)]'
                   }`}
                 >
                   Request Proposal for Scope
@@ -770,7 +761,7 @@ export const Home: React.FC = () => {
             <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }} className="inline-block">
               <Link
                 to="/contact"
-                className="inline-flex items-center space-x-3 px-10 py-5 rounded-2xl bg-[#1a7a8c] hover:bg-[#156575] text-white font-extrabold text-lg shadow-2xl shadow-[#1a7a8c]/30 transition-all"
+                className="inline-flex items-center space-x-3 px-10 py-5 rounded-2xl bg-[var(--color-accent-fill)] hover:bg-[var(--color-accent-hover)] text-white font-extrabold text-lg shadow-2xl shadow-md transition-all"
               >
                 <span>Start a Project Proposal</span>
                 <ArrowRight className="w-5 h-5" />

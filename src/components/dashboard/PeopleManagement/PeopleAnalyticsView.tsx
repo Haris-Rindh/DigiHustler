@@ -28,7 +28,7 @@ export const PeopleAnalyticsView: React.FC<PeopleAnalyticsViewProps> = ({ onSele
     <div className="space-y-8">
       {/* Metric Cards Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="p-6 rounded-3xl bg-[#0d2833] border border-[#1e4a5d] shadow-xl">
+        <div className="p-6 rounded-3xl bg-[var(--color-surface)] border border-[var(--color-border)] shadow-xl">
           <span className="text-[10px] uppercase font-bold text-slate-400">Total Talent Pool</span>
           <p className="font-display font-extrabold text-3xl text-white mt-1">{totalHeadcount}</p>
           <div className="flex items-center space-x-2 text-xs text-slate-400 mt-2">
@@ -38,7 +38,7 @@ export const PeopleAnalyticsView: React.FC<PeopleAnalyticsViewProps> = ({ onSele
           </div>
         </div>
 
-        <div className="p-6 rounded-3xl bg-[#0d2833] border border-[#1e4a5d] shadow-xl">
+        <div className="p-6 rounded-3xl bg-[var(--color-surface)] border border-[var(--color-border)] shadow-xl">
           <span className="text-[10px] uppercase font-bold text-slate-400">Average CSAT Rating</span>
           <p className="font-display font-extrabold text-3xl text-emerald-400 mt-1 flex items-center gap-1">
             <Star className="w-6 h-6 fill-emerald-400" />
@@ -47,13 +47,13 @@ export const PeopleAnalyticsView: React.FC<PeopleAnalyticsViewProps> = ({ onSele
           <p className="text-xs text-slate-400 mt-2">Across 120+ client reviews</p>
         </div>
 
-        <div className="p-6 rounded-3xl bg-[#0d2833] border border-[#1e4a5d] shadow-xl">
+        <div className="p-6 rounded-3xl bg-[var(--color-surface)] border border-[var(--color-border)] shadow-xl">
           <span className="text-[10px] uppercase font-bold text-slate-400">Applicant Conversion</span>
-          <p className="font-display font-extrabold text-3xl text-[#bde0fe] mt-1">{conversionRate}%</p>
+          <p className="font-display font-extrabold text-3xl text-[var(--color-text-primary)] mt-1">{conversionRate}%</p>
           <p className="text-xs text-slate-400 mt-2">{approvedApplicants} approved to date</p>
         </div>
 
-        <div className="p-6 rounded-3xl bg-[#0d2833] border border-[#1e4a5d] shadow-xl">
+        <div className="p-6 rounded-3xl bg-[var(--color-surface)] border border-[var(--color-border)] shadow-xl">
           <span className="text-[10px] uppercase font-bold text-slate-400">Total Talent Disbursed</span>
           <p className="font-display font-extrabold text-3xl text-cyan-400 mt-1">${totalPaidOut.toLocaleString()}</p>
           <p className="text-xs text-slate-400 mt-2">100% verified ledger settlement</p>
@@ -62,7 +62,7 @@ export const PeopleAnalyticsView: React.FC<PeopleAnalyticsViewProps> = ({ onSele
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Squad Headcount Distribution */}
-        <div className="p-6 rounded-3xl bg-[#0d2833] border border-[#1e4a5d] shadow-xl space-y-4">
+        <div className="p-6 rounded-3xl bg-[var(--color-surface)] border border-[var(--color-border)] shadow-xl space-y-4">
           <h3 className="font-display font-bold text-lg text-white">Squad Headcount Distribution</h3>
           <div className="space-y-3 pt-2">
             {groups.map((g) => {
@@ -73,11 +73,11 @@ export const PeopleAnalyticsView: React.FC<PeopleAnalyticsViewProps> = ({ onSele
                 <div key={g.id} className="space-y-1">
                   <div className="flex justify-between text-xs font-semibold text-slate-300">
                     <span>{g.name}</span>
-                    <span className="text-[#bde0fe]">{count} members ({pct}%)</span>
+                    <span className="text-[var(--color-text-primary)]">{count} members ({pct}%)</span>
                   </div>
-                  <div className="w-full h-2 rounded-full bg-[#071e26] overflow-hidden">
+                  <div className="w-full h-2 rounded-full bg-[var(--color-bg)] overflow-hidden">
                     <div
-                      className="h-full bg-gradient-to-r from-[#1a7a8c] to-[#0ea5e9] rounded-full"
+                      className="h-full bg-gradient-to-r from-[#022B3A] via-[#1F7A8C] to-[#E1E5F2] rounded-full"
                       style={{ width: `${pct}%` }}
                     />
                   </div>
@@ -88,17 +88,17 @@ export const PeopleAnalyticsView: React.FC<PeopleAnalyticsViewProps> = ({ onSele
         </div>
 
         {/* Top Community Performers */}
-        <div className="p-6 rounded-3xl bg-[#0d2833] border border-[#1e4a5d] shadow-xl space-y-4">
+        <div className="p-6 rounded-3xl bg-[var(--color-surface)] border border-[var(--color-border)] shadow-xl space-y-4">
           <h3 className="font-display font-bold text-lg text-white">Top Community Earners</h3>
           <div className="space-y-3 pt-2">
             {topEarners.map((earner, idx) => (
               <div
                 key={earner.id}
                 onClick={() => onSelectUser(earner)}
-                className="p-3 rounded-2xl bg-[#071e26] border border-[#1e4a5d] hover:border-[#1a7a8c] flex items-center justify-between cursor-pointer transition-colors"
+                className="p-3 rounded-2xl bg-[var(--color-bg)] border border-[var(--color-border)] hover:border-[var(--color-accent)] flex items-center justify-between cursor-pointer transition-colors"
               >
                 <div className="flex items-center space-x-3">
-                  <div className="w-7 h-7 rounded-xl bg-[#1a7a8c]/20 text-[#bde0fe] font-extrabold text-xs flex items-center justify-center">
+                  <div className="w-7 h-7 rounded-xl bg-[var(--color-accent-fill)]/20 text-[var(--color-text-primary)] font-extrabold text-xs flex items-center justify-center">
                     #{idx + 1}
                   </div>
                   <img

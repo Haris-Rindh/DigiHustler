@@ -74,14 +74,14 @@ export const Blog: React.FC = () => {
       />
 
       {/* Header Banner */}
-      <section className="bg-[#071e26] py-20 px-6 lg:px-8 border-b border-[#1e4a5d]">
+      <section className="bg-[var(--color-bg)] py-20 px-6 lg:px-8 border-b border-[var(--color-border)]">
         <div className="max-w-7xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
           >
-            <p className="text-xs font-extrabold text-[#1a7a8c] uppercase tracking-widest mb-3">
+            <p className="text-xs font-extrabold text-[var(--color-accent)] uppercase tracking-widest mb-3">
               Engineering & Digital Strategy
             </p>
             <h1 className="font-display font-extrabold text-4xl sm:text-5xl lg:text-6xl text-white mb-5">
@@ -104,7 +104,7 @@ export const Blog: React.FC = () => {
                 onClick={() => setActiveCategory(cat)}
                 className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all ${
                   activeCategory === cat
-                    ? 'bg-[#1a7a8c] text-white shadow-md'
+                    ? 'bg-[var(--color-accent-fill)] text-white shadow-md'
                     : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
                 }`}
               >
@@ -123,7 +123,7 @@ export const Blog: React.FC = () => {
               <article
                 key={post.slug}
                 data-cursor="view"
-                className="group border border-gray-200/80 rounded-2xl overflow-hidden bg-white hover:shadow-xl hover:border-[#1a7a8c]/40 transition-all flex flex-col justify-between"
+                className="group border border-gray-200/80 rounded-2xl overflow-hidden bg-white hover:shadow-xl hover:border-[var(--color-accent)]/40 transition-all flex flex-col justify-between"
               >
                 <div>
                   <div className="aspect-video overflow-hidden bg-gray-100 relative">
@@ -132,7 +132,7 @@ export const Blog: React.FC = () => {
                       alt={post.title}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     />
-                    <div className="absolute top-3 left-3 px-2.5 py-1 rounded-md bg-[#071e26]/90 backdrop-blur-sm text-[10px] font-bold text-[#bde0fe] border border-[#1e4a5d]">
+                    <div className="absolute top-3 left-3 px-2.5 py-1 rounded-md bg-[var(--color-bg)]/90 backdrop-blur-sm text-[10px] font-bold text-[var(--color-text-primary)] border border-[var(--color-border)]">
                       {post.category}
                     </div>
                   </div>
@@ -150,7 +150,7 @@ export const Blog: React.FC = () => {
                       </span>
                     </div>
 
-                    <h2 className="font-display font-bold text-xl text-gray-900 mb-3 group-hover:text-[#1a7a8c] transition-colors leading-tight">
+                    <h2 className="font-display font-bold text-xl text-gray-900 mb-3 group-hover:text-[var(--color-accent)] transition-colors leading-tight">
                       <Link to={`/blog/${post.slug}`}>{post.title}</Link>
                     </h2>
 
@@ -178,7 +178,7 @@ export const Blog: React.FC = () => {
                   </div>
                   <Link
                     to={`/blog/${post.slug}`}
-                    className="inline-flex items-center space-x-1 text-xs font-bold text-[#1a7a8c] group-hover:translate-x-1 transition-transform"
+                    className="inline-flex items-center space-x-1 text-xs font-bold text-[var(--color-accent)] group-hover:translate-x-1 transition-transform"
                   >
                     <span>Read Article</span>
                     <ArrowRight className="w-3.5 h-3.5" />

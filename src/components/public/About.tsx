@@ -13,14 +13,14 @@ export const About: React.FC = () => {
       />
 
       {/* Header */}
-      <section className="bg-[#071e26] py-20 px-6 lg:px-8 border-b border-[#1e4a5d]">
+      <section className="bg-[var(--color-bg)] py-20 px-6 lg:px-8 border-b border-[var(--color-border)]">
         <div className="max-w-7xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
           >
-            <p className="text-xs font-extrabold text-[#1a7a8c] uppercase tracking-widest mb-3">
+            <p className="text-xs font-extrabold text-[var(--color-accent)] uppercase tracking-widest mb-3">
               The Story & Mission
             </p>
             <h1 className="font-display font-extrabold text-4xl sm:text-5xl lg:text-6xl text-white mb-5">
@@ -84,7 +84,7 @@ export const About: React.FC = () => {
                 key={s.title}
                 className="p-6 rounded-2xl border border-gray-200 bg-gray-50/70 hover:bg-white hover:shadow-md transition-all flex items-start space-x-5"
               >
-                <div className="font-display font-black text-3xl sm:text-4xl text-[#1a7a8c] flex-shrink-0">
+                <div className="font-display font-black text-3xl sm:text-4xl text-[var(--color-accent)] flex-shrink-0">
                   {s.stat}
                 </div>
                 <div>
@@ -98,7 +98,7 @@ export const About: React.FC = () => {
       </section>
 
       {/* The Solution Section */}
-      <section className="bg-[#071e26] py-20 px-6 lg:px-8 border-y border-[#1e4a5d]">
+      <section className="bg-[var(--color-bg)] py-20 px-6 lg:px-8 border-y border-[var(--color-border)]">
         <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
           <motion.div
             initial={{ opacity: 0, x: -20 }}
@@ -106,7 +106,7 @@ export const About: React.FC = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
           >
-            <p className="text-xs font-extrabold text-[#1a7a8c] uppercase tracking-widest mb-3">
+            <p className="text-xs font-extrabold text-[var(--color-accent)] uppercase tracking-widest mb-3">
               The DigiHust Architecture
             </p>
             <h2 className="font-display font-extrabold text-3xl sm:text-4xl text-white mb-6 leading-tight">
@@ -129,7 +129,7 @@ export const About: React.FC = () => {
           >
             {[
               {
-                icon: <Target className="w-5 h-5 text-[#bde0fe]" />,
+                icon: <Target className="w-5 h-5 text-[var(--color-text-primary)]" />,
                 title: 'Centralized Client Acquisition',
                 desc: 'Single contract, professional scoping, and dedicated management oversight.',
               },
@@ -146,9 +146,9 @@ export const About: React.FC = () => {
             ].map((item) => (
               <div
                 key={item.title}
-                className="p-5 rounded-2xl bg-[#0d2833] border border-[#1e4a5d] flex items-start space-x-4"
+                className="p-5 rounded-2xl bg-[var(--color-surface)] border border-[var(--color-border)] flex items-start space-x-4"
               >
-                <div className="p-2 rounded-xl bg-[#071e26] border border-[#1e4a5d] flex-shrink-0 mt-0.5">
+                <div className="p-2 rounded-xl bg-[var(--color-bg)] border border-[var(--color-border)] flex-shrink-0 mt-0.5">
                   {item.icon}
                 </div>
                 <div>
@@ -164,7 +164,7 @@ export const About: React.FC = () => {
       {/* Core Values (Hustle. Create. Deliver.) */}
       <section className="bg-white py-20 px-6 lg:px-8">
         <div className="max-w-5xl mx-auto text-center">
-          <p className="text-xs font-extrabold text-[#1a7a8c] uppercase tracking-widest mb-3">
+          <p className="text-xs font-extrabold text-[var(--color-accent)] uppercase tracking-widest mb-3">
             Core Principles
           </p>
           <h2 className="font-display font-extrabold text-3xl sm:text-4xl text-gray-900 mb-12">
@@ -196,9 +196,9 @@ export const About: React.FC = () => {
                 viewport={{ once: true }}
                 whileHover={{ y: -4 }}
                 transition={{ duration: 0.3 }}
-                className="p-8 rounded-3xl border border-gray-200 bg-white hover:shadow-xl hover:border-[#1a7a8c]/40 transition-all"
+                className="p-8 rounded-3xl border border-gray-200 bg-white hover:shadow-xl hover:border-[var(--color-accent)]/40 transition-all"
               >
-                <span className="text-xs font-bold text-[#1a7a8c] uppercase tracking-wider">
+                <span className="text-xs font-bold text-[var(--color-accent)] uppercase tracking-wider">
                   {val.tag}
                 </span>
                 <h3 className="font-display font-black text-3xl text-gray-900 my-2">
@@ -212,7 +212,7 @@ export const About: React.FC = () => {
       </section>
 
       {/* CTA */}
-      <section className="bg-[#071e26] py-20 px-6 lg:px-8 text-center border-t border-[#1e4a5d]">
+      <section className="bg-[var(--color-bg)] py-20 px-6 lg:px-8 text-center border-t border-[var(--color-border)]">
         <h2 className="font-display font-extrabold text-3xl text-white mb-4">
           Partner with DigiHust
         </h2>
@@ -221,7 +221,7 @@ export const About: React.FC = () => {
         </p>
         <Link
           to="/contact"
-          className="inline-flex items-center space-x-2 px-8 py-4 rounded-xl bg-[#1a7a8c] hover:bg-[#156575] text-white font-bold shadow-lg transition-all"
+          className="inline-flex items-center space-x-2 px-8 py-4 rounded-xl bg-[var(--color-accent-fill)] hover:bg-[var(--color-accent-hover)] text-white font-bold shadow-lg transition-all"
         >
           <span>Get a Scoped Quote</span>
           <ArrowRight className="w-4 h-4" />

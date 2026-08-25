@@ -66,12 +66,12 @@ export const QuickInviteModal: React.FC<QuickInviteModalProps> = ({ isOpen, onCl
           initial={{ opacity: 0, scale: 0.95, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 20 }}
-          className="relative w-full max-w-2xl bg-[#0d2833] border border-[#1e4a5d] rounded-3xl shadow-2xl overflow-hidden my-8"
+          className="relative w-full max-w-2xl bg-[var(--color-surface)] border border-[var(--color-border)] rounded-3xl shadow-2xl overflow-hidden my-8"
         >
           {/* Header */}
-          <div className="p-6 border-b border-[#1e4a5d] bg-[#071e26] flex items-center justify-between">
+          <div className="p-6 border-b border-[var(--color-border)] bg-[var(--color-bg)] flex items-center justify-between">
             <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-[#1a7a8c] to-[#0ea5e9] flex items-center justify-center text-white shadow-md">
+              <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-[#022B3A] via-[#1F7A8C] to-[#E1E5F2] flex items-center justify-center text-white shadow-md">
                 <UserPlus className="w-5 h-5" />
               </div>
               <div>
@@ -106,7 +106,7 @@ export const QuickInviteModal: React.FC<QuickInviteModalProps> = ({ isOpen, onCl
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="e.g. Zaid Haroon"
-                    className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[#071e26] border border-[#1e4a5d] text-white text-xs focus:outline-none focus:border-[#1a7a8c]"
+                    className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[var(--color-bg)] border border-[var(--color-border)] text-white text-xs focus:outline-none focus:border-[var(--color-accent)]"
                   />
                 </div>
               </div>
@@ -123,7 +123,7 @@ export const QuickInviteModal: React.FC<QuickInviteModalProps> = ({ isOpen, onCl
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="e.g. zaid.dev@digihust.com"
-                    className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[#071e26] border border-[#1e4a5d] text-white text-xs focus:outline-none focus:border-[#1a7a8c]"
+                    className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[var(--color-bg)] border border-[var(--color-border)] text-white text-xs focus:outline-none focus:border-[var(--color-accent)]"
                   />
                 </div>
               </div>
@@ -141,7 +141,7 @@ export const QuickInviteModal: React.FC<QuickInviteModalProps> = ({ isOpen, onCl
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
                     placeholder="+92 300 0000000"
-                    className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[#071e26] border border-[#1e4a5d] text-white text-xs focus:outline-none focus:border-[#1a7a8c]"
+                    className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[var(--color-bg)] border border-[var(--color-border)] text-white text-xs focus:outline-none focus:border-[var(--color-accent)]"
                   />
                 </div>
               </div>
@@ -158,7 +158,7 @@ export const QuickInviteModal: React.FC<QuickInviteModalProps> = ({ isOpen, onCl
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
                     placeholder="e.g. Senior AI Automation Engineer"
-                    className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[#071e26] border border-[#1e4a5d] text-white text-xs focus:outline-none focus:border-[#1a7a8c]"
+                    className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[var(--color-bg)] border border-[var(--color-border)] text-white text-xs focus:outline-none focus:border-[var(--color-accent)]"
                   />
                 </div>
               </div>
@@ -172,7 +172,7 @@ export const QuickInviteModal: React.FC<QuickInviteModalProps> = ({ isOpen, onCl
                 <select
                   value={role}
                   onChange={(e) => setRole(e.target.value as UserRole)}
-                  className="w-full px-3 py-2.5 rounded-xl bg-[#071e26] border border-[#1e4a5d] text-white text-xs focus:outline-none focus:border-[#1a7a8c]"
+                  className="w-full px-3 py-2.5 rounded-xl bg-[var(--color-bg)] border border-[var(--color-border)] text-white text-xs focus:outline-none focus:border-[var(--color-accent)]"
                 >
                   <option value="freelancer">Freelancer / Specialist</option>
                   <option value="group_leader">Group Leader</option>
@@ -187,7 +187,7 @@ export const QuickInviteModal: React.FC<QuickInviteModalProps> = ({ isOpen, onCl
                 <select
                   value={groupId}
                   onChange={(e) => setGroupId(e.target.value as GroupId)}
-                  className="w-full px-3 py-2.5 rounded-xl bg-[#071e26] border border-[#1e4a5d] text-white text-xs focus:outline-none focus:border-[#1a7a8c]"
+                  className="w-full px-3 py-2.5 rounded-xl bg-[var(--color-bg)] border border-[var(--color-border)] text-white text-xs focus:outline-none focus:border-[var(--color-accent)]"
                 >
                   {groups.map((g) => (
                     <option key={g.id} value={g.id}>
@@ -204,7 +204,7 @@ export const QuickInviteModal: React.FC<QuickInviteModalProps> = ({ isOpen, onCl
                 <select
                   value={status}
                   onChange={(e) => setStatus(e.target.value as UserStatus)}
-                  className="w-full px-3 py-2.5 rounded-xl bg-[#071e26] border border-[#1e4a5d] text-white text-xs focus:outline-none focus:border-[#1a7a8c]"
+                  className="w-full px-3 py-2.5 rounded-xl bg-[var(--color-bg)] border border-[var(--color-border)] text-white text-xs focus:outline-none focus:border-[var(--color-accent)]"
                 >
                   <option value="pending_onboarding">Pending Onboarding</option>
                   <option value="active">Active & Available</option>
@@ -222,15 +222,15 @@ export const QuickInviteModal: React.FC<QuickInviteModalProps> = ({ isOpen, onCl
                 value={specialtiesStr}
                 onChange={(e) => setSpecialtiesStr(e.target.value)}
                 placeholder="e.g. Next.js, Python, n8n, Tailwind, PostgreSQL"
-                className="w-full px-4 py-2.5 rounded-xl bg-[#071e26] border border-[#1e4a5d] text-white text-xs focus:outline-none focus:border-[#1a7a8c]"
+                className="w-full px-4 py-2.5 rounded-xl bg-[var(--color-bg)] border border-[var(--color-border)] text-white text-xs focus:outline-none focus:border-[var(--color-accent)]"
               />
             </div>
 
             {/* Optional Custom Split Override */}
-            <div className="p-4 rounded-2xl bg-[#071e26]/80 border border-[#1e4a5d] space-y-3">
+            <div className="p-4 rounded-2xl bg-[var(--color-bg)]/80 border border-[var(--color-border)] space-y-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
-                  <DollarSign className="w-4 h-4 text-[#1a7a8c]" />
+                  <DollarSign className="w-4 h-4 text-[var(--color-accent)]" />
                   <span className="text-xs font-bold text-white">Custom Per-Person Split Override</span>
                 </div>
                 <label className="relative inline-flex items-center cursor-pointer">
@@ -240,7 +240,7 @@ export const QuickInviteModal: React.FC<QuickInviteModalProps> = ({ isOpen, onCl
                     onChange={(e) => setHasSplitOverride(e.target.checked)}
                     className="sr-only peer"
                   />
-                  <div className="w-9 h-5 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#1a7a8c]"></div>
+                  <div className="w-9 h-5 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[var(--color-accent-fill)]"></div>
                 </label>
               </div>
 
@@ -252,7 +252,7 @@ export const QuickInviteModal: React.FC<QuickInviteModalProps> = ({ isOpen, onCl
                       type="number"
                       value={mgmtSplit}
                       onChange={(e) => setMgmtSplit(Number(e.target.value))}
-                      className="w-full text-center py-1.5 rounded-lg bg-[#0d2833] border border-[#1e4a5d] text-white"
+                      className="w-full text-center py-1.5 rounded-lg bg-[var(--color-surface)] border border-[var(--color-border)] text-white"
                     />
                   </div>
                   <div>
@@ -261,7 +261,7 @@ export const QuickInviteModal: React.FC<QuickInviteModalProps> = ({ isOpen, onCl
                       type="number"
                       value={ldrSplit}
                       onChange={(e) => setLdrSplit(Number(e.target.value))}
-                      className="w-full text-center py-1.5 rounded-lg bg-[#0d2833] border border-[#1e4a5d] text-white"
+                      className="w-full text-center py-1.5 rounded-lg bg-[var(--color-surface)] border border-[var(--color-border)] text-white"
                     />
                   </div>
                   <div>
@@ -270,7 +270,7 @@ export const QuickInviteModal: React.FC<QuickInviteModalProps> = ({ isOpen, onCl
                       type="number"
                       value={flSplit}
                       onChange={(e) => setFlSplit(Number(e.target.value))}
-                      className="w-full text-center py-1.5 rounded-lg bg-[#0d2833] border border-[#1e4a5d] text-white"
+                      className="w-full text-center py-1.5 rounded-lg bg-[var(--color-surface)] border border-[var(--color-border)] text-white"
                     />
                   </div>
                 </div>
@@ -278,17 +278,17 @@ export const QuickInviteModal: React.FC<QuickInviteModalProps> = ({ isOpen, onCl
             </div>
 
             {/* Action Buttons */}
-            <div className="flex items-center justify-end space-x-3 pt-3 border-t border-[#1e4a5d]">
+            <div className="flex items-center justify-end space-x-3 pt-3 border-t border-[var(--color-border)]">
               <button
                 type="button"
                 onClick={onClose}
-                className="px-4 py-2.5 rounded-xl border border-[#1e4a5d] text-slate-300 hover:text-white hover:bg-white/5 text-xs font-bold transition-colors"
+                className="px-4 py-2.5 rounded-xl border border-[var(--color-border)] text-slate-300 hover:text-white hover:bg-white/5 text-xs font-bold transition-colors"
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                className="px-6 py-2.5 rounded-xl bg-[#1a7a8c] hover:bg-[#156575] text-white text-xs font-bold shadow-lg shadow-[#1a7a8c]/25 transition-all"
+                className="px-6 py-2.5 rounded-xl bg-[var(--color-accent-fill)] hover:bg-[var(--color-accent-hover)] text-white text-xs font-bold shadow-lg shadow-md transition-all"
               >
                 Add to Roster
               </button>

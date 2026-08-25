@@ -38,13 +38,13 @@ export const SquadMatrixView: React.FC<SquadMatrixViewProps> = ({ onSelectUser }
               key={group.id}
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
-              className="p-6 rounded-3xl bg-[#0d2833] border border-[#1e4a5d] shadow-xl flex flex-col justify-between space-y-6"
+              className="p-6 rounded-3xl bg-[var(--color-surface)] border border-[var(--color-border)] shadow-xl flex flex-col justify-between space-y-6"
             >
               <div>
                 {/* Squad Header */}
-                <div className="flex items-center justify-between pb-4 border-b border-[#1e4a5d]">
+                <div className="flex items-center justify-between pb-4 border-b border-[var(--color-border)]">
                   <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 rounded-2xl bg-[#1a7a8c]/20 border border-[#1a7a8c]/40 flex items-center justify-center text-[#bde0fe]">
+                    <div className="w-10 h-10 rounded-2xl bg-[var(--color-accent-fill)]/20 border border-[var(--color-accent)]/40 flex items-center justify-center text-[var(--color-text-primary)]">
                       {getGroupIcon(group.iconName)}
                     </div>
                     <div>
@@ -61,12 +61,12 @@ export const SquadMatrixView: React.FC<SquadMatrixViewProps> = ({ onSelectUser }
 
                 {/* Group Leader Spotlight */}
                 {leader && (
-                  <div className="mt-5 p-4 rounded-2xl bg-[#071e26] border border-[#1e4a5d] flex items-center justify-between gap-4">
+                  <div className="mt-5 p-4 rounded-2xl bg-[var(--color-bg)] border border-[var(--color-border)] flex items-center justify-between gap-4">
                     <div className="flex items-center space-x-3.5">
                       <img
                         src={leader.avatarUrl}
                         alt={leader.name}
-                        className="w-12 h-12 rounded-xl object-cover ring-2 ring-[#1a7a8c]"
+                        className="w-12 h-12 rounded-xl object-cover ring-2 ring-[var(--color-accent)]"
                       />
                       <div>
                         <div className="flex items-center space-x-2">
@@ -101,7 +101,7 @@ export const SquadMatrixView: React.FC<SquadMatrixViewProps> = ({ onSelectUser }
                       <div
                         key={member.id}
                         onClick={() => onSelectUser(member)}
-                        className="p-2.5 rounded-xl bg-[#071e26]/60 hover:bg-[#071e26] border border-[#1e4a5d]/50 hover:border-[#1a7a8c] flex items-center justify-between cursor-pointer transition-colors text-xs"
+                        className="p-2.5 rounded-xl bg-[var(--color-bg)]/60 hover:bg-[var(--color-bg)] border border-[var(--color-border)]/50 hover:border-[var(--color-accent)] flex items-center justify-between cursor-pointer transition-colors text-xs"
                       >
                         <div className="flex items-center space-x-2.5">
                           <img
@@ -126,11 +126,11 @@ export const SquadMatrixView: React.FC<SquadMatrixViewProps> = ({ onSelectUser }
               </div>
 
               {/* Specialties Strip */}
-              <div className="pt-4 border-t border-[#1e4a5d] flex flex-wrap gap-1.5">
+              <div className="pt-4 border-t border-[var(--color-border)] flex flex-wrap gap-1.5">
                 {group.specialties.map((s) => (
                   <span
                     key={s}
-                    className="px-2 py-0.5 rounded-md bg-[#071e26] text-slate-300 text-[10px] border border-[#1e4a5d]"
+                    className="px-2 py-0.5 rounded-md bg-[var(--color-bg)] text-slate-300 text-[10px] border border-[var(--color-border)]"
                   >
                     {s}
                   </span>

@@ -31,8 +31,8 @@ const SERVICES = [
       'CI/CD Pipelines, Docker, & Cloud Deployment',
     ],
     tags: ['React', 'Next.js', 'Node.js', 'TypeScript', 'Tailwind CSS', 'AWS', 'PostgreSQL'],
-    color: '#1a7a8c',
-    bgLight: 'bg-[#1a7a8c]/5',
+    color: '#1F7A8C',
+    bgLight: 'bg-[var(--color-surface)]',
   },
   {
     id: 'creative',
@@ -49,8 +49,8 @@ const SERVICES = [
       'Investor Pitch Decks & Marketing Collateral',
     ],
     tags: ['Figma', 'Adobe Suite', 'After Effects', 'UI/UX', 'Brand Strategy', 'Motion Design'],
-    color: '#8b5cf6',
-    bgLight: 'bg-purple-500/5',
+    color: '#1F7A8C',
+    bgLight: 'bg-[var(--color-surface)]',
   },
   {
     id: 'ai-automation',
@@ -67,8 +67,8 @@ const SERVICES = [
       'Custom Python ETL & Scraping Scripts',
     ],
     tags: ['OpenAI', 'Python', 'n8n', 'Zapier', 'LangChain', 'Automated APIs'],
-    color: '#0ea5e9',
-    bgLight: 'bg-sky-500/5',
+    color: '#1F7A8C',
+    bgLight: 'bg-[var(--color-surface)]',
   },
   {
     id: 'marketing',
@@ -85,8 +85,8 @@ const SERVICES = [
       'Performance Analytics & GA4 Tracking Setup',
     ],
     tags: ['Technical SEO', 'Google Ads', 'Meta Ads', 'B2B Sales', 'GA4', 'Content Strategy'],
-    color: '#f59e0b',
-    bgLight: 'bg-amber-500/5',
+    color: '#B08D57',
+    bgLight: 'bg-[var(--color-surface)]',
   },
   {
     id: 'cybersecurity',
@@ -103,8 +103,8 @@ const SERVICES = [
       'Security Incident Response Planning',
     ],
     tags: ['Pen Testing', 'OWASP', 'Vulnerability Assessment', 'API Security', 'Compliance'],
-    color: '#ef4444',
-    bgLight: 'bg-red-500/5',
+    color: '#A85C4A',
+    bgLight: 'bg-[var(--color-surface)]',
   },
   {
     id: 'data-solutions',
@@ -121,8 +121,8 @@ const SERVICES = [
       'Specialized Virtual Technical Assistance',
     ],
     tags: ['PowerBI', 'SQL', 'Data Analytics', 'Excel Automation', 'BI Reporting'],
-    color: '#10b981',
-    bgLight: 'bg-emerald-500/5',
+    color: '#1F7A8C',
+    bgLight: 'bg-[var(--color-surface)]',
   },
 ];
 
@@ -137,14 +137,14 @@ export const Services: React.FC = () => {
       />
 
       {/* Header Banner */}
-      <section className="bg-[#071e26] py-20 px-6 lg:px-8 border-b border-[#1e4a5d]">
+      <section className="bg-[var(--color-bg)] py-20 px-6 lg:px-8 border-b border-[var(--color-border)]">
         <div className="max-w-7xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
           >
-            <p className="text-xs font-extrabold text-[#1a7a8c] uppercase tracking-widest mb-3">
+            <p className="text-xs font-extrabold text-[var(--color-accent)] uppercase tracking-widest mb-3">
               Full-Spectrum Capabilities
             </p>
             <h1 className="font-display font-extrabold text-4xl sm:text-5xl lg:text-6xl text-white mb-5">
@@ -171,7 +171,7 @@ export const Services: React.FC = () => {
                 viewport={{ once: true }}
                 className={`border rounded-2xl overflow-hidden transition-all ${
                   isExpanded
-                    ? 'border-[#1a7a8c]/50 shadow-xl bg-white ring-1 ring-[#1a7a8c]/20'
+                    ? 'border-[var(--color-accent)]/50 shadow-xl bg-white ring-1 ring-[var(--color-accent)]/20'
                     : 'border-gray-200 hover:border-gray-300 hover:shadow-md bg-white'
                 }`}
               >
@@ -282,7 +282,7 @@ export const Services: React.FC = () => {
       </section>
 
       {/* Bottom CTA Banner */}
-      <section className="bg-[#071e26] py-20 px-6 lg:px-8 border-t border-[#1e4a5d] text-center">
+      <section className="bg-[var(--color-bg)] py-20 px-6 lg:px-8 border-t border-[var(--color-border)] text-center">
         <div className="max-w-2xl mx-auto">
           <h2 className="font-display font-extrabold text-3xl sm:text-4xl text-white mb-4">
             Need a Multi-Disciplinary Squad?
@@ -292,7 +292,7 @@ export const Services: React.FC = () => {
           </p>
           <Link
             to="/contact"
-            className="inline-flex items-center space-x-2 px-8 py-4 rounded-xl bg-[#1a7a8c] hover:bg-[#156575] text-white font-bold shadow-lg transition-all"
+            className="inline-flex items-center space-x-2 px-8 py-4 rounded-xl bg-[var(--color-accent-fill)] hover:bg-[var(--color-accent-hover)] text-white font-bold shadow-lg transition-all"
           >
             <span>Start a Combined Scope</span>
             <ArrowRight className="w-4 h-4" />

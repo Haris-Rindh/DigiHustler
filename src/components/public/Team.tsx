@@ -83,11 +83,11 @@ const TEAM_MEMBERS: TeamMember[] = [
 const CATS = ['All', 'Development', 'Creative', 'AI & Data', 'Marketing', 'Cybersecurity'] as const;
 
 const CAT_COLORS: Record<string, string> = {
-  Development: '#1a7a8c',
-  Creative: '#8b5cf6',
-  'AI & Data': '#0ea5e9',
-  Marketing: '#f59e0b',
-  Cybersecurity: '#ef4444',
+  Development: '#1F7A8C',
+  Creative: '#1F7A8C',
+  'AI & Data': '#1F7A8C',
+  Marketing: '#B08D57',
+  Cybersecurity: '#A85C4A',
 };
 
 export const Team: React.FC = () => {
@@ -105,14 +105,14 @@ export const Team: React.FC = () => {
       />
 
       {/* Header */}
-      <section className="bg-[#071e26] py-20 px-6 lg:px-8 border-b border-[#1e4a5d]">
+      <section className="bg-[var(--color-bg)] py-20 px-6 lg:px-8 border-b border-[var(--color-border)]">
         <div className="max-w-7xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
           >
-            <p className="text-xs font-extrabold text-[#1a7a8c] uppercase tracking-widest mb-3">
+            <p className="text-xs font-extrabold text-[var(--color-accent)] uppercase tracking-widest mb-3">
               Domain Specialists
             </p>
             <h1 className="font-display font-extrabold text-4xl sm:text-5xl lg:text-6xl text-white mb-5">
@@ -142,7 +142,7 @@ export const Team: React.FC = () => {
                   {active && (
                     <motion.div
                       layoutId="teamCategoryPill"
-                      className="absolute inset-0 bg-[#1a7a8c] rounded-xl shadow-md"
+                      className="absolute inset-0 bg-[var(--color-accent-fill)] rounded-xl shadow-md"
                       transition={{ type: 'spring', stiffness: 400, damping: 30 }}
                     />
                   )}
@@ -168,14 +168,14 @@ export const Team: React.FC = () => {
                   exit={{ opacity: 0, scale: 0.95 }}
                   transition={{ duration: 0.3 }}
                   whileHover={{ y: -4 }}
-                  className="group border border-gray-200/80 rounded-2xl p-6 bg-white hover:shadow-xl hover:border-[#1a7a8c]/40 transition-all flex flex-col justify-between"
+                  className="group border border-gray-200/80 rounded-2xl p-6 bg-white hover:shadow-xl hover:border-[var(--color-accent)]/40 transition-all flex flex-col justify-between"
                 >
                   <div>
                     <div className="flex items-start space-x-4 mb-4">
                       <img
                         src={member.img}
                         alt={member.name}
-                        className="w-14 h-14 rounded-2xl object-cover ring-2 ring-gray-100 group-hover:ring-[#1a7a8c]/40 transition-all flex-shrink-0"
+                        className="w-14 h-14 rounded-2xl object-cover ring-2 ring-gray-100 group-hover:ring-[var(--color-accent)]/40 transition-all flex-shrink-0"
                       />
                       <div className="min-w-0">
                         <h2 className="font-bold text-base text-gray-900 leading-tight truncate">
@@ -232,7 +232,7 @@ export const Team: React.FC = () => {
       <section className="bg-gray-50 py-16 px-6 lg:px-8 border-t border-gray-200/70 text-center">
         <div className="max-w-3xl mx-auto">
           <div className="inline-flex p-3 rounded-2xl bg-white border border-gray-200 shadow-sm mb-4">
-            <ShieldCheck className="w-6 h-6 text-[#1a7a8c]" />
+            <ShieldCheck className="w-6 h-6 text-[var(--color-accent)]" />
           </div>
           <h3 className="font-display font-extrabold text-2xl text-gray-900 mb-3">
             How Talent is Assembled for Your Project
@@ -242,7 +242,7 @@ export const Team: React.FC = () => {
           </p>
           <Link
             to="/contact"
-            className="inline-flex items-center space-x-2 text-sm font-bold text-[#1a7a8c] hover:underline"
+            className="inline-flex items-center space-x-2 text-sm font-bold text-[var(--color-accent)] hover:underline"
           >
             <span>Have our team review your project scope</span>
             <ArrowRight className="w-4 h-4" />

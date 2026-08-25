@@ -12,13 +12,13 @@ export const TermsOfService: React.FC = () => {
         canonical="https://digihust.com/terms"
       />
 
-      <section className="bg-[#071e26] py-16 sm:py-20 px-6 lg:px-8 border-b border-[#1e4a5d]">
+      <section className="bg-[var(--color-bg)] py-16 sm:py-20 px-6 lg:px-8 border-b border-[var(--color-border)]">
         <div className="max-w-4xl mx-auto">
-          <Link to="/" className="inline-flex items-center space-x-2 text-xs font-bold text-[#bde0fe] hover:underline mb-6">
+          <Link to="/" className="inline-flex items-center space-x-2 text-xs font-bold text-[var(--color-text-primary)] hover:underline mb-6">
             <ArrowLeft className="w-4 h-4" />
             <span>Return to Homepage</span>
           </Link>
-          <span className="text-xs font-extrabold text-[#1a7a8c] uppercase tracking-widest block mb-2">
+          <span className="text-xs font-extrabold text-[var(--color-accent)] uppercase tracking-widest block mb-2">
             Contractual Framework
           </span>
           <h1 className="font-display font-extrabold text-4xl sm:text-5xl text-white mb-4">
@@ -61,7 +61,7 @@ export const TermsOfService: React.FC = () => {
           <div>
             <h2 className="font-display font-bold text-2xl text-gray-900 mb-3">5. Inquiries & Legal Notices</h2>
             <p>
-              For legal inquiries or corporate contracts, contact our legal counsel at <a href="mailto:legal@digihust.com" className="text-[#1a7a8c] font-bold underline">legal@digihust.com</a>.
+              For legal inquiries or corporate contracts, contact our legal counsel at <a href="mailto:legal@digihust.com" className="text-[var(--color-accent)] font-bold underline">legal@digihust.com</a>.
             </p>
           </div>
         </div>

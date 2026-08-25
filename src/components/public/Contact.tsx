@@ -122,14 +122,14 @@ export const Contact: React.FC = () => {
       />
 
       {/* Header */}
-      <section className="bg-[#071e26] py-20 px-6 lg:px-8 border-b border-[#1e4a5d]">
+      <section className="bg-[var(--color-bg)] py-20 px-6 lg:px-8 border-b border-[var(--color-border)]">
         <div className="max-w-7xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
           >
-            <p className="text-xs font-extrabold text-[#1a7a8c] uppercase tracking-widest mb-3">
+            <p className="text-xs font-extrabold text-[var(--color-accent)] uppercase tracking-widest mb-3">
               Direct Project Intake
             </p>
             <h1 className="font-display font-extrabold text-4xl sm:text-5xl lg:text-6xl text-white mb-5">
@@ -171,7 +171,7 @@ export const Contact: React.FC = () => {
                   },
                 ].map((item) => (
                   <div key={item.step} className="flex items-start space-x-3.5">
-                    <div className="w-7 h-7 rounded-xl bg-[#1a7a8c] text-white font-bold text-xs flex items-center justify-center flex-shrink-0 mt-0.5 shadow-sm">
+                    <div className="w-7 h-7 rounded-xl bg-[var(--color-accent-fill)] text-white font-bold text-xs flex items-center justify-center flex-shrink-0 mt-0.5 shadow-sm">
                       {item.step}
                     </div>
                     <div>
@@ -184,7 +184,7 @@ export const Contact: React.FC = () => {
             </div>
 
             <div className="p-6 rounded-2xl bg-gray-50 border border-gray-200 space-y-3">
-              <div className="flex items-center space-x-2 text-xs font-bold text-[#1a7a8c] uppercase tracking-wider">
+              <div className="flex items-center space-x-2 text-xs font-bold text-[var(--color-accent)] uppercase tracking-wider">
                 <ShieldCheck className="w-4 h-4" />
                 <span>Our Delivery Guarantee</span>
               </div>
@@ -195,7 +195,7 @@ export const Contact: React.FC = () => {
 
             <div className="pt-2 text-xs text-gray-500">
               <p className="font-bold text-gray-700 mb-1">Direct inquiries via email:</p>
-              <a href="mailto:contact@digihust.com" className="text-[#1a7a8c] font-bold text-sm hover:underline">
+              <a href="mailto:contact@digihust.com" className="text-[var(--color-accent)] font-bold text-sm hover:underline">
                 contact@digihust.com
               </a>
             </div>
@@ -210,21 +210,21 @@ export const Contact: React.FC = () => {
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.95 }}
-                  className="p-10 sm:p-14 rounded-3xl bg-[#071e26] text-white border border-[#1e4a5d] text-center shadow-2xl space-y-6"
+                  className="p-10 sm:p-14 rounded-3xl bg-[var(--color-bg)] text-white border border-[var(--color-border)] text-center shadow-2xl space-y-6"
                 >
-                  <div className="w-20 h-20 rounded-3xl bg-[#1a7a8c]/20 border-2 border-[#1a7a8c] flex items-center justify-center mx-auto shadow-xl">
-                    <CheckCircle2 className="w-10 h-10 text-[#bde0fe]" />
+                  <div className="w-20 h-20 rounded-3xl bg-[var(--color-accent-fill)]/20 border-2 border-[var(--color-accent)] flex items-center justify-center mx-auto shadow-xl">
+                    <CheckCircle2 className="w-10 h-10 text-[var(--color-text-primary)]" />
                   </div>
                   <h2 className="font-display font-extrabold text-3xl sm:text-4xl text-white">
                     Proposal Request Received!
                   </h2>
                   <p className="text-slate-300 max-w-md mx-auto leading-relaxed text-sm sm:text-base">
                     Thank you, <strong className="text-white font-bold">{form.name}</strong>. Our management leads will review your requirements for{' '}
-                    <span className="text-[#bde0fe] font-semibold">{form.services.join(', ')}</span> and reach out to{' '}
+                    <span className="text-[var(--color-text-primary)] font-semibold">{form.services.join(', ')}</span> and reach out to{' '}
                     <strong className="text-white font-bold">{form.email}</strong> within 24 hours.
                   </p>
 
-                  <div className="pt-6 border-t border-[#1e4a5d]">
+                  <div className="pt-6 border-t border-[var(--color-border)]">
                     <button
                       onClick={() => {
                         setSubmitted(false);
@@ -239,7 +239,7 @@ export const Contact: React.FC = () => {
                           file: null,
                         });
                       }}
-                      className="text-xs font-bold text-[#bde0fe] hover:underline"
+                      className="text-xs font-bold text-[var(--color-text-primary)] hover:underline"
                     >
                       Submit Another Project Scope →
                     </button>
@@ -278,7 +278,7 @@ export const Contact: React.FC = () => {
                         type="text"
                         value={form.name}
                         onChange={(e) => setForm({ ...form, name: e.target.value })}
-                        className={`w-full px-4 py-3.5 rounded-xl border text-sm text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-[#1a7a8c]/40 focus:border-[#1a7a8c] transition-colors ${
+                        className={`w-full px-4 py-3.5 rounded-xl border text-sm text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)]/40 focus:border-[var(--color-accent)] transition-colors ${
                           errors.name ? 'border-red-400' : 'border-gray-200'
                         }`}
                         placeholder="e.g. Sarah Jenkins"
@@ -299,7 +299,7 @@ export const Contact: React.FC = () => {
                         type="email"
                         value={form.email}
                         onChange={(e) => setForm({ ...form, email: e.target.value })}
-                        className={`w-full px-4 py-3.5 rounded-xl border text-sm text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-[#1a7a8c]/40 focus:border-[#1a7a8c] transition-colors ${
+                        className={`w-full px-4 py-3.5 rounded-xl border text-sm text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)]/40 focus:border-[var(--color-accent)] transition-colors ${
                           errors.email ? 'border-red-400' : 'border-gray-200'
                         }`}
                         placeholder="you@company.com"
@@ -323,7 +323,7 @@ export const Contact: React.FC = () => {
                       type="text"
                       value={form.company}
                       onChange={(e) => setForm({ ...form, company: e.target.value })}
-                      className="w-full px-4 py-3.5 rounded-xl border border-gray-200 text-sm text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-[#1a7a8c]/40 focus:border-[#1a7a8c] transition-colors"
+                      className="w-full px-4 py-3.5 rounded-xl border border-gray-200 text-sm text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)]/40 focus:border-[var(--color-accent)] transition-colors"
                       placeholder="e.g. Acme Innovations Ltd."
                     />
                   </div>
@@ -344,7 +344,7 @@ export const Contact: React.FC = () => {
                             whileTap={{ scale: 0.95 }}
                             className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold border transition-all ${
                               selected
-                                ? 'bg-[#1a7a8c] text-white border-[#1a7a8c] shadow-md shadow-[#1a7a8c]/20'
+                                ? 'bg-[var(--color-accent-fill)] text-white border-[var(--color-accent)] shadow-md shadow-md'
                                 : 'bg-gray-50 text-gray-700 border-gray-200 hover:border-gray-300'
                             }`}
                           >
@@ -367,7 +367,7 @@ export const Contact: React.FC = () => {
                       rows={5}
                       value={form.description}
                       onChange={(e) => setForm({ ...form, description: e.target.value })}
-                      className={`w-full px-4 py-3.5 rounded-xl border text-sm text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-[#1a7a8c]/40 focus:border-[#1a7a8c] transition-colors resize-none ${
+                      className={`w-full px-4 py-3.5 rounded-xl border text-sm text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)]/40 focus:border-[var(--color-accent)] transition-colors resize-none ${
                         errors.description ? 'border-red-400' : 'border-gray-200'
                       }`}
                       placeholder="Tell us what you are looking to build or solve. Include target audience, desired features, deadlines, or existing tech stack..."
@@ -389,7 +389,7 @@ export const Contact: React.FC = () => {
                       <select
                         value={form.budget}
                         onChange={(e) => setForm({ ...form, budget: e.target.value })}
-                        className="w-full px-4 py-3.5 rounded-xl border border-gray-200 text-sm text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-[#1a7a8c]/40 focus:border-[#1a7a8c]"
+                        className="w-full px-4 py-3.5 rounded-xl border border-gray-200 text-sm text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)]/40 focus:border-[var(--color-accent)]"
                       >
                         {BUDGETS.map((b) => (
                           <option key={b} value={b}>
@@ -406,7 +406,7 @@ export const Contact: React.FC = () => {
                       <select
                         value={form.timeline}
                         onChange={(e) => setForm({ ...form, timeline: e.target.value })}
-                        className="w-full px-4 py-3.5 rounded-xl border border-gray-200 text-sm text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-[#1a7a8c]/40 focus:border-[#1a7a8c]"
+                        className="w-full px-4 py-3.5 rounded-xl border border-gray-200 text-sm text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)]/40 focus:border-[var(--color-accent)]"
                       >
                         {TIMELINES.map((t) => (
                           <option key={t} value={t}>
@@ -423,7 +423,7 @@ export const Contact: React.FC = () => {
                       Attach Architecture / Brief Document{' '}
                       <span className="text-gray-400 font-normal normal-case text-xs">(PDF, ZIP, PNG, DOCX — Max 15MB)</span>
                     </label>
-                    <label className="flex items-center space-x-3 px-4 py-3.5 rounded-xl border-2 border-dashed border-gray-200 hover:border-[#1a7a8c]/50 cursor-pointer bg-gray-50/50 hover:bg-gray-50 transition-colors">
+                    <label className="flex items-center space-x-3 px-4 py-3.5 rounded-xl border-2 border-dashed border-gray-200 hover:border-[var(--color-accent)]/50 cursor-pointer bg-gray-50/50 hover:bg-gray-50 transition-colors">
                       <Paperclip className="w-4 h-4 text-gray-400 flex-shrink-0" />
                       <span className="text-xs sm:text-sm text-gray-500 truncate">
                         {form.file ? form.file.name : 'Click to select an attachment or drag here'}
@@ -444,7 +444,7 @@ export const Contact: React.FC = () => {
                       disabled={isSubmitting}
                       whileHover={{ scale: 1.01 }}
                       whileTap={{ scale: 0.98 }}
-                      className="w-full sm:w-auto flex items-center justify-center space-x-2.5 px-10 py-4 rounded-xl bg-[#1a7a8c] hover:bg-[#156575] text-white font-extrabold text-base shadow-lg shadow-[#1a7a8c]/25 transition-all disabled:opacity-50"
+                      className="w-full sm:w-auto flex items-center justify-center space-x-2.5 px-10 py-4 rounded-xl bg-[var(--color-accent-fill)] hover:bg-[var(--color-accent-hover)] text-white font-extrabold text-base shadow-lg shadow-md transition-all disabled:opacity-50"
                     >
                       <Send className="w-4 h-4" />
                       <span>{isSubmitting ? 'Transmitting Scope...' : 'Submit Project Scope'}</span>

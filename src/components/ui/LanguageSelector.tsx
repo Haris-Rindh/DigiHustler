@@ -24,7 +24,7 @@ export const LanguageSelector: React.FC = () => {
     <div className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center space-x-1.5 px-2.5 py-1.5 rounded-xl border border-[#1e4a5d] bg-[#0d2833]/80 hover:border-[#1a7a8c] text-xs font-bold text-slate-200 transition-colors"
+        className="flex items-center space-x-1.5 px-2.5 py-1.5 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)]/80 hover:border-[var(--color-accent)] text-xs font-bold text-slate-200 transition-colors"
         aria-label="Select Language"
       >
         <span>{activeOption.flag}</span>
@@ -33,7 +33,7 @@ export const LanguageSelector: React.FC = () => {
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-36 rounded-2xl bg-[#0d2833] border border-[#1e4a5d] shadow-2xl p-1.5 z-50">
+        <div className="absolute right-0 mt-2 w-36 rounded-2xl bg-[var(--color-surface)] border border-[var(--color-border)] shadow-2xl p-1.5 z-50">
           {LANGUAGES.map((lang) => (
             <button
               key={lang.code}
@@ -43,7 +43,7 @@ export const LanguageSelector: React.FC = () => {
               }}
               className={`w-full flex items-center space-x-2 px-3 py-2 rounded-xl text-left text-xs font-semibold transition-colors ${
                 lang.code === currentLang
-                  ? 'bg-[#1a7a8c] text-white'
+                  ? 'bg-[var(--color-accent-fill)] text-white'
                   : 'text-slate-300 hover:text-white hover:bg-white/5'
               }`}
             >

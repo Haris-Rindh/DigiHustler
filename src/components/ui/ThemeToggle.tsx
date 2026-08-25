@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Sun, Moon, Sparkles } from 'lucide-react';
+import { Sun, Moon } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
 
 interface ThemeToggleProps {
@@ -27,37 +27,23 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({ className = '' }) => {
       tabIndex={0}
       onClick={toggleTheme}
       onKeyDown={handleKeyDown}
-      className={`relative inline-flex items-center h-9 w-16 p-1 rounded-full border transition-colors cursor-pointer select-none focus:outline-none focus:ring-2 focus:ring-[#1a7a8c] ${
+      className={`relative inline-flex items-center h-9 w-16 p-1 rounded-full border transition-colors cursor-pointer select-none focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)] ${
         isDark
-          ? 'bg-[#071e26] border-[#1e4a5d]'
-          : 'bg-[#e5eff2] border-[#cbdfe6]'
+          ? 'bg-[var(--color-surface)] border-[var(--color-border)]'
+          : 'bg-[#E1E5F2] border-[var(--color-border)]'
       } ${className}`}
     >
-      {/* Background Micro-stars for dark / Sunburst for light */}
-      <div className="absolute inset-0 flex items-center justify-between px-2 pointer-events-none overflow-hidden rounded-full">
+      {/* Background Subtle Indicators */}
+      <div className="absolute inset-0 flex items-center justify-between px-2.5 pointer-events-none overflow-hidden rounded-full">
         {isDark ? (
           <>
-            <motion.span
-              initial={{ opacity: 0, scale: 0.5 }}
-              animate={{ opacity: 0.8, scale: 1 }}
-              transition={{ duration: 0.3 }}
-              className="text-[9px] text-amber-200 ml-1"
-            >
-              ★
-            </motion.span>
-            <motion.span
-              initial={{ opacity: 0, scale: 0.5 }}
-              animate={{ opacity: 0.4, scale: 0.8 }}
-              transition={{ duration: 0.3, delay: 0.1 }}
-              className="text-[7px] text-[#bde0fe] mr-1"
-            >
-              ✦
-            </motion.span>
+            <span className="text-[9px] text-[#B08D57] ml-0.5 opacity-75">★</span>
+            <span className="text-[7px] text-[#E1E5F2] mr-0.5 opacity-50">✦</span>
           </>
         ) : (
           <>
-            <span className="w-1.5 h-1.5 rounded-full bg-amber-400/40 ml-1.5 animate-pulse" />
-            <span className="w-1 h-1 rounded-full bg-sky-400/40 mr-1.5" />
+            <span className="w-1.5 h-1.5 rounded-full bg-[#B08D57]/40 ml-0.5" />
+            <span className="w-1 h-1 rounded-full bg-[#1F7A8C]/30 mr-0.5" />
           </>
         )}
       </div>
@@ -70,10 +56,10 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({ className = '' }) => {
           stiffness: 500,
           damping: 30,
         }}
-        className={`relative z-10 w-7 h-7 rounded-full flex items-center justify-center shadow-md transition-colors ${
+        className={`relative z-10 w-7 h-7 rounded-full flex items-center justify-center shadow-sm transition-colors ${
           isDark
-            ? 'bg-gradient-to-br from-[#1a7a8c] to-[#0ea5e9] text-white ml-auto'
-            : 'bg-gradient-to-br from-amber-400 to-orange-400 text-slate-900 mr-auto'
+            ? 'bg-[#1F7A8C] text-[#EFF1F5] ml-auto'
+            : 'bg-[#B08D57] text-[#022B3A] mr-auto'
         }`}
       >
         <motion.div
@@ -84,9 +70,9 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({ className = '' }) => {
           transition={{ duration: 0.25 }}
         >
           {isDark ? (
-            <Moon className="w-3.5 h-3.5 fill-white text-white" />
+            <Moon className="w-3.5 h-3.5 fill-[#EFF1F5] text-[#EFF1F5]" />
           ) : (
-            <Sun className="w-3.5 h-3.5 fill-amber-900 text-amber-900" />
+            <Sun className="w-3.5 h-3.5 fill-[#022B3A] text-[#022B3A]" />
           )}
         </motion.div>
       </motion.div>

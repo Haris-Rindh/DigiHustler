@@ -58,7 +58,7 @@ export const App: React.FC = () => {
           <OfflineBanner />
           <CookieConsent />
           <PWAInstallPrompt />
-          <div className="flex flex-col min-h-screen bg-[#071e26] text-slate-100 selection:bg-[#1a7a8c] selection:text-white">
+          <div className="flex flex-col min-h-screen bg-[var(--color-bg)] text-slate-100 selection:bg-[var(--color-accent-fill)] selection:text-white">
             <Navbar />
             <main className="flex-1">
               <Routes>

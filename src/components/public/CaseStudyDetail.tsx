@@ -275,11 +275,11 @@ export const CaseStudyDetail: React.FC = () => {
       />
 
       {/* Header Banner */}
-      <section className="bg-[#071e26] py-16 sm:py-20 px-6 lg:px-8 border-b border-[#1e4a5d]">
+      <section className="bg-[var(--color-bg)] py-16 sm:py-20 px-6 lg:px-8 border-b border-[var(--color-border)]">
         <div className="max-w-7xl mx-auto">
           <Link
             to="/work"
-            className="inline-flex items-center space-x-2 text-xs font-bold text-[#bde0fe] hover:underline mb-6"
+            className="inline-flex items-center space-x-2 text-xs font-bold text-[var(--color-text-primary)] hover:underline mb-6"
           >
             <ArrowLeft className="w-4 h-4" />
             <span>Back to All Case Studies</span>
@@ -287,7 +287,7 @@ export const CaseStudyDetail: React.FC = () => {
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
             <div className="lg:col-span-8">
-              <span className="text-xs font-extrabold text-[#1a7a8c] uppercase tracking-widest block mb-2">
+              <span className="text-xs font-extrabold text-[var(--color-accent)] uppercase tracking-widest block mb-2">
                 {study.category} · {study.clientIndustry}
               </span>
               <h1 className="font-display font-extrabold text-3xl sm:text-4xl lg:text-5xl text-white mb-6 leading-tight">
@@ -299,15 +299,15 @@ export const CaseStudyDetail: React.FC = () => {
 
               {/* Meta pills */}
               <div className="flex flex-wrap gap-4 text-xs text-slate-400">
-                <span className="flex items-center gap-1.5 bg-[#0d2833] px-3 py-1.5 rounded-lg border border-[#1e4a5d]">
-                  <Building2 className="w-4 h-4 text-[#1a7a8c]" />
+                <span className="flex items-center gap-1.5 bg-[var(--color-surface)] px-3 py-1.5 rounded-lg border border-[var(--color-border)]">
+                  <Building2 className="w-4 h-4 text-[var(--color-accent)]" />
                   <strong className="text-white font-bold">{study.client}</strong>
                 </span>
-                <span className="flex items-center gap-1.5 bg-[#0d2833] px-3 py-1.5 rounded-lg border border-[#1e4a5d]">
+                <span className="flex items-center gap-1.5 bg-[var(--color-surface)] px-3 py-1.5 rounded-lg border border-[var(--color-border)]">
                   <Calendar className="w-4 h-4 text-[#0ea5e9]" />
                   <span>{study.timeline}</span>
                 </span>
-                <span className="flex items-center gap-1.5 bg-[#1a7a8c]/20 text-[#bde0fe] px-3 py-1.5 rounded-lg border border-[#1a7a8c]/40 font-bold">
+                <span className="flex items-center gap-1.5 bg-[var(--color-accent-fill)]/20 text-[var(--color-text-primary)] px-3 py-1.5 rounded-lg border border-[var(--color-accent)]/40 font-bold">
                   <Sparkles className="w-4 h-4 text-amber-400" />
                   <span>{study.statHighlight}</span>
                 </span>
@@ -315,14 +315,14 @@ export const CaseStudyDetail: React.FC = () => {
             </div>
 
             {/* Quick Action Box */}
-            <div className="lg:col-span-4 p-6 rounded-2xl bg-[#0d2833] border border-[#1e4a5d] shadow-xl text-center">
+            <div className="lg:col-span-4 p-6 rounded-2xl bg-[var(--color-surface)] border border-[var(--color-border)] shadow-xl text-center">
               <h3 className="font-bold text-white text-base mb-2">Need Similar Execution?</h3>
               <p className="text-xs text-slate-400 mb-6 leading-relaxed">
                 Our specialized squads can architect, design, and build custom solutions for your industry.
               </p>
               <Link
                 to="/contact"
-                className="w-full flex items-center justify-center space-x-2 px-6 py-3.5 rounded-xl bg-[#1a7a8c] hover:bg-[#156575] text-white font-bold text-sm shadow-md transition-all"
+                className="w-full flex items-center justify-center space-x-2 px-6 py-3.5 rounded-xl bg-[var(--color-accent-fill)] hover:bg-[var(--color-accent-hover)] text-white font-bold text-sm shadow-md transition-all"
               >
                 <span>Request Project Proposal</span>
                 <ArrowRight className="w-4 h-4" />
@@ -333,9 +333,9 @@ export const CaseStudyDetail: React.FC = () => {
       </section>
 
       {/* Hero Image Showcase */}
-      <section className="bg-[#071e26] pb-16 px-6 lg:px-8">
+      <section className="bg-[var(--color-bg)] pb-16 px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
-          <div className="aspect-[21/9] rounded-3xl overflow-hidden border border-[#1e4a5d] shadow-2xl relative">
+          <div className="aspect-[21/9] rounded-3xl overflow-hidden border border-[var(--color-border)] shadow-2xl relative">
             <img
               src={study.heroImage}
               alt={study.title}
@@ -350,7 +350,7 @@ export const CaseStudyDetail: React.FC = () => {
         <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-8">
           {study.metrics.map((m) => (
             <div key={m.label} className="p-6 rounded-2xl border border-gray-100 bg-gray-50/70 text-center sm:text-left">
-              <p className="font-display font-black text-3xl sm:text-4xl text-[#1a7a8c] mb-1">{m.value}</p>
+              <p className="font-display font-black text-3xl sm:text-4xl text-[var(--color-accent)] mb-1">{m.value}</p>
               <p className="text-sm font-bold text-gray-900 mb-0.5">{m.label}</p>
               <p className="text-xs text-gray-500">{m.sub}</p>
             </div>
@@ -378,7 +378,7 @@ export const CaseStudyDetail: React.FC = () => {
 
             {/* Architectural Engineering */}
             <div>
-              <div className="flex items-center space-x-2 text-xs font-black text-[#1a7a8c] uppercase tracking-widest mb-3">
+              <div className="flex items-center space-x-2 text-xs font-black text-[var(--color-accent)] uppercase tracking-widest mb-3">
                 <Code2 className="w-4 h-4" />
                 <span>Technical Architecture</span>
               </div>
@@ -388,7 +388,7 @@ export const CaseStudyDetail: React.FC = () => {
               <div className="space-y-3">
                 {study.architectureDetails.map((detail) => (
                   <div key={detail} className="flex items-start space-x-3 p-4 rounded-xl border border-gray-100 bg-white shadow-sm">
-                    <CheckCircle2 className="w-5 h-5 text-[#1a7a8c] flex-shrink-0 mt-0.5" />
+                    <CheckCircle2 className="w-5 h-5 text-[var(--color-accent)] flex-shrink-0 mt-0.5" />
                     <span className="text-sm text-gray-700 leading-relaxed">{detail}</span>
                   </div>
                 ))}
@@ -411,17 +411,17 @@ export const CaseStudyDetail: React.FC = () => {
 
             {/* Client Testimonial if available */}
             {study.clientQuote && (
-              <div className="p-8 rounded-3xl bg-[#071e26] text-white border border-[#1e4a5d] relative overflow-hidden shadow-xl">
+              <div className="p-8 rounded-3xl bg-[var(--color-bg)] text-white border border-[var(--color-border)] relative overflow-hidden shadow-xl">
                 <p className="font-display text-lg sm:text-xl text-slate-200 italic leading-relaxed mb-6">
                   "{study.clientQuote.quote}"
                 </p>
                 <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 rounded-full bg-[#1a7a8c] flex items-center justify-center font-bold text-white text-sm">
+                  <div className="w-10 h-10 rounded-full bg-[var(--color-accent-fill)] flex items-center justify-center font-bold text-white text-sm">
                     {study.clientQuote.author[0]}
                   </div>
                   <div>
                     <h4 className="font-bold text-white text-sm">{study.clientQuote.author}</h4>
-                    <p className="text-xs text-[#bde0fe]">{study.clientQuote.role}</p>
+                    <p className="text-xs text-[var(--color-text-primary)]">{study.clientQuote.role}</p>
                   </div>
                 </div>
               </div>
@@ -432,13 +432,13 @@ export const CaseStudyDetail: React.FC = () => {
           <div className="lg:col-span-4 space-y-8">
             <div className="p-6 rounded-2xl bg-gray-50 border border-gray-200">
               <h3 className="font-bold text-gray-900 text-sm uppercase tracking-wider mb-4 flex items-center space-x-1.5">
-                <ShieldCheck className="w-4 h-4 text-[#1a7a8c]" />
+                <ShieldCheck className="w-4 h-4 text-[var(--color-accent)]" />
                 <span>Scope Deliverables</span>
               </h3>
               <ul className="space-y-2.5">
                 {study.deliverables.map((item) => (
                   <li key={item} className="flex items-start space-x-2.5 text-xs text-gray-700 font-medium">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#1a7a8c] mt-1.5 flex-shrink-0" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-accent-fill)] mt-1.5 flex-shrink-0" />
                     <span>{item}</span>
                   </li>
                 ))}
@@ -462,7 +462,7 @@ export const CaseStudyDetail: React.FC = () => {
       </section>
 
       {/* Bottom CTA */}
-      <section className="bg-[#071e26] py-20 px-6 lg:px-8 text-center border-t border-[#1e4a5d]">
+      <section className="bg-[var(--color-bg)] py-20 px-6 lg:px-8 text-center border-t border-[var(--color-border)]">
         <h2 className="font-display font-extrabold text-3xl text-white mb-4">
           Ready to Build Your Success Story?
         </h2>
@@ -471,7 +471,7 @@ export const CaseStudyDetail: React.FC = () => {
         </p>
         <Link
           to="/contact"
-          className="inline-flex items-center space-x-2 px-8 py-4 rounded-xl bg-[#1a7a8c] hover:bg-[#156575] text-white font-bold shadow-lg transition-all"
+          className="inline-flex items-center space-x-2 px-8 py-4 rounded-xl bg-[var(--color-accent-fill)] hover:bg-[var(--color-accent-hover)] text-white font-bold shadow-lg transition-all"
         >
           <span>Start a Project</span>
           <ArrowRight className="w-4 h-4" />

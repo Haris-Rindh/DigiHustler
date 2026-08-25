@@ -47,10 +47,10 @@ export const SplitConfigurationView: React.FC<SplitConfigurationViewProps> = ({ 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         
         {/* Global Default Split Settings Form */}
-        <form onSubmit={handleSaveGlobal} className="p-6 rounded-3xl bg-[#0d2833] border border-[#1e4a5d] space-y-5 shadow-xl">
-          <div className="flex items-center justify-between border-b border-[#1e4a5d] pb-3">
+        <form onSubmit={handleSaveGlobal} className="p-6 rounded-3xl bg-[var(--color-surface)] border border-[var(--color-border)] space-y-5 shadow-xl">
+          <div className="flex items-center justify-between border-b border-[var(--color-border)] pb-3">
             <h3 className="font-display font-bold text-lg text-white flex items-center gap-2">
-              <DollarSign className="w-5 h-5 text-[#1a7a8c]" />
+              <DollarSign className="w-5 h-5 text-[var(--color-accent)]" />
               <span>Global Default Split Allocation</span>
             </h3>
             <span className="text-[10px] text-slate-400 uppercase font-bold">Standard Baseline</span>
@@ -64,7 +64,7 @@ export const SplitConfigurationView: React.FC<SplitConfigurationViewProps> = ({ 
             <div>
               <div className="flex justify-between text-xs font-semibold text-slate-300 mb-1">
                 <span>Default Management Cut %</span>
-                <span className="text-[#bde0fe] font-bold">{mgmtPct}%</span>
+                <span className="text-[var(--color-text-primary)] font-bold">{mgmtPct}%</span>
               </div>
               <input
                 type="range"
@@ -73,7 +73,7 @@ export const SplitConfigurationView: React.FC<SplitConfigurationViewProps> = ({ 
                 step="1"
                 value={mgmtPct}
                 onChange={(e) => setMgmtPct(parseFloat(e.target.value))}
-                className="w-full accent-[#1a7a8c]"
+                className="w-full accent-[var(--color-accent)]"
               />
             </div>
 
@@ -109,7 +109,7 @@ export const SplitConfigurationView: React.FC<SplitConfigurationViewProps> = ({ 
               />
             </div>
 
-            <div className="pt-2 border-t border-[#1e4a5d]/60">
+            <div className="pt-2 border-t border-[var(--color-border)]/60">
               <div className="flex justify-between text-xs font-semibold text-slate-300 mb-1">
                 <span>Independent Lead Gen Commission %</span>
                 <span className="text-amber-400 font-bold">{lgPct}%</span>
@@ -143,7 +143,7 @@ export const SplitConfigurationView: React.FC<SplitConfigurationViewProps> = ({ 
               )}
               <button
                 type="submit"
-                className="px-5 py-2.5 rounded-xl bg-[#1a7a8c] hover:bg-[#156575] text-white font-bold text-xs shadow-md transition-colors"
+                className="px-5 py-2.5 rounded-xl bg-[var(--color-accent-fill)] hover:bg-[var(--color-accent-hover)] text-white font-bold text-xs shadow-md transition-colors"
               >
                 Save Global Defaults
               </button>
@@ -152,11 +152,11 @@ export const SplitConfigurationView: React.FC<SplitConfigurationViewProps> = ({ 
         </form>
 
         {/* Individual Split Overrides List */}
-        <div className="p-6 rounded-3xl bg-[#0d2833] border border-[#1e4a5d] space-y-5 shadow-xl flex flex-col justify-between">
+        <div className="p-6 rounded-3xl bg-[var(--color-surface)] border border-[var(--color-border)] space-y-5 shadow-xl flex flex-col justify-between">
           <div>
-            <div className="flex items-center justify-between border-b border-[#1e4a5d] pb-3">
+            <div className="flex items-center justify-between border-b border-[var(--color-border)] pb-3">
               <h3 className="font-display font-bold text-lg text-white flex items-center gap-2">
-                <Users className="w-5 h-5 text-[#bde0fe]" />
+                <Users className="w-5 h-5 text-[var(--color-text-primary)]" />
                 <span>Custom Per-Person Overrides</span>
               </h3>
               <span className="text-[10px] text-slate-400 uppercase font-bold">
@@ -170,14 +170,14 @@ export const SplitConfigurationView: React.FC<SplitConfigurationViewProps> = ({ 
 
             <div className="space-y-3 mt-4">
               {usersWithOverrides.length === 0 ? (
-                <div className="p-8 text-center rounded-2xl bg-[#071e26] border border-[#1e4a5d] text-slate-400 text-xs">
+                <div className="p-8 text-center rounded-2xl bg-[var(--color-bg)] border border-[var(--color-border)] text-slate-400 text-xs">
                   No individual split overrides configured. All talent uses the global baseline.
                 </div>
               ) : (
                 usersWithOverrides.map((u) => (
                   <div
                     key={u.id}
-                    className="p-4 rounded-2xl bg-[#071e26] border border-[#1e4a5d] flex items-center justify-between gap-4"
+                    className="p-4 rounded-2xl bg-[var(--color-bg)] border border-[var(--color-border)] flex items-center justify-between gap-4"
                   >
                     <div className="flex items-center space-x-3">
                       <img
@@ -188,7 +188,7 @@ export const SplitConfigurationView: React.FC<SplitConfigurationViewProps> = ({ 
                       <div>
                         <h4 className="font-bold text-xs text-white">{u.name}</h4>
                         <p className="text-[10px] text-slate-400">{u.title}</p>
-                        <p className="text-[10px] text-[#bde0fe] font-semibold mt-0.5">
+                        <p className="text-[10px] text-[var(--color-text-primary)] font-semibold mt-0.5">
                           Override: {u.splitOverride?.managementPct || mgmtPct}% Mgmt / {u.splitOverride?.leaderPct || ldrPct}% Leader / {u.splitOverride?.freelancerPct || flPct}% Talent
                         </p>
                       </div>

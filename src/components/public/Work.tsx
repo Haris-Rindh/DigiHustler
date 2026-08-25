@@ -141,14 +141,14 @@ export const Work: React.FC = () => {
       />
 
       {/* Header */}
-      <section className="bg-[#071e26] py-20 px-6 lg:px-8 border-b border-[#1e4a5d]">
+      <section className="bg-[var(--color-bg)] py-20 px-6 lg:px-8 border-b border-[var(--color-border)]">
         <div className="max-w-7xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
           >
-            <p className="text-xs font-extrabold text-[#1a7a8c] uppercase tracking-widest mb-3">
+            <p className="text-xs font-extrabold text-[var(--color-accent)] uppercase tracking-widest mb-3">
               Proven Delivery
             </p>
             <h1 className="font-display font-extrabold text-4xl sm:text-5xl lg:text-6xl text-white mb-5">
@@ -178,7 +178,7 @@ export const Work: React.FC = () => {
                   {active && (
                     <motion.div
                       layoutId="workCategoryPill"
-                      className="absolute inset-0 bg-[#1a7a8c] rounded-xl shadow-md"
+                      className="absolute inset-0 bg-[var(--color-accent-fill)] rounded-xl shadow-md"
                       transition={{ type: 'spring', stiffness: 400, damping: 30 }}
                     />
                   )}
@@ -205,7 +205,7 @@ export const Work: React.FC = () => {
                   transition={{ duration: 0.3 }}
                   whileHover={{ y: -4 }}
                   onClick={() => setSelectedProject(project)}
-                  className="group border border-gray-200/80 rounded-2xl overflow-hidden hover:shadow-xl hover:border-[#1a7a8c]/40 transition-all cursor-pointer bg-white flex flex-col justify-between"
+                  className="group border border-gray-200/80 rounded-2xl overflow-hidden hover:shadow-xl hover:border-[var(--color-accent)]/40 transition-all cursor-pointer bg-white flex flex-col justify-between"
                 >
                   <div>
                     <div className="aspect-video overflow-hidden bg-gray-100 relative">
@@ -214,15 +214,15 @@ export const Work: React.FC = () => {
                         alt={project.title}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       />
-                      <div className="absolute top-3 left-3 px-2.5 py-1 rounded-md bg-[#071e26]/85 backdrop-blur-sm text-[10px] font-bold text-[#bde0fe] border border-[#1e4a5d]">
+                      <div className="absolute top-3 left-3 px-2.5 py-1 rounded-md bg-[var(--color-bg)]/85 backdrop-blur-sm text-[10px] font-bold text-[var(--color-text-primary)] border border-[var(--color-border)]">
                         {project.client}
                       </div>
                     </div>
                     <div className="p-6">
-                      <p className="text-[11px] font-bold text-[#1a7a8c] uppercase tracking-wider mb-1">
+                      <p className="text-[11px] font-bold text-[var(--color-accent)] uppercase tracking-wider mb-1">
                         {project.category}
                       </p>
-                      <h2 className="font-display font-bold text-xl text-gray-900 mb-3 group-hover:text-[#1a7a8c] transition-colors">
+                      <h2 className="font-display font-bold text-xl text-gray-900 mb-3 group-hover:text-[var(--color-accent)] transition-colors">
                         {project.title}
                       </h2>
                       <p className="text-sm text-gray-600 leading-relaxed mb-4">
@@ -241,7 +241,7 @@ export const Work: React.FC = () => {
                     </div>
                   </div>
 
-                  <div className="px-6 pb-6 pt-2 border-t border-gray-100 flex items-center justify-between text-xs font-bold text-[#1a7a8c]">
+                  <div className="px-6 pb-6 pt-2 border-t border-gray-100 flex items-center justify-between text-xs font-bold text-[var(--color-accent)]">
                     <span>Inspect Full Case Study</span>
                     <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                   </div>
@@ -260,18 +260,18 @@ export const Work: React.FC = () => {
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="bg-[#0d2833] border border-[#1e4a5d] rounded-3xl max-w-3xl w-full p-6 sm:p-8 text-white relative shadow-2xl overflow-hidden my-8 max-h-[90vh] overflow-y-auto"
+              className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-3xl max-w-3xl w-full p-6 sm:p-8 text-white relative shadow-2xl overflow-hidden my-8 max-h-[90vh] overflow-y-auto"
             >
               <button
                 onClick={() => setSelectedProject(null)}
-                className="absolute top-6 right-6 p-2 rounded-xl bg-[#071e26] border border-[#1e4a5d] hover:border-[#1a7a8c] text-slate-300 hover:text-white transition-colors"
+                className="absolute top-6 right-6 p-2 rounded-xl bg-[var(--color-bg)] border border-[var(--color-border)] hover:border-[var(--color-accent)] text-slate-300 hover:text-white transition-colors"
                 aria-label="Close Case Study Modal"
               >
                 <X className="w-5 h-5" />
               </button>
 
               <div className="pr-12 mb-6">
-                <span className="text-xs font-bold text-[#1a7a8c] uppercase tracking-wider">
+                <span className="text-xs font-bold text-[var(--color-accent)] uppercase tracking-wider">
                   {selectedProject.category} · {selectedProject.client}
                 </span>
                 <h3 className="font-display font-extrabold text-2xl sm:text-3xl text-white mt-1">
@@ -279,7 +279,7 @@ export const Work: React.FC = () => {
                 </h3>
               </div>
 
-              <div className="aspect-video rounded-2xl overflow-hidden mb-6 border border-[#1e4a5d]">
+              <div className="aspect-video rounded-2xl overflow-hidden mb-6 border border-[var(--color-border)]">
                 <img
                   src={selectedProject.img}
                   alt={selectedProject.title}
@@ -289,21 +289,21 @@ export const Work: React.FC = () => {
 
               <div className="space-y-6 text-sm">
                 <div>
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-[#bde0fe] mb-2 flex items-center space-x-1.5">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--color-text-primary)] mb-2 flex items-center space-x-1.5">
                     <Layers className="w-4 h-4" />
                     <span>The Challenge</span>
                   </h4>
-                  <p className="text-slate-300 leading-relaxed bg-[#071e26] p-4 rounded-xl border border-[#1e4a5d]">
+                  <p className="text-slate-300 leading-relaxed bg-[var(--color-bg)] p-4 rounded-xl border border-[var(--color-border)]">
                     {selectedProject.challenge}
                   </p>
                 </div>
 
                 <div>
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-[#1a7a8c] mb-2 flex items-center space-x-1.5">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--color-accent)] mb-2 flex items-center space-x-1.5">
                     <Sparkles className="w-4 h-4" />
                     <span>The DigiHust Solution</span>
                   </h4>
-                  <p className="text-slate-300 leading-relaxed bg-[#071e26] p-4 rounded-xl border border-[#1e4a5d]">
+                  <p className="text-slate-300 leading-relaxed bg-[var(--color-bg)] p-4 rounded-xl border border-[var(--color-border)]">
                     {selectedProject.solution}
                   </p>
                 </div>
@@ -316,7 +316,7 @@ export const Work: React.FC = () => {
                     {selectedProject.results.map((res) => (
                       <div
                         key={res}
-                        className="p-3.5 rounded-xl bg-[#071e26] border border-emerald-500/30 text-xs font-semibold text-slate-200 flex items-start space-x-2"
+                        className="p-3.5 rounded-xl bg-[var(--color-bg)] border border-emerald-500/30 text-xs font-semibold text-slate-200 flex items-start space-x-2"
                       >
                         <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5" />
                         <span>{res}</span>
@@ -326,12 +326,12 @@ export const Work: React.FC = () => {
                 </div>
               </div>
 
-              <div className="mt-8 pt-6 border-t border-[#1e4a5d] flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="mt-8 pt-6 border-t border-[var(--color-border)] flex flex-col sm:flex-row items-center justify-between gap-4">
                 <div className="flex flex-wrap gap-1.5">
                   {selectedProject.tags.map((t) => (
                     <span
                       key={t}
-                      className="text-[10px] px-2.5 py-1 rounded-md bg-[#071e26] text-slate-300 border border-[#1e4a5d]"
+                      className="text-[10px] px-2.5 py-1 rounded-md bg-[var(--color-bg)] text-slate-300 border border-[var(--color-border)]"
                     >
                       {t}
                     </span>
@@ -339,7 +339,7 @@ export const Work: React.FC = () => {
                 </div>
                 <Link
                   to="/contact"
-                  className="w-full sm:w-auto flex items-center justify-center space-x-2 px-6 py-3 rounded-xl bg-[#1a7a8c] hover:bg-[#156575] text-white font-bold text-xs shadow transition-all"
+                  className="w-full sm:w-auto flex items-center justify-center space-x-2 px-6 py-3 rounded-xl bg-[var(--color-accent-fill)] hover:bg-[var(--color-accent-hover)] text-white font-bold text-xs shadow transition-all"
                 >
                   <span>Build a Similar Project</span>
                   <ArrowRight className="w-4 h-4" />
@@ -351,7 +351,7 @@ export const Work: React.FC = () => {
       </AnimatePresence>
 
       {/* Bottom CTA */}
-      <section className="bg-[#071e26] py-20 px-6 lg:px-8 border-t border-[#1e4a5d] text-center">
+      <section className="bg-[var(--color-bg)] py-20 px-6 lg:px-8 border-t border-[var(--color-border)] text-center">
         <h2 className="font-display font-extrabold text-3xl text-white mb-4">
           Ready to Build Your Digital Solution?
         </h2>
@@ -360,7 +360,7 @@ export const Work: React.FC = () => {
         </p>
         <Link
           to="/contact"
-          className="inline-flex items-center space-x-2 px-8 py-4 rounded-xl bg-[#1a7a8c] hover:bg-[#156575] text-white font-bold shadow-lg transition-all"
+          className="inline-flex items-center space-x-2 px-8 py-4 rounded-xl bg-[var(--color-accent-fill)] hover:bg-[var(--color-accent-hover)] text-white font-bold shadow-lg transition-all"
         >
           <span>Start a Project</span>
           <ArrowRight className="w-4 h-4" />

@@ -47,31 +47,31 @@ export const BlogPost: React.FC = () => {
       />
 
       {/* Header Banner */}
-      <section className="bg-[#071e26] py-16 sm:py-20 px-6 lg:px-8 border-b border-[#1e4a5d]">
+      <section className="bg-[var(--color-bg)] py-16 sm:py-20 px-6 lg:px-8 border-b border-[var(--color-border)]">
         <div className="max-w-4xl mx-auto">
           <Link
             to="/blog"
-            className="inline-flex items-center space-x-2 text-xs font-bold text-[#bde0fe] hover:underline mb-6"
+            className="inline-flex items-center space-x-2 text-xs font-bold text-[var(--color-text-primary)] hover:underline mb-6"
           >
             <ArrowLeft className="w-4 h-4" />
             <span>Back to Insights Hub</span>
           </Link>
 
-          <span className="text-xs font-extrabold text-[#1a7a8c] uppercase tracking-widest block mb-2">
+          <span className="text-xs font-extrabold text-[var(--color-accent)] uppercase tracking-widest block mb-2">
             {post.category}
           </span>
           <h1 className="font-display font-extrabold text-3xl sm:text-4xl lg:text-5xl text-white mb-6 leading-tight">
             {post.title}
           </h1>
 
-          <div className="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-[#1e4a5d] text-xs text-slate-300">
+          <div className="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-[var(--color-border)] text-xs text-slate-300">
             <div className="flex items-center space-x-3">
-              <div className="w-9 h-9 rounded-full bg-[#1a7a8c] flex items-center justify-center font-bold text-white text-xs">
+              <div className="w-9 h-9 rounded-full bg-[var(--color-accent-fill)] flex items-center justify-center font-bold text-white text-xs">
                 {post.author[0]}
               </div>
               <div>
                 <p className="font-bold text-white">{post.author}</p>
-                <p className="text-[10px] text-[#bde0fe]">{post.authorRole}</p>
+                <p className="text-[10px] text-[var(--color-text-primary)]">{post.authorRole}</p>
               </div>
             </div>
 
@@ -97,7 +97,7 @@ export const BlogPost: React.FC = () => {
             <img src={post.image} alt={post.title} className="w-full h-full object-cover" />
           </div>
 
-          <p className="text-xl font-medium text-gray-900 leading-relaxed border-l-4 border-[#1a7a8c] pl-6 italic bg-gray-50/50 py-3 rounded-r-2xl">
+          <p className="text-xl font-medium text-gray-900 leading-relaxed border-l-4 border-[var(--color-accent)] pl-6 italic bg-gray-50/50 py-3 rounded-r-2xl">
             "{post.excerpt}"
           </p>
 
@@ -122,7 +122,7 @@ export const BlogPost: React.FC = () => {
               'Maintain strict Web Content Accessibility Guidelines (WCAG) to ensure both humans and AI parsers navigate with zero ambiguity.',
             ].map((point) => (
               <div key={point} className="flex items-start space-x-3 p-4 rounded-xl bg-gray-50 border border-gray-100">
-                <CheckCircle2 className="w-5 h-5 text-[#1a7a8c] flex-shrink-0 mt-0.5" />
+                <CheckCircle2 className="w-5 h-5 text-[var(--color-accent)] flex-shrink-0 mt-0.5" />
                 <span className="text-sm sm:text-base text-gray-700 font-medium">{point}</span>
               </div>
             ))}
@@ -140,7 +140,7 @@ export const BlogPost: React.FC = () => {
       </article>
 
       {/* Bottom CTA */}
-      <section className="bg-[#071e26] py-16 px-6 lg:px-8 text-center border-t border-[#1e4a5d]">
+      <section className="bg-[var(--color-bg)] py-16 px-6 lg:px-8 text-center border-t border-[var(--color-border)]">
         <h2 className="font-display font-extrabold text-3xl text-white mb-4">
           Want Custom Engineering for Your Business?
         </h2>
@@ -149,7 +149,7 @@ export const BlogPost: React.FC = () => {
         </p>
         <Link
           to="/contact"
-          className="inline-flex items-center space-x-2 px-8 py-4 rounded-xl bg-[#1a7a8c] hover:bg-[#156575] text-white font-bold shadow-lg transition-all"
+          className="inline-flex items-center space-x-2 px-8 py-4 rounded-xl bg-[var(--color-accent-fill)] hover:bg-[var(--color-accent-hover)] text-white font-bold shadow-lg transition-all"
         >
           <span>Get a Scoped Proposal</span>
           <ArrowRight className="w-4 h-4" />

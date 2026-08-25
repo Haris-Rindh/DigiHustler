@@ -176,10 +176,10 @@ export const UserProfileDrawer: React.FC<UserProfileDrawerProps> = ({ user, onCl
           animate={{ x: 0 }}
           exit={{ x: '100%' }}
           transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-          className="relative w-full max-w-2xl bg-[#071e26] border-l border-[#1e4a5d] h-full flex flex-col shadow-2xl overflow-hidden"
+          className="relative w-full max-w-2xl bg-[var(--color-bg)] border-l border-[var(--color-border)] h-full flex flex-col shadow-2xl overflow-hidden"
         >
           {/* Header Banner */}
-          <div className="p-6 border-b border-[#1e4a5d] bg-[#0d2833] relative flex-shrink-0">
+          <div className="p-6 border-b border-[var(--color-border)] bg-[var(--color-surface)] relative flex-shrink-0">
             <button
               onClick={onClose}
               className="absolute top-5 right-5 p-2 rounded-xl text-slate-400 hover:text-white hover:bg-white/10 transition-colors"
@@ -191,11 +191,11 @@ export const UserProfileDrawer: React.FC<UserProfileDrawerProps> = ({ user, onCl
               <img
                 src={user.avatarUrl}
                 alt={user.name}
-                className="w-16 h-16 rounded-2xl object-cover ring-2 ring-[#1a7a8c] shadow-lg flex-shrink-0"
+                className="w-16 h-16 rounded-2xl object-cover ring-2 ring-[var(--color-accent)] shadow-lg flex-shrink-0"
               />
               <div className="flex-1 pr-8">
                 <div className="flex items-center space-x-2 mb-1">
-                  <span className="text-[10px] uppercase font-extrabold px-2 py-0.5 rounded bg-[#1a7a8c]/20 text-[#bde0fe] border border-[#1a7a8c]/40">
+                  <span className="text-[10px] uppercase font-extrabold px-2 py-0.5 rounded bg-[var(--color-accent-fill)]/20 text-[var(--color-text-primary)] border border-[var(--color-accent)]/40">
                     {user.role.replace('_', ' ')}
                   </span>
                   {getStatusBadge(user.status)}
@@ -217,7 +217,7 @@ export const UserProfileDrawer: React.FC<UserProfileDrawerProps> = ({ user, onCl
 
             {/* Quick Action Bar for Management */}
             {isManagement && (
-              <div className="flex flex-wrap items-center gap-2 mt-5 pt-4 border-t border-[#1e4a5d]/60">
+              <div className="flex flex-wrap items-center gap-2 mt-5 pt-4 border-t border-[var(--color-border)]/60">
                 <button
                   onClick={() => {
                     setNewStatus(user.status);
@@ -239,7 +239,7 @@ export const UserProfileDrawer: React.FC<UserProfileDrawerProps> = ({ user, onCl
                 </button>
                 <button
                   onClick={startEdit}
-                  className="px-3 py-1.5 rounded-lg bg-[#1a7a8c] hover:bg-[#156575] text-xs font-bold text-white shadow-sm transition-colors"
+                  className="px-3 py-1.5 rounded-lg bg-[var(--color-accent-fill)] hover:bg-[var(--color-accent-hover)] text-xs font-bold text-white shadow-sm transition-colors"
                 >
                   Edit Profile
                 </button>
@@ -248,7 +248,7 @@ export const UserProfileDrawer: React.FC<UserProfileDrawerProps> = ({ user, onCl
           </div>
 
           {/* Navigation Tabs */}
-          <div className="flex border-b border-[#1e4a5d] px-6 bg-[#0a2530] overflow-x-auto scrollbar-none flex-shrink-0">
+          <div className="flex border-b border-[var(--color-border)] px-6 bg-[var(--color-surface)] overflow-x-auto scrollbar-none flex-shrink-0">
             {[
               { id: 'overview', label: 'Overview' },
               { id: 'workload', label: `Workload (${userProjects.length})` },
@@ -261,7 +261,7 @@ export const UserProfileDrawer: React.FC<UserProfileDrawerProps> = ({ user, onCl
                 onClick={() => setActiveTab(t.id as any)}
                 className={`py-3 px-3 text-xs font-bold whitespace-nowrap transition-colors border-b-2 ${
                   activeTab === t.id
-                    ? 'text-[#bde0fe] border-[#1a7a8c]'
+                    ? 'text-[var(--color-text-primary)] border-[var(--color-accent)]'
                     : 'text-slate-400 border-transparent hover:text-slate-200'
                 }`}
               >
@@ -277,7 +277,7 @@ export const UserProfileDrawer: React.FC<UserProfileDrawerProps> = ({ user, onCl
             {activeTab === 'overview' && (
               <div className="space-y-6">
                 {isEditing ? (
-                  <div className="space-y-4 bg-[#0d2833] p-5 rounded-2xl border border-[#1e4a5d]">
+                  <div className="space-y-4 bg-[var(--color-surface)] p-5 rounded-2xl border border-[var(--color-border)]">
                     <h4 className="text-xs font-bold text-white uppercase tracking-wider">Edit Profile Details</h4>
                     <div>
                       <label className="block text-[11px] text-slate-400 mb-1">Job Title</label>
@@ -285,7 +285,7 @@ export const UserProfileDrawer: React.FC<UserProfileDrawerProps> = ({ user, onCl
                         type="text"
                         value={editTitle}
                         onChange={(e) => setEditTitle(e.target.value)}
-                        className="w-full px-3 py-2 rounded-xl bg-[#071e26] border border-[#1e4a5d] text-white text-xs"
+                        className="w-full px-3 py-2 rounded-xl bg-[var(--color-bg)] border border-[var(--color-border)] text-white text-xs"
                       />
                     </div>
                     <div>
@@ -294,7 +294,7 @@ export const UserProfileDrawer: React.FC<UserProfileDrawerProps> = ({ user, onCl
                         type="number"
                         value={editHourlyRate}
                         onChange={(e) => setEditHourlyRate(Number(e.target.value))}
-                        className="w-full px-3 py-2 rounded-xl bg-[#071e26] border border-[#1e4a5d] text-white text-xs"
+                        className="w-full px-3 py-2 rounded-xl bg-[var(--color-bg)] border border-[var(--color-border)] text-white text-xs"
                       />
                     </div>
                     <div>
@@ -303,7 +303,7 @@ export const UserProfileDrawer: React.FC<UserProfileDrawerProps> = ({ user, onCl
                         type="text"
                         value={editPhone}
                         onChange={(e) => setEditPhone(e.target.value)}
-                        className="w-full px-3 py-2 rounded-xl bg-[#071e26] border border-[#1e4a5d] text-white text-xs"
+                        className="w-full px-3 py-2 rounded-xl bg-[var(--color-bg)] border border-[var(--color-border)] text-white text-xs"
                       />
                     </div>
                     <div>
@@ -312,7 +312,7 @@ export const UserProfileDrawer: React.FC<UserProfileDrawerProps> = ({ user, onCl
                         type="text"
                         value={editSpecialties}
                         onChange={(e) => setEditSpecialties(e.target.value)}
-                        className="w-full px-3 py-2 rounded-xl bg-[#071e26] border border-[#1e4a5d] text-white text-xs"
+                        className="w-full px-3 py-2 rounded-xl bg-[var(--color-bg)] border border-[var(--color-border)] text-white text-xs"
                       />
                     </div>
                     <div>
@@ -321,19 +321,19 @@ export const UserProfileDrawer: React.FC<UserProfileDrawerProps> = ({ user, onCl
                         rows={3}
                         value={editBio}
                         onChange={(e) => setEditBio(e.target.value)}
-                        className="w-full px-3 py-2 rounded-xl bg-[#071e26] border border-[#1e4a5d] text-white text-xs"
+                        className="w-full px-3 py-2 rounded-xl bg-[var(--color-bg)] border border-[var(--color-border)] text-white text-xs"
                       />
                     </div>
                     <div className="flex justify-end space-x-2 pt-2">
                       <button
                         onClick={() => setIsEditing(false)}
-                        className="px-3 py-1.5 rounded-lg border border-[#1e4a5d] text-xs text-slate-300"
+                        className="px-3 py-1.5 rounded-lg border border-[var(--color-border)] text-xs text-slate-300"
                       >
                         Cancel
                       </button>
                       <button
                         onClick={saveEdit}
-                        className="px-4 py-1.5 rounded-lg bg-[#1a7a8c] text-white font-bold text-xs"
+                        className="px-4 py-1.5 rounded-lg bg-[var(--color-accent-fill)] text-white font-bold text-xs"
                       >
                         Save Changes
                       </button>
@@ -343,19 +343,19 @@ export const UserProfileDrawer: React.FC<UserProfileDrawerProps> = ({ user, onCl
                   <>
                     {/* Performance Stat Strip */}
                     <div className="grid grid-cols-3 gap-3">
-                      <div className="p-4 rounded-2xl bg-[#0d2833] border border-[#1e4a5d] text-center">
+                      <div className="p-4 rounded-2xl bg-[var(--color-surface)] border border-[var(--color-border)] text-center">
                         <span className="text-[10px] text-slate-400 uppercase font-bold">Total Earned</span>
-                        <p className="font-display font-extrabold text-lg text-[#bde0fe] mt-0.5">
+                        <p className="font-display font-extrabold text-lg text-[var(--color-text-primary)] mt-0.5">
                           ${totalEarned.toLocaleString()}
                         </p>
                       </div>
-                      <div className="p-4 rounded-2xl bg-[#0d2833] border border-[#1e4a5d] text-center">
+                      <div className="p-4 rounded-2xl bg-[var(--color-surface)] border border-[var(--color-border)] text-center">
                         <span className="text-[10px] text-slate-400 uppercase font-bold">On-Time %</span>
                         <p className="font-display font-extrabold text-lg text-emerald-400 mt-0.5">
                           {user.onTimeDeliveryPct || 98}%
                         </p>
                       </div>
-                      <div className="p-4 rounded-2xl bg-[#0d2833] border border-[#1e4a5d] text-center">
+                      <div className="p-4 rounded-2xl bg-[var(--color-surface)] border border-[var(--color-border)] text-center">
                         <span className="text-[10px] text-slate-400 uppercase font-bold">Projects</span>
                         <p className="font-display font-extrabold text-lg text-purple-400 mt-0.5">
                           {user.completedProjectsCount}
@@ -364,9 +364,9 @@ export const UserProfileDrawer: React.FC<UserProfileDrawerProps> = ({ user, onCl
                     </div>
 
                     {/* Contact & Verification info */}
-                    <div className="p-5 rounded-2xl bg-[#0d2833] border border-[#1e4a5d] space-y-3 text-xs">
+                    <div className="p-5 rounded-2xl bg-[var(--color-surface)] border border-[var(--color-border)] space-y-3 text-xs">
                       <h4 className="font-bold text-white flex items-center gap-1.5">
-                        <Shield className="w-4 h-4 text-[#1a7a8c]" />
+                        <Shield className="w-4 h-4 text-[var(--color-accent)]" />
                         <span>Identity & Credentials</span>
                       </h4>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-slate-300">
@@ -380,7 +380,7 @@ export const UserProfileDrawer: React.FC<UserProfileDrawerProps> = ({ user, onCl
                         </div>
                         <div>
                           <span className="text-slate-500 block">Digiskill Certificate:</span>
-                          <span className="font-semibold text-[#bde0fe]">{user.digiskillBatch || 'Verified Alumnus'}</span>
+                          <span className="font-semibold text-[var(--color-text-primary)]">{user.digiskillBatch || 'Verified Alumnus'}</span>
                         </div>
                         <div>
                           <span className="text-slate-500 block">Hourly Rate:</span>
@@ -391,23 +391,23 @@ export const UserProfileDrawer: React.FC<UserProfileDrawerProps> = ({ user, onCl
 
                     {/* Bio */}
                     {user.bio && (
-                      <div className="p-5 rounded-2xl bg-[#0d2833] border border-[#1e4a5d] text-xs">
+                      <div className="p-5 rounded-2xl bg-[var(--color-surface)] border border-[var(--color-border)] text-xs">
                         <h4 className="font-bold text-white mb-2">Professional Bio</h4>
                         <p className="text-slate-300 leading-relaxed">{user.bio}</p>
                       </div>
                     )}
 
                     {/* Skills Tags */}
-                    <div className="p-5 rounded-2xl bg-[#0d2833] border border-[#1e4a5d]">
+                    <div className="p-5 rounded-2xl bg-[var(--color-surface)] border border-[var(--color-border)]">
                       <h4 className="text-xs font-bold text-white mb-3 flex items-center gap-1.5">
-                        <Tag className="w-4 h-4 text-[#1a7a8c]" />
+                        <Tag className="w-4 h-4 text-[var(--color-accent)]" />
                         <span>Verified Digiskill Skillsets</span>
                       </h4>
                       <div className="flex flex-wrap gap-2">
                         {user.specialties.map((spec) => (
                           <span
                             key={spec}
-                            className="px-2.5 py-1 rounded-lg bg-[#071e26] text-slate-200 border border-[#1e4a5d] text-xs font-semibold"
+                            className="px-2.5 py-1 rounded-lg bg-[var(--color-bg)] text-slate-200 border border-[var(--color-border)] text-xs font-semibold"
                           >
                             {spec}
                           </span>
@@ -426,21 +426,21 @@ export const UserProfileDrawer: React.FC<UserProfileDrawerProps> = ({ user, onCl
                   <h4 className="text-xs font-bold text-white uppercase tracking-wider">
                     Assigned Projects & Deliverables
                   </h4>
-                  <Link to="/dashboard" className="text-xs font-bold text-[#bde0fe] hover:underline flex items-center gap-1">
+                  <Link to="/dashboard" className="text-xs font-bold text-[var(--color-text-primary)] hover:underline flex items-center gap-1">
                     <span>Open Kanban Board</span>
                     <ExternalLink className="w-3 h-3" />
                   </Link>
                 </div>
 
                 {userProjects.length === 0 ? (
-                  <div className="p-8 text-center rounded-2xl bg-[#0d2833] border border-[#1e4a5d] text-slate-400 text-xs">
+                  <div className="p-8 text-center rounded-2xl bg-[var(--color-surface)] border border-[var(--color-border)] text-slate-400 text-xs">
                     No active kanban projects currently assigned to this member.
                   </div>
                 ) : (
                   userProjects.map((p) => (
                     <div
                       key={p.id}
-                      className="p-4 rounded-2xl bg-[#0d2833] border border-[#1e4a5d] flex items-center justify-between gap-4"
+                      className="p-4 rounded-2xl bg-[var(--color-surface)] border border-[var(--color-border)] flex items-center justify-between gap-4"
                     >
                       <div>
                         <div className="flex items-center space-x-2">
@@ -467,11 +467,11 @@ export const UserProfileDrawer: React.FC<UserProfileDrawerProps> = ({ user, onCl
             {/* ── TAB 3: FINANCIALS & SPLITS ── */}
             {activeTab === 'financials' && (
               <div className="space-y-6">
-                <form onSubmit={handleSaveSplitOverride} className="p-5 rounded-2xl bg-[#0d2833] border border-[#1e4a5d] space-y-4">
+                <form onSubmit={handleSaveSplitOverride} className="p-5 rounded-2xl bg-[var(--color-surface)] border border-[var(--color-border)] space-y-4">
                   <div className="flex items-center justify-between">
                     <div>
                       <h4 className="font-bold text-sm text-white flex items-center gap-2">
-                        <DollarSign className="w-4 h-4 text-[#1a7a8c]" />
+                        <DollarSign className="w-4 h-4 text-[var(--color-accent)]" />
                         <span>Individual Split Override Configuration</span>
                       </h4>
                       <p className="text-xs text-slate-400 mt-0.5">
@@ -486,7 +486,7 @@ export const UserProfileDrawer: React.FC<UserProfileDrawerProps> = ({ user, onCl
                           onChange={(e) => setHasSplitOverride(e.target.checked)}
                           className="sr-only peer"
                         />
-                        <div className="w-9 h-5 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#1a7a8c]"></div>
+                        <div className="w-9 h-5 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[var(--color-accent-fill)]"></div>
                       </label>
                     )}
                   </div>
@@ -499,7 +499,7 @@ export const UserProfileDrawer: React.FC<UserProfileDrawerProps> = ({ user, onCl
                           type="number"
                           value={overrideMgmt}
                           onChange={(e) => setOverrideMgmt(Number(e.target.value))}
-                          className="w-full text-center py-1.5 rounded-lg bg-[#071e26] border border-[#1e4a5d] text-white"
+                          className="w-full text-center py-1.5 rounded-lg bg-[var(--color-bg)] border border-[var(--color-border)] text-white"
                         />
                       </div>
                       <div>
@@ -508,7 +508,7 @@ export const UserProfileDrawer: React.FC<UserProfileDrawerProps> = ({ user, onCl
                           type="number"
                           value={overrideLdr}
                           onChange={(e) => setOverrideLdr(Number(e.target.value))}
-                          className="w-full text-center py-1.5 rounded-lg bg-[#071e26] border border-[#1e4a5d] text-white"
+                          className="w-full text-center py-1.5 rounded-lg bg-[var(--color-bg)] border border-[var(--color-border)] text-white"
                         />
                       </div>
                       <div>
@@ -517,7 +517,7 @@ export const UserProfileDrawer: React.FC<UserProfileDrawerProps> = ({ user, onCl
                           type="number"
                           value={overrideFl}
                           onChange={(e) => setOverrideFl(Number(e.target.value))}
-                          className="w-full text-center py-1.5 rounded-lg bg-[#071e26] border border-[#1e4a5d] text-white"
+                          className="w-full text-center py-1.5 rounded-lg bg-[var(--color-bg)] border border-[var(--color-border)] text-white"
                         />
                       </div>
                     </div>
@@ -527,7 +527,7 @@ export const UserProfileDrawer: React.FC<UserProfileDrawerProps> = ({ user, onCl
                     <div className="flex justify-end">
                       <button
                         type="submit"
-                        className="px-4 py-2 rounded-xl bg-[#1a7a8c] hover:bg-[#156575] text-xs font-bold text-white transition-colors"
+                        className="px-4 py-2 rounded-xl bg-[var(--color-accent-fill)] hover:bg-[var(--color-accent-hover)] text-xs font-bold text-white transition-colors"
                       >
                         Save Split Configuration
                       </button>
@@ -541,21 +541,21 @@ export const UserProfileDrawer: React.FC<UserProfileDrawerProps> = ({ user, onCl
                     <h4 className="text-xs font-bold text-white uppercase tracking-wider">
                       Ledger Payout History ({userPayouts.length})
                     </h4>
-                    <Link to="/ledger" className="text-xs font-bold text-[#bde0fe] hover:underline flex items-center gap-1">
+                    <Link to="/ledger" className="text-xs font-bold text-[var(--color-text-primary)] hover:underline flex items-center gap-1">
                       <span>Open Platform Ledger</span>
                       <ExternalLink className="w-3 h-3" />
                     </Link>
                   </div>
 
                   {userPayouts.length === 0 ? (
-                    <div className="p-6 text-center rounded-2xl bg-[#0d2833] border border-[#1e4a5d] text-slate-400 text-xs">
+                    <div className="p-6 text-center rounded-2xl bg-[var(--color-surface)] border border-[var(--color-border)] text-slate-400 text-xs">
                       No disbursed payouts recorded in ledger yet.
                     </div>
                   ) : (
                     userPayouts.map((payout) => (
                       <div
                         key={payout.id}
-                        className="p-4 rounded-2xl bg-[#0d2833] border border-[#1e4a5d] flex items-center justify-between"
+                        className="p-4 rounded-2xl bg-[var(--color-surface)] border border-[var(--color-border)] flex items-center justify-between"
                       >
                         <div>
                           <p className="text-xs font-bold text-white">{payout.projectTitle}</p>
@@ -580,18 +580,18 @@ export const UserProfileDrawer: React.FC<UserProfileDrawerProps> = ({ user, onCl
                 </h4>
 
                 {(!user.statusHistory || user.statusHistory.length === 0) ? (
-                  <div className="p-6 text-center rounded-2xl bg-[#0d2833] border border-[#1e4a5d] text-slate-400 text-xs">
+                  <div className="p-6 text-center rounded-2xl bg-[var(--color-surface)] border border-[var(--color-border)] text-slate-400 text-xs">
                     No status change events logged for this record.
                   </div>
                 ) : (
-                  <div className="relative border-l-2 border-[#1e4a5d] ml-3 pl-4 space-y-4">
+                  <div className="relative border-l-2 border-[var(--color-border)] ml-3 pl-4 space-y-4">
                     {user.statusHistory.map((item, idx) => (
                       <div key={idx} className="relative">
-                        <div className="absolute -left-[23px] top-1 w-3 h-3 rounded-full bg-[#1a7a8c] border-2 border-[#071e26]" />
-                        <div className="p-3.5 rounded-xl bg-[#0d2833] border border-[#1e4a5d] text-xs">
+                        <div className="absolute -left-[23px] top-1 w-3 h-3 rounded-full bg-[var(--color-accent-fill)] border-2 border-[#071e26]" />
+                        <div className="p-3.5 rounded-xl bg-[var(--color-surface)] border border-[var(--color-border)] text-xs">
                           <div className="flex items-center justify-between text-[11px] text-slate-400 mb-1">
                             <span className="font-bold text-white">
-                              {item.from.replace('_', ' ')} → <span className="text-[#bde0fe]">{item.to.replace('_', ' ')}</span>
+                              {item.from.replace('_', ' ')} → <span className="text-[var(--color-text-primary)]">{item.to.replace('_', ' ')}</span>
                             </span>
                             <span>{new Date(item.timestamp).toLocaleString()}</span>
                           </div>
@@ -619,11 +619,11 @@ export const UserProfileDrawer: React.FC<UserProfileDrawerProps> = ({ user, onCl
                       value={noteText}
                       onChange={(e) => setNoteText(e.target.value)}
                       placeholder="Add an internal context note or warning..."
-                      className="flex-1 px-4 py-2.5 rounded-xl bg-[#0d2833] border border-[#1e4a5d] text-white text-xs focus:outline-none focus:border-[#1a7a8c]"
+                      className="flex-1 px-4 py-2.5 rounded-xl bg-[var(--color-surface)] border border-[var(--color-border)] text-white text-xs focus:outline-none focus:border-[var(--color-accent)]"
                     />
                     <button
                       type="submit"
-                      className="px-4 py-2.5 rounded-xl bg-[#1a7a8c] hover:bg-[#156575] text-white font-bold text-xs"
+                      className="px-4 py-2.5 rounded-xl bg-[var(--color-accent-fill)] hover:bg-[var(--color-accent-hover)] text-white font-bold text-xs"
                     >
                       Post Note
                     </button>
@@ -631,14 +631,14 @@ export const UserProfileDrawer: React.FC<UserProfileDrawerProps> = ({ user, onCl
                 )}
 
                 {(!user.notes || user.notes.length === 0) ? (
-                  <div className="p-6 text-center rounded-2xl bg-[#0d2833] border border-[#1e4a5d] text-slate-400 text-xs">
+                  <div className="p-6 text-center rounded-2xl bg-[var(--color-surface)] border border-[var(--color-border)] text-slate-400 text-xs">
                     No admin notes written yet.
                   </div>
                 ) : (
                   user.notes.map((note) => (
                     <div
                       key={note.id}
-                      className="p-4 rounded-2xl bg-[#0d2833] border border-[#1e4a5d] text-xs flex justify-between items-start gap-3"
+                      className="p-4 rounded-2xl bg-[var(--color-surface)] border border-[var(--color-border)] text-xs flex justify-between items-start gap-3"
                     >
                       <div>
                         <div className="flex items-center space-x-2 mb-1">
@@ -672,7 +672,7 @@ export const UserProfileDrawer: React.FC<UserProfileDrawerProps> = ({ user, onCl
             <motion.div
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              className="bg-[#0d2833] border border-[#1e4a5d] rounded-2xl p-6 max-w-md w-full shadow-2xl space-y-4"
+              className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-6 max-w-md w-full shadow-2xl space-y-4"
             >
               <h3 className="font-bold text-lg text-white">Transition User Status</h3>
               <p className="text-xs text-slate-300">
@@ -684,7 +684,7 @@ export const UserProfileDrawer: React.FC<UserProfileDrawerProps> = ({ user, onCl
                 <select
                   value={newStatus}
                   onChange={(e) => setNewStatus(e.target.value as UserStatus)}
-                  className="w-full px-3 py-2 rounded-xl bg-[#071e26] border border-[#1e4a5d] text-white text-xs"
+                  className="w-full px-3 py-2 rounded-xl bg-[var(--color-bg)] border border-[var(--color-border)] text-white text-xs"
                 >
                   <option value="active">Active & Available</option>
                   <option value="on_leave">On Leave</option>
@@ -702,7 +702,7 @@ export const UserProfileDrawer: React.FC<UserProfileDrawerProps> = ({ user, onCl
                   value={statusReason}
                   onChange={(e) => setStatusReason(e.target.value)}
                   placeholder="e.g. Approved 2-week leave for university exams."
-                  className="w-full px-3 py-2 rounded-xl bg-[#071e26] border border-[#1e4a5d] text-white text-xs"
+                  className="w-full px-3 py-2 rounded-xl bg-[var(--color-bg)] border border-[var(--color-border)] text-white text-xs"
                 />
               </div>
 
@@ -710,14 +710,14 @@ export const UserProfileDrawer: React.FC<UserProfileDrawerProps> = ({ user, onCl
                 <button
                   type="button"
                   onClick={() => setShowStatusModal(false)}
-                  className="px-4 py-2 rounded-xl border border-[#1e4a5d] text-xs text-slate-300"
+                  className="px-4 py-2 rounded-xl border border-[var(--color-border)] text-xs text-slate-300"
                 >
                   Cancel
                 </button>
                 <button
                   type="button"
                   onClick={handleStatusSubmit}
-                  className="px-5 py-2 rounded-xl bg-[#1a7a8c] text-white font-bold text-xs"
+                  className="px-5 py-2 rounded-xl bg-[var(--color-accent-fill)] text-white font-bold text-xs"
                 >
                   Confirm Transition
                 </button>
@@ -732,7 +732,7 @@ export const UserProfileDrawer: React.FC<UserProfileDrawerProps> = ({ user, onCl
             <motion.div
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              className="bg-[#0d2833] border border-[#1e4a5d] rounded-2xl p-6 max-w-md w-full shadow-2xl space-y-4"
+              className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-6 max-w-md w-full shadow-2xl space-y-4"
             >
               <div className="flex items-center space-x-3 text-amber-400">
                 <AlertTriangle className="w-6 h-6" />
@@ -747,7 +747,7 @@ export const UserProfileDrawer: React.FC<UserProfileDrawerProps> = ({ user, onCl
                 <select
                   value={newRole}
                   onChange={(e) => setNewRole(e.target.value as UserRole)}
-                  className="w-full px-3 py-2 rounded-xl bg-[#071e26] border border-[#1e4a5d] text-white text-xs"
+                  className="w-full px-3 py-2 rounded-xl bg-[var(--color-bg)] border border-[var(--color-border)] text-white text-xs"
                 >
                   <option value="freelancer">Freelancer / Specialist</option>
                   <option value="group_leader">Group Leader</option>
@@ -760,7 +760,7 @@ export const UserProfileDrawer: React.FC<UserProfileDrawerProps> = ({ user, onCl
                 <select
                   value={newGroupId}
                   onChange={(e) => setNewGroupId(e.target.value as GroupId)}
-                  className="w-full px-3 py-2 rounded-xl bg-[#071e26] border border-[#1e4a5d] text-white text-xs"
+                  className="w-full px-3 py-2 rounded-xl bg-[var(--color-bg)] border border-[var(--color-border)] text-white text-xs"
                 >
                   {groups.map((g) => (
                     <option key={g.id} value={g.id}>
@@ -774,14 +774,14 @@ export const UserProfileDrawer: React.FC<UserProfileDrawerProps> = ({ user, onCl
                 <button
                   type="button"
                   onClick={() => setShowRoleConfirm(false)}
-                  className="px-4 py-2 rounded-xl border border-[#1e4a5d] text-xs text-slate-300"
+                  className="px-4 py-2 rounded-xl border border-[var(--color-border)] text-xs text-slate-300"
                 >
                   Cancel
                 </button>
                 <button
                   type="button"
                   onClick={handleRoleSquadConfirm}
-                  className="px-5 py-2 rounded-xl bg-[#1a7a8c] text-white font-bold text-xs"
+                  className="px-5 py-2 rounded-xl bg-[var(--color-accent-fill)] text-white font-bold text-xs"
                 >
                   Apply Role & Squad
                 </button>

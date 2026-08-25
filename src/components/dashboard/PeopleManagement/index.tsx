@@ -54,11 +54,11 @@ export const PeopleManagementPanel: React.FC = () => {
     <div className="max-w-7xl mx-auto px-4 lg:px-8 py-8 space-y-8">
 
       {/* Top Banner & Active Persona Switcher */}
-      <div className="p-6 sm:p-8 rounded-3xl bg-[#0d2833] border border-[#1e4a5d] shadow-2xl flex flex-col md:flex-row md:items-center justify-between gap-6">
+      <div className="p-6 sm:p-8 rounded-3xl bg-[var(--color-surface)] border border-[var(--color-border)] shadow-2xl flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
           <div className="flex items-center space-x-2 mb-2">
-            <span className="text-[10px] font-extrabold px-3 py-1 rounded-full bg-[#1a7a8c]/20 text-[#bde0fe] border border-[#1a7a8c]/40 uppercase tracking-widest flex items-center gap-1.5">
-              <Shield className="w-3 h-3 text-[#1a7a8c]" />
+            <span className="text-[10px] font-extrabold px-3 py-1 rounded-full bg-[var(--color-accent-fill)]/20 text-[var(--color-text-primary)] border border-[var(--color-accent)]/40 uppercase tracking-widest flex items-center gap-1.5">
+              <Shield className="w-3 h-3 text-[var(--color-accent)]" />
               <span>Unified People & Community Admin</span>
             </span>
             <span className="text-xs text-slate-400">
@@ -75,12 +75,12 @@ export const PeopleManagementPanel: React.FC = () => {
 
         {/* Persona Switcher & Reset */}
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-          <div className="p-2 rounded-2xl bg-[#071e26] border border-[#1e4a5d] flex items-center space-x-2">
+          <div className="p-2 rounded-2xl bg-[var(--color-bg)] border border-[var(--color-border)] flex items-center space-x-2">
             <span className="text-[10px] uppercase font-bold text-slate-400 pl-2">Persona:</span>
             <select
               value={currentUser.id}
               onChange={(e) => switchRole(e.target.value)}
-              className="bg-[#0d2833] text-white text-xs font-bold py-1.5 px-3 rounded-xl border border-[#1e4a5d] focus:outline-none focus:border-[#1a7a8c]"
+              className="bg-[var(--color-surface)] text-white text-xs font-bold py-1.5 px-3 rounded-xl border border-[var(--color-border)] focus:outline-none focus:border-[var(--color-accent)]"
             >
               {users.map((u) => (
                 <option key={u.id} value={u.id}>
@@ -93,7 +93,7 @@ export const PeopleManagementPanel: React.FC = () => {
           {isManagement && (
             <button
               onClick={() => setIsInviteOpen(true)}
-              className="flex items-center justify-center space-x-2 px-5 py-3 rounded-2xl bg-[#1a7a8c] hover:bg-[#156575] text-white text-xs font-bold shadow-lg shadow-[#1a7a8c]/25 transition-all"
+              className="flex items-center justify-center space-x-2 px-5 py-3 rounded-2xl bg-[var(--color-accent-fill)] hover:bg-[var(--color-accent-hover)] text-white text-xs font-bold shadow-lg shadow-md transition-all"
             >
               <UserPlus className="w-4 h-4" />
               <span>Invite Talent</span>
@@ -103,7 +103,7 @@ export const PeopleManagementPanel: React.FC = () => {
       </div>
 
       {/* Navigation Tabs with Spring Active Pill */}
-      <div className="flex items-center space-x-2 p-1.5 rounded-2xl bg-[#0d2833] border border-[#1e4a5d] overflow-x-auto">
+      <div className="flex items-center space-x-2 p-1.5 rounded-2xl bg-[var(--color-surface)] border border-[var(--color-border)] overflow-x-auto">
         {tabs.map((tab) => {
           const isActive = activeTab === tab.id;
 
@@ -118,7 +118,7 @@ export const PeopleManagementPanel: React.FC = () => {
               {isActive && (
                 <motion.div
                   layoutId="activeAdminTab"
-                  className="absolute inset-0 bg-[#1a7a8c] rounded-xl shadow-md"
+                  className="absolute inset-0 bg-[var(--color-accent-fill)] rounded-xl shadow-md"
                   transition={{ type: 'spring', stiffness: 400, damping: 30 }}
                 />
               )}

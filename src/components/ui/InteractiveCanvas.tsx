@@ -104,14 +104,14 @@ export const InteractiveCanvas: React.FC<InteractiveCanvasProps> = ({
           const dist = Math.sqrt(dx * dx + dy * dy);
 
           if (dist < 130) {
-            const lineAlpha = (1 - dist / 130) * (isLight ? 0.18 : 0.22);
+            const lineAlpha = (1 - dist / 130) * (isLight ? 0.16 : 0.12);
             ctx.beginPath();
             ctx.moveTo(particles[i].x, particles[i].y);
             ctx.lineTo(particles[j].x, particles[j].y);
             ctx.strokeStyle = isLight
-              ? `rgba(14, 96, 112, ${lineAlpha})`
-              : `rgba(189, 224, 254, ${lineAlpha})`;
-            ctx.lineWidth = isLight ? 0.9 : 0.75;
+              ? `rgba(31, 122, 140, ${lineAlpha})`
+              : `rgba(225, 229, 242, ${lineAlpha})`;
+            ctx.lineWidth = 0.75;
             ctx.stroke();
           }
         }
@@ -140,7 +140,7 @@ export const InteractiveCanvas: React.FC<InteractiveCanvasProps> = ({
             const force = (1 - dist / mouse.radius) * 1.5;
             p.x -= (dx / dist) * force;
             p.y -= (dy / dist) * force;
-            p.alpha = Math.min(1, p.baseAlpha + 0.4);
+            p.alpha = Math.min(1, p.baseAlpha + 0.3);
           } else {
             p.alpha = p.baseAlpha;
           }
@@ -150,16 +150,16 @@ export const InteractiveCanvas: React.FC<InteractiveCanvasProps> = ({
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
         ctx.fillStyle = isLight
-          ? `rgba(14, 96, 112, ${p.alpha * 1.8})`
-          : `rgba(26, 122, 140, ${p.alpha * 1.5})`;
+          ? `rgba(31, 122, 140, ${p.alpha * 1.5})`
+          : `rgba(31, 122, 140, ${p.alpha * 1.4})`;
         ctx.fill();
 
-        // Inner glowing core
+        // Inner core
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.size * 0.5, 0, Math.PI * 2);
         ctx.fillStyle = isLight
-          ? `rgba(2, 132, 199, ${p.alpha * 2})`
-          : `rgba(189, 224, 254, ${p.alpha * 2})`;
+          ? `rgba(2, 43, 58, ${p.alpha * 1.8})`
+          : `rgba(225, 229, 242, ${p.alpha * 1.8})`;
         ctx.fill();
       }
 

@@ -99,14 +99,14 @@ export const HowItWorks: React.FC = () => {
       />
 
       {/* Header */}
-      <section className="bg-[#071e26] py-20 px-6 lg:px-8 border-b border-[#1e4a5d]">
+      <section className="bg-[var(--color-bg)] py-20 px-6 lg:px-8 border-b border-[var(--color-border)]">
         <div className="max-w-7xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
           >
-            <p className="text-xs font-extrabold text-[#1a7a8c] uppercase tracking-widest mb-3">
+            <p className="text-xs font-extrabold text-[var(--color-accent)] uppercase tracking-widest mb-3">
               Delivery Methodology
             </p>
             <h1 className="font-display font-extrabold text-4xl sm:text-5xl lg:text-6xl text-white mb-5">
@@ -136,11 +136,11 @@ export const HowItWorks: React.FC = () => {
               {/* Step Number Sidebar */}
               <div
                 className={`lg:w-1/3 p-10 flex flex-col justify-between text-white ${
-                  i % 2 === 0 ? 'bg-[#071e26]' : 'bg-[#0d2833]'
+                  i % 2 === 0 ? 'bg-[var(--color-bg)]' : 'bg-[var(--color-surface)]'
                 }`}
               >
                 <div>
-                  <span className="text-xs font-extrabold text-[#1a7a8c] uppercase tracking-widest">
+                  <span className="text-xs font-extrabold text-[var(--color-accent)] uppercase tracking-widest">
                     Phase {step.num}
                   </span>
                   <div className="text-7xl lg:text-8xl font-display font-black text-[#1e4a5d]/60 select-none my-2">
@@ -160,7 +160,7 @@ export const HowItWorks: React.FC = () => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                   {step.points.map((pt) => (
                     <div key={pt} className="flex items-start space-x-2.5">
-                      <CheckCircle2 className="w-4 h-4 text-[#1a7a8c] flex-shrink-0 mt-0.5" />
+                      <CheckCircle2 className="w-4 h-4 text-[var(--color-accent)] flex-shrink-0 mt-0.5" />
                       <span className="text-xs sm:text-sm text-gray-600 font-medium">{pt}</span>
                     </div>
                   ))}
@@ -172,7 +172,7 @@ export const HowItWorks: React.FC = () => {
       </section>
 
       {/* Model Comparison Table */}
-      <section className="bg-[#0d2833] py-20 px-6 lg:px-8 border-y border-[#1e4a5d]">
+      <section className="bg-[var(--color-surface)] py-20 px-6 lg:px-8 border-y border-[var(--color-border)]">
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-12">
             <h2 className="font-display font-extrabold text-3xl text-white mb-3">
@@ -184,11 +184,11 @@ export const HowItWorks: React.FC = () => {
           </div>
 
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm text-slate-300 border-collapse border border-[#1e4a5d] rounded-2xl overflow-hidden">
+            <table className="w-full text-left text-sm text-slate-300 border-collapse border border-[var(--color-border)] rounded-2xl overflow-hidden">
               <thead>
-                <tr className="bg-[#071e26] text-xs uppercase tracking-wider text-slate-400 border-b border-[#1e4a5d]">
+                <tr className="bg-[var(--color-bg)] text-xs uppercase tracking-wider text-slate-400 border-b border-[var(--color-border)]">
                   <th className="p-4 sm:p-5">Comparison Metric</th>
-                  <th className="p-4 sm:p-5 text-[#bde0fe]">DigiHust Managed Model</th>
+                  <th className="p-4 sm:p-5 text-[var(--color-text-primary)]">DigiHust Managed Model</th>
                   <th className="p-4 sm:p-5 text-slate-500">Individual Freelancers</th>
                 </tr>
               </thead>
@@ -219,7 +219,7 @@ export const HowItWorks: React.FC = () => {
       <section className="bg-white py-20 px-6 lg:px-8">
         <div className="max-w-3xl mx-auto">
           <div className="text-center mb-12">
-            <p className="text-xs font-extrabold text-[#1a7a8c] uppercase tracking-widest mb-2 flex items-center justify-center space-x-1">
+            <p className="text-xs font-extrabold text-[var(--color-accent)] uppercase tracking-widest mb-2 flex items-center justify-center space-x-1">
               <HelpCircle className="w-4 h-4" />
               <span>Clarity & Transparency</span>
             </p>
@@ -239,12 +239,12 @@ export const HowItWorks: React.FC = () => {
                 >
                   <button
                     onClick={() => setOpenFaq(isOpen ? null : idx)}
-                    className="w-full text-left p-5 sm:p-6 flex items-center justify-between gap-4 font-display font-bold text-base sm:text-lg text-gray-900 hover:text-[#1a7a8c] transition-colors"
+                    className="w-full text-left p-5 sm:p-6 flex items-center justify-between gap-4 font-display font-bold text-base sm:text-lg text-gray-900 hover:text-[var(--color-accent)] transition-colors"
                   >
                     <span>{faq.q}</span>
                     <ChevronDown
                       className={`w-5 h-5 text-gray-400 flex-shrink-0 transition-transform duration-300 ${
-                        isOpen ? 'rotate-180 text-[#1a7a8c]' : ''
+                        isOpen ? 'rotate-180 text-[var(--color-accent)]' : ''
                       }`}
                     />
                   </button>
@@ -270,7 +270,7 @@ export const HowItWorks: React.FC = () => {
       </section>
 
       {/* CTA */}
-      <section className="bg-[#071e26] py-20 px-6 lg:px-8 text-center border-t border-[#1e4a5d]">
+      <section className="bg-[var(--color-bg)] py-20 px-6 lg:px-8 text-center border-t border-[var(--color-border)]">
         <h2 className="font-display font-extrabold text-3xl text-white mb-4">
           Ready to Start Your Project?
         </h2>
@@ -279,7 +279,7 @@ export const HowItWorks: React.FC = () => {
         </p>
         <Link
           to="/contact"
-          className="inline-flex items-center space-x-2 px-8 py-4 rounded-xl bg-[#1a7a8c] hover:bg-[#156575] text-white font-bold shadow-lg transition-all"
+          className="inline-flex items-center space-x-2 px-8 py-4 rounded-xl bg-[var(--color-accent-fill)] hover:bg-[var(--color-accent-hover)] text-white font-bold shadow-lg transition-all"
         >
           <span>Get a Quote</span>
           <ArrowRight className="w-4 h-4" />
