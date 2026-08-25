@@ -24,6 +24,18 @@ export const Navbar: React.FC = () => {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
+  const navLinks = [
+    { label: t('nav_services'), href: '/services' },
+    { label: t('nav_work'), href: '/work' },
+    { label: t('nav_how_it_works'), href: '/how-it-works' },
+    { label: t('nav_about'), href: '/about' },
+    { label: t('nav_team'), href: '/team' },
+    { label: t('nav_blog'), href: '/blog' },
+    { label: t('nav_contact'), href: '/contact' },
+  ];
+
+  const isActive = (href: string) => location.pathname === href;
+
   if (isPortalLogin) {
     return null;
   }
