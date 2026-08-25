@@ -100,14 +100,14 @@ export const Footer: React.FC = () => {
             </ul>
           </div>
 
-          {/* Utility & Portal */}
+            {/* Utility & Portal */}
           <div className="space-y-4">
             <h4 className="text-xs font-extrabold text-[var(--text-heading)] uppercase tracking-widest">System & Portals</h4>
             <ul className="space-y-2.5 text-sm text-[var(--text-muted)]">
               <li>
-                <Link to="/dashboard" className="text-[var(--text-heading)] hover:underline font-bold inline-flex items-center space-x-1">
-                  <span>Client Portal</span>
-                  <ArrowUpRight className="w-3.5 h-3.5" />
+                <Link to="/portal/login" className="text-[var(--text-muted)] hover:text-[var(--text-heading)] transition-colors inline-flex items-center space-x-1">
+                  <span>Staff Login</span>
+                  <ArrowUpRight className="w-3.5 h-3.5 text-[var(--text-muted)]" />
                 </Link>
               </li>
               <li>
@@ -147,7 +147,7 @@ export const Footer: React.FC = () => {
             <span>·</span>
             <Link to="/terms" className="hover:text-[var(--text-heading)] transition-colors">Terms of Service</Link>
             <span>·</span>
-            <Link to="/contact" className="text-[var(--text-heading)] hover:underline">Support & Inquiries</Link>
+            <Link to="/portal/login" className="hover:text-[var(--text-heading)] transition-colors">Team Login</Link>
           </div>
         </div>
 

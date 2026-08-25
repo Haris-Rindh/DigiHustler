@@ -16,6 +16,8 @@ import {
   HelpCircle,
 } from 'lucide-react';
 import { SEOHead } from '../seo/SEOHead';
+import { useApp } from '../../context/AppContext';
+import { GroupId } from '../../types';
 
 const SERVICES = [
   'Website / Full-Stack App',
@@ -88,6 +90,8 @@ export const Contact: React.FC = () => {
     return Object.keys(errs).length === 0;
   };
 
+  const { submitLead } = useApp();
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (form.honeypot) return; // silent bot rejection
@@ -95,12 +99,39 @@ export const Contact: React.FC = () => {
 
     setIsSubmitting(true);
 
+    const budgetMap: Record<string, number> = {
+      'Under $1,000': 800,
+      '$1,000 – $3,000': 2000,
+      '$3,000 – $7,500': 5000,
+      '$7,500 – $15,000': 10000,
+      '$15,000+': 20000,
+      'Flexible / Not Sure': 3000,
+    };
+    const groupMap: Record<string, GroupId> = {
+      'Website / Full-Stack App': 'tech',
+      'UI/UX & Brand Identity': 'creative',
+      'AI & Workflow Automation': 'data',
+      'Digital Marketing & SEO': 'growth',
+      'Cybersecurity Audit': 'tech',
+      'BI & Data Intelligence': 'data',
+    };
+
+    submitLead({
+      title: `${form.company || form.name} — ${form.services[0]}`,
+      clientName: form.name,
+      clientCompany: form.company || undefined,
+      clientEmail: form.email,
+      brief: `${form.description}\n\nServices: ${form.services.join(', ')}\nTimeline: ${form.timeline}\nBudget: ${form.budget}`,
+      budgetEstimate: budgetMap[form.budget] || 3000,
+      suggestedGroupId: groupMap[form.services[0]] || 'tech',
+    });
+
     // Simulate reliable scope intake submission
     setTimeout(() => {
       setIsSubmitting(false);
       setSubmitted(true);
       window.scrollTo({ top: 180, behavior: 'smooth' });
-    }, 900);
+    }, 600);
   };
 
   return (

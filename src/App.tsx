@@ -24,6 +24,15 @@ import { BlogPost } from './components/public/BlogPost';
 import { Contact } from './components/public/Contact';
 import { PrivacyPolicy } from './components/public/PrivacyPolicy';
 import { TermsOfService } from './components/public/TermsOfService';
+import { CertificateVerification } from './components/public/CertificateVerification';
+
+// Portal & Tiered Management System
+import { PortalLogin } from './components/portal/PortalLogin';
+import { PortalDashboard } from './components/portal/PortalDashboard';
+import { AssignmentWorkspace } from './components/portal/AssignmentWorkspace';
+import { PeopleDirectoryView } from './components/portal/PeopleDirectoryView';
+import { AnnouncementsFeed } from './components/portal/AnnouncementsFeed';
+import { CertificateManager } from './components/portal/CertificateManager';
 
 // Utility & Error pages
 import { NotFoundPage } from './components/utility/NotFoundPage';
@@ -48,21 +57,38 @@ const ScrollToTop: React.FC = () => {
   return null;
 };
 
+// Route wrapper to hide public footer on portal and verification pages
+const PageContainer: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const location = useLocation();
+  const hideFooter = location.pathname.startsWith('/portal') || 
+    location.pathname.startsWith('/verify') || 
+    location.pathname.startsWith('/cert') || 
+    ['/dashboard', '/ledger', '/roster', '/admin'].some(p => location.pathname.startsWith(p));
+
+  return (
+    <div className="flex flex-col min-h-screen bg-[var(--bg-page)] text-[var(--text-body)] selection:bg-[var(--brand-teal)] selection:text-white">
+      <Navbar />
+      <main className="flex-1">
+        {children}
+      </main>
+      {!hideFooter && <Footer />}
+    </div>
+  );
+};
+
 export const App: React.FC = () => {
   return (
     <AppProvider>
       <ThemeProvider>
         <LanguageProvider>
           <Router>
-          <ScrollToTop />
-          <CustomCursor />
-          <ScrollProgress />
-          <OfflineBanner />
-          <CookieConsent />
-          <PWAInstallPrompt />
-          <div className="flex flex-col min-h-screen bg-[var(--bg-page)] text-[var(--text-body)] selection:bg-[var(--brand-teal)] selection:text-white">
-            <Navbar />
-            <main className="flex-1">
+            <ScrollToTop />
+            <CustomCursor />
+            <ScrollProgress />
+            <OfflineBanner />
+            <CookieConsent />
+            <PWAInstallPrompt />
+            <PageContainer>
               <Routes>
                 {/* ── Public Core Routes ── */}
                 <Route path="/" element={<Home />} />
@@ -78,15 +104,23 @@ export const App: React.FC = () => {
                 <Route path="/privacy" element={<PrivacyPolicy />} />
                 <Route path="/terms" element={<TermsOfService />} />
 
-                {/* ── Utility & Error Routes ── */}
-                <Route path="/404" element={<NotFoundPage />} />
-                <Route path="/500" element={<ServerErrorPage />} />
-                <Route path="/403" element={<AccessDeniedPage />} />
-                <Route path="/401" element={<UnauthorizedPage />} />
-                <Route path="/maintenance" element={<MaintenancePage />} />
-                <Route path="/offline" element={<OfflinePage />} />
+                {/* ── Public Unauthenticated Certificate Verification ── */}
+                <Route path="/verify/:certId" element={<CertificateVerification />} />
+                <Route path="/cert/:certId" element={<CertificateVerification />} />
+                <Route path="/verify/cert/:certId" element={<CertificateVerification />} />
 
-                {/* ── Internal Client Portal Routes ── */}
+                {/* ── Staff Portal System (4-Tier Architecture) ── */}
+                <Route path="/portal/login" element={<PortalLogin />} />
+                <Route path="/portal" element={<PortalDashboard />} />
+                <Route path="/portal/dashboard" element={<PortalDashboard />} />
+                <Route path="/portal/assignments" element={<AssignmentWorkspace />} />
+                <Route path="/portal/roster" element={<PeopleDirectoryView />} />
+                <Route path="/portal/announcements" element={<AnnouncementsFeed />} />
+                <Route path="/portal/certificates" element={<CertificateManager />} />
+                <Route path="/portal/ledger" element={<PayoutLedger />} />
+                <Route path="/portal/settings" element={<AdminSettings />} />
+
+                {/* ── Legacy Internal Client Portal Routes ── */}
                 <Route path="/dashboard" element={<KanbanPipeline />} />
                 <Route path="/ledger" element={<PayoutLedger />} />
                 <Route path="/roster" element={<RosterView />} />
@@ -95,13 +129,19 @@ export const App: React.FC = () => {
                 <Route path="/admin/applicants" element={<AdminSettings />} />
                 <Route path="/admin/squads" element={<AdminSettings />} />
 
+                {/* ── Utility & Error Routes ── */}
+                <Route path="/404" element={<NotFoundPage />} />
+                <Route path="/500" element={<ServerErrorPage />} />
+                <Route path="/403" element={<AccessDeniedPage />} />
+                <Route path="/401" element={<UnauthorizedPage />} />
+                <Route path="/maintenance" element={<MaintenancePage />} />
+                <Route path="/offline" element={<OfflinePage />} />
+
                 {/* ── Wildcard Fallback Route (404) ── */}
                 <Route path="*" element={<NotFoundPage />} />
               </Routes>
-            </main>
-            <Footer />
-          </div>
-        </Router>
+            </PageContainer>
+          </Router>
         </LanguageProvider>
       </ThemeProvider>
     </AppProvider>

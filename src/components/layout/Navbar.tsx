@@ -6,13 +6,17 @@ import { LanguageSelector } from '../ui/LanguageSelector';
 import { ThemeToggle } from '../ui/ThemeToggle';
 import { useLanguage } from '../../context/LanguageContext';
 
+import { PortalNavbar } from '../portal/PortalNavbar';
+
 export const Navbar: React.FC = () => {
   const location = useLocation();
   const { t } = useLanguage();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
-  const isInternal = ['/dashboard', '/ledger', '/roster', '/admin'].some(p => location.pathname.startsWith(p));
+  const isPortalLogin = location.pathname === '/portal/login';
+  const isPortal = location.pathname.startsWith('/portal') || ['/dashboard', '/ledger', '/roster', '/admin'].some(p => location.pathname.startsWith(p));
+  const isVerify = location.pathname.startsWith('/verify') || location.pathname.startsWith('/cert');
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 15);
@@ -20,20 +24,16 @@ export const Navbar: React.FC = () => {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  const navLinks = [
-    { label: t('nav_services'), href: '/services' },
-    { label: t('nav_work'), href: '/work' },
-    { label: t('nav_how_it_works'), href: '/how-it-works' },
-    { label: t('nav_about'), href: '/about' },
-    { label: t('nav_team'), href: '/team' },
-    { label: t('nav_blog'), href: '/blog' },
-    { label: t('nav_contact'), href: '/contact' },
-  ];
+  if (isPortalLogin) {
+    return null;
+  }
 
-  const isActive = (href: string) => location.pathname === href;
+  if (isPortal) {
+    return <PortalNavbar />;
+  }
 
-  if (isInternal) {
-    return <InternalNavbar />;
+  if (isVerify) {
+    return null;
   }
 
   return (

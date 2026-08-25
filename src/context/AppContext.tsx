@@ -1,23 +1,41 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { 
-  User, Group, Lead, Project, Payout, Applicant, GlobalAdminSettings, PipelineStage, Deliverable, Comment, ProjectAssignment, GroupId, UserRole, UserStatus, SplitOverride 
+  User, Group, Lead, Project, Payout, Applicant, GlobalAdminSettings, PipelineStage, 
+  Deliverable, Comment, ProjectAssignment, GroupId, UserRole, UserRoleTier, UserStatus, 
+  SplitOverride, Assignment, SubTask, Milestone, Certificate, CertificateType, CertificateStatus, Announcement, AnnouncementScope 
 } from '../types';
 import { 
-  INITIAL_GROUPS, INITIAL_USERS, INITIAL_LEADS, INITIAL_PROJECTS, INITIAL_PAYOUTS, INITIAL_APPLICANTS, INITIAL_SETTINGS 
+  INITIAL_GROUPS, INITIAL_USERS, INITIAL_LEADS, INITIAL_PROJECTS, INITIAL_PAYOUTS, 
+  INITIAL_APPLICANTS, INITIAL_SETTINGS, INITIAL_ASSIGNMENTS, INITIAL_CERTIFICATES, INITIAL_ANNOUNCEMENTS 
 } from '../services/mockData';
+import { getNextMemberId } from '../lib/memberIdGenerator';
+import { getUserRoleTier } from '../lib/permissions';
 
 interface AppContextType {
+  // Auth & Session
+  isAuthenticated: boolean;
   currentUser: User;
+  currentTier: UserRoleTier;
   users: User[];
   groups: Group[];
   leads: Lead[];
   projects: Project[];
+  assignments: Assignment[];
+  certificates: Certificate[];
+  announcements: Announcement[];
   payouts: Payout[];
   applicants: Applicant[];
   settings: GlobalAdminSettings;
   
-  // Pipeline & Project Actions
+  // Auth Actions
+  loginWithMemberId: (memberId: string, password?: string) => { success: boolean; error?: string };
+  logout: () => void;
+  changePassword: (newPassword: string) => void;
+  requestPasswordReset: (email: string) => { success: boolean; message: string };
   switchRole: (userId: string) => void;
+  switchTier: (tier: UserRoleTier) => void;
+
+  // Pipeline & Project Actions
   submitLead: (leadData: Omit<Lead, 'id' | 'createdAt' | 'status' | 'submittedByUserId' | 'submittedByUserName'>) => void;
   reviewLeadToProject: (
     leadId: string, 
@@ -37,6 +55,25 @@ interface AppContextType {
   addComment: (projectId: string, text: string) => void;
   releaseProjectPayout: (projectId: string) => void;
 
+  // Assignment Workspace Actions
+  createAssignment: (assignmentData: Omit<Assignment, 'id' | 'createdAt' | 'subTasks' | 'milestones' | 'deliverables' | 'comments'>) => void;
+  updateAssignmentStatus: (assignmentId: string, newStatus: PipelineStage) => void;
+  addSubTask: (assignmentId: string, title: string, assignedMemberId: string, dueDate?: string) => void;
+  toggleSubTask: (assignmentId: string, subTaskId: string) => void;
+  addMilestone: (assignmentId: string, title: string, targetDate: string) => void;
+  toggleMilestone: (assignmentId: string, milestoneId: string) => void;
+  addAssignmentDeliverable: (assignmentId: string, title: string, linkUrl?: string, notes?: string) => void;
+  addAssignmentComment: (assignmentId: string, text: string) => void;
+
+  // Certificate Actions
+  issueCertificate: (certData: Omit<Certificate, 'id' | 'issuedDate' | 'status' | 'qrCodeUrl'>) => Certificate;
+  revokeCertificate: (certId: string, reason?: string) => void;
+  restoreCertificate: (certId: string) => void;
+
+  // Announcement Actions
+  postAnnouncement: (announcementData: Omit<Announcement, 'id' | 'postedBy' | 'postedByName' | 'postedByRole' | 'postedAt'>) => void;
+  deleteAnnouncement: (announcementId: string) => void;
+
   // People & Community Management Actions
   updateUserProfile: (userId: string, updates: Partial<User>) => void;
   changeUserStatus: (userId: string, newStatus: UserStatus, reason: string, changedBy: string) => void;
@@ -45,9 +82,9 @@ interface AppContextType {
   setUserSplitOverride: (userId: string, splitOverride?: SplitOverride) => void;
   reassignUserSquad: (userId: string, newGroupId?: GroupId) => void;
   changeUserRole: (userId: string, newRole: UserRole) => void;
-  quickInviteUser: (userData: Omit<User, 'id' | 'completedProjectsCount' | 'totalEarnings' | 'rating' | 'statusHistory' | 'notes' | 'documents'>) => void;
-  bulkUpdateStatus: (userIds: string[], status: UserStatus, reason: string, changedBy: string) => void;
-  bulkReassignSquad: (userIds: string[], newGroupId: GroupId) => void;
+  quickInviteUser: (userData: Omit<User, 'id' | 'completedProjectsCount' | 'totalEarnings' | 'rating' | 'statusHistory' | 'notes' | 'documents'>) => User;
+  bulkImportMembers: (importedRows: Partial<User>[]) => { count: number; newUsers: User[] };
+  sendBatchCredentials: () => { count: number; memberNames: string[] };
 
   // Applicant Workflow Actions
   submitApplication: (applicantData: Omit<Applicant, 'id' | 'appliedAt' | 'status'>) => void;
@@ -62,7 +99,7 @@ interface AppContextType {
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
-const LOCAL_STORAGE_KEY = 'digihust_app_state_v2';
+const LOCAL_STORAGE_KEY = 'digihust_app_state_v3';
 
 export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   // Load initial state from local storage if available
@@ -74,7 +111,12 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const [currentUser, setCurrentUser] = useState<User>(() => {
     const savedUser = localStorage.getItem(`${LOCAL_STORAGE_KEY}_current_user`);
     if (savedUser) return JSON.parse(savedUser);
-    return users.find(u => u.role === 'management') || users[0];
+    return users.find(u => u.roleTier === 'ceo' || u.role === 'management') || users[0];
+  });
+
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
+    const savedAuth = localStorage.getItem(`${LOCAL_STORAGE_KEY}_is_authenticated`);
+    return savedAuth ? JSON.parse(savedAuth) : true; // Default true for instant preview
   });
 
   const [groups] = useState<Group[]>(INITIAL_GROUPS);
@@ -87,6 +129,21 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const [projects, setProjects] = useState<Project[]>(() => {
     const saved = localStorage.getItem(`${LOCAL_STORAGE_KEY}_projects`);
     return saved ? JSON.parse(saved) : INITIAL_PROJECTS;
+  });
+
+  const [assignments, setAssignments] = useState<Assignment[]>(() => {
+    const saved = localStorage.getItem(`${LOCAL_STORAGE_KEY}_assignments`);
+    return saved ? JSON.parse(saved) : INITIAL_ASSIGNMENTS;
+  });
+
+  const [certificates, setCertificates] = useState<Certificate[]>(() => {
+    const saved = localStorage.getItem(`${LOCAL_STORAGE_KEY}_certificates`);
+    return saved ? JSON.parse(saved) : INITIAL_CERTIFICATES;
+  });
+
+  const [announcements, setAnnouncements] = useState<Announcement[]>(() => {
+    const saved = localStorage.getItem(`${LOCAL_STORAGE_KEY}_announcements`);
+    return saved ? JSON.parse(saved) : INITIAL_ANNOUNCEMENTS;
   });
 
   const [payouts, setPayouts] = useState<Payout[]>(() => {
@@ -104,7 +161,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     return saved ? JSON.parse(saved) : INITIAL_SETTINGS;
   });
 
-  // Sync state changes to Local Storage
+  // Sync to LocalStorage
   useEffect(() => {
     localStorage.setItem(`${LOCAL_STORAGE_KEY}_users`, JSON.stringify(users));
   }, [users]);
@@ -114,12 +171,28 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   }, [currentUser]);
 
   useEffect(() => {
+    localStorage.setItem(`${LOCAL_STORAGE_KEY}_is_authenticated`, JSON.stringify(isAuthenticated));
+  }, [isAuthenticated]);
+
+  useEffect(() => {
     localStorage.setItem(`${LOCAL_STORAGE_KEY}_leads`, JSON.stringify(leads));
   }, [leads]);
 
   useEffect(() => {
     localStorage.setItem(`${LOCAL_STORAGE_KEY}_projects`, JSON.stringify(projects));
   }, [projects]);
+
+  useEffect(() => {
+    localStorage.setItem(`${LOCAL_STORAGE_KEY}_assignments`, JSON.stringify(assignments));
+  }, [assignments]);
+
+  useEffect(() => {
+    localStorage.setItem(`${LOCAL_STORAGE_KEY}_certificates`, JSON.stringify(certificates));
+  }, [certificates]);
+
+  useEffect(() => {
+    localStorage.setItem(`${LOCAL_STORAGE_KEY}_announcements`, JSON.stringify(announcements));
+  }, [announcements]);
 
   useEffect(() => {
     localStorage.setItem(`${LOCAL_STORAGE_KEY}_payouts`, JSON.stringify(payouts));
@@ -133,28 +206,63 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     localStorage.setItem(`${LOCAL_STORAGE_KEY}_settings`, JSON.stringify(settings));
   }, [settings]);
 
-  // Switch Current User / Active Persona
+  // Auth Handlers
+  const loginWithMemberId = (memberId: string, _password?: string): { success: boolean; error?: string } => {
+    const foundUser = users.find(u => u.memberId?.toUpperCase() === memberId.trim().toUpperCase() || u.email.toLowerCase() === memberId.trim().toLowerCase());
+    if (foundUser) {
+      setCurrentUser(foundUser);
+      setIsAuthenticated(true);
+      return { success: true };
+    }
+    return { success: false, error: 'Invalid Member ID. Example format: DGH2600101' };
+  };
+
+  const logout = () => {
+    setIsAuthenticated(false);
+  };
+
+  const changePassword = (_newPassword: string) => {
+    setUsers(prev => prev.map(u => u.id === currentUser.id ? { ...u, forcePasswordChange: false } : u));
+    setCurrentUser(prev => ({ ...prev, forcePasswordChange: false }));
+  };
+
+  const requestPasswordReset = (email: string) => {
+    const found = users.some(u => u.email.toLowerCase() === email.trim().toLowerCase());
+    if (found) {
+      return { success: true, message: `Password reset link has been dispatched to ${email}.` };
+    }
+    return { success: false, message: 'No registered account found with that email address.' };
+  };
+
   const switchRole = (userId: string) => {
-    const targetUser = users.find(u => u.id === userId);
-    if (targetUser) {
-      setCurrentUser(targetUser);
+    const foundUser = users.find(u => u.id === userId);
+    if (foundUser) {
+      setCurrentUser(foundUser);
+      setIsAuthenticated(true);
     }
   };
 
-  // Submit Lead
+  const switchTier = (tier: UserRoleTier) => {
+    const foundUser = users.find(u => u.roleTier === tier);
+    if (foundUser) {
+      setCurrentUser(foundUser);
+      setIsAuthenticated(true);
+    }
+  };
+
+  // Lead Submission
   const submitLead = (leadData: Omit<Lead, 'id' | 'createdAt' | 'status' | 'submittedByUserId' | 'submittedByUserName'>) => {
     const newLead: Lead = {
       ...leadData,
-      id: `lead-${Date.now().toString().slice(-4)}`,
-      status: 'new_lead',
+      id: `lead-${Date.now()}`,
+      status: settings.autoApproveLeads ? 'under_review' : 'new_lead',
       submittedByUserId: currentUser.id,
-      submittedByUserName: `${currentUser.name} (${currentUser.role === 'management' ? 'Management' : currentUser.role === 'group_leader' ? 'Group Leader' : 'Lead Gen Freelancer'})`,
-      createdAt: new Date().toISOString(),
+      submittedByUserName: currentUser.name,
+      createdAt: new Date().toISOString()
     };
     setLeads(prev => [newLead, ...prev]);
   };
 
-  // Convert Lead to Project with Financial Splits
   const reviewLeadToProject = (
     leadId: string, 
     groupId: GroupId, 
@@ -170,41 +278,32 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     const lead = leads.find(l => l.id === leadId);
     if (!lead) return;
 
-    const leader = users.find(u => u.id === assignedLeaderId) || users.find(u => u.role === 'group_leader' && u.groupId === groupId);
+    const leader = users.find(u => u.id === assignedLeaderId);
     const netRevenue = totalValue - externalFee;
 
     const newProject: Project = {
-      id: `proj-${Date.now().toString().slice(-4)}`,
+      id: `proj-${Date.now()}`,
       leadId: lead.id,
       title: lead.title,
       clientName: lead.clientName,
       clientEmail: lead.clientEmail,
-      groupId: groupId,
-      assignedLeaderId: leader ? leader.id : '',
-      assignedLeaderName: leader ? leader.name : 'Unassigned',
+      clientCompany: lead.clientCompany,
+      groupId,
+      assignedLeaderId,
+      assignedLeaderName: leader ? leader.name : 'Assigned Leader',
       brief: lead.brief,
-      totalValue: totalValue,
-      externalFee: externalFee,
-      netRevenue: netRevenue,
-      isLeadGenIndependent: isLeadGenIndependent,
-      leadGenUserPct: leadGenUserPct,
+      totalValue,
+      externalFee,
+      netRevenue,
+      isLeadGenIndependent,
+      leadGenUserPct,
       splitManagementPct: splitMgmtPct,
       splitLeaderPct: splitLeaderPct,
       splitFreelancerPct: splitFreelancerPct,
       assignments: [],
       status: 'assigned',
       deliverables: [],
-      comments: [
-        {
-          id: `cmt-${Date.now()}`,
-          userId: currentUser.id,
-          userName: currentUser.name,
-          userAvatar: currentUser.avatarUrl,
-          userRole: currentUser.role,
-          text: `Project initiated by ${currentUser.name}. Financial allocation: Net Revenue $${netRevenue.toLocaleString()}.`,
-          timestamp: new Date().toISOString()
-        }
-      ],
+      comments: [],
       createdAt: new Date().toISOString()
     };
 
@@ -212,33 +311,19 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     setLeads(prev => prev.map(l => l.id === leadId ? { ...l, status: 'assigned' } : l));
   };
 
-  // Assign Team to Project
-  const assignProjectTeam = (projectId: string, assignments: ProjectAssignment[]) => {
+  const assignProjectTeam = (projectId: string, projectAssignments: ProjectAssignment[]) => {
     setProjects(prev => prev.map(p => {
       if (p.id === projectId) {
         return {
           ...p,
-          assignments: assignments,
-          status: p.status === 'assigned' ? 'in_progress' : p.status,
-          comments: [
-            ...p.comments,
-            {
-              id: `cmt-${Date.now()}`,
-              userId: currentUser.id,
-              userName: currentUser.name,
-              userAvatar: currentUser.avatarUrl,
-              userRole: currentUser.role,
-              text: `Team assigned by ${currentUser.name}: ${assignments.map(a => `${a.freelancerName} (${a.sharePct}%)`).join(', ')}.`,
-              timestamp: new Date().toISOString()
-            }
-          ]
+          assignments: projectAssignments,
+          status: 'in_progress'
         };
       }
       return p;
     }));
   };
 
-  // Update Project Kanban Status
   const updateProjectStatus = (projectId: string, newStatus: PipelineStage) => {
     setProjects(prev => prev.map(p => {
       if (p.id === projectId) {
@@ -246,170 +331,250 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
           ...p,
           status: newStatus,
           completedAt: newStatus === 'completed' ? new Date().toISOString() : p.completedAt,
-          comments: [
-            ...p.comments,
-            {
-              id: `cmt-${Date.now()}`,
-              userId: currentUser.id,
-              userName: currentUser.name,
-              userAvatar: currentUser.avatarUrl,
-              userRole: currentUser.role,
-              text: `Status updated to ${newStatus.toUpperCase().replace('_', ' ')} by ${currentUser.name}.`,
-              timestamp: new Date().toISOString()
-            }
-          ]
+          paidAt: newStatus === 'paid' ? new Date().toISOString() : p.paidAt
         };
       }
       return p;
     }));
   };
 
-  // Add Deliverable
   const addDeliverable = (projectId: string, title: string, linkUrl?: string, notes?: string) => {
     const newDeliverable: Deliverable = {
-      id: `deliv-${Date.now()}`,
+      id: `del-${Date.now()}`,
       title,
       linkUrl,
-      notes,
       submittedByUserId: currentUser.id,
       submittedByUserName: currentUser.name,
       submittedAt: new Date().toISOString(),
-      status: 'pending'
+      status: 'pending',
+      notes
     };
 
-    setProjects(prev => prev.map(p => {
-      if (p.id === projectId) {
-        return {
-          ...p,
-          deliverables: [...p.deliverables, newDeliverable],
-          comments: [
-            ...p.comments,
-            {
-              id: `cmt-${Date.now()}`,
-              userId: currentUser.id,
-              userName: currentUser.name,
-              userAvatar: currentUser.avatarUrl,
-              userRole: currentUser.role,
-              text: `New deliverable uploaded: "${title}" by ${currentUser.name}.`,
-              timestamp: new Date().toISOString()
-            }
-          ]
-        };
-      }
-      return p;
-    }));
+    setProjects(prev => prev.map(p => p.id === projectId ? { ...p, deliverables: [newDeliverable, ...p.deliverables] } : p));
   };
 
-  // Add Comment
   const addComment = (projectId: string, text: string) => {
     const newComment: Comment = {
-      id: `cmt-${Date.now()}`,
+      id: `c-${Date.now()}`,
       userId: currentUser.id,
       userName: currentUser.name,
       userAvatar: currentUser.avatarUrl,
-      userRole: currentUser.role,
+      userRole: currentUser.roleTier || currentUser.role,
       text,
       timestamp: new Date().toISOString()
     };
 
-    setProjects(prev => prev.map(p => {
-      if (p.id === projectId) {
-        return {
-          ...p,
-          comments: [...p.comments, newComment]
-        };
-      }
-      return p;
-    }));
+    setProjects(prev => prev.map(p => p.id === projectId ? { ...p, comments: [...p.comments, newComment] } : p));
   };
 
-  // Release Financial Payouts & Generate Ledger Entries
   const releaseProjectPayout = (projectId: string) => {
     const project = projects.find(p => p.id === projectId);
     if (!project || project.status === 'paid') return;
 
-    const netRev = project.netRevenue;
     const group = groups.find(g => g.id === project.groupId);
-    const groupName = group ? group.name : 'General';
-    const now = new Date().toISOString();
+    const groupName = group ? group.name : 'Squad';
 
-    const createdPayouts: Payout[] = [];
+    const netRev = project.netRevenue;
+    const mgmtAmount = (netRev * project.splitManagementPct) / 100;
+    const leaderAmount = (netRev * project.splitLeaderPct) / 100;
+    const freelancerPool = (netRev * project.splitFreelancerPct) / 100;
 
-    // 1. Management cut
-    const mgmtAmount = Math.round(netRev * (project.splitManagementPct / 100));
-    createdPayouts.push({
+    const newPayouts: Payout[] = [];
+
+    // Management share
+    newPayouts.push({
       id: `pay-${Date.now()}-mgmt`,
       projectId: project.id,
       projectTitle: project.title,
-      userId: 'usr-mgmt-1',
-      userName: 'Haris Asad',
+      userId: currentUser.id,
+      userName: 'DigiHust Operations',
       userRole: 'management',
-      groupName: 'Executive',
-      roleDescription: `Management Fee (${project.splitManagementPct}%)`,
-      amount: mgmtAmount,
+      groupName: 'Platform Reserve',
+      roleDescription: 'Platform Management & SLA Margin',
+      amount: Math.round(mgmtAmount),
       sharePct: project.splitManagementPct,
-      paidAt: now
+      paidAt: new Date().toISOString()
     });
 
-    // 2. Leader cut
-    const leaderAmount = Math.round(netRev * (project.splitLeaderPct / 100));
-    createdPayouts.push({
+    // Leader share
+    newPayouts.push({
       id: `pay-${Date.now()}-ldr`,
       projectId: project.id,
       projectTitle: project.title,
       userId: project.assignedLeaderId,
       userName: project.assignedLeaderName,
       userRole: 'group_leader',
-      groupName: groupName,
-      roleDescription: `Group Leader Project Management (${project.splitLeaderPct}%)`,
-      amount: leaderAmount,
+      groupName,
+      roleDescription: 'Squad Lead Oversight & QA',
+      amount: Math.round(leaderAmount),
       sharePct: project.splitLeaderPct,
-      paidAt: now
+      paidAt: new Date().toISOString()
     });
 
-    // 3. Freelancer pool
-    const totalFreelancerPool = netRev * (project.splitFreelancerPct / 100);
-    project.assignments.forEach((assignment, idx) => {
-      const flShare = Math.round(totalFreelancerPool * (assignment.sharePct / 100));
-      createdPayouts.push({
-        id: `pay-${Date.now()}-fl-${idx}`,
+    // Freelancer/Member shares
+    project.assignments.forEach((asgn, i) => {
+      const memberAmount = (freelancerPool * asgn.sharePct) / 100;
+      newPayouts.push({
+        id: `pay-${Date.now()}-mbr-${i}`,
         projectId: project.id,
         projectTitle: project.title,
-        userId: assignment.freelancerId,
-        userName: assignment.freelancerName,
-        userRole: 'freelancer',
-        groupName: groupName,
-        roleDescription: `${assignment.roleTitle} (${assignment.sharePct}% of pool)`,
-        amount: flShare,
-        sharePct: Math.round((assignment.sharePct / 100) * project.splitFreelancerPct),
-        paidAt: now
+        userId: asgn.freelancerId,
+        userName: asgn.freelancerName,
+        userRole: 'member',
+        groupName,
+        roleDescription: asgn.roleTitle,
+        amount: Math.round(memberAmount),
+        sharePct: asgn.sharePct,
+        paidAt: new Date().toISOString()
       });
     });
 
-    // Append to Payouts Ledger
-    setPayouts(prev => [...createdPayouts, ...prev]);
+    setPayouts(prev => [...newPayouts, ...prev]);
+    updateProjectStatus(projectId, 'paid');
+  };
 
-    // Mark project as paid
-    setProjects(prev => prev.map(p => p.id === projectId ? { ...p, status: 'paid', paidAt: now } : p));
+  // ── ASSIGNMENT WORKSPACE ACTIONS ───────────────────────────────────────────
 
-    // Update user earnings and stats
-    setUsers(prev => prev.map(u => {
-      const userPayout = createdPayouts.filter(p => p.userId === u.id);
-      if (userPayout.length > 0) {
-        const addedEarnings = userPayout.reduce((sum, p) => sum + p.amount, 0);
+  const createAssignment = (assignmentData: Omit<Assignment, 'id' | 'createdAt' | 'subTasks' | 'milestones' | 'deliverables' | 'comments'>) => {
+    const newAssignment: Assignment = {
+      ...assignmentData,
+      id: `asgn-${Date.now()}`,
+      subTasks: [],
+      milestones: [],
+      deliverables: [],
+      comments: [],
+      createdAt: new Date().toISOString()
+    };
+    setAssignments(prev => [newAssignment, ...prev]);
+  };
+
+  const updateAssignmentStatus = (assignmentId: string, newStatus: PipelineStage) => {
+    setAssignments(prev => prev.map(a => a.id === assignmentId ? { ...a, status: newStatus } : a));
+  };
+
+  const addSubTask = (assignmentId: string, title: string, assignedMemberId: string, dueDate?: string) => {
+    const member = users.find(u => u.id === assignedMemberId);
+    const newSubTask: SubTask = {
+      id: `st-${Date.now()}`,
+      title,
+      assignedMemberId,
+      assignedMemberName: member ? member.name : 'Assigned Member',
+      status: 'todo',
+      dueDate
+    };
+    setAssignments(prev => prev.map(a => a.id === assignmentId ? { ...a, subTasks: [...a.subTasks, newSubTask] } : a));
+  };
+
+  const toggleSubTask = (assignmentId: string, subTaskId: string) => {
+    setAssignments(prev => prev.map(a => {
+      if (a.id === assignmentId) {
         return {
-          ...u,
-          totalEarnings: u.totalEarnings + addedEarnings,
-          completedProjectsCount: u.completedProjectsCount + 1
+          ...a,
+          subTasks: a.subTasks.map(st => {
+            if (st.id === subTaskId) {
+              const nextStatus = st.status === 'completed' ? 'in_progress' : 'completed';
+              return { ...st, status: nextStatus };
+            }
+            return st;
+          })
         };
       }
-      return u;
+      return a;
     }));
   };
 
-  // ── PEOPLE & COMMUNITY MANAGEMENT ACTIONS ───────────────────────────────
+  const addMilestone = (assignmentId: string, title: string, targetDate: string) => {
+    const newMilestone: Milestone = {
+      id: `m-${Date.now()}`,
+      title,
+      targetDate,
+      isCompleted: false
+    };
+    setAssignments(prev => prev.map(a => a.id === assignmentId ? { ...a, milestones: [...a.milestones, newMilestone] } : a));
+  };
 
-  // Update User Profile Fields
+  const toggleMilestone = (assignmentId: string, milestoneId: string) => {
+    setAssignments(prev => prev.map(a => {
+      if (a.id === assignmentId) {
+        return {
+          ...a,
+          milestones: a.milestones.map(m => m.id === milestoneId ? { ...m, isCompleted: !m.isCompleted } : m)
+        };
+      }
+      return a;
+    }));
+  };
+
+  const addAssignmentDeliverable = (assignmentId: string, title: string, linkUrl?: string, notes?: string) => {
+    const newDeliverable: Deliverable = {
+      id: `del-${Date.now()}`,
+      title,
+      linkUrl,
+      submittedByUserId: currentUser.id,
+      submittedByUserName: currentUser.name,
+      submittedAt: new Date().toISOString(),
+      status: 'pending',
+      notes
+    };
+    setAssignments(prev => prev.map(a => a.id === assignmentId ? { ...a, deliverables: [newDeliverable, ...a.deliverables] } : a));
+  };
+
+  const addAssignmentComment = (assignmentId: string, text: string) => {
+    const newComment: Comment = {
+      id: `c-${Date.now()}`,
+      userId: currentUser.id,
+      userName: currentUser.name,
+      userAvatar: currentUser.avatarUrl,
+      userRole: currentUser.roleTier || currentUser.role,
+      text,
+      timestamp: new Date().toISOString()
+    };
+    setAssignments(prev => prev.map(a => a.id === assignmentId ? { ...a, comments: [...a.comments, newComment] } : a));
+  };
+
+  // ── CERTIFICATE ACTIONS ───────────────────────────────────────────────────
+
+  const issueCertificate = (certData: Omit<Certificate, 'id' | 'issuedDate' | 'status' | 'qrCodeUrl'>): Certificate => {
+    const uuidToken = `cert-${certData.type === 'offer_letter' ? 'off' : 'exp'}-${Math.random().toString(36).substring(2, 10)}-${Date.now().toString(36)}`;
+    const newCert: Certificate = {
+      ...certData,
+      id: uuidToken,
+      issuedDate: new Date().toISOString().split('T')[0],
+      status: 'valid',
+      qrCodeUrl: `https://verify.digihust.com/cert/${uuidToken}`
+    };
+    setCertificates(prev => [newCert, ...prev]);
+    return newCert;
+  };
+
+  const revokeCertificate = (certId: string, reason?: string) => {
+    setCertificates(prev => prev.map(c => c.id === certId ? { ...c, status: 'revoked', revocationReason: reason || 'Revoked by Executive Management' } : c));
+  };
+
+  const restoreCertificate = (certId: string) => {
+    setCertificates(prev => prev.map(c => c.id === certId ? { ...c, status: 'valid', revocationReason: undefined } : c));
+  };
+
+  // ── ANNOUNCEMENT ACTIONS ──────────────────────────────────────────────────
+
+  const postAnnouncement = (announcementData: Omit<Announcement, 'id' | 'postedBy' | 'postedByName' | 'postedByRole' | 'postedAt'>) => {
+    const newAnnouncement: Announcement = {
+      ...announcementData,
+      id: `ann-${Date.now()}`,
+      postedBy: currentUser.id,
+      postedByName: currentUser.name,
+      postedByRole: currentUser.roleTier || (currentUser.role === 'management' ? 'ceo' : 'group_leader'),
+      postedAt: new Date().toISOString()
+    };
+    setAnnouncements(prev => [newAnnouncement, ...prev]);
+  };
+
+  const deleteAnnouncement = (announcementId: string) => {
+    setAnnouncements(prev => prev.filter(a => a.id !== announcementId));
+  };
+
+  // ── PEOPLE & COMMUNITY MANAGEMENT ACTIONS ──────────────────────────────────
+
   const updateUserProfile = (userId: string, updates: Partial<User>) => {
     setUsers(prev => prev.map(u => u.id === userId ? { ...u, ...updates } : u));
     if (currentUser.id === userId) {
@@ -417,11 +582,10 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     }
   };
 
-  // Change User Status with Reason and Audit Trail
   const changeUserStatus = (userId: string, newStatus: UserStatus, reason: string, changedBy: string) => {
     setUsers(prev => prev.map(u => {
       if (u.id === userId) {
-        const log = {
+        const log: StatusChangeLog = {
           timestamp: new Date().toISOString(),
           from: u.status,
           to: newStatus,
@@ -438,209 +602,212 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     }));
   };
 
-  // Add Internal Admin Note to User
   const addUserNote = (userId: string, text: string, authorId: string, authorName: string) => {
-    const newNote = {
-      id: `note-${Date.now()}`,
-      timestamp: new Date().toISOString(),
-      authorId,
-      authorName,
-      text
-    };
-
-    setUsers(prev => prev.map(u => {
-      if (u.id === userId) {
-        return {
-          ...u,
-          notes: [newNote, ...(u.notes || [])]
-        };
-      }
-      return u;
-    }));
+    const newNote = { id: `note-${Date.now()}`, timestamp: new Date().toISOString(), authorId, authorName, text };
+    setUsers(prev => prev.map(u => u.id === userId ? { ...u, notes: [newNote, ...(u.notes || [])] } : u));
   };
 
-  // Delete Internal Note
   const deleteUserNote = (userId: string, noteId: string) => {
-    setUsers(prev => prev.map(u => {
-      if (u.id === userId) {
-        return {
-          ...u,
-          notes: (u.notes || []).filter(n => n.id !== noteId)
-        };
-      }
-      return u;
-    }));
+    setUsers(prev => prev.map(u => u.id === userId ? { ...u, notes: (u.notes || []).filter(n => n.id !== noteId) } : u));
   };
 
-  // Set Custom Split Override for Individual User
   const setUserSplitOverride = (userId: string, splitOverride?: SplitOverride) => {
     setUsers(prev => prev.map(u => u.id === userId ? { ...u, splitOverride } : u));
   };
 
-  // Reassign User Squad
   const reassignUserSquad = (userId: string, newGroupId?: GroupId) => {
     setUsers(prev => prev.map(u => u.id === userId ? { ...u, groupId: newGroupId } : u));
   };
 
-  // Change User Role (Promote / Demote)
   const changeUserRole = (userId: string, newRole: UserRole) => {
-    setUsers(prev => prev.map(u => u.id === userId ? { ...u, role: newRole } : u));
+    setUsers(prev => prev.map(u => {
+      if (u.id === userId) {
+        const newTier: UserRoleTier = newRole === 'management' ? 'manager' : newRole === 'group_leader' ? 'group_leader' : 'member';
+        return { ...u, role: newRole, roleTier: newTier };
+      }
+      return u;
+    }));
   };
 
-  // Quick Invite New Talent Directly
-  const quickInviteUser = (userData: Omit<User, 'id' | 'completedProjectsCount' | 'totalEarnings' | 'rating' | 'statusHistory' | 'notes' | 'documents'>) => {
+  const quickInviteUser = (userData: Omit<User, 'id' | 'completedProjectsCount' | 'totalEarnings' | 'rating' | 'statusHistory' | 'notes' | 'documents'>): User => {
+    const { memberId } = getNextMemberId(userData.joinYear);
     const newUser: User = {
       ...userData,
-      id: `usr-inv-${Date.now().toString().slice(-4)}`,
+      id: `usr-${Date.now()}`,
+      memberId,
       completedProjectsCount: 0,
       totalEarnings: 0,
       rating: 5.0,
-      joinedAt: new Date().toISOString().split('T')[0],
-      status: userData.status || 'pending_onboarding',
+      credentialsSentAt: null,
+      forcePasswordChange: true,
       statusHistory: [
         {
           timestamp: new Date().toISOString(),
           from: 'pending_onboarding',
-          to: userData.status || 'pending_onboarding',
-          reason: 'Direct management invitation.',
+          to: userData.status,
+          reason: 'Direct Invitation Added',
           changedBy: currentUser.name
         }
       ],
       notes: [],
       documents: []
     };
-
     setUsers(prev => [newUser, ...prev]);
+    return newUser;
   };
 
-  // Bulk Status Change
-  const bulkUpdateStatus = (userIds: string[], status: UserStatus, reason: string, changedBy: string) => {
+  const bulkImportMembers = (importedRows: Partial<User>[]): { count: number; newUsers: User[] } => {
+    const createdUsers: User[] = [];
+
+    importedRows.forEach((row) => {
+      const { memberId } = getNextMemberId(row.joinYear);
+      const roleTier: UserRoleTier = row.roleTier || (row.role === 'management' ? 'manager' : row.role === 'group_leader' ? 'group_leader' : 'member');
+      const newUser: User = {
+        id: `usr-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
+        memberId,
+        name: row.name || 'Specialist',
+        email: row.email || `specialist-${Date.now()}@digihust.com`,
+        phone: row.phone || '',
+        avatarUrl: row.avatarUrl || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=250',
+        role: row.role || 'freelancer',
+        roleTier,
+        groupId: row.groupId || 'tech',
+        title: row.title || 'Domain Specialist',
+        specialties: row.specialties || ['Digital Delivery'],
+        hourlyRate: row.hourlyRate || 25,
+        completedProjectsCount: 0,
+        totalEarnings: 0,
+        rating: 5.0,
+        status: 'active',
+        joinedAt: new Date().toISOString().split('T')[0],
+        joinYear: row.joinYear || new Date().getFullYear(),
+        credentialsSentAt: null, // Left null so Send Credentials picks them up
+        forcePasswordChange: true,
+        statusHistory: [],
+        notes: [],
+        documents: []
+      };
+      createdUsers.push(newUser);
+    });
+
+    setUsers(prev => [...createdUsers, ...prev]);
+    return { count: createdUsers.length, newUsers: createdUsers };
+  };
+
+  const sendBatchCredentials = (): { count: number; memberNames: string[] } => {
+    const pendingMembers = users.filter(u => u.credentialsSentAt === null || u.credentialsSentAt === undefined);
+    const timestamp = new Date().toISOString();
+    const names = pendingMembers.map(u => `${u.name} (${u.memberId})`);
+
     setUsers(prev => prev.map(u => {
-      if (userIds.includes(u.id)) {
-        const log = {
-          timestamp: new Date().toISOString(),
-          from: u.status,
-          to: status,
-          reason,
-          changedBy
-        };
-        return {
-          ...u,
-          status,
-          statusHistory: [log, ...(u.statusHistory || [])]
-        };
+      if (u.credentialsSentAt === null || u.credentialsSentAt === undefined) {
+        return { ...u, credentialsSentAt: timestamp };
       }
       return u;
     }));
+
+    return { count: pendingMembers.length, memberNames: names };
   };
 
-  // Bulk Squad Reassignment
-  const bulkReassignSquad = (userIds: string[], newGroupId: GroupId) => {
-    setUsers(prev => prev.map(u => userIds.includes(u.id) ? { ...u, groupId: newGroupId } : u));
-  };
-
-  // ── APPLICANT WORKFLOW ACTIONS ──────────────────────────────────────────
-
-  // Submit Digiskill Application
+  // Applicant Actions
   const submitApplication = (applicantData: Omit<Applicant, 'id' | 'appliedAt' | 'status'>) => {
     const newApplicant: Applicant = {
       ...applicantData,
-      id: `app-${Date.now().toString().slice(-4)}`,
+      id: `app-${Date.now()}`,
       appliedAt: new Date().toISOString(),
       status: 'pending'
     };
     setApplicants(prev => [newApplicant, ...prev]);
   };
 
-  // Approve Applicant into Roster with Pending Onboarding Status
   const approveApplicant = (applicantId: string, role: UserRole = 'freelancer', targetGroupId?: GroupId) => {
-    const app = applicants.find(a => a.id === applicantId);
-    if (!app) return;
+    const applicant = applicants.find(a => a.id === applicantId);
+    if (!applicant) return;
+
+    const { memberId } = getNextMemberId();
+    const roleTier: UserRoleTier = role === 'management' ? 'manager' : role === 'group_leader' ? 'group_leader' : 'member';
 
     const newUser: User = {
-      id: `usr-app-${Date.now().toString().slice(-4)}`,
-      name: app.name,
-      email: app.email,
-      phone: app.phone,
-      avatarUrl: `https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=250`,
-      role: role,
-      groupId: targetGroupId || app.preferredGroupId,
-      title: `${app.digiskillCourse} Specialist`,
-      specialties: app.specialties,
-      bio: app.bio,
-      hourlyRate: 25,
+      id: `usr-${Date.now()}`,
+      memberId,
+      name: applicant.name,
+      email: applicant.email,
+      phone: applicant.phone,
+      avatarUrl: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=250',
+      role,
+      roleTier,
+      groupId: targetGroupId || applicant.preferredGroupId,
+      title: applicant.specialties[0] ? `${applicant.specialties[0]} Specialist` : 'Domain Specialist',
+      specialties: applicant.specialties,
+      bio: applicant.bio,
       completedProjectsCount: 0,
       totalEarnings: 0,
       rating: 5.0,
-      digiskillBatch: app.digiskillId,
-      status: 'pending_onboarding',
+      digiskillBatch: applicant.digiskillId,
+      status: 'active',
       joinedAt: new Date().toISOString().split('T')[0],
-      onTimeDeliveryPct: 100,
-      csatScore: 5.0,
-      notes: [
-        {
-          id: `note-${Date.now()}`,
-          timestamp: new Date().toISOString(),
-          authorId: currentUser.id,
-          authorName: currentUser.name,
-          text: `Application approved by ${currentUser.name}. Digiskill Batch: ${app.digiskillId}.`
-        }
-      ],
-      statusHistory: [
-        {
-          timestamp: new Date().toISOString(),
-          from: 'pending_onboarding',
-          to: 'pending_onboarding',
-          reason: 'Application approved by management. Pending identity & contract onboarding.',
-          changedBy: currentUser.name
-        }
-      ],
-      documents: []
+      credentialsSentAt: null,
+      forcePasswordChange: true
     };
 
     setUsers(prev => [newUser, ...prev]);
     setApplicants(prev => prev.map(a => a.id === applicantId ? { ...a, status: 'approved' } : a));
   };
 
-  // Reject Applicant with Reason
-  const rejectApplicant = (applicantId: string, reason: string = 'Profile does not meet current squad requirements.') => {
+  const rejectApplicant = (applicantId: string, reason?: string) => {
     setApplicants(prev => prev.map(a => a.id === applicantId ? { ...a, status: 'rejected', rejectionReason: reason } : a));
   };
 
-  // Request More Info / Follow-up from Applicant
-  const requestMoreInfoApplicant = (applicantId: string, followUpNotes: string = 'Portfolio links or updated CV requested.') => {
+  const requestMoreInfoApplicant = (applicantId: string, followUpNotes?: string) => {
     setApplicants(prev => prev.map(a => a.id === applicantId ? { ...a, status: 'more_info_requested', followUpNotes } : a));
   };
 
-  // Update Settings
   const updateGlobalSettings = (newSettings: GlobalAdminSettings) => {
     setSettings(newSettings);
   };
 
-  // Reset Data to Defaults
   const resetToDefaultData = () => {
-    localStorage.clear();
     setUsers(INITIAL_USERS);
     setCurrentUser(INITIAL_USERS[0]);
+    setIsAuthenticated(true);
     setLeads(INITIAL_LEADS);
     setProjects(INITIAL_PROJECTS);
+    setAssignments(INITIAL_ASSIGNMENTS);
+    setCertificates(INITIAL_CERTIFICATES);
+    setAnnouncements(INITIAL_ANNOUNCEMENTS);
     setPayouts(INITIAL_PAYOUTS);
     setApplicants(INITIAL_APPLICANTS);
     setSettings(INITIAL_SETTINGS);
   };
 
+  const currentTier = getUserRoleTier(currentUser);
+
   return (
     <AppContext.Provider
       value={{
+        isAuthenticated,
         currentUser,
+        currentTier,
         users,
         groups,
         leads,
         projects,
+        assignments,
+        certificates,
+        announcements,
         payouts,
         applicants,
         settings,
+
+        // Auth
+        loginWithMemberId,
+        logout,
+        changePassword,
+        requestPasswordReset,
         switchRole,
+        switchTier,
+
+        // Pipeline & Project
         submitLead,
         reviewLeadToProject,
         assignProjectTeam,
@@ -648,6 +815,27 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         addDeliverable,
         addComment,
         releaseProjectPayout,
+
+        // Assignment Workspace
+        createAssignment,
+        updateAssignmentStatus,
+        addSubTask,
+        toggleSubTask,
+        addMilestone,
+        toggleMilestone,
+        addAssignmentDeliverable,
+        addAssignmentComment,
+
+        // Certificates
+        issueCertificate,
+        revokeCertificate,
+        restoreCertificate,
+
+        // Announcements
+        postAnnouncement,
+        deleteAnnouncement,
+
+        // People & Roster
         updateUserProfile,
         changeUserStatus,
         addUserNote,
@@ -656,12 +844,16 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         reassignUserSquad,
         changeUserRole,
         quickInviteUser,
-        bulkUpdateStatus,
-        bulkReassignSquad,
+        bulkImportMembers,
+        sendBatchCredentials,
+
+        // Applicants
         submitApplication,
         approveApplicant,
         rejectApplicant,
         requestMoreInfoApplicant,
+
+        // Settings
         updateGlobalSettings,
         resetToDefaultData
       }}

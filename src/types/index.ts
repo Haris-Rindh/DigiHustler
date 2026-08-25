@@ -1,5 +1,7 @@
 export type UserRole = 'management' | 'group_leader' | 'freelancer';
 
+export type UserRoleTier = 'ceo' | 'manager' | 'group_leader' | 'member';
+
 export type GroupId = 'tech' | 'creative' | 'data' | 'growth';
 
 export type UserStatus = 'active' | 'inactive' | 'on_leave' | 'suspended' | 'pending_onboarding';
@@ -36,11 +38,13 @@ export interface SplitOverride {
 
 export interface User {
   id: string;
+  memberId?: string; // DGH2600001 format
   name: string;
   email: string;
   phone?: string;
   avatarUrl: string;
   role: UserRole;
+  roleTier?: UserRoleTier; // 4-tier access: ceo | manager | group_leader | member
   groupId?: GroupId;
   title: string;
   specialties: string[];
@@ -52,12 +56,16 @@ export interface User {
   digiskillBatch?: string;
   status: UserStatus;
   joinedAt?: string;
+  joinYear?: number;
   onTimeDeliveryPct?: number;
   csatScore?: number;
   splitOverride?: SplitOverride;
   statusHistory?: StatusChangeLog[];
   notes?: InternalNote[];
   documents?: DocumentAttachment[];
+  credentialsSentAt?: string | null;
+  forcePasswordChange?: boolean;
+  passwordHash?: string;
 }
 
 export interface Group {
@@ -98,7 +106,7 @@ export interface ProjectAssignment {
   freelancerId: string;
   freelancerName: string;
   roleTitle: string;
-  sharePct: number; // slice of the freelancer pool (e.g. 60% of freelancer pool)
+  sharePct: number;
   amountCalculated?: number;
 }
 
@@ -119,7 +127,7 @@ export interface Comment {
   userId: string;
   userName: string;
   userAvatar: string;
-  userRole: UserRole;
+  userRole: UserRole | UserRoleTier;
   text: string;
   timestamp: string;
 }
@@ -130,6 +138,7 @@ export interface Project {
   title: string;
   clientName: string;
   clientEmail: string;
+  clientCompany?: string;
   groupId: GroupId;
   assignedLeaderId: string;
   assignedLeaderName: string;
@@ -140,10 +149,10 @@ export interface Project {
   
   // Financial splits
   isLeadGenIndependent: boolean;
-  leadGenUserPct: number; // e.g. 15%
-  splitManagementPct: number; // e.g. 20%
-  splitLeaderPct: number; // e.g. 10%
-  splitFreelancerPct: number; // e.g. 55%
+  leadGenUserPct: number;
+  splitManagementPct: number;
+  splitLeaderPct: number;
+  splitFreelancerPct: number;
   
   // Team assignment
   assignments: ProjectAssignment[];
@@ -163,7 +172,7 @@ export interface Payout {
   projectTitle: string;
   userId: string;
   userName: string;
-  userRole: UserRole;
+  userRole: UserRole | UserRoleTier;
   groupName: string;
   roleDescription: string;
   amount: number;
@@ -196,4 +205,97 @@ export interface GlobalAdminSettings {
   defaultLeadGenPct: number;
   payoutCurrency: string;
   autoApproveLeads: boolean;
+}
+
+// ── NEW PORTAL & ASSIGNMENT TYPES ─────────────────────────────────────────────
+
+export interface SanitizedBrief {
+  title: string;
+  scope: string;
+  deliverables: string[];
+  deadline: string;
+  referenceFiles?: string[];
+}
+
+export interface SubTask {
+  id: string;
+  title: string;
+  assignedMemberId: string;
+  assignedMemberName: string;
+  status: 'todo' | 'in_progress' | 'completed';
+  dueDate?: string;
+}
+
+export interface Milestone {
+  id: string;
+  title: string;
+  targetDate: string;
+  isCompleted: boolean;
+}
+
+export interface Assignment {
+  id: string;
+  projectId: string;
+  // Full client record (CEO & Manager only)
+  clientName?: string;
+  clientEmail?: string;
+  clientCompany?: string;
+  totalBudget?: number;
+  // Sanitized view (All assigned roles)
+  assignedLeaderId: string;
+  assignedLeaderName: string;
+  assignedMemberIds: string[];
+  squad: GroupId;
+  status: PipelineStage;
+  sanitizedBrief: SanitizedBrief;
+  subTasks: SubTask[];
+  milestones: Milestone[];
+  deliverables: Deliverable[];
+  comments: Comment[];
+  createdBy: string;
+  createdAt: string;
+}
+
+// ── CERTIFICATES & QR VERIFICATION TYPES ─────────────────────────────────────
+
+export type CertificateType = 'offer_letter' | 'experience_certificate';
+export type CertificateStatus = 'valid' | 'revoked';
+
+export interface Certificate {
+  id: string; // UUID token for unguessable public URL
+  memberId: string;
+  memberName: string;
+  memberDghId: string;
+  type: CertificateType;
+  roleTitle: string;
+  startDate: string;
+  endDate?: string;
+  issuedDate: string;
+  status: CertificateStatus;
+  clientName: string; // Real client name
+  projectDetails: string; // Real project details
+  issuedBy: string;
+  qrCodeUrl?: string;
+  revocationReason?: string;
+}
+
+// ── ANNOUNCEMENTS TYPES ──────────────────────────────────────────────────────
+
+export type AnnouncementScope = 'global' | 'group';
+
+export interface Announcement {
+  id: string;
+  scope: AnnouncementScope;
+  groupId?: GroupId;
+  title: string;
+  body: string;
+  postedBy: string;
+  postedByName: string;
+  postedByRole: UserRoleTier;
+  postedAt: string;
+  expiresAt?: string;
+}
+
+export interface IdCounter {
+  lastNumber: number;
 }
