@@ -220,10 +220,19 @@ export default function RadialOrbitalTimeline({
     return () => clearInterval(interval);
   }, [autoRotate]);
 
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 640);
+    check();
+    window.addEventListener('resize', check);
+    return () => window.removeEventListener('resize', check);
+  }, []);
+
   const calculateNodePosition = (index: number, totalNodes: number) => {
     const angleStep = (2 * Math.PI) / totalNodes;
     const currentAngle = angleStep * index + (rotationAngle * Math.PI) / 180;
-    const radius = embedded ? 125 : 170;
+    const radius = isMobile ? (embedded ? 105 : 135) : (embedded ? 130 : 175);
     const x = radius * Math.cos(currentAngle);
     const y = radius * Math.sin(currentAngle);
     const zIndex = Math.round(100 + 50 * Math.sin(currentAngle));
@@ -241,8 +250,8 @@ export default function RadialOrbitalTimeline({
   return (
     <div
       ref={containerRef}
-      className={`relative w-full overflow-hidden flex items-center justify-center select-none ${
-        embedded ? "h-[330px] sm:h-[360px] lg:h-[380px]" : "h-[480px] sm:h-[540px]"
+      className={`relative w-full max-w-full overflow-hidden flex items-center justify-center select-none ${
+        embedded ? "h-[320px] sm:h-[350px] lg:h-[380px]" : "h-[450px] sm:h-[520px]"
       } ${className}`}
       onClick={handleContainerClick}
       aria-label="Interactive Radial Orbital Timeline for DigiHust Capabilities"
@@ -258,15 +267,21 @@ export default function RadialOrbitalTimeline({
           {/* Central Hub Core */}
           <div
             className={`absolute rounded-full bg-gradient-to-br from-[#022B3A] via-[#1F7A8C] to-[#E1E5F2] border-2 border-[var(--border-subtle)] shadow-xl flex items-center justify-center z-10 cursor-pointer transition-transform hover:scale-105 ${
-              embedded ? "w-13 h-13" : "w-16 h-16"
+              embedded ? "w-12 h-12 sm:w-14 sm:h-14" : "w-14 h-14 sm:w-18 sm:h-18"
             }`}
-            onClick={() => setAutoRotate(!autoRotate)}
-            title={autoRotate ? "Click to pause rotation" : "Click to auto-rotate"}
+            onClick={(e) => {
+              e.stopPropagation();
+              setAutoRotate((prev) => !prev);
+            }}
+            title={autoRotate ? "Click to pause rotation" : "Click to resume rotation"}
           >
-            <div className={`rounded-full bg-[var(--bg-surface)] flex items-center justify-center text-[var(--text-heading)] font-extrabold tracking-tight shadow-inner ${
-              embedded ? "w-8 h-8 text-[9px]" : "w-9 h-9 text-[10px]"
-            }`}>
-              DIGI
+            <div className="text-center px-1">
+              <span className="font-display font-black text-[10px] sm:text-xs text-white uppercase tracking-tighter block leading-tight">
+                DIGI
+              </span>
+              <span className="font-mono text-[8px] sm:text-[9px] text-[var(--brand-teal)] bg-white/90 px-1 py-0.2 rounded font-extrabold block">
+                SQUADS
+              </span>
             </div>
           </div>
 

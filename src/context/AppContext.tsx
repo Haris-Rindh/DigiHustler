@@ -2,14 +2,16 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 import { 
   User, Group, Lead, Project, Payout, Applicant, GlobalAdminSettings, PipelineStage, 
   Deliverable, Comment, ProjectAssignment, GroupId, UserRole, UserRoleTier, UserStatus, 
-  SplitOverride, Assignment, SubTask, Milestone, Certificate, CertificateType, CertificateStatus, Announcement, AnnouncementScope 
+  SplitOverride, Assignment, SubTask, Milestone, Certificate, CertificateType, CertificateStatus, 
+  Announcement, AnnouncementScope, SiteContent, SecurityAuditLog 
 } from '../types';
 import { 
   INITIAL_GROUPS, INITIAL_USERS, INITIAL_LEADS, INITIAL_PROJECTS, INITIAL_PAYOUTS, 
-  INITIAL_APPLICANTS, INITIAL_SETTINGS, INITIAL_ASSIGNMENTS, INITIAL_CERTIFICATES, INITIAL_ANNOUNCEMENTS 
+  INITIAL_APPLICANTS, INITIAL_SETTINGS, INITIAL_ASSIGNMENTS, INITIAL_CERTIFICATES, 
+  INITIAL_ANNOUNCEMENTS, DEFAULT_SITE_CONTENT, INITIAL_AUDIT_LOGS 
 } from '../services/mockData';
 import { getNextMemberId } from '../lib/memberIdGenerator';
-import { getUserRoleTier } from '../lib/permissions';
+import { getUserRoleTier, PERMISSIONS } from '../lib/permissions';
 
 interface AppContextType {
   // Auth & Session
@@ -26,6 +28,8 @@ interface AppContextType {
   payouts: Payout[];
   applicants: Applicant[];
   settings: GlobalAdminSettings;
+  siteContent: SiteContent;
+  auditLogs: SecurityAuditLog[];
   
   // Auth Actions
   loginWithMemberId: (memberId: string, password?: string) => { success: boolean; error?: string };
@@ -82,9 +86,15 @@ interface AppContextType {
   setUserSplitOverride: (userId: string, splitOverride?: SplitOverride) => void;
   reassignUserSquad: (userId: string, newGroupId?: GroupId) => void;
   changeUserRole: (userId: string, newRole: UserRole) => void;
+  updateUserRoleWithAuth: (targetUserId: string, newRoleTier: UserRoleTier, reason: string) => { success: boolean; error?: string };
+  updateUserSquadWithAuth: (targetUserId: string, newGroupId?: GroupId) => { success: boolean; error?: string };
   quickInviteUser: (userData: Omit<User, 'id' | 'completedProjectsCount' | 'totalEarnings' | 'rating' | 'statusHistory' | 'notes' | 'documents'>) => User;
   bulkImportMembers: (importedRows: Partial<User>[]) => { count: number; newUsers: User[] };
   sendBatchCredentials: () => { count: number; memberNames: string[] };
+
+  // Live Website CMS Actions
+  updateSiteContent: (section: keyof SiteContent, data: any) => void;
+  resetSiteContent: () => void;
 
   // Applicant Workflow Actions
   submitApplication: (applicantData: Omit<Applicant, 'id' | 'appliedAt' | 'status'>) => void;
@@ -99,7 +109,7 @@ interface AppContextType {
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
-const LOCAL_STORAGE_KEY = 'digihust_app_state_v3';
+const LOCAL_STORAGE_KEY = 'digihust_app_state_v4';
 
 export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   // Load initial state from local storage if available
@@ -116,7 +126,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
     const savedAuth = localStorage.getItem(`${LOCAL_STORAGE_KEY}_is_authenticated`);
-    return savedAuth ? JSON.parse(savedAuth) : true; // Default true for instant preview
+    return savedAuth ? JSON.parse(savedAuth) : true;
   });
 
   const [groups] = useState<Group[]>(INITIAL_GROUPS);
@@ -159,6 +169,16 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const [settings, setSettings] = useState<GlobalAdminSettings>(() => {
     const saved = localStorage.getItem(`${LOCAL_STORAGE_KEY}_settings`);
     return saved ? JSON.parse(saved) : INITIAL_SETTINGS;
+  });
+
+  const [siteContent, setSiteContent] = useState<SiteContent>(() => {
+    const saved = localStorage.getItem(`${LOCAL_STORAGE_KEY}_site_content`);
+    return saved ? JSON.parse(saved) : DEFAULT_SITE_CONTENT;
+  });
+
+  const [auditLogs, setAuditLogs] = useState<SecurityAuditLog[]>(() => {
+    const saved = localStorage.getItem(`${LOCAL_STORAGE_KEY}_audit_logs`);
+    return saved ? JSON.parse(saved) : INITIAL_AUDIT_LOGS;
   });
 
   // Sync to LocalStorage
@@ -206,7 +226,17 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     localStorage.setItem(`${LOCAL_STORAGE_KEY}_settings`, JSON.stringify(settings));
   }, [settings]);
 
+  useEffect(() => {
+    localStorage.setItem(`${LOCAL_STORAGE_KEY}_site_content`, JSON.stringify(siteContent));
+  }, [siteContent]);
+
+  useEffect(() => {
+    localStorage.setItem(`${LOCAL_STORAGE_KEY}_audit_logs`, JSON.stringify(auditLogs));
+  }, [auditLogs]);
+
   // Auth Handlers
+  const currentTier = getUserRoleTier(currentUser);
+
   const loginWithMemberId = (memberId: string, _password?: string): { success: boolean; error?: string } => {
     const foundUser = users.find(u => u.memberId?.toUpperCase() === memberId.trim().toUpperCase() || u.email.toLowerCase() === memberId.trim().toLowerCase());
     if (foundUser) {
@@ -420,7 +450,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         projectTitle: project.title,
         userId: asgn.freelancerId,
         userName: asgn.freelancerName,
-        userRole: 'member',
+        userRole: 'freelancer',
         groupName,
         roleDescription: asgn.roleTitle,
         amount: Math.round(memberAmount),
@@ -544,11 +574,41 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       qrCodeUrl: `/verify/${uuidToken}`
     };
     setCertificates(prev => [newCert, ...prev]);
+
+    // Record in Security Audit Logs
+    const auditEntry: SecurityAuditLog = {
+      id: `audit-${Date.now()}`,
+      timestamp: new Date().toISOString(),
+      actorId: currentUser.id,
+      actorName: currentUser.name,
+      actorRole: currentTier,
+      action: 'CERTIFICATE_ISSUED',
+      targetId: certData.memberId,
+      targetName: certData.memberName,
+      details: `Issued ${certData.type.replace('_', ' ')} to ${certData.memberName} (${certData.memberDghId}) for ${certData.clientName}.`
+    };
+    setAuditLogs(prev => [auditEntry, ...prev]);
+
     return newCert;
   };
 
   const revokeCertificate = (certId: string, reason?: string) => {
     setCertificates(prev => prev.map(c => c.id === certId ? { ...c, status: 'revoked', revocationReason: reason || 'Revoked by Executive Management' } : c));
+    const cert = certificates.find(c => c.id === certId);
+    if (cert) {
+      const auditEntry: SecurityAuditLog = {
+        id: `audit-${Date.now()}`,
+        timestamp: new Date().toISOString(),
+        actorId: currentUser.id,
+        actorName: currentUser.name,
+        actorRole: currentTier,
+        action: 'CERTIFICATE_REVOKED',
+        targetId: cert.memberId,
+        targetName: cert.memberName,
+        details: `Revoked certificate ${certId}. Reason: ${reason || 'Executive discretion'}`
+      };
+      setAuditLogs(prev => [auditEntry, ...prev]);
+    }
   };
 
   const restoreCertificate = (certId: string) => {
@@ -573,7 +633,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     setAnnouncements(prev => prev.filter(a => a.id !== announcementId));
   };
 
-  // ── PEOPLE & COMMUNITY MANAGEMENT ACTIONS ──────────────────────────────────
+  // ── PEOPLE & COMMUNITY MANAGEMENT ACTIONS (STRICT EXECUTIVE GOVERNANCE) ────
 
   const updateUserProfile = (userId: string, updates: Partial<User>) => {
     setUsers(prev => prev.map(u => u.id === userId ? { ...u, ...updates } : u));
@@ -629,6 +689,67 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     }));
   };
 
+  // Strict Executive Authority: Only CEO can modify Role Tiers with logged audit records
+  const updateUserRoleWithAuth = (targetUserId: string, newRoleTier: UserRoleTier, reason: string): { success: boolean; error?: string } => {
+    if (!PERMISSIONS.canDistributeRoles(currentTier)) {
+      return { success: false, error: 'Access Denied: Only Executive CEO authority can distribute roles.' };
+    }
+
+    const targetUser = users.find(u => u.id === targetUserId);
+    if (!targetUser) return { success: false, error: 'User not found.' };
+
+    const mappedRole: UserRole = (newRoleTier === 'ceo' || newRoleTier === 'manager') ? 'management' : (newRoleTier === 'group_leader' ? 'group_leader' : 'freelancer');
+
+    setUsers(prev => prev.map(u => {
+      if (u.id === targetUserId) {
+        return { ...u, roleTier: newRoleTier, role: mappedRole };
+      }
+      return u;
+    }));
+
+    // Record Security Audit Log
+    const auditEntry: SecurityAuditLog = {
+      id: `audit-${Date.now()}`,
+      timestamp: new Date().toISOString(),
+      actorId: currentUser.id,
+      actorName: currentUser.name,
+      actorRole: currentTier,
+      action: 'ROLE_MODIFIED',
+      targetId: targetUser.id,
+      targetName: targetUser.name,
+      details: `Changed role tier from ${targetUser.roleTier || targetUser.role} to ${newRoleTier}. Reason: ${reason}`
+    };
+    setAuditLogs(prev => [auditEntry, ...prev]);
+
+    return { success: true };
+  };
+
+  const updateUserSquadWithAuth = (targetUserId: string, newGroupId?: GroupId): { success: boolean; error?: string } => {
+    if (!PERMISSIONS.canReassignSquad(currentTier)) {
+      return { success: false, error: 'Access Denied: Only Executive CEO authority can reassign squads.' };
+    }
+
+    const targetUser = users.find(u => u.id === targetUserId);
+    if (!targetUser) return { success: false, error: 'User not found.' };
+
+    setUsers(prev => prev.map(u => u.id === targetUserId ? { ...u, groupId: newGroupId } : u));
+
+    const auditEntry: SecurityAuditLog = {
+      id: `audit-${Date.now()}`,
+      timestamp: new Date().toISOString(),
+      actorId: currentUser.id,
+      actorName: currentUser.name,
+      actorRole: currentTier,
+      action: 'SQUAD_REASSIGNED',
+      targetId: targetUser.id,
+      targetName: targetUser.name,
+      details: `Reassigned squad to ${newGroupId || 'None'}.`
+    };
+    setAuditLogs(prev => [auditEntry, ...prev]);
+
+    return { success: true };
+  };
+
   const quickInviteUser = (userData: Omit<User, 'id' | 'completedProjectsCount' | 'totalEarnings' | 'rating' | 'statusHistory' | 'notes' | 'documents'>): User => {
     const { memberId } = getNextMemberId(userData.joinYear);
     const newUser: User = {
@@ -681,7 +802,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         status: 'active',
         joinedAt: new Date().toISOString().split('T')[0],
         joinYear: row.joinYear || new Date().getFullYear(),
-        credentialsSentAt: null, // Left null so Send Credentials picks them up
+        credentialsSentAt: null,
         forcePasswordChange: true,
         statusHistory: [],
         notes: [],
@@ -707,6 +828,37 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     }));
 
     return { count: pendingMembers.length, memberNames: names };
+  };
+
+  // ── LIVE WEBSITE CMS ACTIONS ───────────────────────────────────────────────
+
+  const updateSiteContent = (section: keyof SiteContent, data: any) => {
+    if (!PERMISSIONS.canEditWebsiteContent(currentTier)) return;
+
+    setSiteContent(prev => {
+      const updated = {
+        ...prev,
+        [section]: data
+      };
+      return updated;
+    });
+
+    // Record in audit log
+    const auditEntry: SecurityAuditLog = {
+      id: `audit-${Date.now()}`,
+      timestamp: new Date().toISOString(),
+      actorId: currentUser.id,
+      actorName: currentUser.name,
+      actorRole: currentTier,
+      action: 'CMS_UPDATED',
+      details: `Updated website content section: ${String(section)}`
+    };
+    setAuditLogs(prev => [auditEntry, ...prev]);
+  };
+
+  const resetSiteContent = () => {
+    if (!PERMISSIONS.canEditWebsiteContent(currentTier)) return;
+    setSiteContent(DEFAULT_SITE_CONTENT);
   };
 
   // Applicant Actions
@@ -778,9 +930,9 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     setPayouts(INITIAL_PAYOUTS);
     setApplicants(INITIAL_APPLICANTS);
     setSettings(INITIAL_SETTINGS);
+    setSiteContent(DEFAULT_SITE_CONTENT);
+    setAuditLogs(INITIAL_AUDIT_LOGS);
   };
-
-  const currentTier = getUserRoleTier(currentUser);
 
   return (
     <AppContext.Provider
@@ -798,6 +950,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         payouts,
         applicants,
         settings,
+        siteContent,
+        auditLogs,
 
         // Auth
         loginWithMemberId,
@@ -843,9 +997,15 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         setUserSplitOverride,
         reassignUserSquad,
         changeUserRole,
+        updateUserRoleWithAuth,
+        updateUserSquadWithAuth,
         quickInviteUser,
         bulkImportMembers,
         sendBatchCredentials,
+
+        // CMS
+        updateSiteContent,
+        resetSiteContent,
 
         // Applicants
         submitApplication,

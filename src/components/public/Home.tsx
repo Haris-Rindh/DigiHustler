@@ -197,8 +197,16 @@ const itemVariants = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: 'easeOut' } },
 };
 
+import { useLanguage } from '../../context/LanguageContext';
+import { useApp } from '../../context/AppContext';
+
 export const Home: React.FC = () => {
   const { t } = useLanguage();
+  const { siteContent } = useApp();
+
+  const hero = siteContent?.hero;
+  const caseStudies = siteContent?.caseStudies || [];
+  const testimonials = siteContent?.testimonials || [];
 
   return (
     <div className="overflow-hidden">
@@ -207,8 +215,8 @@ export const Home: React.FC = () => {
         description="One company. Coordinated specialized talent. DigiHust delivers web engineering, design systems, AI automations, and cybersecurity under one managed roof."
       />
 
-      {/* ── SECTION 1: COMPACT FULL-VIEWPORT HERO (Optimized for laptops, taskbars & browser chrome) ── */}
-      <section className="relative min-h-[calc(100svh-4rem)] lg:min-h-[calc(100dvh-4rem)] max-h-[860px] flex flex-col justify-between px-4 sm:px-6 lg:px-8 border-b border-[var(--border-subtle)] overflow-hidden pt-16 lg:pt-18 pb-2 safe-top bg-[var(--bg-page)]">
+      {/* ── SECTION 1: COMPACT FULL-VIEWPORT HERO (Responsive on all screen sizes) ── */}
+      <section className="relative min-h-auto lg:min-h-[calc(100dvh-4rem)] lg:max-h-[860px] flex flex-col justify-between px-4 sm:px-6 lg:px-8 border-b border-[var(--border-subtle)] overflow-hidden pt-18 sm:pt-20 lg:pt-16 pb-6 lg:pb-2 safe-top bg-[var(--bg-page)]">
         {/* Interactive Canvas Background with high-clarity 3D particles */}
         <InteractiveCanvas particleCount={50} className="absolute inset-0 pointer-events-none opacity-90" />
 
@@ -228,48 +236,48 @@ export const Home: React.FC = () => {
               {/* Trust Pill */}
               <motion.div variants={itemVariants} className="inline-flex items-center space-x-2 px-3 py-1 rounded-full border border-[var(--border-subtle)] bg-[var(--bg-surface)] text-[var(--brand-teal)] text-[11px] font-semibold uppercase tracking-wider mb-3 shadow-sm">
                 <span className="w-2 h-2 rounded-full bg-[var(--brand-teal)] animate-pulse" />
-                <span>{t('hero_trust_pill')}</span>
+                <span>{hero?.badgeText || t('hero_trust_pill')}</span>
               </motion.div>
 
               {/* Headline */}
               <motion.h1
                 variants={itemVariants}
-                className="font-display font-extrabold text-3xl sm:text-4xl lg:text-5xl text-[var(--text-heading)] leading-[1.12] tracking-tight mb-3"
+                className="font-display font-extrabold text-3xl sm:text-4xl lg:text-5xl text-[var(--text-heading)] leading-[1.14] tracking-tight mb-3"
               >
-                {t('hero_headline_1')}<br />
+                {hero?.headlineLine1 || t('hero_headline_1')}<br />
                 <span className="text-[var(--brand-teal)]">
-                  {t('hero_headline_2')}
+                  {hero?.headlineHighlight || hero?.headlineLine2 || t('hero_headline_2')}
                 </span>
               </motion.h1>
 
               {/* Subtitle */}
               <motion.p
                 variants={itemVariants}
-                className="text-sm sm:text-base text-[var(--text-body)] max-w-lg leading-relaxed mb-5"
+                className="text-xs sm:text-sm lg:text-base text-[var(--text-body)] max-w-lg leading-relaxed mb-5"
               >
-                {t('hero_sub')}
+                {hero?.subheadline || t('hero_sub')}
               </motion.p>
 
               {/* Action Buttons */}
               <motion.div
                 variants={itemVariants}
-                className="flex flex-col sm:flex-row items-start sm:items-center gap-3 mb-5"
+                className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 mb-5"
               >
                 <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                   <Link
                     to="/contact"
-                    className="flex items-center space-x-2 px-6 py-3 rounded-xl bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-white font-bold text-xs sm:text-sm shadow-md transition-colors"
+                    className="flex items-center justify-center space-x-2 px-6 py-3 rounded-xl bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-white font-bold text-xs sm:text-sm shadow-md transition-colors"
                   >
-                    <span>{t('btn_scoped_quote')}</span>
+                    <span>{hero?.ctaPrimaryText || t('btn_scoped_quote')}</span>
                     <ArrowRight className="w-4 h-4" />
                   </Link>
                 </motion.div>
                 <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                   <Link
                     to="/services"
-                    className="flex items-center space-x-2 px-6 py-3 rounded-xl border border-[var(--border-subtle)] hover:border-[var(--brand-teal)] text-[var(--text-heading)] font-bold text-xs sm:text-sm bg-[var(--bg-surface)] hover:bg-[var(--bg-subtle)] transition-all"
+                    className="flex items-center justify-center space-x-2 px-6 py-3 rounded-xl border border-[var(--border-subtle)] hover:border-[var(--brand-teal)] text-[var(--text-heading)] font-bold text-xs sm:text-sm bg-[var(--bg-surface)] hover:bg-[var(--bg-subtle)] transition-all"
                   >
-                    <span>{t('btn_explore_capabilities')}</span>
+                    <span>{hero?.ctaSecondaryText || t('btn_explore_capabilities')}</span>
                   </Link>
                 </motion.div>
               </motion.div>
@@ -553,9 +561,9 @@ export const Home: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {WORK_PREVIEWS.map((project) => (
+            {caseStudies.map((project) => (
               <motion.div
-                key={project.title}
+                key={project.id || project.title}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
@@ -567,12 +575,12 @@ export const Home: React.FC = () => {
                 <div>
                   <div className="aspect-video overflow-hidden relative bg-[var(--bg-subtle)]">
                     <img
-                      src={project.img}
+                      src={project.imageUrl || 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=800&q=80'}
                       alt={project.title}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     />
                     <div className="absolute top-3 right-3 px-2.5 py-1 rounded-md bg-[var(--bg-page)]/90 backdrop-blur-sm border border-[var(--border-subtle)] text-[10px] font-bold text-[var(--brand-teal)]">
-                      {project.stat}
+                      {project.impactMetric} {project.impactLabel}
                     </div>
                   </div>
                   <div className="p-6">
@@ -583,7 +591,7 @@ export const Home: React.FC = () => {
                       {project.title}
                     </h3>
                     <div className="flex flex-wrap gap-1.5 mb-4">
-                      {project.tags.map((tTag) => (
+                      {project.tags?.map((tTag) => (
                         <span
                           key={tTag}
                           className="text-[10px] px-2 py-0.5 rounded bg-[var(--bg-subtle)] text-[var(--text-body)] border border-[var(--border-subtle)] font-medium"
@@ -623,9 +631,9 @@ export const Home: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {TESTIMONIALS.map((tItem) => (
+            {testimonials.map((tItem) => (
               <motion.div
-                key={tItem.name}
+                key={tItem.id || tItem.name}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
@@ -633,7 +641,7 @@ export const Home: React.FC = () => {
               >
                 <div>
                   <div className="flex items-center space-x-1 text-[var(--color-status-warning)] mb-4">
-                    {[...Array(tItem.rating)].map((_, i) => (
+                    {[...Array(tItem.rating || 5)].map((_, i) => (
                       <Star key={i} className="w-4 h-4 fill-[var(--color-status-warning)]" />
                     ))}
                   </div>
@@ -643,7 +651,7 @@ export const Home: React.FC = () => {
                 </div>
 
                 <div className="flex items-center space-x-3.5 pt-4 border-t border-[var(--border-subtle)]">
-                  <img src={tItem.avatar} alt={tItem.name} className="w-10 h-10 rounded-full object-cover ring-2 ring-[var(--brand-teal)]/40" />
+                  <img src={tItem.avatarUrl} alt={tItem.name} className="w-10 h-10 rounded-full object-cover ring-2 ring-[var(--brand-teal)]/40" />
                   <div>
                     <h4 className="font-bold text-[var(--text-heading)] text-sm">{tItem.name}</h4>
                     <p className="text-xs text-[var(--brand-teal)] font-medium">{tItem.role}, {tItem.company}</p>

@@ -1,19 +1,22 @@
 import React, { useState } from 'react';
 import { 
   Users, Mail, Shield, Send, CheckCircle2, AlertCircle, Plus, 
-  FileSpreadsheet, Sparkles, Filter, Search, UserCheck, Key, Lock 
+  FileSpreadsheet, Sparkles, Filter, Search, UserCheck, Key, Lock, History, ShieldCheck, Settings 
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
-import { UserRoleTier, GroupId } from '../../types';
+import { User as UserType, UserRoleTier, GroupId } from '../../types';
 import { PERMISSIONS } from '../../lib/permissions';
 import { BulkImportModal } from './BulkImportModal';
+import { RoleManagementModal } from './RoleManagementModal';
 
 export const PeopleDirectoryView: React.FC = () => {
-  const { users, groups, currentTier, currentUser, sendBatchCredentials } = useApp();
+  const { users, groups, currentTier, currentUser, sendBatchCredentials, auditLogs } = useApp();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedSquad, setSelectedSquad] = useState<string>('all');
   const [isImportOpen, setIsImportOpen] = useState(false);
   const [credentialModalOpen, setCredentialModalOpen] = useState(false);
+  const [auditLogModalOpen, setAuditLogModalOpen] = useState(false);
+  const [selectedUserForRole, setSelectedUserForRole] = useState<UserType | null>(null);
   const [dispatchResult, setDispatchResult] = useState<{ count: number; memberNames: string[] } | null>(null);
 
   // Determine which users are visible based on 4-Tier Access Matrix:
@@ -65,10 +68,20 @@ export const PeopleDirectoryView: React.FC = () => {
 
         {/* Action Buttons (CEO & Manager only) */}
         {PERMISSIONS.canSendCredentials(currentTier) && (
-          <div className="flex items-center space-x-2.5">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-2.5">
+            {PERMISSIONS.canViewAuditLogs(currentTier) && (
+              <button
+                onClick={() => setAuditLogModalOpen(true)}
+                className="flex items-center space-x-1.5 px-3.5 py-2 rounded-xl border border-purple-500/30 text-purple-400 hover:bg-purple-500/10 text-xs font-bold transition-all cursor-pointer"
+              >
+                <History className="w-4 h-4" />
+                <span>Audit Logs ({auditLogs.length})</span>
+              </button>
+            )}
+
             <button
               onClick={() => setIsImportOpen(true)}
-              className="flex items-center space-x-1.5 px-4 py-2.5 rounded-xl border border-[var(--border-subtle)] hover:border-[var(--brand-teal)] text-xs font-bold text-[var(--text-heading)] bg-[var(--bg-surface)] hover:bg-[var(--bg-subtle)] transition-all cursor-pointer"
+              className="flex items-center space-x-1.5 px-3.5 py-2 rounded-xl border border-[var(--border-subtle)] hover:border-[var(--brand-teal)] text-xs font-bold text-[var(--text-heading)] bg-[var(--bg-surface)] hover:bg-[var(--bg-subtle)] transition-all cursor-pointer"
             >
               <FileSpreadsheet className="w-4 h-4 text-[var(--brand-teal)]" />
               <span>Import Excel</span>
@@ -79,7 +92,7 @@ export const PeopleDirectoryView: React.FC = () => {
                 setDispatchResult(null);
                 setCredentialModalOpen(true);
               }}
-              className="flex items-center space-x-2 px-5 py-2.5 rounded-xl bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-white text-xs font-bold shadow-md transition-all cursor-pointer relative"
+              className="flex items-center space-x-2 px-4 py-2 rounded-xl bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-white text-xs font-bold shadow-md transition-all cursor-pointer relative"
             >
               <Key className="w-4 h-4" />
               <span>Send Credentials</span>
@@ -187,12 +200,77 @@ export const PeopleDirectoryView: React.FC = () => {
                     </span>
                   )}
                 </div>
-                <span className="font-mono text-[var(--text-muted)]">${u.hourlyRate || 25}/hr</span>
+
+                {PERMISSIONS.canDistributeRoles(currentTier) && (
+                  <button
+                    onClick={() => setSelectedUserForRole(u)}
+                    className="flex items-center space-x-1 px-2.5 py-1 rounded-lg bg-[var(--brand-teal-subtle)] border border-[var(--brand-teal)]/30 text-[var(--brand-teal)] hover:bg-[var(--brand-teal)] hover:text-white text-[10px] font-bold transition-all cursor-pointer"
+                  >
+                    <Shield className="w-3 h-3" />
+                    <span>Manage Role</span>
+                  </button>
+                )}
               </div>
             </div>
           );
         })}
       </div>
+
+      {/* Role Distribution Modal (CEO Authority) */}
+      {selectedUserForRole && (
+        <RoleManagementModal
+          user={selectedUserForRole}
+          onClose={() => setSelectedUserForRole(null)}
+        />
+      )}
+
+      {/* Security Audit Logs Modal */}
+      {auditLogModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-3xl p-6 sm:p-8 max-w-2xl w-full shadow-2xl animate-in fade-in zoom-in-95 max-h-[90vh] flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between pb-3 border-b border-[var(--border-subtle)] mb-4">
+                <div className="flex items-center space-x-2.5">
+                  <ShieldCheck className="w-5 h-5 text-purple-400" />
+                  <h3 className="font-display font-extrabold text-lg text-[var(--text-heading)]">
+                    Executive Security & Role Audit Trail
+                  </h3>
+                </div>
+                <button
+                  onClick={() => setAuditLogModalOpen(false)}
+                  className="p-1 rounded-xl text-[var(--text-muted)] hover:text-[var(--text-heading)]"
+                >
+                  ✕
+                </button>
+              </div>
+
+              <div className="max-h-96 overflow-y-auto space-y-2 font-mono text-xs pr-1">
+                {auditLogs.map((log) => (
+                  <div key={log.id} className="p-3 rounded-2xl bg-[var(--bg-page)] border border-[var(--border-subtle)] space-y-1">
+                    <div className="flex items-center justify-between text-[10px]">
+                      <span className="font-bold text-purple-400 uppercase tracking-wider">{log.action}</span>
+                      <span className="text-[var(--text-muted)]">{new Date(log.timestamp).toLocaleString()}</span>
+                    </div>
+                    <p className="text-[var(--text-heading)] font-sans text-xs">{log.details}</p>
+                    <div className="text-[10px] text-[var(--text-muted)] pt-1 border-t border-[var(--border-subtle)]">
+                      Actor: {log.actorName} ({log.actorRole.toUpperCase()})
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="pt-4 border-t border-[var(--border-subtle)] flex justify-end">
+              <button
+                onClick={() => setAuditLogModalOpen(false)}
+                className="px-5 py-2 rounded-xl bg-[var(--brand-teal)] text-white text-xs font-bold cursor-pointer"
+              >
+                Close Audit Records
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Batch Send Credentials Modal */}
       {credentialModalOpen && (

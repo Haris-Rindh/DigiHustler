@@ -33,6 +33,7 @@ import { AssignmentWorkspace } from './components/portal/AssignmentWorkspace';
 import { PeopleDirectoryView } from './components/portal/PeopleDirectoryView';
 import { AnnouncementsFeed } from './components/portal/AnnouncementsFeed';
 import { CertificateManager } from './components/portal/CertificateManager';
+import { SiteContentManager } from './components/portal/SiteContentManager';
 
 // Utility & Error pages
 import { NotFoundPage } from './components/utility/NotFoundPage';
@@ -117,6 +118,7 @@ export const App: React.FC = () => {
                 <Route path="/portal/roster" element={<PeopleDirectoryView />} />
                 <Route path="/portal/announcements" element={<AnnouncementsFeed />} />
                 <Route path="/portal/certificates" element={<CertificateManager />} />
+                <Route path="/portal/cms" element={<SiteContentManager />} />
                 <Route path="/portal/ledger" element={<PayoutLedger />} />
                 <Route path="/portal/settings" element={<AdminSettings />} />
 

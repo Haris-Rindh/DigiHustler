@@ -107,18 +107,17 @@ export interface ProjectAssignment {
   freelancerName: string;
   roleTitle: string;
   sharePct: number;
-  amountCalculated?: number;
+  assignedAt: string;
 }
 
 export interface Deliverable {
   id: string;
   title: string;
-  fileUrl?: string;
   linkUrl?: string;
   submittedByUserId: string;
   submittedByUserName: string;
   submittedAt: string;
-  status: 'pending' | 'approved' | 'revision_requested';
+  status: 'pending' | 'approved' | 'changes_requested';
   notes?: string;
 }
 
@@ -126,15 +125,15 @@ export interface Comment {
   id: string;
   userId: string;
   userName: string;
-  userAvatar: string;
-  userRole: UserRole | UserRoleTier;
+  userAvatar?: string;
+  userRole: string;
   text: string;
   timestamp: string;
 }
 
 export interface Project {
   id: string;
-  leadId: string;
+  leadId?: string;
   title: string;
   clientName: string;
   clientEmail: string;
@@ -146,18 +145,12 @@ export interface Project {
   totalValue: number;
   externalFee: number;
   netRevenue: number;
-  
-  // Financial splits
   isLeadGenIndependent: boolean;
   leadGenUserPct: number;
   splitManagementPct: number;
   splitLeaderPct: number;
   splitFreelancerPct: number;
-  
-  // Team assignment
   assignments: ProjectAssignment[];
-  
-  // Execution tracking
   status: PipelineStage;
   deliverables: Deliverable[];
   comments: Comment[];
@@ -172,7 +165,7 @@ export interface Payout {
   projectTitle: string;
   userId: string;
   userName: string;
-  userRole: UserRole | UserRoleTier;
+  userRole: UserRole;
   groupName: string;
   roleDescription: string;
   amount: number;
@@ -187,35 +180,29 @@ export interface Applicant {
   phone: string;
   preferredGroupId: GroupId;
   specialties: string[];
-  digiskillId: string;
-  digiskillCourse: string;
-  portfolioUrl: string;
-  experienceYears: number;
+  portfolioUrl?: string;
+  digiskillId?: string;
+  yearsOfExperience?: number;
   bio: string;
   appliedAt: string;
-  status: 'pending' | 'approved' | 'rejected' | 'more_info_requested';
+  status: 'pending' | 'under_review' | 'approved' | 'rejected' | 'more_info_requested';
   rejectionReason?: string;
   followUpNotes?: string;
 }
 
 export interface GlobalAdminSettings {
-  defaultManagementPct: number;
-  defaultLeaderPct: number;
-  defaultFreelancerPct: number;
-  defaultLeadGenPct: number;
-  payoutCurrency: string;
+  defaultManagementSplitPct: number;
+  defaultLeaderSplitPct: number;
+  defaultFreelancerSplitPct: number;
   autoApproveLeads: boolean;
+  payoutHoldDays: number;
+  allowIndependentLeadGen: boolean;
+  defaultLeadGenPct: number;
+  minFreelancersPerProject: number;
+  maxActiveProjectsPerFreelancer: number;
 }
 
-// ── NEW PORTAL & ASSIGNMENT TYPES ─────────────────────────────────────────────
-
-export interface SanitizedBrief {
-  title: string;
-  scope: string;
-  deliverables: string[];
-  deadline: string;
-  referenceFiles?: string[];
-}
+// ── INTERNAL PORTAL & ASSIGNMENT WORKSPACE TYPES ─────────────────────────────
 
 export interface SubTask {
   id: string;
@@ -233,10 +220,18 @@ export interface Milestone {
   isCompleted: boolean;
 }
 
+export interface SanitizedBrief {
+  title: string;
+  scope: string;
+  deliverables: string[];
+  deadline: string;
+  referenceFiles?: string[];
+}
+
 export interface Assignment {
   id: string;
-  projectId: string;
-  // Full client record (CEO & Manager only)
+  projectId?: string;
+  // Full Client Record (CEO & Manager only)
   clientName?: string;
   clientEmail?: string;
   clientCompany?: string;
@@ -298,4 +293,93 @@ export interface Announcement {
 
 export interface IdCounter {
   lastNumber: number;
+}
+
+// ── EXECUTIVE CMS (LIVE SITE CONTENT) TYPES ──────────────────────────────────
+
+export interface SiteHeroContent {
+  badgeText: string;
+  headlineLine1: string;
+  headlineHighlight: string;
+  headlineLine2: string;
+  subheadline: string;
+  ctaPrimaryText: string;
+  ctaSecondaryText: string;
+  metricsBadgeValue: string;
+  metricsBadgeLabel: string;
+  heroImage: string;
+}
+
+export interface SiteCaseStudy {
+  id: string;
+  slug: string;
+  category: string;
+  title: string;
+  client: string;
+  tags: string[];
+  summary: string;
+  impactMetric: string;
+  impactLabel: string;
+  imageUrl: string;
+  deliverables: string[];
+}
+
+export interface SiteTestimonial {
+  id: string;
+  quote: string;
+  name: string;
+  role: string;
+  company: string;
+  avatarUrl: string;
+  rating: number;
+}
+
+export interface SiteServiceItem {
+  id: string;
+  groupId: GroupId;
+  title: string;
+  tagline: string;
+  description: string;
+  features: string[];
+  color: string;
+}
+
+export interface SiteTeamMember {
+  id: string;
+  name: string;
+  role: string;
+  squad: string;
+  bio: string;
+  avatarUrl: string;
+  tags: string[];
+}
+
+export interface SiteContent {
+  hero: SiteHeroContent;
+  caseStudies: SiteCaseStudy[];
+  testimonials: SiteTestimonial[];
+  services: SiteServiceItem[];
+  teamMembers: SiteTeamMember[];
+  customImages: Record<string, string>;
+}
+
+// ── SECURITY & PERMISSION AUDIT LOG TYPES ────────────────────────────────────
+
+export interface SecurityAuditLog {
+  id: string;
+  timestamp: string;
+  actorId: string;
+  actorName: string;
+  actorRole: UserRoleTier;
+  action: 
+    | 'ROLE_MODIFIED' 
+    | 'PERMISSIONS_UPDATED' 
+    | 'SQUAD_REASSIGNED' 
+    | 'CMS_UPDATED' 
+    | 'CREDENTIALS_DISPATCHED' 
+    | 'CERTIFICATE_ISSUED' 
+    | 'CERTIFICATE_REVOKED';
+  targetId?: string;
+  targetName?: string;
+  details: string;
 }

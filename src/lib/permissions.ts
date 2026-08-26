@@ -14,10 +14,24 @@ export function getUserRoleTier(user: User): UserRoleTier {
 }
 
 export const PERMISSIONS = {
-  // Client Records
+  // Executive Role & Governance Authority (Strict CEO root authority)
+  canDistributeRoles: (tier: UserRoleTier) => tier === 'ceo',
+  canReassignSquad: (tier: UserRoleTier) => tier === 'ceo',
+  canManageManagers: (tier: UserRoleTier) => tier === 'ceo',
+  canViewAuditLogs: (tier: UserRoleTier) => tier === 'ceo',
+  canManageSplitConfig: (tier: UserRoleTier) => tier === 'ceo',
+  canViewCompanyFinancialOverview: (tier: UserRoleTier) => tier === 'ceo',
+
+  // Live Website CMS
+  canEditWebsiteContent: (tier: UserRoleTier) => tier === 'ceo' || tier === 'manager',
+  canPublishLiveChanges: (tier: UserRoleTier) => tier === 'ceo' || tier === 'manager',
+
+  // Client Records & Data Isolation (Strict Privacy Wall)
   canViewFullClientRecord: (tier: UserRoleTier) => tier === 'ceo' || tier === 'manager',
+  canViewClientBudget: (tier: UserRoleTier) => tier === 'ceo' || tier === 'manager',
+  canViewClientContact: (tier: UserRoleTier) => tier === 'ceo' || tier === 'manager',
   
-  // Assignments
+  // Assignments & Task Delegation
   canCreateAssignment: (tier: UserRoleTier) => tier === 'ceo' || tier === 'manager',
   canManageProjectSubtasks: (tier: UserRoleTier, isAssignedLeader: boolean) => 
     tier === 'ceo' || tier === 'manager' || (tier === 'group_leader' && isAssignedLeader),
@@ -36,11 +50,8 @@ export const PERMISSIONS = {
   
   // Financials & Payouts
   canViewAllPayouts: (tier: UserRoleTier) => tier === 'ceo' || tier === 'manager',
-  canViewCompanyFinancialOverview: (tier: UserRoleTier) => tier === 'ceo',
-  canManageSplitConfig: (tier: UserRoleTier) => tier === 'ceo',
-  canManageManagers: (tier: UserRoleTier) => tier === 'ceo',
   
-  // Certificates
+  // Digital Certificates & Credentials
   canIssueCertificate: (tier: UserRoleTier) => tier === 'ceo' || tier === 'manager',
   canRevokeCertificate: (tier: UserRoleTier) => tier === 'ceo' || tier === 'manager',
 };

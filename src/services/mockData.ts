@@ -1,4 +1,4 @@
-import { Group, User, Lead, Project, Payout, Applicant, GlobalAdminSettings, Assignment, Certificate, Announcement } from '../types';
+import { Group, User, Lead, Project, Payout, Applicant, GlobalAdminSettings, Assignment, Certificate, Announcement, SiteContent, SecurityAuditLog } from '../types';
 
 export const INITIAL_GROUPS: Group[] = [
   {
@@ -614,10 +614,185 @@ export const INITIAL_APPLICANTS: Applicant[] = [
 ];
 
 export const INITIAL_SETTINGS: GlobalAdminSettings = {
-  defaultManagementPct: 20,
-  defaultLeaderPct: 20,
-  defaultFreelancerPct: 60,
+  defaultManagementSplitPct: 20,
+  defaultLeaderSplitPct: 20,
+  defaultFreelancerSplitPct: 60,
   defaultLeadGenPct: 15,
-  payoutCurrency: 'USD ($)',
-  autoApproveLeads: false
+  autoApproveLeads: false,
+  payoutHoldDays: 7,
+  allowIndependentLeadGen: true,
+  minFreelancersPerProject: 1,
+  maxActiveProjectsPerFreelancer: 5
 };
+
+// ── DEFAULT EXECUTIVE CMS (LIVE SITE CONTENT) ────────────────────────────────
+export const DEFAULT_SITE_CONTENT: SiteContent = {
+  hero: {
+    badgeText: 'Verified Sourced Talent · Single Managed Contract',
+    headlineLine1: 'Your Digital Work.',
+    headlineHighlight: 'Handled by Skilled People.',
+    headlineLine2: 'Delivered as One.',
+    subheadline: 'One company. Coordinated specialized talent. DigiHust delivers end-to-end web engineering, brand identity, AI workflows, and cybersecurity under one managed roof.',
+    ctaPrimaryText: 'Start a Project',
+    ctaSecondaryText: 'Explore Squads',
+    metricsBadgeValue: '+140%',
+    metricsBadgeLabel: 'Average Client Conversion Boost',
+    heroImage: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=800&q=80'
+  },
+  caseStudies: [
+    {
+      id: 'cs-1',
+      slug: 'real-estate-marketplace-portal',
+      category: 'Web Development',
+      title: 'Real-Estate Marketplace Portal & Agent CRM',
+      client: 'Estates Direct UK',
+      tags: ['React', 'Node.js', 'PostgreSQL', 'Tailwind CSS'],
+      summary: 'High-speed geospatial property portal with sub-second listings search and integrated agent CRM.',
+      impactMetric: '+140%',
+      impactLabel: 'Conversion Rate Growth',
+      imageUrl: 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=800&q=80',
+      deliverables: ['Next.js Architecture', 'Spatial Database', 'Automated Valuation API']
+    },
+    {
+      id: 'cs-2',
+      slug: 'automotive-brand-identity',
+      category: 'Creative & Branding',
+      title: 'Automotive Brand Identity & 3D Motion Launch',
+      client: 'Veloce Motors DE',
+      tags: ['Brand Identity', 'Cinema 4D', '3D Motion', 'After Effects'],
+      summary: 'Comprehensive brand architecture, bespoke 3D vehicle renders, and motion teasers generating 2.4M impressions.',
+      impactMetric: '2.4M',
+      impactLabel: 'Global Launch Impressions',
+      imageUrl: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=800&q=80',
+      deliverables: ['Brand Design System', '3D Commercial Spots', 'Digital Asset Guidelines']
+    },
+    {
+      id: 'cs-3',
+      slug: 'hospital-bi-dashboard',
+      category: 'AI & Data',
+      title: 'Executive Clinical & Revenue BI Dashboard',
+      client: 'Titan Healthcare',
+      tags: ['PowerBI', 'Python ETL', 'SQL Data Lake'],
+      summary: 'Automated data engineering pipeline and interactive PowerBI suite unifying 35+ regional hospitals.',
+      impactMetric: '12+ Hrs',
+      impactLabel: 'Saved Per Week / Department',
+      imageUrl: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=800&q=80',
+      deliverables: ['Automated Python ETL', 'Executive PowerBI Dashboard', 'HIPAA Hardened Schemas']
+    }
+  ],
+  testimonials: [
+    {
+      id: 't-1',
+      quote: 'DigiHust transformed our slow, crashing property platform into the fastest portal in our regional market. Zero headache managing separate freelancers.',
+      name: 'David Sterling',
+      role: 'Managing Director',
+      company: 'Estates Direct UK',
+      avatarUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=150',
+      rating: 5
+    },
+    {
+      id: 't-2',
+      quote: 'The 3D promotional trailers and brand system produced by DigiHust established our electric vehicle startup as an immediate serious contender in Europe.',
+      name: 'Markus Vogel',
+      role: 'Chief Brand Officer',
+      company: 'Veloce Motors DE',
+      avatarUrl: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=150',
+      rating: 5
+    },
+    {
+      id: 't-3',
+      quote: 'Their AI squad built an automated tracking bot that resolved 78% of our customer tickets within seconds. Our support team can finally focus on VIP accounts.',
+      name: 'Sarah Chen',
+      role: 'Head of Operations',
+      company: 'LogiXpress Global',
+      avatarUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=150',
+      rating: 5
+    }
+  ],
+  services: [
+    {
+      id: 's-web',
+      groupId: 'tech',
+      title: 'Web & Mobile Engineering',
+      tagline: 'Custom React · Next.js · Node.js · Scalable Backend',
+      description: 'Production-ready full-stack applications built with modern architectures, microservices, and extreme performance benchmarks.',
+      features: ['Single Page Applications', 'Enterprise APIs', 'Database Optimization', 'Mobile App Development'],
+      color: '#1F7A8C'
+    },
+    {
+      id: 's-creative',
+      groupId: 'creative',
+      title: 'UI/UX & 3D Brand Systems',
+      tagline: 'Design Systems · 3D Motion · Commercial Visuals',
+      description: 'Distinctive brand identities, Figma component libraries, and Cinema 4D animation suites that elevate digital perception.',
+      features: ['Figma Design Systems', '3D Product Rendering', 'Brand Guidelines', 'Interactive Prototypes'],
+      color: '#022B3A'
+    },
+    {
+      id: 's-data',
+      groupId: 'data',
+      title: 'AI Workflows & Business Intelligence',
+      tagline: 'PowerBI · Python ETL · OpenAI Workflows',
+      description: 'Intelligent automation pipelines, autonomous agent workflows, and executive analytics dashboards that drive operational speed.',
+      features: ['Automated ETL Pipelines', 'AI Customer Bots', 'Executive Dashboards', 'n8n Workflow Automations'],
+      color: '#1F7A8C'
+    }
+  ],
+  teamMembers: [
+    {
+      id: 'tm-1',
+      name: 'Haris Asad',
+      role: 'Chief Executive Officer',
+      squad: 'Executive Leadership',
+      bio: 'Leading strategic direction, enterprise partner allocations, and financial architecture.',
+      avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=250',
+      tags: ['Strategy', 'Enterprise Deals', 'Executive']
+    },
+    {
+      id: 'tm-2',
+      name: 'Sarah Tariq',
+      role: 'Operations & QA Lead',
+      squad: 'Platform Management',
+      bio: 'Overseeing client lead intake, SLA compliance, and cross-squad sprint deliverables.',
+      avatarUrl: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&q=80&w=250',
+      tags: ['Operations', 'SLA QA', 'Intake Scoping']
+    },
+    {
+      id: 'tm-3',
+      name: 'Zubair Ahmed',
+      role: 'Tech Squad Leader',
+      squad: 'Technology & Development',
+      bio: 'Full-Stack software architect specializing in React 18, Next.js, and Node.js microservices.',
+      avatarUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=250',
+      tags: ['Full Stack', 'Next.js', 'System Architecture']
+    }
+  ],
+  customImages: {
+    heroImage: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=800&q=80',
+    aboutImage: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=800&q=80'
+  }
+};
+
+// ── INITIAL SECURITY AUDIT LOGS ──────────────────────────────────────────────
+export const INITIAL_AUDIT_LOGS: SecurityAuditLog[] = [
+  {
+    id: 'audit-001',
+    timestamp: '2026-08-25T18:30:00Z',
+    actorId: 'usr-ceo-1',
+    actorName: 'Haris Asad (CEO)',
+    actorRole: 'ceo',
+    action: 'ROLE_MODIFIED',
+    targetId: 'usr-dev-1',
+    targetName: 'Bilal Farooq',
+    details: 'Verified specialist credential profile initialized with Member level permissions.'
+  },
+  {
+    id: 'audit-002',
+    timestamp: '2026-08-25T19:00:00Z',
+    actorId: 'usr-ceo-1',
+    actorName: 'Haris Asad (CEO)',
+    actorRole: 'ceo',
+    action: 'CMS_UPDATED',
+    details: 'Updated global hero conversion metric and headline tokens.'
+  }
+];

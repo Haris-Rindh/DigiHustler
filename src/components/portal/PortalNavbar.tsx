@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { 
   Shield, LayoutDashboard, Briefcase, Users, Award, DollarSign, Bell, Settings, 
-  LogOut, ChevronDown, UserCheck, Sparkles, Key, Check, PlusCircle 
+  LogOut, ChevronDown, Sparkles, Check, Menu, X, Layout, Lock 
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { ThemeToggle } from '../ui/ThemeToggle';
@@ -10,10 +10,11 @@ import { LanguageSelector } from '../ui/LanguageSelector';
 import { UserRoleTier } from '../../types';
 
 export const PortalNavbar: React.FC = () => {
-  const { currentUser, currentTier, users, switchRole, switchTier, logout } = useApp();
+  const { currentUser, currentTier, switchTier, logout } = useApp();
   const location = useLocation();
   const navigate = useNavigate();
   const [showRoleDropdown, setShowRoleDropdown] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const handleLogout = () => {
     logout();
@@ -32,6 +33,7 @@ export const PortalNavbar: React.FC = () => {
     { label: 'Announcements', href: '/portal/announcements', icon: <Bell className="w-3.5 h-3.5" />, show: true },
     { label: 'Certificates', href: '/portal/certificates', icon: <Award className="w-3.5 h-3.5" />, show: currentTier === 'ceo' || currentTier === 'manager' },
     { label: 'Payout Ledger', href: '/portal/ledger', icon: <DollarSign className="w-3.5 h-3.5" />, show: true },
+    { label: 'Site CMS', href: '/portal/cms', icon: <Sparkles className="w-3.5 h-3.5 text-cyan-400" />, show: currentTier === 'ceo' || currentTier === 'manager' },
     { label: 'Split Settings', href: '/portal/settings', icon: <Settings className="w-3.5 h-3.5 text-amber-400" />, show: currentTier === 'ceo' },
   ].filter(i => i.show);
 
@@ -69,7 +71,7 @@ export const PortalNavbar: React.FC = () => {
           </Link>
 
           {/* Desktop Nav Links */}
-          <div className="hidden md:flex items-center space-x-1 pl-3 border-l border-[var(--border-subtle)]">
+          <div className="hidden xl:flex items-center space-x-1 pl-3 border-l border-[var(--border-subtle)]">
             {navItems.map((item) => (
               <Link
                 key={item.href}
@@ -88,7 +90,7 @@ export const PortalNavbar: React.FC = () => {
         </div>
 
         {/* Right Side: Language, Theme, Role Switcher & User Profile */}
-        <div className="flex items-center space-x-3">
+        <div className="flex items-center space-x-2.5 sm:space-x-3">
           <LanguageSelector />
           <ThemeToggle />
 
@@ -96,7 +98,7 @@ export const PortalNavbar: React.FC = () => {
           <div className="relative">
             <button
               onClick={() => setShowRoleDropdown(!showRoleDropdown)}
-              className="flex items-center space-x-2.5 p-1.5 pl-3 rounded-2xl bg-[var(--bg-page)] border border-[var(--border-subtle)] hover:border-[var(--brand-teal)] transition-all cursor-pointer shadow-sm"
+              className="flex items-center space-x-2 sm:space-x-2.5 p-1.5 pl-2 sm:pl-3 rounded-2xl bg-[var(--bg-page)] border border-[var(--border-subtle)] hover:border-[var(--brand-teal)] transition-all cursor-pointer shadow-sm"
             >
               <img
                 src={currentUser.avatarUrl}
@@ -180,9 +182,39 @@ export const PortalNavbar: React.FC = () => {
             )}
           </div>
 
+          {/* Mobile Menu Hamburger Button */}
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="xl:hidden p-2 rounded-xl text-[var(--text-heading)] hover:bg-[var(--bg-subtle)] transition-colors"
+            aria-label="Toggle Portal Navigation Menu"
+          >
+            {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          </button>
+
         </div>
 
       </div>
+
+      {/* Mobile Portal Navigation Dropdown */}
+      {mobileMenuOpen && (
+        <div className="xl:hidden pt-3 pb-2 border-t border-[var(--border-subtle)] mt-2.5 space-y-1 animate-in slide-in-from-top-2">
+          {navItems.map((item) => (
+            <Link
+              key={item.href}
+              to={item.href}
+              onClick={() => setMobileMenuOpen(false)}
+              className={`flex items-center space-x-2.5 px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all ${
+                location.pathname === item.href
+                  ? 'bg-[var(--brand-teal)] text-white shadow-sm'
+                  : 'text-[var(--text-body)] hover:text-[var(--text-heading)] hover:bg-[var(--bg-subtle)]'
+              }`}
+            >
+              {item.icon}
+              <span>{item.label}</span>
+            </Link>
+          ))}
+        </div>
+      )}
     </nav>
   );
 };
