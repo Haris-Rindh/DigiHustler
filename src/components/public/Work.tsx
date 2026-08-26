@@ -126,12 +126,29 @@ const PROJECTS: Project[] = [
 const FILTER_CATS = ['All', 'Development', 'Creative', 'AI & Data'];
 
 export const Work: React.FC = () => {
-  const [activeFilter, setActiveFilter] = useState('All');
+  const { siteContent } = useApp();
+  const [activeFilter, setActiveFilter] = useState<string>('All');
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
 
+  const projectsList: Project[] = (siteContent?.caseStudies && siteContent.caseStudies.length > 0)
+    ? siteContent.caseStudies.map((cs) => ({
+        id: cs.slug || cs.id,
+        category: cs.category || 'Web Development',
+        filterCat: cs.category?.includes('Design') || cs.category?.includes('Brand') ? 'Creative' : cs.category?.includes('AI') ? 'AI & Data' : 'Development',
+        title: cs.title,
+        client: cs.client,
+        description: cs.summary,
+        challenge: cs.challenge || 'Client required modernized architecture and streamlined conversion funnels.',
+        solution: cs.solution || 'Engineered customized full-stack solution with enterprise performance guarantees.',
+        results: [cs.impactMetric ? `${cs.impactMetric} ${cs.impactLabel}` : '100% On-Time Delivery'],
+        tags: cs.tags || ['React', 'Full Stack'],
+        img: cs.imageUrl || 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=800&q=80'
+      }))
+    : PROJECTS;
+
   const filtered = activeFilter === 'All'
-    ? PROJECTS
-    : PROJECTS.filter((p) => p.filterCat === activeFilter);
+    ? projectsList
+    : projectsList.filter((p) => p.filterCat === activeFilter || p.category === activeFilter);
 
   return (
     <div className="pt-16">

@@ -126,8 +126,28 @@ const SERVICES = [
   },
 ];
 
+import { useApp } from '../../context/AppContext';
+
 export const Services: React.FC = () => {
-  const [expandedId, setExpandedId] = useState<string | null>('development');
+  const { siteContent } = useApp();
+  const servicesList = (siteContent?.services && siteContent.services.length > 0)
+    ? siteContent.services.map(s => {
+        const fallback = SERVICES.find(fs => fs.id === s.id || fs.id === s.groupId);
+        return {
+          id: s.id,
+          icon: fallback ? fallback.icon : <Code className="w-7 h-7" />,
+          title: s.title,
+          headline: s.tagline,
+          description: s.description,
+          offerings: s.features || [],
+          tags: s.features || ['Full Stack', 'Cloud'],
+          color: s.color || '#1F7A8C',
+          bgLight: 'bg-[var(--bg-surface)]'
+        };
+      })
+    : SERVICES;
+
+  const [expandedId, setExpandedId] = useState<string | null>(servicesList[0]?.id || 'development');
 
   return (
     <div className="pt-16">
@@ -160,7 +180,7 @@ export const Services: React.FC = () => {
       {/* Interactive Services List */}
       <section className="bg-[var(--bg-page)] py-20 px-6 lg:px-8">
         <div className="max-w-7xl mx-auto space-y-6">
-          {SERVICES.map((svc) => {
+          {servicesList.map((svc) => {
             const isExpanded = expandedId === svc.id;
 
             return (

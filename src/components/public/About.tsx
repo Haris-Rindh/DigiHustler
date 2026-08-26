@@ -4,7 +4,12 @@ import { motion } from 'framer-motion';
 import { ArrowRight, CheckCircle2, ShieldCheck, Target, Zap, Rocket } from 'lucide-react';
 import { SEOHead } from '../seo/SEOHead';
 
+import { useApp } from '../../context/AppContext';
+
 export const About: React.FC = () => {
+  const { siteContent } = useApp();
+  const aboutData = siteContent?.about;
+
   return (
     <div className="pt-16">
       <SEOHead
@@ -27,7 +32,7 @@ export const About: React.FC = () => {
               The DigiHust Mission.
             </h1>
             <p className="text-lg text-[var(--text-body)] max-w-2xl leading-relaxed">
-              Founded inside Pakistan's Digiskill community to replace isolated freelance hustling with managed, world-class project delivery.
+              {aboutData?.mission || "Founded inside Pakistan's Digiskill community to replace isolated freelance hustling with managed, world-class project delivery."}
             </p>
           </motion.div>
         </div>

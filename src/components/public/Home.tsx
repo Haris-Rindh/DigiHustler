@@ -207,6 +207,8 @@ export const Home: React.FC = () => {
   const hero = siteContent?.hero;
   const caseStudies = siteContent?.caseStudies || [];
   const testimonials = siteContent?.testimonials || [];
+  const packages = siteContent?.packages || PACKAGES;
+  const valueProps = siteContent?.valueProps || [];
 
   return (
     <div className="overflow-hidden">
@@ -677,7 +679,7 @@ export const Home: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {PACKAGES.map((pkg) => (
+            {packages.map((pkg) => (
               <motion.div
                 key={pkg.name}
                 initial={{ opacity: 0, y: 20 }}

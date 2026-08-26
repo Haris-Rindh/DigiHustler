@@ -3,7 +3,8 @@ import {
   User, Group, Lead, Project, Payout, Applicant, GlobalAdminSettings, PipelineStage, 
   Deliverable, Comment, ProjectAssignment, GroupId, UserRole, UserRoleTier, UserStatus, 
   SplitOverride, Assignment, SubTask, Milestone, Certificate, CertificateType, CertificateStatus, 
-  Announcement, AnnouncementScope, SiteContent, SecurityAuditLog 
+  Announcement, AnnouncementScope, SiteContent, SecurityAuditLog,
+  SiteCaseStudy, SiteTestimonial, SiteServiceItem, SitePackage, SiteTeamMember, SiteFAQ, SiteValueProp
 } from '../types';
 import { 
   INITIAL_GROUPS, INITIAL_USERS, INITIAL_LEADS, INITIAL_PROJECTS, INITIAL_PAYOUTS, 
@@ -12,6 +13,7 @@ import {
 } from '../services/mockData';
 import { getNextMemberId } from '../lib/memberIdGenerator';
 import { getUserRoleTier, PERMISSIONS } from '../lib/permissions';
+import { quickHashSync } from '../lib/crypto';
 
 interface AppContextType {
   // Auth & Session
@@ -31,13 +33,22 @@ interface AppContextType {
   siteContent: SiteContent;
   auditLogs: SecurityAuditLog[];
   
-  // Auth Actions
-  loginWithMemberId: (memberId: string, password?: string) => { success: boolean; error?: string };
+  // Real Auth Actions (Production Authenticator)
+  loginWithMemberId: (memberIdOrEmail: string, password?: string) => { success: boolean; error?: string };
   logout: () => void;
-  changePassword: (newPassword: string) => void;
+  changePassword: (newPassword: string) => { success: boolean; error?: string };
   requestPasswordReset: (email: string) => { success: boolean; message: string };
-  switchRole: (userId: string) => void;
-  switchTier: (tier: UserRoleTier) => void;
+
+  // Master CEO User & Security Governance Actions
+  createUserAccount: (
+    userData: Omit<User, 'id' | 'completedProjectsCount' | 'totalEarnings' | 'rating' | 'statusHistory' | 'notes' | 'documents'>, 
+    initialPlainPassword?: string
+  ) => { success: boolean; newUser?: User; error?: string };
+  resetUserPasswordByCeo: (targetUserId: string, newPlainPassword: string) => { success: boolean; error?: string };
+  toggleUserAccountStatus: (targetUserId: string, reason: string) => { success: boolean; error?: string };
+  updateUserRoleWithAuth: (targetUserId: string, newRoleTier: UserRoleTier, reason: string) => { success: boolean; error?: string };
+  updateUserSquadWithAuth: (targetUserId: string, newGroupId?: GroupId) => { success: boolean; error?: string };
+  setDelegatedPermissions: (targetUserId: string, permissions: string[]) => { success: boolean; error?: string };
 
   // Pipeline & Project Actions
   submitLead: (leadData: Omit<Lead, 'id' | 'createdAt' | 'status' | 'submittedByUserId' | 'submittedByUserName'>) => void;
@@ -86,14 +97,15 @@ interface AppContextType {
   setUserSplitOverride: (userId: string, splitOverride?: SplitOverride) => void;
   reassignUserSquad: (userId: string, newGroupId?: GroupId) => void;
   changeUserRole: (userId: string, newRole: UserRole) => void;
-  updateUserRoleWithAuth: (targetUserId: string, newRoleTier: UserRoleTier, reason: string) => { success: boolean; error?: string };
-  updateUserSquadWithAuth: (targetUserId: string, newGroupId?: GroupId) => { success: boolean; error?: string };
   quickInviteUser: (userData: Omit<User, 'id' | 'completedProjectsCount' | 'totalEarnings' | 'rating' | 'statusHistory' | 'notes' | 'documents'>) => User;
   bulkImportMembers: (importedRows: Partial<User>[]) => { count: number; newUsers: User[] };
   sendBatchCredentials: () => { count: number; memberNames: string[] };
 
-  // Live Website CMS Actions
+  // Full-Scope Live Website CMS Studio Actions (with Add & Remove)
   updateSiteContent: (section: keyof SiteContent, data: any) => void;
+  addItemToSiteContent: <K extends keyof SiteContent>(section: K, item: any) => void;
+  removeItemFromSiteContent: <K extends keyof SiteContent>(section: K, itemId: string) => void;
+  updateItemInSiteContent: <K extends keyof SiteContent>(section: K, itemId: string, updatedItem: any) => void;
   resetSiteContent: () => void;
 
   // Applicant Workflow Actions
@@ -109,7 +121,7 @@ interface AppContextType {
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
-const LOCAL_STORAGE_KEY = 'digihust_app_state_v4';
+const LOCAL_STORAGE_KEY = 'digihust_prod_state_v5';
 
 export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   // Load initial state from local storage if available
@@ -121,7 +133,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const [currentUser, setCurrentUser] = useState<User>(() => {
     const savedUser = localStorage.getItem(`${LOCAL_STORAGE_KEY}_current_user`);
     if (savedUser) return JSON.parse(savedUser);
-    return users.find(u => u.roleTier === 'ceo' || u.role === 'management') || users[0];
+    return users.find(u => u.roleTier === 'ceo' || u.isCeoMaster) || users[0];
   });
 
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
@@ -237,47 +249,189 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   // Auth Handlers
   const currentTier = getUserRoleTier(currentUser);
 
-  const loginWithMemberId = (memberId: string, _password?: string): { success: boolean; error?: string } => {
-    const foundUser = users.find(u => u.memberId?.toUpperCase() === memberId.trim().toUpperCase() || u.email.toLowerCase() === memberId.trim().toLowerCase());
-    if (foundUser) {
-      setCurrentUser(foundUser);
-      setIsAuthenticated(true);
-      return { success: true };
+  const loginWithMemberId = (memberIdOrEmail: string, password?: string): { success: boolean; error?: string } => {
+    const cleanId = memberIdOrEmail.trim().toLowerCase();
+    const foundUser = users.find(u => 
+      u.memberId?.toLowerCase() === cleanId || 
+      u.email.toLowerCase() === cleanId
+    );
+
+    if (!foundUser) {
+      return { success: false, error: 'No registered DigiHust account found with this Member ID or Email.' };
     }
-    return { success: false, error: 'Invalid Member ID. Example format: DGH2600101' };
+
+    if (foundUser.status === 'suspended') {
+      return { success: false, error: 'This account has been suspended by Executive Management.' };
+    }
+
+    // Real Password Verification via SHA-256 Hash
+    if (password && foundUser.passwordHash) {
+      const computedHash = quickHashSync(password);
+      if (computedHash !== foundUser.passwordHash) {
+        return { success: false, error: 'Incorrect password. Please verify your credentials or contact the CEO.' };
+      }
+    }
+
+    setCurrentUser(foundUser);
+    setIsAuthenticated(true);
+    return { success: true };
   };
 
   const logout = () => {
     setIsAuthenticated(false);
   };
 
-  const changePassword = (_newPassword: string) => {
-    setUsers(prev => prev.map(u => u.id === currentUser.id ? { ...u, forcePasswordChange: false } : u));
-    setCurrentUser(prev => ({ ...prev, forcePasswordChange: false }));
+  const changePassword = (newPassword: string): { success: boolean; error?: string } => {
+    if (!newPassword || newPassword.length < 6) {
+      return { success: false, error: 'Password must be at least 6 characters.' };
+    }
+    const newHash = quickHashSync(newPassword);
+    setUsers(prev => prev.map(u => u.id === currentUser.id ? { ...u, passwordHash: newHash, forcePasswordChange: false } : u));
+    setCurrentUser(prev => ({ ...prev, passwordHash: newHash, forcePasswordChange: false }));
+    return { success: true };
   };
 
   const requestPasswordReset = (email: string) => {
     const found = users.some(u => u.email.toLowerCase() === email.trim().toLowerCase());
     if (found) {
-      return { success: true, message: `Password reset link has been dispatched to ${email}.` };
+      return { success: true, message: `A secure credential reset link has been dispatched to ${email}.` };
     }
     return { success: false, message: 'No registered account found with that email address.' };
   };
 
-  const switchRole = (userId: string) => {
-    const foundUser = users.find(u => u.id === userId);
-    if (foundUser) {
-      setCurrentUser(foundUser);
-      setIsAuthenticated(true);
+  // ── CEO MASTER USER & SECURITY GOVERNANCE ─────────────────────────────────
+
+  const createUserAccount = (
+    userData: Omit<User, 'id' | 'completedProjectsCount' | 'totalEarnings' | 'rating' | 'statusHistory' | 'notes' | 'documents'>, 
+    initialPlainPassword?: string
+  ): { success: boolean; newUser?: User; error?: string } => {
+    if (!PERMISSIONS.canCreateUserAccount(currentTier)) {
+      return { success: false, error: 'Access Denied: Only CEO Master authority can create user accounts.' };
     }
+
+    const { memberId } = getNextMemberId(userData.joinYear);
+    const plainPwd = initialPlainPassword || `DigiHust@${Math.random().toString(36).substring(2, 7)}`;
+    const passwordHash = quickHashSync(plainPwd);
+
+    const newUser: User = {
+      ...userData,
+      id: `usr-${Date.now()}`,
+      memberId,
+      passwordHash,
+      temporaryPlainPassword: plainPwd,
+      completedProjectsCount: 0,
+      totalEarnings: 0,
+      rating: 5.0,
+      credentialsSentAt: null,
+      forcePasswordChange: true,
+      statusHistory: [
+        {
+          timestamp: new Date().toISOString(),
+          from: 'pending_onboarding',
+          to: userData.status,
+          reason: 'Created by CEO Master',
+          changedBy: currentUser.name
+        }
+      ],
+      notes: [],
+      documents: []
+    };
+
+    setUsers(prev => [newUser, ...prev]);
+
+    // Record Security Audit Log
+    const auditEntry: SecurityAuditLog = {
+      id: `audit-${Date.now()}`,
+      timestamp: new Date().toISOString(),
+      actorId: currentUser.id,
+      actorName: currentUser.name,
+      actorRole: currentTier,
+      action: 'ACCOUNT_CREATED',
+      targetId: newUser.id,
+      targetName: newUser.name,
+      details: `Created new ${newUser.roleTier} account for ${newUser.name} with Member ID ${newUser.memberId}.`
+    };
+    setAuditLogs(prev => [auditEntry, ...prev]);
+
+    return { success: true, newUser };
   };
 
-  const switchTier = (tier: UserRoleTier) => {
-    const foundUser = users.find(u => u.roleTier === tier);
-    if (foundUser) {
-      setCurrentUser(foundUser);
-      setIsAuthenticated(true);
+  const resetUserPasswordByCeo = (targetUserId: string, newPlainPassword: string): { success: boolean; error?: string } => {
+    if (!PERMISSIONS.canResetAnyPassword(currentTier)) {
+      return { success: false, error: 'Access Denied: Only CEO Master authority can reset user credentials.' };
     }
+
+    const targetUser = users.find(u => u.id === targetUserId);
+    if (!targetUser) return { success: false, error: 'User not found.' };
+
+    const newHash = quickHashSync(newPlainPassword);
+    setUsers(prev => prev.map(u => u.id === targetUserId ? { ...u, passwordHash: newHash, forcePasswordChange: true } : u));
+
+    const auditEntry: SecurityAuditLog = {
+      id: `audit-${Date.now()}`,
+      timestamp: new Date().toISOString(),
+      actorId: currentUser.id,
+      actorName: currentUser.name,
+      actorRole: currentTier,
+      action: 'PASSWORD_RESET',
+      targetId: targetUser.id,
+      targetName: targetUser.name,
+      details: `CEO reset password for ${targetUser.name} (${targetUser.memberId}).`
+    };
+    setAuditLogs(prev => [auditEntry, ...prev]);
+
+    return { success: true };
+  };
+
+  const toggleUserAccountStatus = (targetUserId: string, reason: string): { success: boolean; error?: string } => {
+    if (!PERMISSIONS.canDistributeRoles(currentTier)) {
+      return { success: false, error: 'Access Denied: Only CEO Master authority can alter user account status.' };
+    }
+
+    const targetUser = users.find(u => u.id === targetUserId);
+    if (!targetUser) return { success: false, error: 'User not found.' };
+
+    const newStatus: UserStatus = targetUser.status === 'active' ? 'suspended' : 'active';
+    setUsers(prev => prev.map(u => u.id === targetUserId ? { ...u, status: newStatus } : u));
+
+    const auditEntry: SecurityAuditLog = {
+      id: `audit-${Date.now()}`,
+      timestamp: new Date().toISOString(),
+      actorId: currentUser.id,
+      actorName: currentUser.name,
+      actorRole: currentTier,
+      action: newStatus === 'suspended' ? 'ACCOUNT_SUSPENDED' : 'ROLE_MODIFIED',
+      targetId: targetUser.id,
+      targetName: targetUser.name,
+      details: `Changed account status to ${newStatus}. Reason: ${reason}`
+    };
+    setAuditLogs(prev => [auditEntry, ...prev]);
+
+    return { success: true };
+  };
+
+  const setDelegatedPermissions = (targetUserId: string, permissions: string[]): { success: boolean; error?: string } => {
+    if (!PERMISSIONS.canDistributeRoles(currentTier)) {
+      return { success: false, error: 'Access Denied: Only CEO Master authority can assign delegated permissions.' };
+    }
+
+    setUsers(prev => prev.map(u => u.id === targetUserId ? { ...u, delegatedPermissions: permissions } : u));
+
+    const targetUser = users.find(u => u.id === targetUserId);
+    const auditEntry: SecurityAuditLog = {
+      id: `audit-${Date.now()}`,
+      timestamp: new Date().toISOString(),
+      actorId: currentUser.id,
+      actorName: currentUser.name,
+      actorRole: currentTier,
+      action: 'PERMISSIONS_UPDATED',
+      targetId: targetUserId,
+      targetName: targetUser?.name,
+      details: `Delegated permissions updated: ${permissions.join(', ')}`
+    };
+    setAuditLogs(prev => [auditEntry, ...prev]);
+
+    return { success: true };
   };
 
   // Lead Submission
@@ -645,7 +799,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const changeUserStatus = (userId: string, newStatus: UserStatus, reason: string, changedBy: string) => {
     setUsers(prev => prev.map(u => {
       if (u.id === userId) {
-        const log: StatusChangeLog = {
+        const log = {
           timestamp: new Date().toISOString(),
           from: u.status,
           to: newStatus,
@@ -756,6 +910,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       ...userData,
       id: `usr-${Date.now()}`,
       memberId,
+      passwordHash: quickHashSync('DigiHust@2026'),
       completedProjectsCount: 0,
       totalEarnings: 0,
       rating: 5.0,
@@ -786,6 +941,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       const newUser: User = {
         id: `usr-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
         memberId,
+        passwordHash: quickHashSync('DigiHust@2026'),
         name: row.name || 'Specialist',
         email: row.email || `specialist-${Date.now()}@digihust.com`,
         phone: row.phone || '',
@@ -830,20 +986,16 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     return { count: pendingMembers.length, memberNames: names };
   };
 
-  // ── LIVE WEBSITE CMS ACTIONS ───────────────────────────────────────────────
+  // ── FULL-SCOPE LIVE WEBSITE CMS STUDIO ACTIONS (WITH DYNAMIC ADD & REMOVE) ──
 
   const updateSiteContent = (section: keyof SiteContent, data: any) => {
-    if (!PERMISSIONS.canEditWebsiteContent(currentTier)) return;
+    if (!PERMISSIONS.canEditWebsiteContent(currentTier, currentUser)) return;
 
-    setSiteContent(prev => {
-      const updated = {
-        ...prev,
-        [section]: data
-      };
-      return updated;
-    });
+    setSiteContent(prev => ({
+      ...prev,
+      [section]: data
+    }));
 
-    // Record in audit log
     const auditEntry: SecurityAuditLog = {
       id: `audit-${Date.now()}`,
       timestamp: new Date().toISOString(),
@@ -856,8 +1008,66 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     setAuditLogs(prev => [auditEntry, ...prev]);
   };
 
+  const addItemToSiteContent = <K extends keyof SiteContent>(section: K, item: any) => {
+    if (!PERMISSIONS.canEditWebsiteContent(currentTier, currentUser)) return;
+
+    setSiteContent(prev => {
+      const currentList = Array.isArray(prev[section]) ? (prev[section] as any[]) : [];
+      return {
+        ...prev,
+        [section]: [...currentList, item]
+      };
+    });
+
+    const auditEntry: SecurityAuditLog = {
+      id: `audit-${Date.now()}`,
+      timestamp: new Date().toISOString(),
+      actorId: currentUser.id,
+      actorName: currentUser.name,
+      actorRole: currentTier,
+      action: 'CMS_UPDATED',
+      details: `Added new item to ${String(section)} (ID: ${item.id || 'new'})`
+    };
+    setAuditLogs(prev => [auditEntry, ...prev]);
+  };
+
+  const removeItemFromSiteContent = <K extends keyof SiteContent>(section: K, itemId: string) => {
+    if (!PERMISSIONS.canEditWebsiteContent(currentTier, currentUser)) return;
+
+    setSiteContent(prev => {
+      const currentList = Array.isArray(prev[section]) ? (prev[section] as any[]) : [];
+      return {
+        ...prev,
+        [section]: currentList.filter(item => item.id !== itemId)
+      };
+    });
+
+    const auditEntry: SecurityAuditLog = {
+      id: `audit-${Date.now()}`,
+      timestamp: new Date().toISOString(),
+      actorId: currentUser.id,
+      actorName: currentUser.name,
+      actorRole: currentTier,
+      action: 'CMS_UPDATED',
+      details: `Removed item from ${String(section)} (ID: ${itemId})`
+    };
+    setAuditLogs(prev => [auditEntry, ...prev]);
+  };
+
+  const updateItemInSiteContent = <K extends keyof SiteContent>(section: K, itemId: string, updatedItem: any) => {
+    if (!PERMISSIONS.canEditWebsiteContent(currentTier, currentUser)) return;
+
+    setSiteContent(prev => {
+      const currentList = Array.isArray(prev[section]) ? (prev[section] as any[]) : [];
+      return {
+        ...prev,
+        [section]: currentList.map(item => item.id === itemId ? { ...item, ...updatedItem } : item)
+      };
+    });
+  };
+
   const resetSiteContent = () => {
-    if (!PERMISSIONS.canEditWebsiteContent(currentTier)) return;
+    if (!PERMISSIONS.canEditWebsiteContent(currentTier, currentUser)) return;
     setSiteContent(DEFAULT_SITE_CONTENT);
   };
 
@@ -882,6 +1092,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     const newUser: User = {
       id: `usr-${Date.now()}`,
       memberId,
+      passwordHash: quickHashSync('DigiHust@2026'),
       name: applicant.name,
       email: applicant.email,
       phone: applicant.phone,
@@ -958,8 +1169,14 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         logout,
         changePassword,
         requestPasswordReset,
-        switchRole,
-        switchTier,
+
+        // CEO Master User Governance
+        createUserAccount,
+        resetUserPasswordByCeo,
+        toggleUserAccountStatus,
+        updateUserRoleWithAuth,
+        updateUserSquadWithAuth,
+        setDelegatedPermissions,
 
         // Pipeline & Project
         submitLead,
@@ -997,14 +1214,15 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         setUserSplitOverride,
         reassignUserSquad,
         changeUserRole,
-        updateUserRoleWithAuth,
-        updateUserSquadWithAuth,
         quickInviteUser,
         bulkImportMembers,
         sendBatchCredentials,
 
-        // CMS
+        // CMS Studio with Add & Remove
         updateSiteContent,
+        addItemToSiteContent,
+        removeItemFromSiteContent,
+        updateItemInSiteContent,
         resetSiteContent,
 
         // Applicants

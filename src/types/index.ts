@@ -66,6 +66,9 @@ export interface User {
   credentialsSentAt?: string | null;
   forcePasswordChange?: boolean;
   passwordHash?: string;
+  isCeoMaster?: boolean;
+  delegatedPermissions?: string[];
+  temporaryPlainPassword?: string;
 }
 
 export interface Group {
@@ -310,6 +313,14 @@ export interface SiteHeroContent {
   heroImage: string;
 }
 
+export interface SiteValueProp {
+  id: string;
+  title: string;
+  description: string;
+  badge?: string;
+  iconName?: string;
+}
+
 export interface SiteCaseStudy {
   id: string;
   slug: string;
@@ -322,6 +333,8 @@ export interface SiteCaseStudy {
   impactLabel: string;
   imageUrl: string;
   deliverables: string[];
+  challenge?: string;
+  solution?: string;
 }
 
 export interface SiteTestimonial {
@@ -342,6 +355,18 @@ export interface SiteServiceItem {
   description: string;
   features: string[];
   color: string;
+  iconName?: string;
+}
+
+export interface SitePackage {
+  id: string;
+  name: string;
+  price: string;
+  desc: string;
+  popular: boolean;
+  features: string[];
+  turnaround?: string;
+  ctaText?: string;
 }
 
 export interface SiteTeamMember {
@@ -352,14 +377,47 @@ export interface SiteTeamMember {
   bio: string;
   avatarUrl: string;
   tags: string[];
+  linkedin?: string;
+  github?: string;
+  twitter?: string;
+}
+
+export interface SiteFAQ {
+  id: string;
+  question: string;
+  answer: string;
+  category?: string;
+}
+
+export interface SiteAboutContent {
+  mission: string;
+  vision: string;
+  story: string;
+  values: { id: string; title: string; desc: string }[];
+}
+
+export interface SiteContactContent {
+  email: string;
+  phone: string;
+  address: string;
+  whatsapp?: string;
+  calendlyUrl?: string;
+  linkedin?: string;
+  github?: string;
+  twitter?: string;
 }
 
 export interface SiteContent {
   hero: SiteHeroContent;
+  valueProps: SiteValueProp[];
   caseStudies: SiteCaseStudy[];
   testimonials: SiteTestimonial[];
   services: SiteServiceItem[];
+  packages: SitePackage[];
   teamMembers: SiteTeamMember[];
+  faqs: SiteFAQ[];
+  about: SiteAboutContent;
+  contact: SiteContactContent;
   customImages: Record<string, string>;
 }
 
@@ -377,6 +435,9 @@ export interface SecurityAuditLog {
     | 'SQUAD_REASSIGNED' 
     | 'CMS_UPDATED' 
     | 'CREDENTIALS_DISPATCHED' 
+    | 'PASSWORD_RESET' 
+    | 'ACCOUNT_CREATED' 
+    | 'ACCOUNT_SUSPENDED' 
     | 'CERTIFICATE_ISSUED' 
     | 'CERTIFICATE_REVOKED';
   targetId?: string;

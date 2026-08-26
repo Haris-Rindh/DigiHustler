@@ -189,7 +189,7 @@ export const Contact: React.FC = () => {
               </div>
             </div>
 
-            {/* Direct Contact Card */}
+              {/* Direct Contact Card */}
             <div className="p-8 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] shadow-sm space-y-4">
               <h3 className="font-display font-bold text-lg text-[var(--text-heading)]">Direct Inquiries</h3>
               <p className="text-xs text-[var(--text-muted)] leading-relaxed">
@@ -198,13 +198,19 @@ export const Contact: React.FC = () => {
               <div className="space-y-3 text-xs pt-1">
                 <div className="flex items-center space-x-3 text-[var(--text-body)]">
                   <Mail className="w-4 h-4 text-[var(--brand-teal)]" />
-                  <a href="mailto:contact@digihust.com" className="font-semibold text-[var(--text-heading)] hover:text-[var(--brand-teal)] transition-colors">
-                    contact@digihust.com
+                  <a href={`mailto:${siteContent?.contact?.email || 'contact@digihust.com'}`} className="font-semibold text-[var(--text-heading)] hover:text-[var(--brand-teal)] transition-colors">
+                    {siteContent?.contact?.email || 'contact@digihust.com'}
                   </a>
                 </div>
+                {siteContent?.contact?.phone && (
+                  <div className="flex items-center space-x-3 text-[var(--text-body)]">
+                    <Phone className="w-4 h-4 text-[var(--brand-teal)]" />
+                    <span>{siteContent.contact.phone}</span>
+                  </div>
+                )}
                 <div className="flex items-center space-x-3 text-[var(--text-body)]">
                   <MapPin className="w-4 h-4 text-[var(--brand-teal)]" />
-                  <span>Islamabad / Global Remote Squads</span>
+                  <span>{siteContent?.contact?.address || 'Islamabad / Global Remote Squads'}</span>
                 </div>
               </div>
             </div>

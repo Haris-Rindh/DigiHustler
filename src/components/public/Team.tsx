@@ -90,12 +90,26 @@ const CAT_COLORS: Record<string, string> = {
   Cybersecurity: '#A85C4A',
 };
 
+import { useApp } from '../../context/AppContext';
+
 export const Team: React.FC = () => {
+  const { siteContent } = useApp();
   const [filter, setFilter] = useState<string>('All');
 
+  const teamList = (siteContent?.teamMembers && siteContent.teamMembers.length > 0)
+    ? siteContent.teamMembers.map(tm => ({
+        name: tm.name,
+        role: tm.role,
+        category: 'Development' as const,
+        bio: tm.bio,
+        skills: tm.tags || ['Specialist'],
+        img: tm.avatarUrl || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=250'
+      }))
+    : TEAM_MEMBERS;
+
   const displayed = filter === 'All'
-    ? TEAM_MEMBERS
-    : TEAM_MEMBERS.filter((m) => m.category === filter);
+    ? teamList
+    : teamList.filter((m) => m.category === filter || filter === 'All');
 
   return (
     <div className="pt-16">

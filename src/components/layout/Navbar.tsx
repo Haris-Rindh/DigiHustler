@@ -177,9 +177,9 @@ import { PayoutCalculatorModal } from '../dashboard/PayoutCalculatorModal';
 import { NewLeadModal } from '../dashboard/NewLeadModal';
 
 const InternalNavbar: React.FC = () => {
-  const { currentUser, users, switchRole } = useApp();
+  const { currentUser, logout } = useApp();
   const { t } = useLanguage();
-  const [showRoleDropdown, setShowRoleDropdown] = useState(false);
+  const [showProfileDropdown, setShowProfileDropdown] = useState(false);
   const [isCalcOpen, setIsCalcOpen] = useState(false);
   const [isLeadOpen, setIsLeadOpen] = useState(false);
   const location = useLocation();
@@ -251,49 +251,34 @@ const InternalNavbar: React.FC = () => {
             </button>
             <div className="relative">
               <button
-                onClick={() => setShowRoleDropdown(!showRoleDropdown)}
+                onClick={() => setShowProfileDropdown(!showProfileDropdown)}
                 className="flex items-center space-x-2 p-1.5 pl-3 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] hover:border-[var(--brand-teal)] transition-colors cursor-pointer"
               >
                 <img src={currentUser.avatarUrl} alt={currentUser.name} className="w-7 h-7 rounded-full object-cover ring-2 ring-[var(--brand-teal)]/40" />
                 <div className="hidden xl:block text-left">
                   <div className="text-xs font-bold text-[var(--text-heading)] flex items-center gap-1">{currentUser.name}</div>
-                  <div className="text-[10px] text-[var(--text-muted)] truncate max-w-[100px]">{currentUser.title}</div>
+                  <div className="text-[10px] text-[var(--text-muted)] truncate max-w-[100px]">{currentUser.memberId || currentUser.title}</div>
                 </div>
                 <ChevronDown className="w-4 h-4 text-[var(--text-muted)]" />
               </button>
-              {showRoleDropdown && (
-                <div className="absolute right-0 mt-2 w-72 rounded-2xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] shadow-2xl p-2 z-50">
-                  <div className="px-3 py-2 border-b border-[var(--border-subtle)] mb-1">
-                    <p className="text-[10px] uppercase font-bold tracking-wider text-[var(--text-muted)]">Switch Active Role</p>
+              {showProfileDropdown && (
+                <div className="absolute right-0 mt-2 w-60 rounded-2xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] shadow-2xl p-2 z-50">
+                  <div className="p-2 border-b border-[var(--border-subtle)] mb-1">
+                    <p className="text-xs font-bold text-[var(--text-heading)]">{currentUser.name}</p>
+                    <p className="text-[10px] font-mono text-[var(--brand-teal)]">{currentUser.memberId}</p>
                   </div>
-                  <div className="max-h-72 overflow-y-auto space-y-1">
-                    {users.map((u) => (
-                      <button
-                        key={u.id}
-                        onClick={() => {
-                          switchRole(u.id);
-                          setShowRoleDropdown(false);
-                        }}
-                        className={`w-full flex items-center justify-between p-2 rounded-xl text-left transition-colors cursor-pointer ${
-                          u.id === currentUser.id ? 'bg-[var(--brand-teal-subtle)] border border-[var(--brand-teal)]/40' : 'hover:bg-[var(--bg-subtle)]'
-                        }`}
-                      >
-                        <div className="flex items-center space-x-2.5">
-                          <img src={u.avatarUrl} alt={u.name} className="w-7 h-7 rounded-full object-cover" />
-                          <div>
-                            <p className="text-xs font-bold text-[var(--text-heading)] flex items-center gap-1">
-                              {u.name}
-                              {u.id === currentUser.id && <UserCheck className="w-3 h-3 text-[var(--brand-teal)]" />}
-                            </p>
-                            <p className="text-[10px] text-[var(--text-muted)]">{u.title}</p>
-                          </div>
-                        </div>
-                        <span className="text-[9px] font-bold px-2 py-0.5 rounded uppercase bg-[var(--bg-page)] text-[var(--text-heading)] border border-[var(--border-subtle)]">
-                          {u.role.replace('_', ' ')}
-                        </span>
-                      </button>
-                    ))}
-                  </div>
+                  <Link
+                    to="/portal/dashboard"
+                    className="block w-full px-3 py-2 rounded-xl text-xs font-semibold text-[var(--text-heading)] hover:bg-[var(--bg-subtle)]"
+                  >
+                    Portal Dashboard
+                  </Link>
+                  <button
+                    onClick={logout}
+                    className="w-full text-left px-3 py-2 rounded-xl text-xs font-semibold text-rose-400 hover:bg-rose-500/10"
+                  >
+                    Sign Out
+                  </button>
                 </div>
               )}
             </div>
