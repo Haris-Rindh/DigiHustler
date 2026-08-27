@@ -79,16 +79,21 @@ export const PeopleDirectoryView: React.FC = () => {
     e.preventDefault();
     if (!certModalUser) return;
 
-    const tpl = certificateTemplates?.find(t => t.id === selectedTemplateId) || certificateTemplates?.[0];
-    const cert = generateMemberCertificate(certModalUser.id, tpl?.id || 'tpl-offer', {
-      roleTitle: customRoleTitle || certModalUser.title || 'Specialist',
-      durationText: customDuration || '45 Days (Remote)',
-      clientName: customClient || 'DigiHust Engineering Squad Core',
-      documentTitle: tpl?.documentTitle || tpl?.name || 'Internship Offer Letter'
-    });
+    try {
+      const tpl = certificateTemplates?.find(t => t.id === selectedTemplateId) || certificateTemplates?.[0];
+      const cert = generateMemberCertificate(certModalUser.id, tpl?.id || 'tpl-offer', {
+        roleTitle: customRoleTitle || certModalUser.title || 'Specialist',
+        durationText: customDuration || '45 Days (Remote)',
+        clientName: customClient || 'DigiHust Engineering Squad Core',
+        documentTitle: tpl?.documentTitle || tpl?.name || 'Internship Offer Letter'
+      });
 
-    setCertModalUser(null);
-    setGeneratedCertPreview(cert);
+      setCertModalUser(null);
+      setGeneratedCertPreview(cert);
+    } catch (err) {
+      console.error('Failed to generate certificate:', err);
+      alert('Failed to generate certificate document. Please try again.');
+    }
   };
 
   const handleCreateAccountSubmit = (e: React.FormEvent) => {
@@ -468,7 +473,10 @@ export const PeopleDirectoryView: React.FC = () => {
 
             {/* Letterhead Render */}
             <div className="flex justify-center bg-slate-100 p-4 sm:p-6 rounded-2xl overflow-x-auto">
-              <CertificatePrintView certificate={generatedCertPreview} verificationUrl={`${origin}/verify/${generatedCertPreview.id}`} />
+              <CertificatePrintView 
+                certificate={generatedCertPreview} 
+                verificationUrl={generatedCertPreview?.id ? `${origin}/verify/${generatedCertPreview.id}` : undefined} 
+              />
             </div>
           </div>
         </div>

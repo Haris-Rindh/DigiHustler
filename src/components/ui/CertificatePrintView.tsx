@@ -4,7 +4,7 @@ import { Phone, Mail, Globe, MapPin } from 'lucide-react';
 import { Certificate } from '../../types';
 
 interface CertificatePrintViewProps {
-  certificate: Certificate;
+  certificate?: Certificate | null;
   verificationUrl?: string;
 }
 
@@ -12,48 +12,49 @@ export const CertificatePrintView: React.FC<CertificatePrintViewProps> = ({
   certificate,
   verificationUrl
 }) => {
-  const origin = typeof window !== 'undefined' ? window.location.origin : 'https://digihust.com';
-  const fullVerificationUrl = verificationUrl || `${origin}/verify/${certificate.id}`;
+  if (!certificate) {
+    return (
+      <div className="w-full max-w-[850px] mx-auto p-12 text-center text-slate-500 bg-white border border-slate-200 rounded-2xl shadow-sm font-sans">
+        <p className="font-bold text-base text-slate-700">Loading Certificate Document...</p>
+        <p className="text-xs text-slate-400 mt-1">Please select a valid member record to view their letterhead.</p>
+      </div>
+    );
+  }
 
-  const isOfferLetter = certificate.type === 'offer_letter';
+  const origin = typeof window !== 'undefined' ? window.location.origin : 'https://digihust.com';
+  const certId = certificate.id || 'cert-preview';
+  const fullVerificationUrl = verificationUrl || `${origin}/verify/${certId}`;
+
+  const isOfferLetter = certificate.type === 'offer_letter' || !certificate.type;
   const isCompletion = certificate.type === 'completion_certificate';
 
-  const title = certificate.documentTitle || (
-    isOfferLetter 
-      ? 'Internship Offer Letter' 
-      : isCompletion 
-        ? 'Certificate of Completion' 
-        : 'Experience Certificate'
-  );
-
-  const duration = certificate.durationText || (
-    isOfferLetter 
-      ? '45 Days (Remote)' 
-      : isCompletion 
-        ? '45 Days Track' 
-        : '8 Months (Full Retainer)'
-  );
-
+  const memberName = certificate.memberName || 'Specialist Name';
+  const roleTitle = certificate.roleTitle || 'Full-Stack Developer';
+  const memberDghId = certificate.memberDghId || 'DGH2600101';
+  const duration = certificate.durationText || (isOfferLetter ? '45 Days (Remote)' : '8 Months (Full Retainer)');
+  const title = certificate.documentTitle || (isOfferLetter ? 'Internship Offer Letter' : isCompletion ? 'Certificate of Completion' : 'Experience Certificate');
   const signatoryName = certificate.signatoryName || 'Mahad Abbas';
   const signatoryTitle = certificate.signatoryTitle || 'Founder & CEO';
 
   // Format date to e.g. "September 01, 2026"
   const formattedDate = (() => {
     try {
-      const d = new Date(certificate.issuedDate);
+      const d = certificate.issuedDate ? new Date(certificate.issuedDate) : new Date();
       return d.toLocaleDateString('en-US', { month: 'long', day: '2-digit', year: 'numeric' });
     } catch {
       return certificate.issuedDate || 'September 01, 2026';
     }
   })();
 
-  const evaluationList = certificate.evaluationCriteria || [
-    'Quality of work',
-    'Meeting deadlines',
-    'Communication & teamwork',
-    'Problem-solving',
-    'Ability to follow client requirements'
-  ];
+  const evaluationList = (certificate.evaluationCriteria && certificate.evaluationCriteria.length > 0)
+    ? certificate.evaluationCriteria
+    : [
+        'Quality of work',
+        'Meeting deadlines',
+        'Communication & teamwork',
+        'Problem-solving',
+        'Ability to follow client requirements'
+      ];
 
   return (
     <div className="w-full max-w-[850px] mx-auto bg-white text-slate-800 shadow-2xl rounded-none overflow-hidden print:shadow-none print:max-w-none print:w-full border border-slate-200 print:border-none relative font-sans min-h-[1100px] flex flex-col justify-between p-0">
@@ -139,13 +140,13 @@ export const CertificatePrintView: React.FC<CertificatePrintViewProps> = ({
             {/* Left Recipient */}
             <div>
               <span className="font-bold text-slate-900 block text-xs mb-1">To :</span>
-              <p className="font-extrabold text-base sm:text-lg text-slate-900 leading-snug">{certificate.memberName}</p>
-              <p className="text-slate-700 font-medium text-xs mt-0.5">{certificate.roleTitle}</p>
+              <p className="font-extrabold text-base sm:text-lg text-slate-900 leading-snug">{memberName}</p>
+              <p className="text-slate-700 font-medium text-xs mt-0.5">{roleTitle}</p>
               <p className="text-slate-600 font-medium text-xs mt-0.5">
                 {isOfferLetter ? `Internship Duration: ${duration}` : `Duration: ${duration}`}
               </p>
               <p className="font-mono text-[11px] text-[#1F7A8C] font-semibold mt-1">
-                Member ID: {certificate.memberDghId}
+                Member ID: {memberDghId}
               </p>
             </div>
 
@@ -160,13 +161,13 @@ export const CertificatePrintView: React.FC<CertificatePrintViewProps> = ({
           <div className="mt-6 space-y-4 text-[13px] sm:text-[14px] leading-relaxed text-slate-800">
             
             <p className="font-bold text-slate-900">
-              Dear {certificate.memberName},
+              Dear {memberName},
             </p>
 
             {/* Paragraph 1 */}
             <p>
               We are pleased to offer you a <strong>{duration}</strong> internship at DigiHust as a{' '}
-              <strong className="text-slate-900">{certificate.roleTitle}</strong>. This period will serve as both a learning opportunity and a practical evaluation for potential inclusion in our core team.
+              <strong className="text-slate-900">{roleTitle}</strong>. This period will serve as both a learning opportunity and a practical evaluation for potential inclusion in our core team.
             </p>
 
             {/* Evaluation Criteria Checklist */}
@@ -221,7 +222,7 @@ export const CertificatePrintView: React.FC<CertificatePrintViewProps> = ({
                 </div>
                 <div className="text-[10px] font-mono leading-tight">
                   <span className="font-bold text-[#022B3A] block">DIGITAL AUDIT QR</span>
-                  <span className="text-slate-500 block truncate max-w-[130px]">{certificate.id}</span>
+                  <span className="text-slate-500 block truncate max-w-[130px]">{certId}</span>
                   <span className="text-emerald-600 font-bold block mt-0.5">✓ Scan to Verify Online</span>
                 </div>
               </div>
