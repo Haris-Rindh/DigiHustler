@@ -2,13 +2,20 @@ import React, { useState } from 'react';
 import { 
   Award, Plus, QrCode, CheckCircle2, AlertTriangle, ExternalLink, 
   RotateCcw, ShieldCheck, FileText, Search, User, Check, X, Printer, Eye, 
-  Settings, Layers, Trash2, Edit3, Sparkles 
+  Settings, Layers, Trash2, Edit3, Sparkles, Download, FileUp 
 } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import { useApp } from '../../context/AppContext';
 import { Certificate, CertificateType, CertificateTemplate, CertificateStatus } from '../../types';
 import { PERMISSIONS } from '../../lib/permissions';
 import { CertificatePrintView } from '../ui/CertificatePrintView';
+import { PdfTemplateEditorModal } from './PdfTemplateEditorModal';
+import { 
+  generateBuiltInCertificatePdf, 
+  stampCustomPdfTemplate, 
+  downloadPdfFile, 
+  previewPdfInNewTab 
+} from '../../lib/pdfTemplateEngine';
 
 export const CertificateManager: React.FC = () => {
   const { 
@@ -25,10 +32,11 @@ export const CertificateManager: React.FC = () => {
   const [previewCert, setPreviewCert] = useState<Certificate | null>(null);
   const [selectedCertForRevoke, setSelectedCertForRevoke] = useState<Certificate | null>(null);
   const [revokeReason, setRevokeReason] = useState('');
+  const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
 
   // Template Studio Modals
   const [createTemplateModalOpen, setCreateTemplateModalOpen] = useState(false);
-  const [editingTemplate, setEditingTemplate] = useState<CertificateTemplate | null>(null);
+  const [uploadPdfModalOpen, setUploadPdfModalOpen] = useState(false);
 
   // New Template Draft
   const [tplName, setTplName] = useState('');
@@ -79,11 +87,39 @@ export const CertificateManager: React.FC = () => {
       roleTitle,
       durationText,
       clientName,
-      projectDetails: projectDetails || undefined
+      projectDetails: projectDetails || undefined,
+      pdfConfig: tpl?.pdfConfig
     });
 
     setIssueModalOpen(false);
     setPreviewCert(newCert);
+  };
+
+  const handleDownloadPdf = async (cert: Certificate) => {
+    setIsGeneratingPdf(true);
+    try {
+      const origin = typeof window !== 'undefined' ? window.location.origin : 'https://digihust.com';
+      const verifyUrl = `${origin}/verify/${cert.id}`;
+
+      // Check if certificate has custom PDF graphic template uploaded
+      const matchingTpl = certificateTemplates.find(t => t.id === cert.templateId);
+      const pdfConfig = cert.pdfConfig || matchingTpl?.pdfConfig;
+
+      let pdfBytes: Uint8Array;
+      if (pdfConfig?.backgroundPdfBase64) {
+        pdfBytes = await stampCustomPdfTemplate(pdfConfig.backgroundPdfBase64, cert, verifyUrl, pdfConfig);
+      } else {
+        pdfBytes = await generateBuiltInCertificatePdf(cert, verifyUrl);
+      }
+
+      const safeName = `${cert.memberName.replace(/\s+/g, '_')}_${(cert.documentTitle || cert.type).replace(/\s+/g, '_')}`;
+      downloadPdfFile(pdfBytes, safeName);
+    } catch (err) {
+      console.error(err);
+      alert('Error generating PDF document. Please try again.');
+    } finally {
+      setIsGeneratingPdf(false);
+    }
   };
 
   const handleCreateTemplateSubmit = (e: React.FormEvent) => {
@@ -137,23 +173,31 @@ export const CertificateManager: React.FC = () => {
             Offer Letters & Experience Certificates
           </h1>
           <p className="text-xs sm:text-sm text-[var(--text-body)]">
-            Design certificate templates and generate 1-click verified credentials with unique scannable QR codes for each member.
+            Upload custom PDF graphic templates or use built-in layouts to generate verified credentials with unique vector QR codes.
           </p>
         </div>
 
         {canIssue && (
-          <div className="flex items-center space-x-2 self-start sm:self-auto">
+          <div className="flex flex-wrap items-center gap-2 self-start sm:self-auto">
+            <button
+              onClick={() => setUploadPdfModalOpen(true)}
+              className="flex items-center space-x-1.5 px-3.5 py-2.5 rounded-xl border border-purple-500/40 text-purple-400 hover:bg-purple-500/10 text-xs font-bold transition-all cursor-pointer shadow-sm"
+            >
+              <FileUp className="w-4 h-4" />
+              <span>Upload PDF Template</span>
+            </button>
+
             <button
               onClick={() => setCreateTemplateModalOpen(true)}
-              className="flex items-center space-x-1.5 px-4 py-2.5 rounded-xl border border-[var(--border-subtle)] hover:border-[var(--brand-teal)] text-xs font-bold text-[var(--text-heading)] bg-[var(--bg-surface)] hover:bg-[var(--bg-subtle)] transition-all cursor-pointer shadow-sm"
+              className="flex items-center space-x-1.5 px-3.5 py-2.5 rounded-xl border border-[var(--border-subtle)] hover:border-[var(--brand-teal)] text-xs font-bold text-[var(--text-heading)] bg-[var(--bg-surface)] hover:bg-[var(--bg-subtle)] transition-all cursor-pointer shadow-sm"
             >
               <Plus className="w-4 h-4 text-[var(--brand-teal)]" />
-              <span>Add Certificate Type</span>
+              <span>New Type</span>
             </button>
 
             <button
               onClick={handleOpenIssueModal}
-              className="flex items-center space-x-2 px-5 py-2.5 rounded-xl bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-white text-xs font-bold shadow-md transition-all cursor-pointer"
+              className="flex items-center space-x-2 px-4.5 py-2.5 rounded-xl bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-white text-xs font-bold shadow-md transition-all cursor-pointer"
             >
               <Award className="w-4 h-4" />
               <span>Generate for Member</span>
@@ -272,23 +316,31 @@ export const CertificateManager: React.FC = () => {
                   </div>
 
                   {/* Action Buttons */}
-                  <div className="pt-3 border-t border-[var(--border-subtle)] flex items-center justify-between gap-2">
+                  <div className="pt-3 border-t border-[var(--border-subtle)] flex flex-wrap items-center justify-between gap-1.5">
+                    <button
+                      onClick={() => handleDownloadPdf(c)}
+                      disabled={isGeneratingPdf}
+                      className="flex items-center space-x-1 px-3 py-1.5 rounded-xl bg-[var(--brand-teal)] text-white text-xs font-bold shadow-sm hover:bg-[var(--brand-teal-hover)] transition-all cursor-pointer disabled:opacity-50"
+                    >
+                      <Download className="w-3.5 h-3.5" />
+                      <span>{isGeneratingPdf ? 'PDF...' : 'Download PDF'}</span>
+                    </button>
+
                     <button
                       onClick={() => setPreviewCert(c)}
-                      className="flex items-center space-x-1 px-3 py-1.5 rounded-xl bg-[var(--brand-teal)] text-white text-xs font-bold shadow-sm hover:bg-[var(--brand-teal-hover)] transition-all cursor-pointer"
+                      className="flex items-center space-x-1 px-2.5 py-1.5 rounded-xl border border-[var(--border-subtle)] hover:border-[var(--brand-teal)] text-[var(--text-heading)] text-xs font-bold transition-all cursor-pointer"
                     >
-                      <Printer className="w-3.5 h-3.5" />
-                      <span>Print Letter</span>
+                      <Printer className="w-3.5 h-3.5 text-[var(--brand-teal)]" />
+                      <span>Print</span>
                     </button>
 
                     <a
                       href={`/verify/${c.id}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center space-x-1 px-3 py-1.5 rounded-xl border border-[var(--border-subtle)] hover:border-[var(--brand-teal)] text-[var(--text-heading)] text-xs font-bold transition-all"
+                      className="flex items-center space-x-1 px-2.5 py-1.5 rounded-xl border border-[var(--border-subtle)] hover:border-[var(--brand-teal)] text-[var(--text-heading)] text-xs font-bold transition-all"
                     >
                       <ExternalLink className="w-3.5 h-3.5 text-[var(--brand-teal)]" />
-                      <span>Verify URL</span>
                     </a>
 
                     {PERMISSIONS.canRevokeCertificate(currentTier) && (
@@ -324,18 +376,27 @@ export const CertificateManager: React.FC = () => {
       {/* ── TAB 2: CERTIFICATE TEMPLATE STUDIO ── */}
       {activeTab === 'templates' && (
         <div className="space-y-6">
-          <div className="flex items-center justify-between p-4 rounded-2xl bg-[var(--bg-surface)] border border-[var(--border-subtle)]">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-2xl bg-[var(--bg-surface)] border border-[var(--border-subtle)]">
             <div>
               <h3 className="font-display font-extrabold text-base text-[var(--text-heading)]">Configured Letterhead Templates ({certificateTemplates.length})</h3>
-              <p className="text-xs text-[var(--text-muted)]">Customize text, clauses, criteria, and branding for every certificate type.</p>
+              <p className="text-xs text-[var(--text-muted)]">Upload custom graphic PDF templates or customize text, clauses, criteria, and branding.</p>
             </div>
-            <button
-              onClick={() => setCreateTemplateModalOpen(true)}
-              className="flex items-center space-x-1.5 px-4 py-2 rounded-xl bg-[var(--brand-teal)] text-white text-xs font-bold shadow-md cursor-pointer hover:bg-[var(--brand-teal-hover)]"
-            >
-              <Plus className="w-4 h-4" />
-              <span>Create New Type</span>
-            </button>
+            <div className="flex items-center space-x-2">
+              <button
+                onClick={() => setUploadPdfModalOpen(true)}
+                className="flex items-center space-x-1.5 px-3.5 py-2 rounded-xl border border-purple-500/40 text-purple-400 hover:bg-purple-500/10 text-xs font-bold cursor-pointer"
+              >
+                <FileUp className="w-4 h-4" />
+                <span>Upload PDF Template</span>
+              </button>
+              <button
+                onClick={() => setCreateTemplateModalOpen(true)}
+                className="flex items-center space-x-1.5 px-3.5 py-2 rounded-xl bg-[var(--brand-teal)] text-white text-xs font-bold shadow-md cursor-pointer hover:bg-[var(--brand-teal-hover)]"
+              >
+                <Plus className="w-4 h-4" />
+                <span>Create New Type</span>
+              </button>
+            </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -344,7 +405,7 @@ export const CertificateManager: React.FC = () => {
                 <div>
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md bg-[var(--brand-teal-subtle)] text-[var(--brand-teal)]">
-                      {tpl.type.replace('_', ' ')}
+                      {tpl.pdfConfig?.backgroundPdfBase64 ? 'Custom Graphic PDF' : tpl.type.replace('_', ' ')}
                     </span>
                     {certificateTemplates.length > 1 && (
                       <button
@@ -382,9 +443,9 @@ export const CertificateManager: React.FC = () => {
                   <span className="text-[11px] text-[var(--text-muted)]">Signatory: <strong>{tpl.signatoryName}</strong></span>
                   <button
                     onClick={() => {
-                      // Generate a sample preview
                       const sampleCert: Certificate = {
                         id: 'sample-preview-token',
+                        templateId: tpl.id,
                         memberId: 'usr-sample',
                         memberName: 'Specialist Candidate',
                         memberDghId: 'DGH2600101',
@@ -407,7 +468,8 @@ export const CertificateManager: React.FC = () => {
                         watermarkText: tpl.watermarkText,
                         contactEmail: tpl.contactEmail,
                         contactPhone: tpl.contactPhone,
-                        contactAddress: tpl.contactAddress
+                        contactAddress: tpl.contactAddress,
+                        pdfConfig: tpl.pdfConfig
                       };
                       setPreviewCert(sampleCert);
                     }}
@@ -624,10 +686,20 @@ export const CertificateManager: React.FC = () => {
 
             <div className="flex justify-end space-x-2 pt-3 border-t border-[var(--border-subtle)]">
               <button type="button" onClick={() => setCreateTemplateModalOpen(false)} className="px-4 py-2 rounded-xl text-xs font-semibold text-[var(--text-muted)]">Cancel</button>
-              <button type="submit" className="px-5 py-2 rounded-xl bg-[var(--brand-teal)] text-white text-xs font-bold">Save Template Type</button>
+              <button type="submit" className="px-5 py-2.5 rounded-xl bg-[var(--brand-teal)] text-white text-xs font-bold">Save Template Type</button>
             </div>
           </form>
         </div>
+      )}
+
+      {/* ── UPLOAD PDF TEMPLATE MODAL ── */}
+      {uploadPdfModalOpen && (
+        <PdfTemplateEditorModal
+          onClose={() => setUploadPdfModalOpen(false)}
+          onSave={(newTpl) => {
+            createCertificateTemplate(newTpl);
+          }}
+        />
       )}
 
       {/* ── PREVIEW & PRINT MODAL ── */}
@@ -643,11 +715,19 @@ export const CertificateManager: React.FC = () => {
               </div>
               <div className="flex items-center space-x-2">
                 <button
+                  onClick={() => handleDownloadPdf(previewCert)}
+                  disabled={isGeneratingPdf}
+                  className="flex items-center space-x-1.5 px-4 py-2 rounded-xl bg-[var(--brand-teal)] text-white text-xs font-bold shadow-md cursor-pointer hover:bg-[var(--brand-teal-hover)] disabled:opacity-50"
+                >
+                  <Download className="w-4 h-4" />
+                  <span>{isGeneratingPdf ? 'Compiling PDF...' : 'Download Stamped PDF'}</span>
+                </button>
+                <button
                   onClick={() => window.print()}
-                  className="flex items-center space-x-1.5 px-4 py-2 rounded-xl bg-[var(--brand-teal)] text-white text-xs font-bold shadow-md cursor-pointer hover:bg-[var(--brand-teal-hover)]"
+                  className="flex items-center space-x-1.5 px-3.5 py-2 rounded-xl border border-[var(--border-subtle)] text-[var(--text-heading)] text-xs font-bold shadow-sm cursor-pointer hover:bg-[var(--bg-subtle)]"
                 >
                   <Printer className="w-4 h-4" />
-                  <span>Print Document</span>
+                  <span>Print View</span>
                 </button>
                 <button
                   onClick={() => setPreviewCert(null)}

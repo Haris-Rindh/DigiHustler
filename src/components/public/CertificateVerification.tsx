@@ -10,6 +10,11 @@ import { QRCodeSVG } from 'qrcode.react';
 import { useApp } from '../../context/AppContext';
 import { SEOHead } from '../seo/SEOHead';
 import { CertificatePrintView } from '../ui/CertificatePrintView';
+import { 
+  generateBuiltInCertificatePdf, 
+  stampCustomPdfTemplate, 
+  downloadPdfFile 
+} from '../../lib/pdfTemplateEngine';
 
 export const CertificateVerification: React.FC = () => {
   const { certId } = useParams<{ certId: string }>();
@@ -23,6 +28,30 @@ export const CertificateVerification: React.FC = () => {
 
   const origin = typeof window !== 'undefined' ? window.location.origin : 'https://digihust.com';
   const currentUrl = `${origin}/verify/${certificate?.id || ''}`;
+
+  const [isDownloadingPdf, setIsDownloadingPdf] = useState(false);
+
+  const handleDownloadPdf = async () => {
+    if (!certificate) return;
+    setIsDownloadingPdf(true);
+    try {
+      const pdfConfig = certificate.pdfConfig;
+      let pdfBytes: Uint8Array;
+      if (pdfConfig?.backgroundPdfBase64) {
+        pdfBytes = await stampCustomPdfTemplate(pdfConfig.backgroundPdfBase64, certificate, currentUrl, pdfConfig);
+      } else {
+        pdfBytes = await generateBuiltInCertificatePdf(certificate, currentUrl);
+      }
+
+      const safeName = `${certificate.memberName.replace(/\s+/g, '_')}_${(certificate.documentTitle || certificate.type).replace(/\s+/g, '_')}`;
+      downloadPdfFile(pdfBytes, safeName);
+    } catch (err) {
+      console.error(err);
+      alert('Error generating PDF document.');
+    } finally {
+      setIsDownloadingPdf(false);
+    }
+  };
 
   const handlePrint = () => {
     window.print();
@@ -133,13 +162,23 @@ export const CertificateVerification: React.FC = () => {
               <span>{copiedLink ? 'Link Copied!' : 'Copy Link'}</span>
             </button>
 
-            {/* Print / Download Button */}
+            {/* Download Stamped PDF Button */}
+            <button
+              onClick={handleDownloadPdf}
+              disabled={isDownloadingPdf}
+              className="flex items-center space-x-1.5 px-4 py-2 rounded-xl bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-white text-xs font-bold shadow-md transition-all cursor-pointer disabled:opacity-50"
+            >
+              <Download className="w-3.5 h-3.5" />
+              <span>{isDownloadingPdf ? 'Compiling PDF...' : 'Download Stamped PDF'}</span>
+            </button>
+
+            {/* Print View Button */}
             <button
               onClick={handlePrint}
-              className="flex items-center space-x-1.5 px-4 py-2 rounded-xl bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-white text-xs font-bold shadow-md transition-all cursor-pointer"
+              className="flex items-center space-x-1.5 px-3.5 py-2 rounded-xl border border-[var(--border-subtle)] text-[var(--text-heading)] text-xs font-bold shadow-sm transition-all cursor-pointer hover:bg-[var(--bg-subtle)]"
             >
               <Printer className="w-3.5 h-3.5" />
-              <span>Print / Save PDF</span>
+              <span>Print View</span>
             </button>
           </div>
         </div>

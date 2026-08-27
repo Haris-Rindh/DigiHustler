@@ -10,6 +10,11 @@ import { PERMISSIONS } from '../../lib/permissions';
 import { BulkImportModal } from './BulkImportModal';
 import { RoleManagementModal } from './RoleManagementModal';
 import { CertificatePrintView } from '../ui/CertificatePrintView';
+import { 
+  generateBuiltInCertificatePdf, 
+  stampCustomPdfTemplate, 
+  downloadPdfFile 
+} from '../../lib/pdfTemplateEngine';
 
 export const PeopleDirectoryView: React.FC = () => {
   const { 
@@ -424,11 +429,33 @@ export const PeopleDirectoryView: React.FC = () => {
               </div>
               <div className="flex items-center space-x-2">
                 <button
-                  onClick={() => window.print()}
+                  onClick={async () => {
+                    if (!generatedCertPreview) return;
+                    const origin = typeof window !== 'undefined' ? window.location.origin : 'https://digihust.com';
+                    const verifyUrl = `${origin}/verify/${generatedCertPreview.id}`;
+                    const matchingTpl = certificateTemplates.find(t => t.id === generatedCertPreview.templateId);
+                    const pdfConfig = generatedCertPreview.pdfConfig || matchingTpl?.pdfConfig;
+
+                    let pdfBytes: Uint8Array;
+                    if (pdfConfig?.backgroundPdfBase64) {
+                      pdfBytes = await stampCustomPdfTemplate(pdfConfig.backgroundPdfBase64, generatedCertPreview, verifyUrl, pdfConfig);
+                    } else {
+                      pdfBytes = await generateBuiltInCertificatePdf(generatedCertPreview, verifyUrl);
+                    }
+                    const safeName = `${generatedCertPreview.memberName.replace(/\s+/g, '_')}_${(generatedCertPreview.documentTitle || generatedCertPreview.type).replace(/\s+/g, '_')}`;
+                    downloadPdfFile(pdfBytes, safeName);
+                  }}
                   className="flex items-center space-x-1.5 px-4 py-2 rounded-xl bg-[var(--brand-teal)] text-white text-xs font-bold shadow-md cursor-pointer hover:bg-[var(--brand-teal-hover)]"
                 >
+                  <Download className="w-4 h-4" />
+                  <span>Download Stamped PDF</span>
+                </button>
+                <button
+                  onClick={() => window.print()}
+                  className="flex items-center space-x-1.5 px-3.5 py-2 rounded-xl border border-[var(--border-subtle)] text-[var(--text-heading)] text-xs font-bold shadow-sm cursor-pointer hover:bg-[var(--bg-subtle)]"
+                >
                   <Printer className="w-4 h-4" />
-                  <span>Print Document</span>
+                  <span>Print</span>
                 </button>
                 <button
                   onClick={() => setGeneratedCertPreview(null)}

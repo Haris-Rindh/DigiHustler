@@ -259,6 +259,30 @@ export interface Assignment {
 export type CertificateType = 'offer_letter' | 'completion_certificate' | 'experience_certificate' | string;
 export type CertificateStatus = 'valid' | 'revoked';
 
+export interface PdfFieldPosition {
+  x: number; // percentage 0-100
+  y: number; // percentage 0-100
+  fontSize?: number;
+  color?: string; // hex color e.g. '#022B3A'
+  align?: 'left' | 'center' | 'right';
+}
+
+export interface PdfTemplateConfig {
+  orientation: 'portrait' | 'landscape';
+  backgroundPdfBase64?: string; // base64 or data URL of the user's custom PDF template
+  backgroundImageUrl?: string; // high-res PNG/JPG template image
+  positions: {
+    recipientName: PdfFieldPosition;
+    memberId?: PdfFieldPosition;
+    roleTitle?: PdfFieldPosition;
+    duration?: PdfFieldPosition;
+    issueDate?: PdfFieldPosition;
+    qrCode: { x: number; y: number; size: number };
+    signatoryName?: PdfFieldPosition;
+    signatoryTitle?: PdfFieldPosition;
+  };
+}
+
 export interface CertificateTemplate {
   id: string;
   name: string; // e.g. "Internship Offer Letter", "Certificate of Completion", "Experience Certificate"
@@ -276,6 +300,7 @@ export interface CertificateTemplate {
   contactEmail?: string;
   contactPhone?: string;
   contactAddress?: string;
+  pdfConfig?: PdfTemplateConfig;
   createdAt?: string;
 }
 
@@ -309,6 +334,7 @@ export interface Certificate {
   contactEmail?: string;
   contactPhone?: string;
   contactAddress?: string;
+  pdfConfig?: PdfTemplateConfig;
 }
 
 // ── ANNOUNCEMENTS TYPES ──────────────────────────────────────────────────────
