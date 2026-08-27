@@ -657,7 +657,80 @@ export const DEFAULT_SITE_CONTENT: SiteContent = {
   customImages: {
     heroImage: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=800&q=80',
     aboutImage: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=800&q=80'
-  }
+  },
+  certificateTemplates: [
+    {
+      id: 'tpl-offer',
+      name: 'Internship Offer Letter',
+      type: 'offer_letter',
+      documentTitle: 'Internship Offer Letter',
+      badgeText: 'Official Verified Offer',
+      defaultDuration: '45 Days (Remote)',
+      introParagraph: 'We are pleased to offer you a {{duration}} internship at DigiHust as a {{roleTitle}}. This period will serve as both a structured learning opportunity and a practical evaluation for potential inclusion in our core managed squads.',
+      bulletPoints: [
+        'Quality of work',
+        'Meeting deadlines',
+        'Communication & teamwork',
+        'Problem-solving',
+        'Ability to follow client requirements'
+      ],
+      revenueClause: 'Successful interns may be selected for the DigiHust core team and assigned real client projects. Compensation will be project-based, with independent project contributors generally receiving 65–70% of the project budget, according to DigiHust\'s revenue-sharing policy.',
+      closingParagraph: 'This internship does not guarantee permanent placement. Continued collaboration will be based on performance, reliability, professionalism, and project requirements. We look forward to having you on board.',
+      signatoryName: 'Mahad Abbas',
+      signatoryTitle: 'Founder & CEO',
+      watermarkText: 'DigiHust',
+      contactEmail: 'contact@digihust.com',
+      contactPhone: '+92 300 1234567',
+      contactAddress: 'Islamabad / Global Remote Operations',
+      createdAt: '2026-08-20'
+    },
+    {
+      id: 'tpl-completion',
+      name: 'Certificate of Completion',
+      type: 'completion_certificate',
+      documentTitle: 'Certificate of Completion',
+      badgeText: 'Verified Completion',
+      defaultDuration: '45 Days Internship Track',
+      introParagraph: 'This is to certify that {{memberName}} (Member ID: {{memberDghId}}) has successfully completed their tenure and trial milestones as a {{roleTitle}} with DigiHust.',
+      bulletPoints: [
+        'Demonstrated high code quality and architectural integrity',
+        'Consistent on-time sprint deliverable submissions',
+        'Proactive team communication and cross-squad collaboration',
+        'Successful execution of real client trial milestones'
+      ],
+      revenueClause: 'Having satisfied all evaluation criteria, the candidate is formally certified for milestone project eligibility under the DigiHust Delivery Network.',
+      closingParagraph: 'We commend their dedication, technical mastery, and professional ethics, and wish them continuous success in their career.',
+      signatoryName: 'Mahad Abbas',
+      signatoryTitle: 'Founder & CEO',
+      watermarkText: 'DigiHust',
+      contactEmail: 'contact@digihust.com',
+      contactPhone: '+92 300 1234567',
+      contactAddress: 'Islamabad / Global Remote Operations',
+      createdAt: '2026-08-20'
+    },
+    {
+      id: 'tpl-experience',
+      name: 'Professional Experience Certificate',
+      type: 'experience_certificate',
+      documentTitle: 'Experience Certificate',
+      badgeText: 'Verified Experience',
+      defaultDuration: '8 Months (Full Retainer)',
+      introParagraph: 'This official experience letter certifies that {{memberName}} (Member ID: {{memberDghId}}) has served as a {{roleTitle}} at DigiHust from {{startDate}} to {{endDate}}.',
+      bulletPoints: [
+        'Full-stack system architecture and frontend engineering',
+        'Client requirements scoping and agile delivery management',
+        'Automated CI/CD workflows and deployment guarantees'
+      ],
+      closingParagraph: 'During their engagement, they exhibited exemplary professionalism, problem-solving skills, and adherence to enterprise SLA benchmarks. We recommend them with complete confidence.',
+      signatoryName: 'Mahad Abbas',
+      signatoryTitle: 'Founder & CEO',
+      watermarkText: 'DigiHust',
+      contactEmail: 'contact@digihust.com',
+      contactPhone: '+92 300 1234567',
+      contactAddress: 'Islamabad / Global Remote Operations',
+      createdAt: '2026-08-20'
+    }
+  ]
 };
 
 // ── INITIAL SECURITY AUDIT LOGS ──────────────────────────────────────────────

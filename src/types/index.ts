@@ -256,15 +256,38 @@ export interface Assignment {
 
 // ── CERTIFICATES & QR VERIFICATION TYPES ─────────────────────────────────────
 
-export type CertificateType = 'offer_letter' | 'experience_certificate';
+export type CertificateType = 'offer_letter' | 'completion_certificate' | 'experience_certificate' | string;
 export type CertificateStatus = 'valid' | 'revoked';
+
+export interface CertificateTemplate {
+  id: string;
+  name: string; // e.g. "Internship Offer Letter", "Certificate of Completion", "Experience Certificate"
+  type: CertificateType;
+  documentTitle: string; // e.g. "Internship Offer Letter", "Certificate of Completion"
+  badgeText?: string; // e.g. "Official Verified", "Honorary Award"
+  defaultDuration?: string; // e.g. "45 Days (Remote)"
+  introParagraph: string; // supports {{memberName}}, {{roleTitle}}, {{duration}}, {{memberId}}
+  bulletPoints?: string[]; // criteria / key milestones
+  revenueClause?: string; // e.g. "65–70% of project budget..."
+  closingParagraph?: string;
+  signatoryName: string; // e.g. "Mahad Abbas"
+  signatoryTitle: string; // e.g. "Founder & CEO"
+  watermarkText?: string; // e.g. "DigiHust"
+  contactEmail?: string;
+  contactPhone?: string;
+  contactAddress?: string;
+  createdAt?: string;
+}
 
 export interface Certificate {
   id: string; // UUID token for unguessable public URL
+  templateId?: string;
   memberId: string;
   memberName: string;
   memberDghId: string;
   type: CertificateType;
+  customTypeName?: string;
+  documentTitle?: string;
   roleTitle: string;
   startDate: string;
   endDate?: string;
@@ -278,8 +301,11 @@ export interface Certificate {
   durationText?: string; // e.g. "45 Days (Remote)"
   stipendTerms?: string; // e.g. "65–70% of the project budget"
   evaluationCriteria?: string[];
+  introParagraph?: string;
+  closingParagraph?: string;
   signatoryName?: string; // e.g. "Mahad Abbas"
   signatoryTitle?: string; // e.g. "Founder & CEO"
+  watermarkText?: string;
   contactEmail?: string;
   contactPhone?: string;
   contactAddress?: string;
@@ -427,6 +453,7 @@ export interface SiteContent {
   about: SiteAboutContent;
   contact: SiteContactContent;
   customImages: Record<string, string>;
+  certificateTemplates?: CertificateTemplate[];
 }
 
 // ── SECURITY & PERMISSION AUDIT LOG TYPES ────────────────────────────────────

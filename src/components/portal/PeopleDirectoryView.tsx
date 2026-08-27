@@ -2,18 +2,20 @@ import React, { useState } from 'react';
 import { 
   Users, Mail, Shield, Send, CheckCircle2, AlertCircle, Plus, 
   FileSpreadsheet, Sparkles, Filter, Search, UserCheck, Key, Lock, History, 
-  ShieldCheck, Settings, UserPlus, Ban, Check, X 
+  ShieldCheck, Settings, UserPlus, Ban, Check, X, Award, Printer, Eye 
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
-import { User as UserType, UserRoleTier, GroupId } from '../../types';
+import { User as UserType, UserRoleTier, GroupId, Certificate } from '../../types';
 import { PERMISSIONS } from '../../lib/permissions';
 import { BulkImportModal } from './BulkImportModal';
 import { RoleManagementModal } from './RoleManagementModal';
+import { CertificatePrintView } from '../ui/CertificatePrintView';
 
 export const PeopleDirectoryView: React.FC = () => {
   const { 
     users, groups, currentTier, currentUser, sendBatchCredentials, 
-    auditLogs, createUserAccount, resetUserPasswordByCeo, toggleUserAccountStatus 
+    auditLogs, createUserAccount, resetUserPasswordByCeo, toggleUserAccountStatus,
+    certificateTemplates, generateMemberCertificate 
   } = useApp();
 
   const [searchQuery, setSearchQuery] = useState('');
@@ -27,6 +29,14 @@ export const PeopleDirectoryView: React.FC = () => {
   const [selectedUserForRole, setSelectedUserForRole] = useState<UserType | null>(null);
   const [dispatchResult, setDispatchResult] = useState<{ count: number; memberNames: string[] } | null>(null);
 
+  // Certificate Generator Modal States
+  const [certModalUser, setCertModalUser] = useState<UserType | null>(null);
+  const [selectedTemplateId, setSelectedTemplateId] = useState<string>('');
+  const [customRoleTitle, setCustomRoleTitle] = useState('');
+  const [customDuration, setCustomDuration] = useState('');
+  const [customClient, setCustomClient] = useState('DigiHust Engineering Squad Core');
+  const [generatedCertPreview, setGeneratedCertPreview] = useState<Certificate | null>(null);
+
   // New Account Draft
   const [newAccName, setNewAccName] = useState('');
   const [newAccEmail, setNewAccEmail] = useState('');
@@ -36,10 +46,6 @@ export const PeopleDirectoryView: React.FC = () => {
   const [newAccPassword, setNewAccPassword] = useState('');
   const [createFeedback, setCreateFeedback] = useState<{ success?: boolean; message?: string } | null>(null);
 
-  // Determine which users are visible based on 4-Tier Access Matrix:
-  // - CEO & Manager: All users
-  // - Group Leader: Members in own squad
-  // - Member: Self only
   const visibleUsers = users.filter((u) => {
     if (currentTier === 'ceo' || currentTier === 'manager') return true;
     if (currentTier === 'group_leader') return u.groupId === currentUser.groupId;
@@ -54,6 +60,31 @@ export const PeopleDirectoryView: React.FC = () => {
     const matchesSquad = selectedSquad === 'all' || u.groupId === selectedSquad;
     return matchesSearch && matchesSquad;
   });
+
+  const handleOpenCertModal = (user: UserType) => {
+    setCertModalUser(user);
+    const defaultTpl = certificateTemplates[0];
+    setSelectedTemplateId(defaultTpl ? defaultTpl.id : '');
+    setCustomRoleTitle(user.title || 'Specialist');
+    setCustomDuration(defaultTpl?.defaultDuration || '45 Days (Remote)');
+    setCustomClient('DigiHust Engineering Squad Core');
+  };
+
+  const handleGenerateCertificateSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!certModalUser) return;
+
+    const tpl = certificateTemplates.find(t => t.id === selectedTemplateId) || certificateTemplates[0];
+    const cert = generateMemberCertificate(certModalUser.id, tpl.id, {
+      roleTitle: customRoleTitle,
+      durationText: customDuration,
+      clientName: customClient,
+      documentTitle: tpl.documentTitle || tpl.name
+    });
+
+    setCertModalUser(null);
+    setGeneratedCertPreview(cert);
+  };
 
   const handleCreateAccountSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -107,6 +138,8 @@ export const PeopleDirectoryView: React.FC = () => {
     }
   };
 
+  const origin = typeof window !== 'undefined' ? window.location.origin : 'https://digihust.com';
+
   return (
     <div className="max-w-7xl mx-auto px-4 lg:px-8 py-8 space-y-8">
       
@@ -123,7 +156,7 @@ export const PeopleDirectoryView: React.FC = () => {
           <p className="text-xs sm:text-sm text-[var(--text-body)]">
             {currentTier === 'group_leader'
               ? `Manage your active squad members, capacity, and assignments.`
-              : `Manage permanent DGH identities, password access, roles, and credential governance.`}
+              : `Manage permanent DGH identities, password access, roles, and 1-click certificate generation.`}
           </p>
         </div>
 
@@ -248,40 +281,171 @@ export const PeopleDirectoryView: React.FC = () => {
                 </div>
               </div>
 
-              {/* Action Controls for CEO */}
-              {PERMISSIONS.isCeoMaster(currentUser) && (
-                <div className="pt-3 border-t border-[var(--border-subtle)] flex items-center justify-between gap-1 text-[11px]">
+              {/* Action Controls for CEO & Management */}
+              <div className="pt-3 border-t border-[var(--border-subtle)] flex flex-wrap items-center justify-between gap-1.5 text-[11px]">
+                {/* 1-Click Generate Certificate / Letter Button */}
+                {PERMISSIONS.canIssueCertificate(currentTier) && (
                   <button
-                    onClick={() => setSelectedUserForRole(u)}
-                    className="flex items-center space-x-1 px-2.5 py-1 rounded-lg bg-[var(--brand-teal-subtle)] border border-[var(--brand-teal)]/30 text-[var(--brand-teal)] hover:bg-[var(--brand-teal)] hover:text-white text-[10px] font-bold transition-all cursor-pointer"
+                    onClick={() => handleOpenCertModal(u)}
+                    className="flex items-center space-x-1 px-3 py-1.5 rounded-xl bg-[var(--brand-teal)] text-white text-[11px] font-bold shadow-sm hover:bg-[var(--brand-teal-hover)] transition-all cursor-pointer"
                   >
-                    <Shield className="w-3 h-3" />
-                    <span>Role</span>
+                    <Award className="w-3.5 h-3.5" />
+                    <span>Generate Cert / Letter</span>
                   </button>
+                )}
 
-                  <button
-                    onClick={() => setResetPwdUser(u)}
-                    className="flex items-center space-x-1 px-2.5 py-1 rounded-lg border border-[var(--border-subtle)] hover:border-[var(--brand-teal)] text-[var(--text-heading)] text-[10px] font-bold transition-all cursor-pointer"
-                  >
-                    <Key className="w-3 h-3 text-amber-400" />
-                    <span>Reset Pass</span>
-                  </button>
+                {PERMISSIONS.isCeoMaster(currentUser) && (
+                  <div className="flex items-center space-x-1">
+                    <button
+                      onClick={() => setSelectedUserForRole(u)}
+                      className="flex items-center space-x-1 px-2.5 py-1.5 rounded-xl bg-[var(--brand-teal-subtle)] border border-[var(--brand-teal)]/30 text-[var(--brand-teal)] hover:bg-[var(--brand-teal)] hover:text-white text-[10px] font-bold transition-all cursor-pointer"
+                    >
+                      <Shield className="w-3 h-3" />
+                      <span>Role</span>
+                    </button>
 
-                  <button
-                    onClick={() => toggleUserAccountStatus(u.id, 'CEO Discretion')}
-                    className={`p-1.5 rounded-lg text-[10px] font-bold transition-all cursor-pointer ${
-                      isSuspended ? 'bg-emerald-500/10 text-emerald-400' : 'bg-rose-500/10 text-rose-400 hover:bg-rose-500/20'
-                    }`}
-                    title={isSuspended ? 'Activate Account' : 'Suspend Account'}
-                  >
-                    <Ban className="w-3.5 h-3.5" />
-                  </button>
-                </div>
-              )}
+                    <button
+                      onClick={() => setResetPwdUser(u)}
+                      className="flex items-center space-x-1 px-2.5 py-1.5 rounded-xl border border-[var(--border-subtle)] hover:border-[var(--brand-teal)] text-[var(--text-heading)] text-[10px] font-bold transition-all cursor-pointer"
+                      title="Reset Password"
+                    >
+                      <Key className="w-3 h-3 text-amber-400" />
+                    </button>
+
+                    <button
+                      onClick={() => toggleUserAccountStatus(u.id, 'CEO Discretion')}
+                      className={`p-1.5 rounded-xl text-[10px] font-bold transition-all cursor-pointer ${
+                        isSuspended ? 'bg-emerald-500/10 text-emerald-400' : 'bg-rose-500/10 text-rose-400 hover:bg-rose-500/20'
+                      }`}
+                      title={isSuspended ? 'Activate Account' : 'Suspend Account'}
+                    >
+                      <Ban className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
           );
         })}
       </div>
+
+      {/* ── 1-CLICK GENERATE CERTIFICATE MODAL ── */}
+      {certModalUser && (
+        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+          <form onSubmit={handleGenerateCertificateSubmit} className="bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl space-y-4 animate-in fade-in zoom-in-95 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between pb-3 border-b border-[var(--border-subtle)]">
+              <div className="flex items-center space-x-2">
+                <Award className="w-5 h-5 text-[var(--brand-teal)]" />
+                <h3 className="font-bold text-base text-[var(--text-heading)]">
+                  Generate Certificate for {certModalUser.name}
+                </h3>
+              </div>
+              <button type="button" onClick={() => setCertModalUser(null)}><X className="w-5 h-5" /></button>
+            </div>
+
+            <div className="p-3.5 rounded-2xl bg-[var(--bg-page)] border border-[var(--border-subtle)] flex items-center space-x-3">
+              <img src={certModalUser.avatarUrl} alt={certModalUser.name} className="w-10 h-10 rounded-full object-cover" />
+              <div>
+                <p className="font-bold text-xs text-[var(--text-heading)]">{certModalUser.name}</p>
+                <p className="text-[11px] font-mono text-[var(--brand-teal)]">{certModalUser.memberId}</p>
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold uppercase text-[var(--text-muted)] mb-1">Select Certificate Template</label>
+              <select
+                required
+                value={selectedTemplateId}
+                onChange={(e) => {
+                  setSelectedTemplateId(e.target.value);
+                  const tpl = certificateTemplates.find(t => t.id === e.target.value);
+                  if (tpl?.defaultDuration) setCustomDuration(tpl.defaultDuration);
+                }}
+                className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3.5 py-2.5 text-xs text-[var(--text-heading)] font-semibold"
+              >
+                {certificateTemplates.map(t => (
+                  <option key={t.id} value={t.id}>{t.name} ({t.documentTitle})</option>
+                ))}
+              </select>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="block text-xs font-bold uppercase text-[var(--text-muted)] mb-1">Designation / Role Title</label>
+                <input
+                  type="text"
+                  required
+                  value={customRoleTitle}
+                  onChange={(e) => setCustomRoleTitle(e.target.value)}
+                  className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs text-[var(--text-heading)]"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold uppercase text-[var(--text-muted)] mb-1">Duration Tag</label>
+                <input
+                  type="text"
+                  value={customDuration}
+                  onChange={(e) => setCustomDuration(e.target.value)}
+                  placeholder="e.g. 45 Days (Remote)"
+                  className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs text-[var(--text-heading)]"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold uppercase text-[var(--text-muted)] mb-1">Squad / Scope Reference</label>
+              <input
+                type="text"
+                value={customClient}
+                onChange={(e) => setCustomClient(e.target.value)}
+                className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs text-[var(--text-heading)]"
+              />
+            </div>
+
+            <div className="flex justify-end space-x-2 pt-3 border-t border-[var(--border-subtle)]">
+              <button type="button" onClick={() => setCertModalUser(null)} className="px-4 py-2 rounded-xl text-xs font-semibold text-[var(--text-muted)]">Cancel</button>
+              <button type="submit" className="px-5 py-2.5 rounded-xl bg-[var(--brand-teal)] text-white text-xs font-bold shadow-md">Generate & Open Preview</button>
+            </div>
+          </form>
+        </div>
+      )}
+
+      {/* ── GENERATED CERTIFICATE PREVIEW MODAL ── */}
+      {generatedCertPreview && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+          <div className="bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-3xl p-6 sm:p-8 max-w-4xl w-full shadow-2xl space-y-6 my-auto max-h-[92vh] overflow-y-auto">
+            <div className="flex items-center justify-between pb-4 border-b border-[var(--border-subtle)] print:hidden">
+              <div className="flex items-center space-x-2">
+                <Award className="w-5 h-5 text-[var(--brand-teal)]" />
+                <h3 className="font-bold text-lg text-[var(--text-heading)]">
+                  Generated Document: {generatedCertPreview.memberName}
+                </h3>
+              </div>
+              <div className="flex items-center space-x-2">
+                <button
+                  onClick={() => window.print()}
+                  className="flex items-center space-x-1.5 px-4 py-2 rounded-xl bg-[var(--brand-teal)] text-white text-xs font-bold shadow-md cursor-pointer hover:bg-[var(--brand-teal-hover)]"
+                >
+                  <Printer className="w-4 h-4" />
+                  <span>Print Document</span>
+                </button>
+                <button
+                  onClick={() => setGeneratedCertPreview(null)}
+                  className="p-2 rounded-xl text-[var(--text-muted)] hover:text-[var(--text-heading)]"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
+
+            {/* Letterhead Render */}
+            <div className="flex justify-center bg-slate-100 p-4 sm:p-6 rounded-2xl overflow-x-auto">
+              <CertificatePrintView certificate={generatedCertPreview} verificationUrl={`${origin}/verify/${generatedCertPreview.id}`} />
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Create Account Modal (CEO Authority) */}
       {createAccountModalOpen && (

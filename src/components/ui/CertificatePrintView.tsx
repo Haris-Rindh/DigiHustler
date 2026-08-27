@@ -16,10 +16,28 @@ export const CertificatePrintView: React.FC<CertificatePrintViewProps> = ({
   const fullVerificationUrl = verificationUrl || `${origin}/verify/${certificate.id}`;
 
   const isOfferLetter = certificate.type === 'offer_letter';
-  const title = isOfferLetter ? 'Internship Offer Letter' : 'Experience Certificate';
-  const duration = certificate.durationText || (isOfferLetter ? '45 Days (Remote)' : '6 Months (Full Scope)');
+  const isCompletion = certificate.type === 'completion_certificate';
+  const isExperience = certificate.type === 'experience_certificate';
+
+  const title = certificate.documentTitle || (
+    isOfferLetter 
+      ? 'Internship Offer Letter' 
+      : isCompletion 
+        ? 'Certificate of Completion' 
+        : 'Experience Certificate'
+  );
+
+  const duration = certificate.durationText || (
+    isOfferLetter 
+      ? '45 Days (Remote)' 
+      : isCompletion 
+        ? '45 Days Internship Track' 
+        : '8 Months (Full Retainer)'
+  );
+
   const signatoryName = certificate.signatoryName || 'Mahad Abbas';
   const signatoryTitle = certificate.signatoryTitle || 'Founder & CEO';
+  const watermark = certificate.watermarkText || 'DigiHust';
 
   // Format date to e.g. "September 01, 2026"
   const formattedDate = (() => {
@@ -30,6 +48,18 @@ export const CertificatePrintView: React.FC<CertificatePrintViewProps> = ({
       return certificate.issuedDate;
     }
   })();
+
+  // Dynamic Placeholder Interpolation Helper
+  const interpolate = (text: string) => {
+    return text
+      .replace(/{{memberName}}/g, certificate.memberName)
+      .replace(/{{memberId}}/g, certificate.memberDghId)
+      .replace(/{{roleTitle}}/g, certificate.roleTitle)
+      .replace(/{{duration}}/g, duration)
+      .replace(/{{startDate}}/g, certificate.startDate)
+      .replace(/{{endDate}}/g, certificate.endDate || 'Present')
+      .replace(/{{clientName}}/g, certificate.clientName);
+  };
 
   const evaluationList = certificate.evaluationCriteria || [
     'Quality of work',
@@ -49,7 +79,7 @@ export const CertificatePrintView: React.FC<CertificatePrintViewProps> = ({
       >
         {Array.from({ length: 48 }).map((_, i) => (
           <span key={i} className="font-display font-black text-2xl tracking-widest text-[#1F7A8C]">
-            DigiHust
+            {watermark}
           </span>
         ))}
       </div>
@@ -86,7 +116,7 @@ export const CertificatePrintView: React.FC<CertificatePrintViewProps> = ({
               <p className="font-extrabold text-lg text-slate-900 leading-snug">{certificate.memberName}</p>
               <p className="text-slate-700 font-medium text-xs mt-0.5">{certificate.roleTitle}</p>
               <p className="text-slate-500 font-medium text-xs mt-0.5">
-                {isOfferLetter ? `Internship Duration: ${duration}` : `Engagement Duration: ${duration}`}
+                {isOfferLetter ? `Internship Duration: ${duration}` : isCompletion ? `Duration: ${duration}` : `Engagement Duration: ${duration}`}
               </p>
               <p className="font-mono text-xs text-[#1F7A8C] font-semibold mt-1">
                 Member ID: {certificate.memberDghId}
@@ -108,59 +138,78 @@ export const CertificatePrintView: React.FC<CertificatePrintViewProps> = ({
               Dear {certificate.memberName},
             </p>
 
-            {isOfferLetter ? (
-              <>
-                <p>
-                  We are pleased to offer you a <strong>{duration}</strong> internship at DigiHust as a{' '}
-                  <strong className="text-slate-900">{certificate.roleTitle}</strong>. This period will serve as both a structured learning opportunity and a practical evaluation for potential inclusion in our core managed squads.
-                </p>
+            {/* Custom Intro or Default Templates */}
+            {certificate.introParagraph ? (
+              <p>{interpolate(certificate.introParagraph)}</p>
+            ) : isOfferLetter ? (
+              <p>
+                We are pleased to offer you a <strong>{duration}</strong> internship at DigiHust as a{' '}
+                <strong className="text-slate-900">{certificate.roleTitle}</strong>. This period will serve as both a structured learning opportunity and a practical evaluation for potential inclusion in our core managed squads.
+              </p>
+            ) : isCompletion ? (
+              <p>
+                This is to certify that <strong>{certificate.memberName}</strong> (Member ID: <span className="font-mono font-semibold">{certificate.memberDghId}</span>) has successfully completed their tenure and trial milestones as a{' '}
+                <strong className="text-slate-900">{certificate.roleTitle}</strong> with DigiHust.
+              </p>
+            ) : (
+              <p>
+                This official experience letter certifies that <strong>{certificate.memberName}</strong> (<span className="font-mono font-semibold">{certificate.memberDghId}</span>) has successfully completed their tenure at DigiHust as a{' '}
+                <strong className="text-slate-900">{certificate.roleTitle}</strong> from <strong>{certificate.startDate}</strong> {certificate.endDate ? `to ${certificate.endDate}` : 'to Present'}.
+              </p>
+            )}
 
+            {/* Evaluation Checklist / Milestones */}
+            {evaluationList && evaluationList.length > 0 && (
+              <>
                 <p className="font-semibold text-slate-800 pt-1">
-                  During the internship, you will work on assigned client & trial projects and will be evaluated on:
+                  {isOfferLetter 
+                    ? 'During the internship, you will work on assigned trial projects and will be evaluated on:' 
+                    : isCompletion 
+                      ? 'Key performance achievements and milestones demonstrated:' 
+                      : 'Core areas of technical contribution and execution:'}
                 </p>
 
                 <ul className="space-y-1.5 pl-4">
                   {evaluationList.map((crit) => (
                     <li key={crit} className="flex items-center space-x-2 text-slate-800">
                       <span className="w-1.5 h-1.5 rounded-full bg-[#1F7A8C] flex-shrink-0" />
-                      <span>{crit}</span>
+                      <span>{interpolate(crit)}</span>
                     </li>
                   ))}
                 </ul>
-
-                <p className="pt-2">
-                  Successful interns may be selected for the DigiHust core team and assigned real client projects. Compensation will be project-based, with independent project contributors generally receiving{' '}
-                  <strong className="text-slate-900">{certificate.stipendTerms || '65–70% of the project budget, according to DigiHust\'s revenue-sharing policy'}</strong>.
-                </p>
-
-                <p>
-                  This internship does not guarantee permanent placement. Continued collaboration will be based on performance, reliability, professionalism, and project requirements.
-                </p>
-
-                <p className="font-medium pt-1">
-                  We look forward to having you on board.
-                </p>
               </>
+            )}
+
+            {/* Scope / Revenue Clause */}
+            {isOfferLetter && (
+              <p className="pt-2">
+                Successful interns may be selected for the DigiHust core team and assigned real client projects. Compensation will be project-based, with independent project contributors generally receiving{' '}
+                <strong className="text-slate-900">{certificate.stipendTerms || '65–70% of the project budget, according to DigiHust\'s revenue-sharing policy'}</strong>.
+              </p>
+            )}
+
+            {isExperience && (
+              <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 text-xs space-y-1 my-3">
+                <p className="font-bold text-slate-900">Verified Client Account & Project Scope:</p>
+                <p className="text-slate-700">{certificate.clientName} — {certificate.projectDetails}</p>
+              </div>
+            )}
+
+            {/* Closing Paragraph */}
+            {certificate.closingParagraph ? (
+              <p>{interpolate(certificate.closingParagraph)}</p>
+            ) : isOfferLetter ? (
+              <p>
+                This internship does not guarantee permanent placement. Continued collaboration will be based on performance, reliability, professionalism, and project requirements. We look forward to having you on board.
+              </p>
+            ) : isCompletion ? (
+              <p>
+                We commend their dedication, technical mastery, and professional ethics, and wish them continuous success in their career journey.
+              </p>
             ) : (
-              <>
-                <p>
-                  This official experience letter certifies that <strong>{certificate.memberName}</strong> (<span className="font-mono font-semibold">{certificate.memberDghId}</span>) has successfully completed their tenure at DigiHust as a{' '}
-                  <strong className="text-slate-900">{certificate.roleTitle}</strong>.
-                </p>
-
-                <p>
-                  During their engagement from <strong>{certificate.startDate}</strong> {certificate.endDate ? `to ${certificate.endDate}` : 'to Present'}, they demonstrated exceptional technical competency, accountability, and teamwork.
-                </p>
-
-                <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 text-xs space-y-1 my-3">
-                  <p className="font-bold text-slate-900">Verified Client Account & Project Scope:</p>
-                  <p className="text-slate-700">{certificate.clientName} — {certificate.projectDetails}</p>
-                </div>
-
-                <p>
-                  We commend their contributions to the DigiHust delivery ecosystem and recommend them with confidence for future enterprise opportunities.
-                </p>
-              </>
+              <p>
+                We commend their contributions to the DigiHust delivery ecosystem and recommend them with confidence for future enterprise opportunities.
+              </p>
             )}
           </div>
         </div>

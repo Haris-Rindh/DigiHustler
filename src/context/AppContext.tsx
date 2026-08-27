@@ -3,7 +3,7 @@ import {
   User, Group, Lead, Project, Payout, Applicant, GlobalAdminSettings, PipelineStage, 
   Deliverable, Comment, ProjectAssignment, GroupId, UserRole, UserRoleTier, UserStatus, 
   SplitOverride, Assignment, SubTask, Milestone, Certificate, CertificateType, CertificateStatus, 
-  Announcement, AnnouncementScope, SiteContent, SecurityAuditLog,
+  CertificateTemplate, Announcement, AnnouncementScope, SiteContent, SecurityAuditLog,
   SiteCaseStudy, SiteTestimonial, SiteServiceItem, SitePackage, SiteTeamMember, SiteFAQ, SiteValueProp
 } from '../types';
 import { 
@@ -80,8 +80,13 @@ interface AppContextType {
   addAssignmentDeliverable: (assignmentId: string, title: string, linkUrl?: string, notes?: string) => void;
   addAssignmentComment: (assignmentId: string, text: string) => void;
 
-  // Certificate Actions
+  // Certificate & Template Actions
+  certificateTemplates: CertificateTemplate[];
   issueCertificate: (certData: Omit<Certificate, 'id' | 'issuedDate' | 'status' | 'qrCodeUrl'>) => Certificate;
+  generateMemberCertificate: (memberId: string, templateId: string, overrides?: Partial<Certificate>) => Certificate;
+  createCertificateTemplate: (templateData: Omit<CertificateTemplate, 'id' | 'createdAt'>) => CertificateTemplate;
+  updateCertificateTemplate: (templateId: string, updates: Partial<CertificateTemplate>) => void;
+  deleteCertificateTemplate: (templateId: string) => void;
   revokeCertificate: (certId: string, reason?: string) => void;
   restoreCertificate: (certId: string) => void;
 
@@ -716,7 +721,105 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     setAssignments(prev => prev.map(a => a.id === assignmentId ? { ...a, comments: [...a.comments, newComment] } : a));
   };
 
-  // ── CERTIFICATE ACTIONS ───────────────────────────────────────────────────
+  // ── CERTIFICATE & TEMPLATE ACTIONS ────────────────────────────────────────
+
+  const certificateTemplates = siteContent.certificateTemplates || DEFAULT_SITE_CONTENT.certificateTemplates || [];
+
+  const createCertificateTemplate = (templateData: Omit<CertificateTemplate, 'id' | 'createdAt'>): CertificateTemplate => {
+    const newTpl: CertificateTemplate = {
+      ...templateData,
+      id: `tpl-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+      createdAt: new Date().toISOString().split('T')[0]
+    };
+
+    setSiteContent(prev => ({
+      ...prev,
+      certificateTemplates: [...(prev.certificateTemplates || []), newTpl]
+    }));
+
+    const auditEntry: SecurityAuditLog = {
+      id: `audit-${Date.now()}`,
+      timestamp: new Date().toISOString(),
+      actorId: currentUser.id,
+      actorName: currentUser.name,
+      actorRole: currentTier,
+      action: 'CMS_UPDATED',
+      details: `Created new certificate template: ${newTpl.name}`
+    };
+    setAuditLogs(prev => [auditEntry, ...prev]);
+
+    return newTpl;
+  };
+
+  const updateCertificateTemplate = (templateId: string, updates: Partial<CertificateTemplate>) => {
+    setSiteContent(prev => ({
+      ...prev,
+      certificateTemplates: (prev.certificateTemplates || []).map(t => t.id === templateId ? { ...t, ...updates } : t)
+    }));
+  };
+
+  const deleteCertificateTemplate = (templateId: string) => {
+    setSiteContent(prev => ({
+      ...prev,
+      certificateTemplates: (prev.certificateTemplates || []).filter(t => t.id !== templateId)
+    }));
+  };
+
+  const generateMemberCertificate = (memberId: string, templateId: string, overrides?: Partial<Certificate>): Certificate => {
+    const member = users.find(u => u.id === memberId);
+    const template = certificateTemplates.find(t => t.id === templateId) || certificateTemplates[0];
+
+    const uuidPrefix = template?.type === 'offer_letter' ? 'off' : template?.type === 'completion_certificate' ? 'cmp' : 'exp';
+    const uuidToken = `cert-${uuidPrefix}-${Math.random().toString(36).substring(2, 10)}-${Date.now().toString(36)}`;
+
+    const newCert: Certificate = {
+      id: uuidToken,
+      templateId: template?.id,
+      memberId: member?.id || memberId,
+      memberName: member?.name || overrides?.memberName || 'Specialist',
+      memberDghId: member?.memberId || overrides?.memberDghId || 'DGH2600101',
+      type: template?.type || overrides?.type || 'offer_letter',
+      documentTitle: overrides?.documentTitle || template?.documentTitle || template?.name,
+      roleTitle: overrides?.roleTitle || member?.title || 'Specialist',
+      startDate: overrides?.startDate || new Date().toISOString().split('T')[0],
+      endDate: overrides?.endDate,
+      issuedDate: new Date().toISOString().split('T')[0],
+      status: 'valid',
+      clientName: overrides?.clientName || 'DigiHust Engineering Squad Core',
+      projectDetails: overrides?.projectDetails || 'Assigned to enterprise trial milestones and client deliverables under managed SLA standards.',
+      issuedBy: `${currentUser.name}, ${currentUser.roleTier?.toUpperCase() || 'Management'}`,
+      qrCodeUrl: `/verify/${uuidToken}`,
+      durationText: overrides?.durationText || template?.defaultDuration || '45 Days (Remote)',
+      stipendTerms: overrides?.stipendTerms || template?.revenueClause,
+      evaluationCriteria: overrides?.evaluationCriteria || template?.bulletPoints,
+      introParagraph: overrides?.introParagraph || template?.introParagraph,
+      closingParagraph: overrides?.closingParagraph || template?.closingParagraph,
+      signatoryName: overrides?.signatoryName || template?.signatoryName || 'Mahad Abbas',
+      signatoryTitle: overrides?.signatoryTitle || template?.signatoryTitle || 'Founder & CEO',
+      watermarkText: overrides?.watermarkText || template?.watermarkText || 'DigiHust',
+      contactEmail: overrides?.contactEmail || template?.contactEmail || 'contact@digihust.com',
+      contactPhone: overrides?.contactPhone || template?.contactPhone || '+92 300 1234567',
+      contactAddress: overrides?.contactAddress || template?.contactAddress || 'Islamabad / Global Remote Operations',
+      ...overrides
+    };
+
+    setCertificates(prev => [newCert, ...prev]);
+
+    const auditEntry: SecurityAuditLog = {
+      id: `audit-${Date.now()}`,
+      timestamp: new Date().toISOString(),
+      actorId: currentUser.id,
+      actorName: currentUser.name,
+      actorRole: currentTier,
+      action: 'CERTIFICATE_ISSUED',
+      targetId: newCert.memberId,
+      targetName: newCert.memberName,
+      details: `Generated ${newCert.documentTitle || newCert.type} for ${newCert.memberName} (${newCert.memberDghId}) with unique QR code.`
+    };
+    setAuditLogs(prev => [auditEntry, ...prev]);
+
+    return newCert;
+  };
 
   const issueCertificate = (certData: Omit<Certificate, 'id' | 'issuedDate' | 'status' | 'qrCodeUrl'>): Certificate => {
     const uuidToken = `cert-${certData.type === 'offer_letter' ? 'off' : 'exp'}-${Math.random().toString(36).substring(2, 10)}-${Date.now().toString(36)}`;
@@ -1197,8 +1300,13 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         addAssignmentDeliverable,
         addAssignmentComment,
 
-        // Certificates
+        // Certificates & Templates
+        certificateTemplates,
         issueCertificate,
+        generateMemberCertificate,
+        createCertificateTemplate,
+        updateCertificateTemplate,
+        deleteCertificateTemplate,
         revokeCertificate,
         restoreCertificate,
 
