@@ -14,6 +14,8 @@ import {
 import { getNextMemberId } from '../lib/memberIdGenerator';
 import { getUserRoleTier, PERMISSIONS } from '../lib/permissions';
 import { quickHashSync } from '../lib/crypto';
+import { dbService } from '../lib/dbService';
+import { isSupabaseConfigured } from '../lib/supabase';
 
 interface AppContextType {
   // Auth & Session
@@ -198,7 +200,26 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     return saved ? JSON.parse(saved) : INITIAL_AUDIT_LOGS;
   });
 
-  // Sync to LocalStorage
+  // ── CLOUD DATABASE INITIALIZATION (Supabase PostgreSQL) ───────────────────
+  useEffect(() => {
+    if (!isSupabaseConfigured) return;
+
+    dbService.fetchInitialData().then((cloudData) => {
+      if (!cloudData) return;
+      if (cloudData.users && cloudData.users.length > 0) setUsers(cloudData.users);
+      if (cloudData.leads && cloudData.leads.length > 0) setLeads(cloudData.leads);
+      if (cloudData.projects && cloudData.projects.length > 0) setProjects(cloudData.projects);
+      if (cloudData.assignments && cloudData.assignments.length > 0) setAssignments(cloudData.assignments);
+      if (cloudData.certificates && cloudData.certificates.length > 0) setCertificates(cloudData.certificates);
+      if (cloudData.announcements && cloudData.announcements.length > 0) setAnnouncements(cloudData.announcements);
+      if (cloudData.siteContent) setSiteContent(cloudData.siteContent);
+      if (cloudData.auditLogs && cloudData.auditLogs.length > 0) setAuditLogs(cloudData.auditLogs);
+    }).catch(err => {
+      console.warn('Cloud sync on mount failed, using local cache:', err);
+    });
+  }, []);
+
+  // Sync to LocalStorage (Offline Resilience)
   useEffect(() => {
     localStorage.setItem(`${LOCAL_STORAGE_KEY}_users`, JSON.stringify(users));
   }, [users]);
