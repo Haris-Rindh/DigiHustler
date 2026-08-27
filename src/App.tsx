@@ -22,9 +22,14 @@ import { Team } from './components/public/Team';
 import { Blog } from './components/public/Blog';
 import { BlogPost } from './components/public/BlogPost';
 import { Contact } from './components/public/Contact';
+import { Apply } from './components/public/Apply';
 import { PrivacyPolicy } from './components/public/PrivacyPolicy';
 import { TermsOfService } from './components/public/TermsOfService';
 import { CertificateVerification } from './components/public/CertificateVerification';
+import { SaasDevelopmentLanding } from './components/public/LandingPages/SaasDevelopmentLanding';
+import { AiAutomationLanding } from './components/public/LandingPages/AiAutomationLanding';
+import { DesignSystemLanding } from './components/public/LandingPages/DesignSystemLanding';
+import { ClientProjectTracker } from './components/public/ClientProjectTracker';
 
 // Portal & Tiered Management System
 import { PortalLogin } from './components/portal/PortalLogin';
@@ -102,8 +107,19 @@ export const App: React.FC = () => {
                 <Route path="/blog" element={<Blog />} />
                 <Route path="/blog/:slug" element={<BlogPost />} />
                 <Route path="/contact" element={<Contact />} />
+                <Route path="/apply" element={<Apply />} />
                 <Route path="/privacy" element={<PrivacyPolicy />} />
                 <Route path="/terms" element={<TermsOfService />} />
+
+                {/* ── High-Intent International SEO Landing Pages ── */}
+                <Route path="/services/saas-mvp-development" element={<SaasDevelopmentLanding />} />
+                <Route path="/services/ai-workflow-automation" element={<AiAutomationLanding />} />
+                <Route path="/services/brand-identity-design-system" element={<DesignSystemLanding />} />
+
+                {/* ── Private Client Live Project Tracker ── */}
+                <Route path="/project/track/:trackingToken" element={<ClientProjectTracker />} />
+                <Route path="/project/track" element={<ClientProjectTracker />} />
+                <Route path="/project/view" element={<ClientProjectTracker />} />
 
                 {/* ── Public Unauthenticated Certificate Verification ── */}
                 <Route path="/verify/:certId" element={<CertificateVerification />} />

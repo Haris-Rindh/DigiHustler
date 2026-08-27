@@ -145,7 +145,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
     const savedAuth = localStorage.getItem(`${LOCAL_STORAGE_KEY}_is_authenticated`);
-    return savedAuth ? JSON.parse(savedAuth) : true;
+    return savedAuth ? JSON.parse(savedAuth) : false;
   });
 
   const [groups] = useState<Group[]>(INITIAL_GROUPS);
@@ -305,6 +305,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   const logout = () => {
     setIsAuthenticated(false);
+    localStorage.setItem(`${LOCAL_STORAGE_KEY}_is_authenticated`, JSON.stringify(false));
   };
 
   const changePassword = (newPassword: string): { success: boolean; error?: string } => {

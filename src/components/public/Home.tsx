@@ -203,8 +203,31 @@ export const Home: React.FC = () => {
   const { siteContent } = useApp();
 
   const hero = siteContent?.hero;
-  const caseStudies = siteContent?.caseStudies || [];
-  const testimonials = siteContent?.testimonials || [];
+  const caseStudies = (siteContent?.caseStudies && siteContent.caseStudies.length > 0)
+    ? siteContent.caseStudies
+    : WORK_PREVIEWS.map((p, i) => ({
+        id: p.slug,
+        slug: p.slug,
+        title: p.title,
+        category: p.category,
+        tags: p.tags,
+        imageUrl: p.img,
+        impactMetric: p.stat.split(' ')[0],
+        impactLabel: p.stat.split(' ').slice(1).join(' '),
+        client: '',
+        summary: '',
+      }));
+  const testimonials = (siteContent?.testimonials && siteContent.testimonials.length > 0)
+    ? siteContent.testimonials
+    : TESTIMONIALS.map((t, i) => ({
+        id: String(i),
+        name: t.name,
+        role: t.role,
+        company: t.company,
+        quote: t.quote,
+        avatarUrl: t.avatar,
+        rating: t.rating,
+      }));
   const packages = siteContent?.packages || PACKAGES;
   const valueProps = siteContent?.valueProps || [];
 
@@ -216,7 +239,7 @@ export const Home: React.FC = () => {
       />
 
       {/* ── SECTION 1: COMPACT FULL-VIEWPORT HERO (Responsive on all screen sizes) ── */}
-      <section className="relative min-h-auto lg:min-h-[calc(100dvh-4rem)] lg:max-h-[860px] flex flex-col justify-between px-4 sm:px-6 lg:px-8 border-b border-[var(--border-subtle)] overflow-hidden pt-18 sm:pt-20 lg:pt-16 pb-6 lg:pb-2 safe-top bg-[var(--bg-page)]">
+      <section className="relative lg:min-h-[calc(100dvh-4rem)] lg:max-h-[860px] flex flex-col justify-between px-4 sm:px-6 lg:px-8 border-b border-[var(--border-subtle)] overflow-hidden pt-20 sm:pt-22 lg:pt-16 pb-6 lg:pb-2 bg-[var(--bg-page)]">
         {/* Interactive Canvas Background with high-clarity 3D particles */}
         <InteractiveCanvas particleCount={50} className="absolute inset-0 pointer-events-none opacity-90" />
 
@@ -308,7 +331,7 @@ export const Home: React.FC = () => {
               data-cursor="orbit"
               className="lg:col-span-6 xl:col-span-5 relative flex flex-col items-center justify-center"
             >
-              <div className="w-full relative rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] backdrop-blur-sm p-2 shadow-xl">
+              <div className="w-full relative rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] backdrop-blur-sm p-2 shadow-xl min-h-[280px] sm:min-h-[340px]">
                 <RadialOrbitalTimeline
                   timelineData={defaultServicesTimelineData}
                   embedded={true}
@@ -712,7 +735,7 @@ export const Home: React.FC = () => {
 
                 <Link
                   to="/contact"
-                  className={`w-full py-3.5 rounded-xl text-center font-bold text-xs sm:text-sm transition-all ${
+                  className={`block w-full py-3.5 rounded-xl text-center font-bold text-xs sm:text-sm transition-all ${
                     pkg.popular
                       ? 'bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-white shadow-md'
                       : 'border border-[var(--border-subtle)] hover:border-[var(--brand-teal)] text-[var(--text-heading)] hover:text-[var(--brand-teal)] bg-[var(--bg-subtle)]'

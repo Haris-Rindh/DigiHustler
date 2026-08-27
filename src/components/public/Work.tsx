@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowRight, Sparkles, X, CheckCircle2, Layers } from 'lucide-react';
 import { SEOHead } from '../seo/SEOHead';
+import { useApp } from '../../context/AppContext';
 
 interface Project {
   id: string;
@@ -272,12 +273,15 @@ export const Work: React.FC = () => {
       {/* Case Study Detail Modal */}
       <AnimatePresence>
         {selectedProject && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 overflow-y-auto bg-black/70 backdrop-blur-sm">
+          <div
+            className="fixed inset-0 z-50 flex items-start justify-center p-4 sm:p-6 bg-black/70 backdrop-blur-sm overflow-y-auto"
+            onClick={(e) => { if (e.target === e.currentTarget) setSelectedProject(null); }}
+          >
             <motion.div
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-3xl max-w-3xl w-full p-6 sm:p-8 text-[var(--text-body)] relative shadow-2xl overflow-hidden my-8 max-h-[90vh] overflow-y-auto"
+              className="bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-3xl max-w-3xl w-full p-6 sm:p-8 text-[var(--text-body)] relative shadow-2xl my-8"
             >
               <button
                 onClick={() => setSelectedProject(null)}

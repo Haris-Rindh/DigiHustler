@@ -160,6 +160,7 @@ export interface Project {
   createdAt: string;
   completedAt?: string;
   paidAt?: string;
+  trackingToken?: string;
 }
 
 export interface Payout {

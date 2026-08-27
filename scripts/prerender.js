@@ -30,6 +30,27 @@ const routes = [
     summary: 'Six specialized domains — delivered as one cohesive digital engine: Web Engineering, Design Systems, AI Automations, Growth Marketing, Cybersecurity, and BI Dashboards.',
   },
   {
+    path: '/services/saas-mvp-development',
+    title: 'Hire Dedicated SaaS & Web App Engineering Squads | DigiHust',
+    description: 'Build and scale production-grade SaaS MVPs and custom web applications. Coordinated full-stack engineering squads delivering React, Next.js, Node.js, and cloud architectures under managed SLAs for US, UK, EU, and Gulf founders.',
+    h1: 'Build Your SaaS MVP & Web Platform With a Managed Engineering Squad.',
+    summary: 'Full-stack engineering squad—frontend engineers, backend architects, DevOps, and QA testers—governed by strict milestone SLAs and single-point accountability.',
+  },
+  {
+    path: '/services/ai-workflow-automation',
+    title: 'AI Workflow Automation & Custom LLM Engineering | DigiHust',
+    description: 'Deploy enterprise AI agents, OpenAI integrations, n8n automated workflows, and intelligent data extraction pipelines. Eliminate repetitive operational overhead with DigiHust AI engineering squad.',
+    h1: 'Scale Your Business Operations With Custom AI & Autonomous Workflows.',
+    summary: 'Custom LLM agents, multi-step n8n pipelines, and automated CRM triggers tailored to enterprise workflows.',
+  },
+  {
+    path: '/services/brand-identity-design-system',
+    title: 'Brand Identity & High-Converting UI/UX Design Systems | DigiHust',
+    description: 'Transform your digital presence with enterprise brand identity systems, Figma design tokens, responsive UI/UX prototypes, and 3D motion graphics created by DigiHust Creative Squad.',
+    h1: 'Establish Visual Authority With World-Class Brand & UI/UX Systems.',
+    summary: 'Complete typography & vector logo guidelines, comprehensive Figma component token libraries, and 3D motion trailers.',
+  },
+  {
     path: '/work',
     title: 'Our Work & Case Studies — DigiHust',
     description: 'Explore DigiHust portfolio of delivered projects across full-stack development, brand identity systems, AI automation, and business intelligence.',

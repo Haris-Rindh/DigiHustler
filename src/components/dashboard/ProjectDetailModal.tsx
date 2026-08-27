@@ -131,9 +131,25 @@ export const ProjectDetailModal: React.FC<Props> = ({ project, onClose }) => {
             </div>
             <h2 className="font-display font-extrabold text-2xl text-[var(--text-heading)] mt-1">{project.title}</h2>
           </div>
-          <button onClick={onClose} className="p-2 rounded-xl bg-[var(--bg-subtle)] hover:bg-[var(--bg-subtle)] text-[var(--text-muted)] hover:text-[var(--text-heading)]">
-            <X className="w-5 h-5" />
-          </button>
+          <div className="flex items-center space-x-2">
+            <button
+              onClick={() => {
+                const origin = typeof window !== 'undefined' ? window.location.origin : 'https://digihust.com';
+                const token = project.trackingToken || project.id;
+                const link = `${origin}/project/track/${token}`;
+                navigator.clipboard.writeText(link);
+                alert(`✓ Client Live Project Tracker Link copied to clipboard:\n\n${link}\n\nThis read-only link shows live milestones & deliverables without internal financials.`);
+              }}
+              className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-[var(--brand-teal-subtle)] border border-[var(--brand-teal)]/40 hover:bg-[var(--brand-teal)] hover:text-white text-[var(--brand-teal)] text-xs font-bold transition-all cursor-pointer shadow-sm"
+              title="Copy private read-only tracking link for the client"
+            >
+              <Award className="w-3.5 h-3.5" />
+              <span>Copy Client Tracker Link</span>
+            </button>
+            <button onClick={onClose} className="p-2 rounded-xl bg-[var(--bg-subtle)] hover:bg-[var(--bg-subtle)] text-[var(--text-muted)] hover:text-[var(--text-heading)] cursor-pointer">
+              <X className="w-5 h-5" />
+            </button>
+          </div>
         </div>
 
         {/* Tab Selection */}

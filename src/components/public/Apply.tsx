@@ -52,7 +52,7 @@ export const Apply: React.FC = () => {
       </div>
 
       {submitted ? (
-        <div className="glass-card p-8 rounded-3xl text-center space-y-4 border border-emerald-500/30">
+        <div className="p-8 rounded-3xl text-center space-y-4 border border-emerald-500/30 bg-[var(--bg-surface)] shadow-xl">
           <div className="w-16 h-16 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center mx-auto">
             <CheckCircle2 className="w-8 h-8" />
           </div>
@@ -62,13 +62,13 @@ export const Apply: React.FC = () => {
           </p>
           <button 
             onClick={() => setSubmitted(false)}
-            className="px-6 py-2.5 rounded-xl bg-[var(--bg-subtle)] text-white font-bold text-xs hover:bg-[var(--bg-subtle)]/20"
+            className="px-6 py-2.5 rounded-xl border border-[var(--border-subtle)] text-[var(--text-heading)] font-bold text-xs hover:border-[var(--brand-teal)] hover:text-[var(--brand-teal)] transition-colors bg-[var(--bg-page)]"
           >
             Submit Another Application
           </button>
         </div>
       ) : (
-        <form onSubmit={handleSubmit} className="glass-card p-8 rounded-3xl space-y-6">
+        <form onSubmit={handleSubmit} className="p-8 rounded-3xl space-y-6 bg-[var(--bg-surface)] border border-[var(--border-subtle)] shadow-sm">
           
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
@@ -168,7 +168,7 @@ export const Apply: React.FC = () => {
 
           <button 
             type="submit"
-            className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-cyan-500 via-blue-600 to-purple-600 hover:from-cyan-400 hover:to-purple-500 text-white font-extrabold text-sm shadow-xl shadow-cyan-500/25 transition-all flex items-center justify-center space-x-2"
+            className="w-full py-3.5 rounded-2xl bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-white font-extrabold text-sm shadow-md transition-all flex items-center justify-center space-x-2"
           >
             <Send className="w-4 h-4" />
             <span>Submit Membership Application</span>

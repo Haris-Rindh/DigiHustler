@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Shield, ArrowRight, Lock, User as UserIcon, Bell, Sparkles, AlertCircle, CheckCircle2 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
@@ -8,6 +8,8 @@ import { SEOHead } from '../seo/SEOHead';
 export const PortalLogin: React.FC = () => {
   const { loginWithMemberId, announcements, requestPasswordReset } = useApp();
   const navigate = useNavigate();
+  const location = useLocation();
+  const from = (location.state as any)?.from?.pathname || '/portal/dashboard';
 
   const [memberId, setMemberId] = useState('');
   const [password, setPassword] = useState('');

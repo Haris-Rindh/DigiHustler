@@ -17,7 +17,8 @@ import {
 } from 'lucide-react';
 import { SEOHead } from '../seo/SEOHead';
 import { useApp } from '../../context/AppContext';
-import { GroupId } from '../../types';
+import { GroupId, Lead } from '../../types';
+import { notificationService } from '../../lib/notificationService';
 
 const SERVICES = [
   'Website / Full-Stack App',
@@ -116,17 +117,38 @@ export const Contact: React.FC = () => {
       'BI & Data Intelligence': 'data',
     };
 
-    submitLead({
+    const targetGroupId = groupMap[form.services[0]] || 'tech';
+    const rawBudget = budgetMap[form.budget] || 3000;
+
+    const newLeadData = {
       title: `${form.company || form.name} — ${form.services[0]}`,
       clientName: form.name,
       clientCompany: form.company || undefined,
       clientEmail: form.email,
       brief: `${form.description}\n\nServices: ${form.services.join(', ')}\nTimeline: ${form.timeline}\nBudget: ${form.budget}`,
-      budgetEstimate: budgetMap[form.budget] || 3000,
-      suggestedGroupId: groupMap[form.services[0]] || 'tech',
-    });
+      budgetEstimate: rawBudget,
+      suggestedGroupId: targetGroupId,
+    };
 
-    // Simulate reliable scope intake submission
+    submitLead(newLeadData);
+
+    // Trigger instant automated notification dispatch
+    const leadPayload: Lead = {
+      id: `lead-${Date.now()}`,
+      clientName: form.name,
+      email: form.email,
+      companyName: form.company,
+      scopeDescription: form.description,
+      targetGroupId: targetGroupId,
+      budgetRange: form.budget,
+      timeline: form.timeline,
+      referralSource: 'website_contact_form',
+      status: 'new',
+      createdAt: new Date().toISOString()
+    };
+    notificationService.dispatchLeadNotifications(leadPayload);
+
+    // Reliable UI state update
     setTimeout(() => {
       setIsSubmitting(false);
       setSubmitted(true);
