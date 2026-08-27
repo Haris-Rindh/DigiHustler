@@ -296,6 +296,35 @@ export const INITIAL_ASSIGNMENTS: Assignment[] = [
 
 export const INITIAL_CERTIFICATES: Certificate[] = [
   {
+    id: 'cert-off-ammar-2026',
+    memberId: 'usr-dev-ammar',
+    memberName: 'Muhammad Ammar',
+    memberDghId: 'DGH2600105',
+    type: 'offer_letter',
+    roleTitle: 'Full-Stack Developer',
+    startDate: '2026-09-01',
+    issuedDate: '2026-09-01',
+    status: 'valid',
+    clientName: 'DigiHust Engineering Squad Core',
+    projectDetails: 'Assigned to enterprise trial projects including responsive Next.js platforms, API microservices, and database architecture.',
+    issuedBy: 'Mahad Abbas, Founder & CEO',
+    qrCodeUrl: '/verify/cert-off-ammar-2026',
+    durationText: '45 Days (Remote)',
+    stipendTerms: '65–70% of the project budget, according to DigiHust\'s revenue-sharing policy',
+    evaluationCriteria: [
+      'Quality of work',
+      'Meeting deadlines',
+      'Communication & teamwork',
+      'Problem-solving',
+      'Ability to follow client requirements'
+    ],
+    signatoryName: 'Mahad Abbas',
+    signatoryTitle: 'Founder & CEO',
+    contactEmail: 'contact@digihust.com',
+    contactPhone: '+92 300 1234567',
+    contactAddress: 'Islamabad / Global Remote Operations'
+  },
+  {
     id: 'cert-exp-8812a-2026',
     memberId: 'usr-dev-1',
     memberName: 'Bilal Farooq',
@@ -307,9 +336,15 @@ export const INITIAL_CERTIFICATES: Certificate[] = [
     issuedDate: '2026-08-25',
     status: 'valid',
     clientName: 'Estates Direct UK',
-    projectDetails: 'Architected high-speed geospatial real-estate portal with Next.js 14 and responsive Tailwind UI.',
-    issuedBy: 'Haris Asad (Chief Executive Officer)',
-    qrCodeUrl: '/verify/cert-exp-8812a-2026'
+    projectDetails: 'Architected high-speed geospatial real-estate portal with Next.js 14, Tailwind CSS, and responsive PostGIS mapping.',
+    issuedBy: 'Mahad Abbas, Founder & CEO',
+    qrCodeUrl: '/verify/cert-exp-8812a-2026',
+    durationText: '8 Months (Full Retainer)',
+    signatoryName: 'Mahad Abbas',
+    signatoryTitle: 'Founder & CEO',
+    contactEmail: 'contact@digihust.com',
+    contactPhone: '+92 300 1234567',
+    contactAddress: 'Islamabad / Global Remote Operations'
   }
 ];
 

@@ -275,6 +275,14 @@ export interface Certificate {
   issuedBy: string;
   qrCodeUrl?: string;
   revocationReason?: string;
+  durationText?: string; // e.g. "45 Days (Remote)"
+  stipendTerms?: string; // e.g. "65–70% of the project budget"
+  evaluationCriteria?: string[];
+  signatoryName?: string; // e.g. "Mahad Abbas"
+  signatoryTitle?: string; // e.g. "Founder & CEO"
+  contactEmail?: string;
+  contactPhone?: string;
+  contactAddress?: string;
 }
 
 // ── ANNOUNCEMENTS TYPES ──────────────────────────────────────────────────────

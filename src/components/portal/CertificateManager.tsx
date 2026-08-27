@@ -1,28 +1,33 @@
 import React, { useState } from 'react';
 import { 
   Award, Plus, QrCode, CheckCircle2, AlertTriangle, ExternalLink, 
-  RotateCcw, ShieldCheck, FileText, Search, User, Check, X 
+  RotateCcw, ShieldCheck, FileText, Search, User, Check, X, Printer, Eye 
 } from 'lucide-react';
+import { QRCodeSVG } from 'qrcode.react';
 import { useApp } from '../../context/AppContext';
 import { Certificate, CertificateType, CertificateStatus } from '../../types';
 import { PERMISSIONS } from '../../lib/permissions';
+import { CertificatePrintView } from '../ui/CertificatePrintView';
 
 export const CertificateManager: React.FC = () => {
   const { certificates, users, currentTier, currentUser, issueCertificate, revokeCertificate, restoreCertificate } = useApp();
   const [searchQuery, setSearchQuery] = useState('');
   const [issueModalOpen, setIssueModalOpen] = useState(false);
   const [revokeModalOpen, setRevokeModalOpen] = useState(false);
+  const [previewCert, setPreviewCert] = useState<Certificate | null>(null);
   const [selectedCertForRevoke, setSelectedCertForRevoke] = useState<Certificate | null>(null);
   const [revokeReason, setRevokeReason] = useState('');
 
   // Form state for issuing new cert
   const [selectedMemberId, setSelectedMemberId] = useState('');
-  const [certType, setCertType] = useState<CertificateType>('experience_certificate');
+  const [certType, setCertType] = useState<CertificateType>('offer_letter');
   const [roleTitle, setRoleTitle] = useState('');
-  const [startDate, setStartDate] = useState('2026-01-10');
-  const [endDate, setEndDate] = useState('2026-08-25');
-  const [clientName, setClientName] = useState('');
-  const [projectDetails, setProjectDetails] = useState('');
+  const [durationText, setDurationText] = useState('45 Days (Remote)');
+  const [startDate, setStartDate] = useState(new Date().toISOString().split('T')[0]);
+  const [endDate, setEndDate] = useState('');
+  const [clientName, setClientName] = useState('DigiHust Engineering Squad Core');
+  const [projectDetails, setProjectDetails] = useState('Assigned to client deliverables including responsive full-stack applications, API microservices, and database architecture.');
+  const [stipendTerms, setStipendTerms] = useState('65–70% of the project budget, according to DigiHust\'s revenue-sharing policy');
 
   const canIssue = PERMISSIONS.canIssueCertificate(currentTier);
 
@@ -38,24 +43,30 @@ export const CertificateManager: React.FC = () => {
     const member = users.find(u => u.id === selectedMemberId);
     if (!member) return;
 
-    issueCertificate({
+    const newCert = issueCertificate({
       memberId: member.id,
       memberName: member.name,
       memberDghId: member.memberId || 'DGH2600101',
       type: certType,
       roleTitle: roleTitle || member.title,
       startDate,
-      endDate: certType === 'experience_certificate' ? endDate : undefined,
-      clientName: clientName || 'Enterprise Portfolio Accounts',
+      endDate: certType === 'experience_certificate' ? (endDate || undefined) : undefined,
+      durationText,
+      stipendTerms: certType === 'offer_letter' ? stipendTerms : undefined,
+      clientName: clientName || 'DigiHust Engineering Core',
       projectDetails: projectDetails || 'Executed complex digital milestones under managed SLA quality standards.',
-      issuedBy: `${currentUser.name}, ${currentUser.roleTier?.toUpperCase() || 'Management'}`
+      issuedBy: `${currentUser.name}, ${currentUser.roleTier?.toUpperCase() || 'Management'}`,
+      signatoryName: 'Mahad Abbas',
+      signatoryTitle: 'Founder & CEO',
+      contactEmail: 'contact@digihust.com',
+      contactPhone: '+92 300 1234567',
+      contactAddress: 'Islamabad / Global Remote Operations'
     });
 
     setIssueModalOpen(false);
     setSelectedMemberId('');
     setRoleTitle('');
-    setClientName('');
-    setProjectDetails('');
+    setPreviewCert(newCert);
   };
 
   const handleConfirmRevoke = () => {
@@ -65,6 +76,8 @@ export const CertificateManager: React.FC = () => {
     setSelectedCertForRevoke(null);
     setRevokeReason('');
   };
+
+  const origin = typeof window !== 'undefined' ? window.location.origin : 'https://digihust.com';
 
   return (
     <div className="max-w-7xl mx-auto px-4 lg:px-8 py-8 space-y-8">
@@ -80,7 +93,7 @@ export const CertificateManager: React.FC = () => {
             Offer Letters & Experience Certificates
           </h1>
           <p className="text-xs sm:text-sm text-[var(--text-body)]">
-            Generate verifiable credentials with embedded QR code tokens and public audit pages.
+            Generate verifiable credentials with embedded unique QR codes and print-ready DigiHust letterheads.
           </p>
         </div>
 
@@ -90,7 +103,7 @@ export const CertificateManager: React.FC = () => {
             className="flex items-center space-x-2 px-5 py-2.5 rounded-xl bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-white text-xs font-bold shadow-md transition-all cursor-pointer self-start sm:self-auto"
           >
             <Plus className="w-4 h-4" />
-            <span>Issue New Certificate</span>
+            <span>Issue Offer / Certificate</span>
           </button>
         )}
       </div>
@@ -103,127 +116,118 @@ export const CertificateManager: React.FC = () => {
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search member, DGH ID, client..."
+            placeholder="Search member, DGH ID, role..."
             className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl pl-10 pr-4 py-2 text-xs text-[var(--text-heading)] focus:border-[var(--brand-teal)] focus:outline-none"
           />
         </div>
 
-        <div className="flex items-center space-x-4 text-xs">
-          <span className="font-bold text-emerald-400 flex items-center gap-1.5">
+        <div className="flex items-center space-x-4 text-xs font-bold">
+          <div className="flex items-center space-x-1.5 text-emerald-400">
             <CheckCircle2 className="w-4 h-4" />
-            <span>{certificates.filter(c => c.status === 'valid').length} Valid Credentials</span>
-          </span>
-          <span className="font-bold text-rose-400 flex items-center gap-1.5">
+            <span>{certificates.filter(c => c.status === 'valid').length} Active & Valid</span>
+          </div>
+          <div className="flex items-center space-x-1.5 text-rose-400">
             <AlertTriangle className="w-4 h-4" />
             <span>{certificates.filter(c => c.status === 'revoked').length} Revoked</span>
-          </span>
+          </div>
         </div>
       </div>
 
-      {/* Certificates Grid */}
+      {/* Certificates Table & Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredCerts.map((cert) => {
-          const isValid = cert.status === 'valid';
+        {filteredCerts.map((c) => {
+          const isValid = c.status === 'valid';
+          const certUrl = `${origin}/verify/${c.id}`;
 
           return (
             <div
-              key={cert.id}
+              key={c.id}
               className={`p-6 rounded-3xl bg-[var(--bg-surface)] border transition-all flex flex-col justify-between ${
                 isValid
-                  ? 'border-[var(--border-subtle)] hover:border-[var(--brand-teal)]/50 shadow-md'
-                  : 'border-rose-500/30 bg-rose-500/5 shadow-sm'
+                  ? 'border-[var(--border-subtle)] hover:border-[var(--brand-teal)]/40 hover:shadow-xl'
+                  : 'border-rose-500/40 opacity-75'
               }`}
             >
               <div>
-                {/* Status & Type Banner */}
-                <div className="flex items-center justify-between mb-4">
-                  <span className={`text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full border ${
-                    cert.type === 'experience_certificate'
-                      ? 'bg-[var(--brand-teal-subtle)] text-[var(--brand-teal)] border-[var(--brand-teal)]/30'
-                      : 'bg-purple-500/10 text-purple-400 border-purple-500/30'
-                  }`}>
-                    {cert.type === 'experience_certificate' ? 'EXPERIENCE CERT' : 'OFFER LETTER'}
-                  </span>
-
-                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                    isValid
-                      ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30'
-                      : 'bg-rose-500/10 text-rose-400 border border-rose-500/30'
-                  }`}>
-                    {isValid ? 'VALID' : 'REVOKED'}
-                  </span>
-                </div>
-
-                <h3 className="font-bold text-base text-[var(--text-heading)] mb-0.5">
-                  {cert.memberName}
-                </h3>
-                <p className="text-[11px] font-mono text-[var(--brand-teal)] font-bold mb-3">
-                  {cert.memberDghId} · {cert.roleTitle}
-                </p>
-
-                <div className="space-y-2 mb-4 text-xs bg-[var(--bg-page)] p-3.5 rounded-2xl border border-[var(--border-subtle)]">
+                {/* Card Top Row: Type & Status */}
+                <div className="flex items-start justify-between mb-4">
                   <div>
-                    <span className="text-[10px] uppercase font-bold text-[var(--text-muted)] block">
-                      Real Client Reference
+                    <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full bg-[var(--brand-teal-subtle)] text-[var(--brand-teal)] border border-[var(--border-subtle)]">
+                      {c.type === 'offer_letter' ? 'Internship Offer' : 'Experience Cert'}
                     </span>
-                    <span className="font-bold text-[var(--text-heading)]">{cert.clientName}</span>
+                    <h3 className="font-bold text-base text-[var(--text-heading)] mt-2">{c.memberName}</h3>
+                    <p className="text-xs font-mono text-[var(--brand-teal)] font-bold">{c.memberDghId}</p>
                   </div>
-                  <div>
-                    <span className="text-[10px] uppercase font-bold text-[var(--text-muted)] block">
-                      Scope / Project Details
-                    </span>
-                    <p className="text-[11px] text-[var(--text-body)] line-clamp-2 leading-relaxed">
-                      {cert.projectDetails}
-                    </p>
-                  </div>
-                  <div className="pt-2 border-t border-[var(--border-subtle)] flex items-center justify-between text-[10px] text-[var(--text-muted)]">
-                    <span>Issued: {cert.issuedDate}</span>
-                    <span>Signatory: {cert.issuedBy}</span>
+
+                  {/* Scannable Vector QR Code Preview */}
+                  <div 
+                    onClick={() => setPreviewCert(c)}
+                    className="p-1.5 rounded-xl bg-white border border-slate-200 shadow-sm cursor-pointer hover:scale-105 transition-transform"
+                    title="Click to preview & print"
+                  >
+                    <QRCodeSVG
+                      value={certUrl}
+                      size={44}
+                      level="M"
+                      includeMargin={false}
+                      fgColor="#022B3A"
+                      bgColor="#FFFFFF"
+                    />
                   </div>
                 </div>
 
-                {!isValid && cert.revocationReason && (
-                  <div className="mb-4 p-2.5 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 text-[11px]">
-                    <strong>Revocation Reason:</strong> {cert.revocationReason}
-                  </div>
-                )}
+                <div className="space-y-1.5 text-xs mb-4">
+                  <p className="text-[var(--text-heading)] font-semibold">{c.roleTitle}</p>
+                  <p className="text-[var(--text-muted)] text-[11px]">
+                    Issued: {c.issuedDate} · {c.durationText || 'Standard'}
+                  </p>
+                  <p className="text-[var(--text-muted)] text-[11px] truncate">
+                    Scope: <strong className="text-[var(--text-body)]">{c.clientName}</strong>
+                  </p>
+                </div>
               </div>
 
               {/* Action Buttons */}
-              <div className="pt-3 border-t border-[var(--border-subtle)] flex items-center justify-between">
+              <div className="pt-3 border-t border-[var(--border-subtle)] flex items-center justify-between gap-2">
+                <button
+                  onClick={() => setPreviewCert(c)}
+                  className="flex items-center space-x-1 px-3 py-1.5 rounded-xl bg-[var(--brand-teal)] text-white text-xs font-bold shadow-sm hover:bg-[var(--brand-teal-hover)] transition-all cursor-pointer"
+                >
+                  <Printer className="w-3.5 h-3.5" />
+                  <span>Print Letter</span>
+                </button>
+
                 <a
-                  href={`/verify/${cert.id}`}
+                  href={`/verify/${c.id}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center space-x-1 text-xs font-bold text-[var(--brand-teal)] hover:underline"
+                  className="flex items-center space-x-1 px-3 py-1.5 rounded-xl border border-[var(--border-subtle)] hover:border-[var(--brand-teal)] text-[var(--text-heading)] text-xs font-bold transition-all"
                 >
-                  <QrCode className="w-3.5 h-3.5" />
-                  <span>Public QR Page</span>
-                  <ExternalLink className="w-3 h-3" />
+                  <ExternalLink className="w-3.5 h-3.5 text-[var(--brand-teal)]" />
+                  <span>Verify URL</span>
                 </a>
 
-                {canIssue && (
-                  <div>
-                    {isValid ? (
-                      <button
-                        onClick={() => {
-                          setSelectedCertForRevoke(cert);
-                          setRevokeModalOpen(true);
-                        }}
-                        className="text-[11px] font-bold text-rose-400 hover:text-rose-300 hover:underline cursor-pointer"
-                      >
-                        Revoke
-                      </button>
-                    ) : (
-                      <button
-                        onClick={() => restoreCertificate(cert.id)}
-                        className="text-[11px] font-bold text-emerald-400 hover:text-emerald-300 hover:underline flex items-center gap-1 cursor-pointer"
-                      >
-                        <RotateCcw className="w-3 h-3" />
-                        <span>Restore</span>
-                      </button>
-                    )}
-                  </div>
+                {PERMISSIONS.canRevokeCertificate(currentTier) && (
+                  isValid ? (
+                    <button
+                      onClick={() => {
+                        setSelectedCertForRevoke(c);
+                        setRevokeModalOpen(true);
+                      }}
+                      className="p-1.5 rounded-xl text-rose-400 hover:bg-rose-500/10 text-xs transition-colors"
+                      title="Revoke Credential"
+                    >
+                      <AlertTriangle className="w-4 h-4" />
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => restoreCertificate(c.id)}
+                      className="p-1.5 rounded-xl text-emerald-400 hover:bg-emerald-500/10 text-xs transition-colors"
+                      title="Restore Validity"
+                    >
+                      <RotateCcw className="w-4 h-4" />
+                    </button>
+                  )
                 )}
               </div>
             </div>
@@ -231,193 +235,165 @@ export const CertificateManager: React.FC = () => {
         })}
       </div>
 
-      {/* Issue Certificate Modal */}
-      {issueModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-3xl p-6 sm:p-8 max-w-xl w-full shadow-2xl animate-in fade-in zoom-in-95 max-h-[90vh] overflow-y-auto">
-            <h3 className="font-display font-extrabold text-xl text-[var(--text-heading)] mb-1">
-              Issue Official Digital Credential
-            </h3>
-            <p className="text-xs text-[var(--text-body)] mb-5">
-              An unguessable UUID token and public QR verification record will be generated automatically.
-            </p>
-
-            <form onSubmit={handleIssueSubmit} className="space-y-4">
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] mb-1">
-                  Select Recipient Member
-                </label>
-                <select
-                  value={selectedMemberId}
-                  onChange={(e) => {
-                    setSelectedMemberId(e.target.value);
-                    const m = users.find(u => u.id === e.target.value);
-                    if (m) setRoleTitle(m.title);
-                  }}
-                  required
-                  className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3.5 py-2.5 text-xs text-[var(--text-heading)] focus:border-[var(--brand-teal)] focus:outline-none"
-                >
-                  <option value="">Select Member from Roster...</option>
-                  {users.map((u) => (
-                    <option key={u.id} value={u.id}>{u.name} ({u.memberId}) · {u.title}</option>
-                  ))}
-                </select>
+      {/* ── PREVIEW & PRINT MODAL ── */}
+      {previewCert && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+          <div className="bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-3xl p-6 sm:p-8 max-w-4xl w-full shadow-2xl space-y-6 my-auto max-h-[92vh] overflow-y-auto">
+            <div className="flex items-center justify-between pb-4 border-b border-[var(--border-subtle)] print:hidden">
+              <div className="flex items-center space-x-2">
+                <Award className="w-5 h-5 text-[var(--brand-teal)]" />
+                <h3 className="font-bold text-lg text-[var(--text-heading)]">
+                  Print Preview: {previewCert.memberName} ({previewCert.type === 'offer_letter' ? 'Internship Offer' : 'Experience Cert'})
+                </h3>
               </div>
-
-              <div className="grid grid-cols-2 gap-2">
+              <div className="flex items-center space-x-2">
                 <button
-                  type="button"
-                  onClick={() => setCertType('experience_certificate')}
-                  className={`py-2 px-3 rounded-xl text-xs font-bold border transition-all ${
-                    certType === 'experience_certificate'
-                      ? 'bg-[var(--brand-teal)] text-white border-[var(--brand-teal)]'
-                      : 'bg-[var(--bg-page)] border-[var(--border-subtle)] text-[var(--text-heading)]'
-                  }`}
+                  onClick={() => window.print()}
+                  className="flex items-center space-x-1.5 px-4 py-2 rounded-xl bg-[var(--brand-teal)] text-white text-xs font-bold shadow-md cursor-pointer hover:bg-[var(--brand-teal-hover)]"
                 >
-                  Experience Certificate
+                  <Printer className="w-4 h-4" />
+                  <span>Print Document</span>
                 </button>
                 <button
-                  type="button"
-                  onClick={() => setCertType('offer_letter')}
-                  className={`py-2 px-3 rounded-xl text-xs font-bold border transition-all ${
-                    certType === 'offer_letter'
-                      ? 'bg-[var(--brand-teal)] text-white border-[var(--brand-teal)]'
-                      : 'bg-[var(--bg-page)] border-[var(--border-subtle)] text-[var(--text-heading)]'
-                  }`}
+                  onClick={() => setPreviewCert(null)}
+                  className="p-2 rounded-xl text-[var(--text-muted)] hover:text-[var(--text-heading)]"
                 >
-                  Offer Letter
+                  <X className="w-5 h-5" />
                 </button>
               </div>
+            </div>
 
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] mb-1">
-                  Designation / Role Title
-                </label>
-                <input
-                  type="text"
-                  value={roleTitle}
-                  onChange={(e) => setRoleTitle(e.target.value)}
-                  placeholder="e.g. Senior Frontend React Engineer"
-                  required
-                  className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3.5 py-2.5 text-xs text-[var(--text-heading)] focus:border-[var(--brand-teal)] focus:outline-none"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] mb-1">
-                    Start Date
-                  </label>
-                  <input
-                    type="date"
-                    value={startDate}
-                    onChange={(e) => setStartDate(e.target.value)}
-                    required
-                    className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs text-[var(--text-heading)] focus:border-[var(--brand-teal)] focus:outline-none"
-                  />
-                </div>
-                {certType === 'experience_certificate' && (
-                  <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] mb-1">
-                      End / Completion Date
-                    </label>
-                    <input
-                      type="date"
-                      value={endDate}
-                      onChange={(e) => setEndDate(e.target.value)}
-                      required
-                      className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs text-[var(--text-heading)] focus:border-[var(--brand-teal)] focus:outline-none"
-                    />
-                  </div>
-                )}
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] mb-1">
-                  Real Client Reference Name
-                </label>
-                <input
-                  type="text"
-                  value={clientName}
-                  onChange={(e) => setClientName(e.target.value)}
-                  placeholder="e.g. Estates Direct UK & Veloce Motors"
-                  required
-                  className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3.5 py-2.5 text-xs text-[var(--text-heading)] focus:border-[var(--brand-teal)] focus:outline-none"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] mb-1">
-                  Real Project Details & Scope Accomplished
-                </label>
-                <textarea
-                  value={projectDetails}
-                  onChange={(e) => setProjectDetails(e.target.value)}
-                  placeholder="Summarize key architectural contributions, stack used, and milestone results..."
-                  rows={3}
-                  required
-                  className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl p-3 text-xs text-[var(--text-heading)] focus:border-[var(--brand-teal)] focus:outline-none"
-                />
-              </div>
-
-              <div className="flex items-center justify-end space-x-2 pt-3 border-t border-[var(--border-subtle)]">
-                <button
-                  type="button"
-                  onClick={() => setIssueModalOpen(false)}
-                  className="px-4 py-2 rounded-xl text-xs font-semibold text-[var(--text-muted)] hover:bg-[var(--bg-subtle)] cursor-pointer"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-5 py-2.5 rounded-xl bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-white text-xs font-bold shadow-md transition-all cursor-pointer"
-                >
-                  Generate & Publish Credential
-                </button>
-              </div>
-            </form>
+            {/* Letterhead Render */}
+            <div className="flex justify-center bg-slate-100 p-4 sm:p-6 rounded-2xl overflow-x-auto">
+              <CertificatePrintView certificate={previewCert} verificationUrl={`${origin}/verify/${previewCert.id}`} />
+            </div>
           </div>
         </div>
       )}
 
-      {/* Revocation Reason Modal */}
-      {revokeModalOpen && selectedCertForRevoke && (
+      {/* ── ISSUE NEW CERTIFICATE MODAL ── */}
+      {issueModalOpen && (
         <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl animate-in fade-in zoom-in-95">
-            <h3 className="font-display font-extrabold text-lg text-rose-400 mb-1">
-              Revoke Digital Certificate
-            </h3>
-            <p className="text-xs text-[var(--text-body)] mb-4">
-              Revoking will immediately flag the public verification page as <strong>Revoked</strong> while preserving the historical audit trail.
-            </p>
+          <form onSubmit={handleIssueSubmit} className="bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between pb-3 border-b border-[var(--border-subtle)]">
+              <h3 className="font-bold text-base text-[var(--text-heading)]">Generate Official Letterhead & QR</h3>
+              <button type="button" onClick={() => setIssueModalOpen(false)}><X className="w-5 h-5" /></button>
+            </div>
 
-            <div className="mb-4">
-              <label className="block text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] mb-1">
-                Reason for Revocation
-              </label>
-              <textarea
-                value={revokeReason}
-                onChange={(e) => setRevokeReason(e.target.value)}
-                placeholder="e.g. Incomplete project obligations or terms violation..."
-                rows={3}
+            <div>
+              <label className="block text-xs font-bold uppercase text-[var(--text-muted)] mb-1">Target Member</label>
+              <select
                 required
-                className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl p-3 text-xs text-[var(--text-heading)] focus:border-rose-400 focus:outline-none"
+                value={selectedMemberId}
+                onChange={(e) => {
+                  setSelectedMemberId(e.target.value);
+                  const mem = users.find(u => u.id === e.target.value);
+                  if (mem) setRoleTitle(mem.title);
+                }}
+                className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3.5 py-2.5 text-xs text-[var(--text-heading)]"
+              >
+                <option value="">-- Select Member from Directory --</option>
+                {users.map(u => (
+                  <option key={u.id} value={u.id}>{u.name} ({u.memberId}) — {u.title}</option>
+                ))}
+              </select>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="block text-xs font-bold uppercase text-[var(--text-muted)] mb-1">Document Type</label>
+                <select
+                  value={certType}
+                  onChange={(e) => setCertType(e.target.value as CertificateType)}
+                  className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs text-[var(--text-heading)]"
+                >
+                  <option value="offer_letter">Internship Offer Letter</option>
+                  <option value="experience_certificate">Experience Certificate</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold uppercase text-[var(--text-muted)] mb-1">Duration Tag</label>
+                <input
+                  type="text"
+                  value={durationText}
+                  onChange={(e) => setDurationText(e.target.value)}
+                  placeholder="e.g. 45 Days (Remote)"
+                  className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs text-[var(--text-heading)]"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold uppercase text-[var(--text-muted)] mb-1">Designation / Role Title</label>
+              <input
+                type="text"
+                required
+                value={roleTitle}
+                onChange={(e) => setRoleTitle(e.target.value)}
+                placeholder="e.g. Full-Stack Developer"
+                className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3.5 py-2 text-xs text-[var(--text-heading)]"
               />
             </div>
 
-            <div className="flex items-center justify-end space-x-2 pt-2 border-t border-[var(--border-subtle)]">
-              <button
-                onClick={() => setRevokeModalOpen(false)}
-                className="px-4 py-2 rounded-xl text-xs font-semibold text-[var(--text-muted)] hover:bg-[var(--bg-subtle)] cursor-pointer"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleConfirmRevoke}
-                className="px-5 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold shadow-md transition-all cursor-pointer"
-              >
-                Confirm Revocation
-              </button>
+            {certType === 'offer_letter' && (
+              <div>
+                <label className="block text-xs font-bold uppercase text-[var(--text-muted)] mb-1">Revenue-Share / Payout Clause</label>
+                <input
+                  type="text"
+                  value={stipendTerms}
+                  onChange={(e) => setStipendTerms(e.target.value)}
+                  className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3.5 py-2 text-xs text-[var(--text-heading)]"
+                />
+              </div>
+            )}
+
+            <div>
+              <label className="block text-xs font-bold uppercase text-[var(--text-muted)] mb-1">Squad / Scope Reference</label>
+              <input
+                type="text"
+                value={clientName}
+                onChange={(e) => setClientName(e.target.value)}
+                className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3.5 py-2 text-xs text-[var(--text-heading)]"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold uppercase text-[var(--text-muted)] mb-1">Project Details</label>
+              <textarea
+                rows={2}
+                value={projectDetails}
+                onChange={(e) => setProjectDetails(e.target.value)}
+                className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl p-3 text-xs text-[var(--text-heading)]"
+              />
+            </div>
+
+            <div className="flex justify-end space-x-2 pt-3 border-t border-[var(--border-subtle)]">
+              <button type="button" onClick={() => setIssueModalOpen(false)} className="px-4 py-2 rounded-xl text-xs font-semibold text-[var(--text-muted)]">Cancel</button>
+              <button type="submit" className="px-5 py-2 rounded-xl bg-[var(--brand-teal)] text-white text-xs font-bold">Issue & Generate QR</button>
+            </div>
+          </form>
+        </div>
+      )}
+
+      {/* ── REVOKE MODAL ── */}
+      {revokeModalOpen && selectedCertForRevoke && (
+        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl space-y-4">
+            <h3 className="font-bold text-base text-[var(--text-heading)]">Revoke Credential Verification</h3>
+            <p className="text-xs text-[var(--text-muted)]">
+              Are you sure you want to mark the credential for <strong>{selectedCertForRevoke.memberName}</strong> as revoked?
+            </p>
+            <input
+              type="text"
+              placeholder="Reason for revocation..."
+              value={revokeReason}
+              onChange={(e) => setRevokeReason(e.target.value)}
+              className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3.5 py-2 text-xs text-[var(--text-heading)]"
+            />
+            <div className="flex justify-end space-x-2 pt-2">
+              <button onClick={() => setRevokeModalOpen(false)} className="px-4 py-2 rounded-xl text-xs font-semibold text-[var(--text-muted)]">Cancel</button>
+              <button onClick={handleConfirmRevoke} className="px-4 py-2 rounded-xl bg-rose-500 text-white text-xs font-bold">Confirm Revocation</button>
             </div>
           </div>
         </div>
