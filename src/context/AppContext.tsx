@@ -723,7 +723,35 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   // ── CERTIFICATE & TEMPLATE ACTIONS ────────────────────────────────────────
 
-  const certificateTemplates = siteContent.certificateTemplates || DEFAULT_SITE_CONTENT.certificateTemplates || [];
+  const certificateTemplates = (siteContent?.certificateTemplates && siteContent.certificateTemplates.length > 0)
+    ? siteContent.certificateTemplates
+    : (DEFAULT_SITE_CONTENT.certificateTemplates || []);
+
+  const defaultFallbackTemplate: CertificateTemplate = certificateTemplates[0] || {
+    id: 'tpl-offer',
+    name: 'Internship Offer Letter',
+    type: 'offer_letter',
+    documentTitle: 'Internship Offer Letter',
+    badgeText: 'Official Verified Offer',
+    defaultDuration: '45 Days (Remote)',
+    introParagraph: 'We are pleased to offer you a 45-day internship at DigiHust as a {{roleTitle}}. This period will serve as both a learning opportunity and a practical evaluation for potential inclusion in our core managed squads.',
+    bulletPoints: [
+      'Quality of work',
+      'Meeting deadlines',
+      'Communication & teamwork',
+      'Problem-solving',
+      'Ability to follow client requirements'
+    ],
+    revenueClause: 'Successful interns may be selected for the DigiHust core team and assigned real client projects. Compensation will be project-based, with independent project contributors generally receiving 65–70% of the project budget, according to DigiHust\'s revenue-sharing policy.',
+    closingParagraph: 'This internship does not guarantee permanent placement. Continued collaboration will be based on performance, reliability, professionalism, and project requirements. We look forward to having you on board.',
+    signatoryName: 'Mahad Abbas',
+    signatoryTitle: 'Founder & CEO',
+    watermarkText: 'DigiHust',
+    contactEmail: 'contact@digihust.com',
+    contactPhone: '+92 300 1234567',
+    contactAddress: 'Islamabad / Global Remote Operations',
+    createdAt: '2026-08-20'
+  };
 
   const createCertificateTemplate = (templateData: Omit<CertificateTemplate, 'id' | 'createdAt'>): CertificateTemplate => {
     const newTpl: CertificateTemplate = {
@@ -734,7 +762,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
     setSiteContent(prev => ({
       ...prev,
-      certificateTemplates: [...(prev.certificateTemplates || []), newTpl]
+      certificateTemplates: [...(prev.certificateTemplates || certificateTemplates), newTpl]
     }));
 
     const auditEntry: SecurityAuditLog = {
@@ -754,20 +782,20 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const updateCertificateTemplate = (templateId: string, updates: Partial<CertificateTemplate>) => {
     setSiteContent(prev => ({
       ...prev,
-      certificateTemplates: (prev.certificateTemplates || []).map(t => t.id === templateId ? { ...t, ...updates } : t)
+      certificateTemplates: (prev.certificateTemplates || certificateTemplates).map(t => t.id === templateId ? { ...t, ...updates } : t)
     }));
   };
 
   const deleteCertificateTemplate = (templateId: string) => {
     setSiteContent(prev => ({
       ...prev,
-      certificateTemplates: (prev.certificateTemplates || []).filter(t => t.id !== templateId)
+      certificateTemplates: (prev.certificateTemplates || certificateTemplates).filter(t => t.id !== templateId)
     }));
   };
 
-  const generateMemberCertificate = (memberId: string, templateId: string, overrides?: Partial<Certificate>): Certificate => {
+  const generateMemberCertificate = (memberId: string, templateId?: string, overrides?: Partial<Certificate>): Certificate => {
     const member = users.find(u => u.id === memberId);
-    const template = certificateTemplates.find(t => t.id === templateId) || certificateTemplates[0];
+    const template = certificateTemplates.find(t => t.id === templateId) || certificateTemplates[0] || defaultFallbackTemplate;
 
     const uuidPrefix = template?.type === 'offer_letter' ? 'off' : template?.type === 'completion_certificate' ? 'cmp' : 'exp';
     const uuidToken = `cert-${uuidPrefix}-${Math.random().toString(36).substring(2, 10)}-${Date.now().toString(36)}`;

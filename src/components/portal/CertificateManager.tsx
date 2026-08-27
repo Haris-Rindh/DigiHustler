@@ -71,8 +71,8 @@ export const CertificateManager: React.FC = () => {
 
   const handleOpenIssueModal = () => {
     setSelectedMemberId(users[0]?.id || '');
-    const tpl = certificateTemplates[0];
-    setSelectedTemplateId(tpl?.id || '');
+    const tpl = certificateTemplates?.[0];
+    setSelectedTemplateId(tpl?.id || 'tpl-offer');
     setRoleTitle(users[0]?.title || 'Specialist');
     setDurationText(tpl?.defaultDuration || '45 Days (Remote)');
     setIssueModalOpen(true);
@@ -82,11 +82,11 @@ export const CertificateManager: React.FC = () => {
     e.preventDefault();
     if (!selectedMemberId) return;
 
-    const tpl = certificateTemplates.find(t => t.id === selectedTemplateId) || certificateTemplates[0];
-    const newCert = generateMemberCertificate(selectedMemberId, tpl?.id || '', {
-      roleTitle,
-      durationText,
-      clientName,
+    const tpl = certificateTemplates?.find(t => t.id === selectedTemplateId) || certificateTemplates?.[0];
+    const newCert = generateMemberCertificate(selectedMemberId, tpl?.id || 'tpl-offer', {
+      roleTitle: roleTitle || 'Specialist',
+      durationText: durationText || '45 Days (Remote)',
+      clientName: clientName || 'DigiHust Engineering Squad Core',
       projectDetails: projectDetails || undefined,
       pdfConfig: tpl?.pdfConfig
     });

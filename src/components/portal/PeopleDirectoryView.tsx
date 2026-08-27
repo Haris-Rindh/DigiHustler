@@ -68,8 +68,8 @@ export const PeopleDirectoryView: React.FC = () => {
 
   const handleOpenCertModal = (user: UserType) => {
     setCertModalUser(user);
-    const defaultTpl = certificateTemplates[0];
-    setSelectedTemplateId(defaultTpl ? defaultTpl.id : '');
+    const defaultTpl = certificateTemplates?.[0];
+    setSelectedTemplateId(defaultTpl ? defaultTpl.id : 'tpl-offer');
     setCustomRoleTitle(user.title || 'Specialist');
     setCustomDuration(defaultTpl?.defaultDuration || '45 Days (Remote)');
     setCustomClient('DigiHust Engineering Squad Core');
@@ -79,12 +79,12 @@ export const PeopleDirectoryView: React.FC = () => {
     e.preventDefault();
     if (!certModalUser) return;
 
-    const tpl = certificateTemplates.find(t => t.id === selectedTemplateId) || certificateTemplates[0];
-    const cert = generateMemberCertificate(certModalUser.id, tpl.id, {
-      roleTitle: customRoleTitle,
-      durationText: customDuration,
-      clientName: customClient,
-      documentTitle: tpl.documentTitle || tpl.name
+    const tpl = certificateTemplates?.find(t => t.id === selectedTemplateId) || certificateTemplates?.[0];
+    const cert = generateMemberCertificate(certModalUser.id, tpl?.id || 'tpl-offer', {
+      roleTitle: customRoleTitle || certModalUser.title || 'Specialist',
+      durationText: customDuration || '45 Days (Remote)',
+      clientName: customClient || 'DigiHust Engineering Squad Core',
+      documentTitle: tpl?.documentTitle || tpl?.name || 'Internship Offer Letter'
     });
 
     setCertModalUser(null);
