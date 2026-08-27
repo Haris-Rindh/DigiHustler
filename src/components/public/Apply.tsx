@@ -79,7 +79,7 @@ export const Apply: React.FC = () => {
                 placeholder="Usman Tariq"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-400"
+                className="w-full bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-sm text-[var(--text-heading)] placeholder:text-[var(--text-dim)] focus:outline-none focus:border-[var(--brand-teal)]"
               />
             </div>
             <div>
@@ -90,7 +90,7 @@ export const Apply: React.FC = () => {
                 placeholder="usman@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-400"
+                className="w-full bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-sm text-[var(--text-heading)] placeholder:text-[var(--text-dim)] focus:outline-none focus:border-[var(--brand-teal)]"
               />
             </div>
           </div>
@@ -104,7 +104,7 @@ export const Apply: React.FC = () => {
                 placeholder="DS-Batch 15 (ID: 98421)"
                 value={digiskillId}
                 onChange={(e) => setDigiskillId(e.target.value)}
-                className="w-full bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-400"
+                className="w-full bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-sm text-[var(--text-heading)] placeholder:text-[var(--text-dim)] focus:outline-none focus:border-[var(--brand-teal)]"
               />
             </div>
             <div>
@@ -114,7 +114,7 @@ export const Apply: React.FC = () => {
                 placeholder="Web Development / Graphic Design"
                 value={digiskillCourse}
                 onChange={(e) => setDigiskillCourse(e.target.value)}
-                className="w-full bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-400"
+                className="w-full bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-sm text-[var(--text-heading)] placeholder:text-[var(--text-dim)] focus:outline-none focus:border-[var(--brand-teal)]"
               />
             </div>
           </div>
@@ -125,7 +125,7 @@ export const Apply: React.FC = () => {
               <select
                 value={preferredGroupId}
                 onChange={(e) => setPreferredGroupId(e.target.value as GroupId)}
-                className="w-full bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-400"
+                className="w-full bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-sm text-[var(--text-heading)] placeholder:text-[var(--text-dim)] focus:outline-none focus:border-[var(--brand-teal)]"
               >
                 {groups.map(g => (
                   <option key={g.id} value={g.id}>{g.name}</option>
@@ -139,7 +139,7 @@ export const Apply: React.FC = () => {
                 placeholder="https://github.com/your-username"
                 value={portfolioUrl}
                 onChange={(e) => setPortfolioUrl(e.target.value)}
-                className="w-full bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-400"
+                className="w-full bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-sm text-[var(--text-heading)] placeholder:text-[var(--text-dim)] focus:outline-none focus:border-[var(--brand-teal)]"
               />
             </div>
           </div>
@@ -151,7 +151,7 @@ export const Apply: React.FC = () => {
               placeholder="React, TypeScript, Tailwind CSS, Figma"
               value={specialtiesText}
               onChange={(e) => setSpecialtiesText(e.target.value)}
-              className="w-full bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-400"
+              className="w-full bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-sm text-[var(--text-heading)] placeholder:text-[var(--text-dim)] focus:outline-none focus:border-[var(--brand-teal)]"
             />
           </div>
 
@@ -162,7 +162,7 @@ export const Apply: React.FC = () => {
               placeholder="Tell Management about your key strengths and previous client projects..."
               value={bio}
               onChange={(e) => setBio(e.target.value)}
-              className="w-full bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl p-3 text-sm text-white focus:outline-none focus:border-cyan-400"
+              className="w-full bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl p-3 text-sm text-[var(--text-heading)] placeholder:text-[var(--text-dim)] focus:outline-none focus:border-[var(--brand-teal)]"
             />
           </div>
 

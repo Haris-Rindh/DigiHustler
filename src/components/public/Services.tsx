@@ -191,8 +191,8 @@ export const Services: React.FC = () => {
                 viewport={{ once: true }}
                 className={`border rounded-2xl overflow-hidden transition-all ${
                   isExpanded
-                    ? 'border-[var(--brand-teal)]/50 shadow-xl bg-white ring-1 ring-[var(--brand-teal)]/20'
-                    : 'border-[var(--border-subtle)] hover:border-[var(--border-hover)] hover:shadow-md bg-white'
+                    ? 'border-[var(--brand-teal)]/50 shadow-xl bg-[var(--bg-surface)] ring-1 ring-[var(--brand-teal)]/20'
+                    : 'border-[var(--border-subtle)] hover:border-[var(--border-hover)] hover:shadow-md bg-[var(--bg-surface)]'
                 }`}
               >
                 {/* Trigger button */}

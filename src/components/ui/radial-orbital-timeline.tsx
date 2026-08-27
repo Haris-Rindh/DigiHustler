@@ -333,7 +333,9 @@ export default function RadialOrbitalTimeline({
                 role="button"
                 aria-label={`${item.title} capability node`}
                 aria-expanded={isExpanded}
-                className="absolute cursor-pointer focus:outline-none rounded-2xl group transition-all duration-700 ease-out"
+                className={`absolute cursor-pointer focus:outline-none rounded-2xl group ${
+                  autoRotate ? "transition-transform duration-75 ease-linear" : "transition-all duration-700 ease-out"
+                }`}
                 style={nodeStyle}
                 onKeyDown={(e) => {
                   if (e.key === "Enter" || e.key === " ") {
