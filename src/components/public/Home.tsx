@@ -24,8 +24,8 @@ import {
 } from 'lucide-react';
 import { SEOHead } from '../seo/SEOHead';
 import { InteractiveCanvas } from '../ui/InteractiveCanvas';
-import RadialOrbitalTimeline, { defaultServicesTimelineData } from '../ui/radial-orbital-timeline';
 import { useLanguage } from '../../context/LanguageContext';
+import { useApp } from '../../context/AppContext';
 
 // ── Service categories ──────────────────────────────────────────────────────
 const SERVICES = [
@@ -196,9 +196,6 @@ const itemVariants = {
   hidden: { opacity: 0, y: 20 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: 'easeOut' } },
 };
-
-import { useLanguage } from '../../context/LanguageContext';
-import { useApp } from '../../context/AppContext';
 
 export const Home: React.FC = () => {
   const { t } = useLanguage();
