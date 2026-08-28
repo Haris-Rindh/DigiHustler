@@ -1,3 +1,4 @@
+import emailjs from '@emailjs/browser';
 import { Lead } from '../types';
 
 export interface NotificationResult {
@@ -35,7 +36,7 @@ export const notificationService = {
   },
 
   /**
-   * Dispatches automated lead email notifications directly to digihust@gmail.com
+   * Dispatches automated lead email notifications directly to digihust@gmail.com via EmailJS
    */
   async dispatchLeadEmail(leadData: {
     name: string;
@@ -46,6 +47,35 @@ export const notificationService = {
     timeline: string;
     description: string;
   }): Promise<boolean> {
+    const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID || '';
+    const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID || '';
+    const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY || '';
+
+    // 1. Primary: EmailJS SDK (Zero-block, direct connection to your Gmail)
+    if (serviceId && templateId && publicKey) {
+      try {
+        const emailParams = {
+          client_name: leadData.name,
+          client_email: leadData.email,
+          company: leadData.company || 'Not Specified',
+          services: Array.isArray(leadData.services) ? leadData.services.join(', ') : leadData.services,
+          budget: leadData.budget,
+          timeline: leadData.timeline,
+          project_description: leadData.description,
+          submitted_at: new Date().toLocaleString(),
+          to_email: 'digihust@gmail.com'
+        };
+
+        const res = await emailjs.send(serviceId, templateId, emailParams, publicKey);
+        if (res.status === 200) {
+          return true;
+        }
+      } catch (err) {
+        console.warn('EmailJS delivery warning:', err);
+      }
+    }
+
+    // 2. Secondary Fallback: Direct FormSubmit.co Dispatcher
     try {
       const formData = new FormData();
       formData.append('_subject', `🚨 New DigiHust Project Lead: ${leadData.name} (${leadData.budget})`);
@@ -63,9 +93,7 @@ export const notificationService = {
 
       const res = await fetch('https://formsubmit.co/ajax/digihust@gmail.com', {
         method: 'POST',
-        headers: {
-          'Accept': 'application/json'
-        },
+        headers: { 'Accept': 'application/json' },
         body: formData
       });
 
@@ -73,11 +101,11 @@ export const notificationService = {
         const data = await res.json();
         return data.success === 'true' || data.success === true;
       }
-      return false;
     } catch (err) {
-      console.warn('Lead email dispatch warning:', err);
-      return false;
+      console.warn('Lead email dispatch fallback notice:', err);
     }
+
+    return false;
   },
 
   /**
