@@ -46,38 +46,68 @@ export const notificationService = {
     timeline: string;
     description: string;
   }): Promise<boolean> {
-    const accessKey = import.meta.env.VITE_WEB3FORMS_ACCESS_KEY || '';
-    
-    if (!accessKey) {
-      console.info('Tip: Add VITE_WEB3FORMS_ACCESS_KEY to .env for instant email alerts to digihust@gmail.com.');
-      return false;
-    }
+    const subject = `🚨 New DigiHust Lead: ${leadData.name} (${leadData.budget})`;
 
+    // Primary: Direct FormSubmit.co Dispatcher to digihust@gmail.com
     try {
-      const response = await fetch('https://api.web3forms.com/submit', {
+      const formSubmitRes = await fetch('https://formsubmit.co/ajax/digihust@gmail.com', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           Accept: 'application/json'
         },
         body: JSON.stringify({
-          access_key: accessKey,
-          subject: `🚨 New DigiHust Project Lead: ${leadData.name} (${leadData.budget})`,
-          from_name: 'DigiHust Portal Lead System',
-          name: leadData.name,
-          email: leadData.email,
-          company: leadData.company || 'N/A',
-          services: leadData.services.join(', '),
-          budget: leadData.budget,
-          timeline: leadData.timeline,
-          message: `New client brief submitted on DigiHust:\n\nClient Name: ${leadData.name}\nEmail: ${leadData.email}\nCompany: ${leadData.company || 'N/A'}\nServices Requested: ${leadData.services.join(', ')}\nBudget Range: ${leadData.budget}\nTarget Timeline: ${leadData.timeline}\n\nProject Scope:\n${leadData.description}\n\n--- View and manage in Executive Portal at /portal/leads ---`
+          _subject: subject,
+          _template: 'table',
+          _captcha: 'false',
+          'Client Name': leadData.name,
+          'Client Email': leadData.email,
+          'Company': leadData.company || 'Not Specified',
+          'Services Required': leadData.services.join(', '),
+          'Budget Range': leadData.budget,
+          'Target Timeline': leadData.timeline,
+          'Project Scope & Details': leadData.description,
+          '_portal_link': 'https://digihust.com/portal/leads'
         })
       });
-      return response.ok;
+
+      if (formSubmitRes.ok) {
+        return true;
+      }
     } catch (err) {
-      console.warn('Direct email dispatch notice:', err);
-      return false;
+      console.warn('FormSubmit email dispatch notice:', err);
     }
+
+    // Secondary: Web3Forms Dispatcher
+    const accessKey = import.meta.env.VITE_WEB3FORMS_ACCESS_KEY || '';
+    if (accessKey) {
+      try {
+        const w3Res = await fetch('https://api.web3forms.com/submit', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json'
+          },
+          body: JSON.stringify({
+            access_key: accessKey,
+            subject: subject,
+            from_name: 'DigiHust Lead Dispatcher',
+            name: leadData.name,
+            email: leadData.email,
+            company: leadData.company || 'N/A',
+            services: leadData.services.join(', '),
+            budget: leadData.budget,
+            timeline: leadData.timeline,
+            message: `New client brief submitted on DigiHust:\n\nClient Name: ${leadData.name}\nEmail: ${leadData.email}\nCompany: ${leadData.company || 'N/A'}\nServices Requested: ${leadData.services.join(', ')}\nBudget Range: ${leadData.budget}\nTarget Timeline: ${leadData.timeline}\n\nProject Scope:\n${leadData.description}`
+          })
+        });
+        return w3Res.ok;
+      } catch (err) {
+        console.warn('Web3Forms dispatch notice:', err);
+      }
+    }
+
+    return false;
   },
 
   /**
