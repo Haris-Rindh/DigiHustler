@@ -206,11 +206,40 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
     dbService.fetchInitialData().then((cloudData) => {
       if (!cloudData) return;
-      if (cloudData.users && cloudData.users.length > 0) setUsers(cloudData.users);
-      if (cloudData.leads && cloudData.leads.length > 0) setLeads(cloudData.leads);
-      if (cloudData.projects && cloudData.projects.length > 0) setProjects(cloudData.projects);
+      if (cloudData.users && cloudData.users.length > 0) {
+        setUsers(prev => {
+          const cloudIds = new Set(cloudData.users!.map(u => u.id));
+          const localOnly = prev.filter(u => !cloudIds.has(u.id));
+          // If there are local users not yet in cloud, sync them up
+          localOnly.forEach(u => dbService.upsertUser(u));
+          return [...cloudData.users!, ...localOnly];
+        });
+      }
+      if (cloudData.leads && cloudData.leads.length > 0) {
+        setLeads(prev => {
+          const cloudIds = new Set(cloudData.leads!.map(l => l.id));
+          const localOnly = prev.filter(l => !cloudIds.has(l.id));
+          localOnly.forEach(l => dbService.insertLead(l));
+          return [...cloudData.leads!, ...localOnly];
+        });
+      }
+      if (cloudData.projects && cloudData.projects.length > 0) {
+        setProjects(prev => {
+          const cloudIds = new Set(cloudData.projects!.map(p => p.id));
+          const localOnly = prev.filter(p => !cloudIds.has(p.id));
+          localOnly.forEach(p => dbService.upsertProject(p));
+          return [...cloudData.projects!, ...localOnly];
+        });
+      }
       if (cloudData.assignments && cloudData.assignments.length > 0) setAssignments(cloudData.assignments);
-      if (cloudData.certificates && cloudData.certificates.length > 0) setCertificates(cloudData.certificates);
+      if (cloudData.certificates && cloudData.certificates.length > 0) {
+        setCertificates(prev => {
+          const cloudIds = new Set(cloudData.certificates!.map(c => c.id));
+          const localOnly = prev.filter(c => !cloudIds.has(c.id));
+          localOnly.forEach(c => dbService.upsertCertificate(c));
+          return [...cloudData.certificates!, ...localOnly];
+        });
+      }
       if (cloudData.announcements && cloudData.announcements.length > 0) setAnnouncements(cloudData.announcements);
       if (cloudData.siteContent) setSiteContent(cloudData.siteContent);
       if (cloudData.auditLogs && cloudData.auditLogs.length > 0) setAuditLogs(cloudData.auditLogs);
@@ -392,6 +421,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     };
 
     setUsers(prev => [newUser, ...prev]);
+    dbService.upsertUser(newUser);
 
     // Record Security Audit Log
     const auditEntry: SecurityAuditLog = {
@@ -1109,6 +1139,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       documents: []
     };
     setUsers(prev => [newUser, ...prev]);
+    dbService.upsertUser(newUser);
     return newUser;
   };
 
@@ -1148,6 +1179,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     });
 
     setUsers(prev => [...createdUsers, ...prev]);
+    createdUsers.forEach(u => dbService.upsertUser(u));
     return { count: createdUsers.length, newUsers: createdUsers };
   };
 
@@ -1158,7 +1190,9 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
     setUsers(prev => prev.map(u => {
       if (u.credentialsSentAt === null || u.credentialsSentAt === undefined) {
-        return { ...u, credentialsSentAt: timestamp };
+        const updated = { ...u, credentialsSentAt: timestamp };
+        dbService.upsertUser(updated);
+        return updated;
       }
       return u;
     }));
@@ -1171,10 +1205,12 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const updateSiteContent = (section: keyof SiteContent, data: any) => {
     if (!PERMISSIONS.canEditWebsiteContent(currentTier, currentUser)) return;
 
-    setSiteContent(prev => ({
-      ...prev,
+    const newContent = {
+      ...siteContent,
       [section]: data
-    }));
+    };
+    setSiteContent(newContent);
+    dbService.saveSiteContent(newContent);
 
     const auditEntry: SecurityAuditLog = {
       id: `audit-${Date.now()}`,
