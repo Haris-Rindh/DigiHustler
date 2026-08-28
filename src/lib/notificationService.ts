@@ -57,11 +57,16 @@ export const notificationService = {
         const emailParams = {
           client_name: leadData.name,
           client_email: leadData.email,
+          name: leadData.name,
+          from_name: leadData.name,
+          email: leadData.email,
+          from_email: leadData.email,
           company: leadData.company || 'Not Specified',
           services: Array.isArray(leadData.services) ? leadData.services.join(', ') : leadData.services,
           budget: leadData.budget,
           timeline: leadData.timeline,
           project_description: leadData.description,
+          message: leadData.description,
           submitted_at: new Date().toLocaleString(),
           to_email: 'digihust@gmail.com'
         };
