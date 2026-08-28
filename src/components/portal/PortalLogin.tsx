@@ -230,17 +230,17 @@ export const PortalLogin: React.FC = () => {
                     >
                       <div className="flex items-center justify-between mb-1.5">
                         <span className="text-[10px] font-extrabold uppercase tracking-wide text-[var(--brand-teal)]">
-                          {ann.postedByRole.toUpperCase()} NOTICE
+                          {(ann.postedByRole || 'STAFF').toUpperCase()} NOTICE
                         </span>
                         <span className="text-[10px] text-[var(--text-muted)]">
-                          {new Date(ann.postedAt).toLocaleDateString()}
+                          {ann.postedAt ? new Date(ann.postedAt).toLocaleDateString() : 'Recent'}
                         </span>
                       </div>
                       <h3 className="font-bold text-xs text-[var(--text-heading)] mb-1">
                         {ann.title}
                       </h3>
                       <p className="text-xs text-[var(--text-body)] leading-relaxed">
-                        {ann.content}
+                        {ann.content || ann.body || ''}
                       </p>
                     </div>
                   ))}

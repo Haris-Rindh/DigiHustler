@@ -144,13 +144,13 @@ export const AnnouncementsFeed: React.FC = () => {
                 </h3>
 
                 <p className="text-xs sm:text-sm text-[var(--text-body)] leading-relaxed mb-4">
-                  {ann.body}
+                  {ann.body || ann.content || ''}
                 </p>
 
                 <div className="pt-3 border-t border-[var(--border-subtle)] flex items-center justify-between text-xs text-[var(--text-muted)]">
                   <span className="flex items-center gap-1.5">
                     <User className="w-3.5 h-3.5 text-[var(--brand-teal)]" />
-                    <span>Posted by <strong className="text-[var(--text-heading)]">{ann.postedByName}</strong> ({ann.postedByRole.toUpperCase()})</span>
+                    <span>Posted by <strong className="text-[var(--text-heading)]">{ann.postedByName || 'Staff'}</strong> ({((ann.postedByRole as string) || 'STAFF').toUpperCase()})</span>
                   </span>
                   <span className="text-[11px] text-[var(--text-muted)]">Read-Only Notice</span>
                 </div>

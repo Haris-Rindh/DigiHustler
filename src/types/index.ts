@@ -347,10 +347,11 @@ export interface Announcement {
   scope: AnnouncementScope;
   groupId?: GroupId;
   title: string;
-  body: string;
-  postedBy: string;
-  postedByName: string;
-  postedByRole: UserRoleTier;
+  body?: string;
+  content?: string;
+  postedBy?: string;
+  postedByName?: string;
+  postedByRole?: UserRoleTier;
   postedAt: string;
   expiresAt?: string;
 }

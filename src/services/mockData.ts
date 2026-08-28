@@ -94,6 +94,7 @@ export const INITIAL_ANNOUNCEMENTS: Announcement[] = [
     id: 'ann-welcome',
     scope: 'global',
     title: 'Welcome to DigiHust Portal',
+    body: 'Welcome to the DigiHust enterprise platform. Manage specialized squads, client intake, and verified digital delivery from this central console.',
     content: 'Welcome to the DigiHust enterprise platform. Manage specialized squads, client intake, and verified digital delivery from this central console.',
     postedBy: 'usr-ceo-1',
     postedByName: 'Mahad Abbas',

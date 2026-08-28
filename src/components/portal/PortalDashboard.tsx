@@ -240,15 +240,15 @@ export const PortalDashboard: React.FC = () => {
                 >
                   <div className="flex items-center justify-between">
                     <span className="text-[9px] font-black uppercase tracking-wider text-[var(--brand-teal)] bg-[var(--brand-teal-subtle)] px-2 py-0.5 rounded">
-                      {ann.scope.toUpperCase()}
+                      {(ann.scope || 'global').toUpperCase()}
                     </span>
                     <span className="text-[10px] font-mono text-[var(--text-muted)]">
-                      {new Date(ann.postedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                      {ann.postedAt ? new Date(ann.postedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : 'Recent'}
                     </span>
                   </div>
                   <h5 className="font-bold text-xs text-[var(--text-heading)]">{ann.title}</h5>
                   <p className="text-[11px] text-[var(--text-body)] line-clamp-2 leading-relaxed">
-                    {ann.content}
+                    {ann.content || ann.body || ''}
                   </p>
                 </div>
               ))
