@@ -58,16 +58,17 @@ export const notificationService = {
         },
         body: JSON.stringify({
           _subject: subject,
+          _replyto: leadData.email,
           _template: 'table',
           _captcha: 'false',
-          'Client Name': leadData.name,
-          'Client Email': leadData.email,
-          'Company': leadData.company || 'Not Specified',
-          'Services Required': leadData.services.join(', '),
-          'Budget Range': leadData.budget,
-          'Target Timeline': leadData.timeline,
-          'Project Scope & Details': leadData.description,
-          '_portal_link': 'https://digihust.com/portal/leads'
+          name: leadData.name,
+          email: leadData.email,
+          company: leadData.company || 'Not Specified',
+          services: Array.isArray(leadData.services) ? leadData.services.join(', ') : leadData.services,
+          budget: leadData.budget,
+          timeline: leadData.timeline,
+          project_description: leadData.description,
+          submitted_at: new Date().toLocaleString()
         })
       });
 
