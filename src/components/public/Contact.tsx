@@ -91,6 +91,7 @@ export const Contact: React.FC = () => {
   };
 
   const { submitLead, siteContent } = useApp();
+  const [whatsappLink, setWhatsappLink] = useState<string>('');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -132,6 +133,20 @@ export const Contact: React.FC = () => {
       };
 
       submitLead(newLeadData);
+
+      // Generate direct WhatsApp click-to-chat URL for management
+      const cleanPhone = (siteContent?.contact?.whatsapp || '+923206806396').replace(/[^0-9]/g, '');
+      const waMsg = `*🚨 New DigiHust Project Proposal*\n\n` +
+        `*Name:* ${form.name}\n` +
+        `*Email:* ${form.email}\n` +
+        (form.company ? `*Company:* ${form.company}\n` : '') +
+        `*Services:* ${form.services.join(', ')}\n` +
+        `*Budget:* ${form.budget}\n` +
+        `*Timeline:* ${form.timeline}\n\n` +
+        `*Project Scope:* ${form.description}`;
+      const waUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(waMsg)}`;
+      setWhatsappLink(waUrl);
+
     } catch (err) {
       console.error('Contact form submission error:', err);
     }
@@ -248,6 +263,23 @@ export const Contact: React.FC = () => {
                     <span className="text-[var(--brand-teal)] font-semibold">{form.services.join(', ')}</span> and reach out to{' '}
                     <strong className="text-[var(--text-heading)] font-bold">{form.email}</strong> within 24 hours.
                   </p>
+
+                  {whatsappLink && (
+                    <div className="pt-2 space-y-3 max-w-md mx-auto">
+                      <a
+                        href={whatsappLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center justify-center space-x-2.5 w-full px-6 py-4 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm shadow-xl transition-all hover:scale-[1.02] cursor-pointer"
+                      >
+                        <MessageSquare className="w-5 h-5" />
+                        <span>Send Brief on WhatsApp to CEO (+92 320 6806396)</span>
+                      </a>
+                      <p className="text-xs text-[var(--text-muted)]">
+                        Prefer instant response? Click above to forward your brief directly to our CEO on WhatsApp!
+                      </p>
+                    </div>
+                  )}
 
                   <div className="pt-6 border-t border-[var(--border-subtle)]">
                     <button

@@ -214,7 +214,7 @@ INSERT INTO public.users (
   'management',
   'ceo',
   'Founder & CEO',
-  '+92 320 6806396',
+  '+92 303 7368528',
   'DGH2400001',
   '5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8', -- quickHash of DigiHust@2026
   'active',

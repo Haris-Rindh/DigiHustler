@@ -1,6 +1,6 @@
-import { 
-  Group, User, Lead, Project, Payout, Applicant, GlobalAdminSettings, Assignment, 
-  Certificate, Announcement, SiteContent, SecurityAuditLog 
+import {
+  Group, User, Lead, Project, Payout, Applicant, GlobalAdminSettings, Assignment,
+  Certificate, Announcement, SiteContent, SecurityAuditLog
 } from '../types';
 import { quickHashSync } from '../lib/crypto';
 
@@ -54,7 +54,7 @@ export const INITIAL_USERS: User[] = [
     memberId: 'DGH2400001',
     name: 'Mahad Abbas',
     email: 'digihust@gmail.com',
-    phone: '+92 320 6806396',
+    phone: '+92 303 7368528',
     avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=250',
     role: 'management',
     roleTier: 'ceo',
@@ -266,9 +266,9 @@ export const DEFAULT_SITE_CONTENT: SiteContent = {
   },
   contact: {
     email: 'digihust@gmail.com',
-    phone: '+92 320 6806396',
+    phone: '+92 303 7368528',
     address: 'Islamabad, Pakistan',
-    whatsapp: '+92 320 6806396',
+    whatsapp: '+92 303 7368528',
     calendlyUrl: 'https://calendly.com/digihust/discovery',
     linkedin: 'https://www.linkedin.com/company/digihust/',
     github: 'https://github.com/digihust',
@@ -301,7 +301,7 @@ export const DEFAULT_SITE_CONTENT: SiteContent = {
       signatoryTitle: 'Founder & CEO',
       watermarkText: 'DigiHust',
       contactEmail: 'digihust@gmail.com',
-      contactPhone: '+92 320 6806396',
+      contactPhone: '+92 303 7368528',
       contactAddress: 'Islamabad, Pakistan',
       createdAt: '2026-08-20'
     },
@@ -325,7 +325,7 @@ export const DEFAULT_SITE_CONTENT: SiteContent = {
       signatoryTitle: 'Founder & CEO',
       watermarkText: 'DigiHust',
       contactEmail: 'digihust@gmail.com',
-      contactPhone: '+92 320 6806396',
+      contactPhone: '+92 303 7368528',
       contactAddress: 'Islamabad, Pakistan',
       createdAt: '2026-08-20'
     },
@@ -347,7 +347,7 @@ export const DEFAULT_SITE_CONTENT: SiteContent = {
       signatoryTitle: 'Founder & CEO',
       watermarkText: 'DigiHust',
       contactEmail: 'digihust@gmail.com',
-      contactPhone: '+92 320 6806396',
+      contactPhone: '+92 303 7368528',
       contactAddress: 'Islamabad, Pakistan',
       createdAt: '2026-08-20'
     }

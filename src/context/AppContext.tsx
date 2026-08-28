@@ -529,6 +529,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       createdAt: new Date().toISOString()
     };
     setLeads(prev => [newLead, ...prev]);
+    dbService.insertLead(newLead);
   };
 
   const reviewLeadToProject = (
