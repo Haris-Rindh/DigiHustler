@@ -164,23 +164,41 @@ ALTER TABLE public.announcements ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.site_content ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.audit_logs ENABLE ROW LEVEL SECURITY;
 
--- Allow anonymous public reads on certificates for instant QR scanning / verification
+-- 1. Certificates Public Verification Policy
+DROP POLICY IF EXISTS "Allow public read certificates" ON public.certificates;
 CREATE POLICY "Allow public read certificates" ON public.certificates FOR SELECT USING (true);
 
--- Allow anonymous public reads on site_content for public web rendering
+-- 2. Site Content Public Read Policy
+DROP POLICY IF EXISTS "Allow public read site_content" ON public.site_content;
 CREATE POLICY "Allow public read site_content" ON public.site_content FOR SELECT USING (true);
 
--- Allow anonymous public insert for new leads (Contact forms / quote submissions)
+-- 3. Leads Public Insert Policy (Client quote submissions)
+DROP POLICY IF EXISTS "Allow public insert leads" ON public.leads;
 CREATE POLICY "Allow public insert leads" ON public.leads FOR INSERT WITH CHECK (true);
 
--- Allow authenticated / service access for all operations
+-- 4. Full Access Policies for System Operations
+DROP POLICY IF EXISTS "Allow full access users" ON public.users;
 CREATE POLICY "Allow full access users" ON public.users FOR ALL USING (true) WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Allow full access leads" ON public.leads;
 CREATE POLICY "Allow full access leads" ON public.leads FOR ALL USING (true) WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Allow full access projects" ON public.projects;
 CREATE POLICY "Allow full access projects" ON public.projects FOR ALL USING (true) WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Allow full access assignments" ON public.assignments;
 CREATE POLICY "Allow full access assignments" ON public.assignments FOR ALL USING (true) WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Allow full access certificates" ON public.certificates;
 CREATE POLICY "Allow full access certificates" ON public.certificates FOR ALL USING (true) WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Allow full access announcements" ON public.announcements;
 CREATE POLICY "Allow full access announcements" ON public.announcements FOR ALL USING (true) WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Allow full access site_content" ON public.site_content;
 CREATE POLICY "Allow full access site_content" ON public.site_content FOR ALL USING (true) WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Allow full access audit_logs" ON public.audit_logs;
 CREATE POLICY "Allow full access audit_logs" ON public.audit_logs FOR ALL USING (true) WITH CHECK (true);
 
 -- ==============================================================================
