@@ -44,7 +44,7 @@ export const PortalDashboard: React.FC = () => {
 
         <div className="flex items-center space-x-4">
           <img
-            src={currentUser.avatarUrl}
+            src={currentUser.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser.name)}&background=1F7A8C&color=fff&size=64`}
             alt={currentUser.name}
             className="w-16 h-16 rounded-2xl object-cover ring-2 ring-[var(--brand-teal)] shadow-md"
           />
@@ -167,41 +167,50 @@ export const PortalDashboard: React.FC = () => {
           </div>
 
           <div className="space-y-3">
-            {visibleAssignments.map((asgn) => {
-              const squadObj = groups.find(g => g.id === asgn.squad);
-
-              return (
-                <Link
-                  key={asgn.id}
-                  to="/portal/assignments"
-                  className="block p-5 rounded-2xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] hover:border-[var(--brand-teal)]/50 hover:shadow-lg transition-all"
-                >
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[var(--brand-teal-subtle)] text-[var(--brand-teal)] border border-[var(--border-subtle)]">
-                      {squadObj?.name.split('&')[0] || asgn.squad.toUpperCase()}
-                    </span>
-                    <span className="text-[10px] font-mono text-[var(--text-muted)] uppercase">
-                      Due: {asgn.sanitizedBrief.deadline}
-                    </span>
-                  </div>
-
-                  <h4 className="font-bold text-sm text-[var(--text-heading)] mb-1">
-                    {asgn.sanitizedBrief.title}
-                  </h4>
-                  <p className="text-xs text-[var(--text-body)] line-clamp-1 mb-3">
-                    {asgn.sanitizedBrief.scope}
-                  </p>
-
-                  <div className="flex items-center justify-between text-[11px] text-[var(--text-muted)] pt-2 border-t border-[var(--border-subtle)]">
-                    <span>Lead: <strong className="text-[var(--text-heading)]">{asgn.assignedLeaderName}</strong></span>
-                    <span className="text-[var(--brand-teal)] font-semibold flex items-center gap-1">
-                      <span>Open Workspace</span>
-                      <ArrowRight className="w-3 h-3" />
-                    </span>
-                  </div>
-                </Link>
-              );
-            })}
+            {visibleAssignments.length === 0 ? (
+              <div className="p-8 rounded-2xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] text-center">
+                <Briefcase className="w-8 h-8 text-[var(--text-muted)] mx-auto mb-3 opacity-50" />
+                <p className="text-sm font-semibold text-[var(--text-heading)] mb-1">No Active Assignments</p>
+                <p className="text-xs text-[var(--text-muted)]">
+                  {currentTier === 'member'
+                    ? 'You have not been assigned to any active projects yet. Check back soon.'
+                    : 'No active sprint assignments exist. Create one from the Assignments section.'}
+                </p>
+              </div>
+            ) : (
+              visibleAssignments.map((asgn) => {
+                const squadObj = groups.find(g => g.id === asgn.squad);
+                return (
+                  <Link
+                    key={asgn.id}
+                    to="/portal/assignments"
+                    className="block p-5 rounded-2xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] hover:border-[var(--brand-teal)]/50 hover:shadow-lg transition-all"
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[var(--brand-teal-subtle)] text-[var(--brand-teal)] border border-[var(--border-subtle)]">
+                        {squadObj?.name.split('&')[0] || asgn.squad.toUpperCase()}
+                      </span>
+                      <span className="text-[10px] font-mono text-[var(--text-muted)] uppercase">
+                        Due: {asgn.sanitizedBrief.deadline}
+                      </span>
+                    </div>
+                    <h4 className="font-bold text-sm text-[var(--text-heading)] mb-1">
+                      {asgn.sanitizedBrief.title}
+                    </h4>
+                    <p className="text-xs text-[var(--text-body)] line-clamp-1 mb-3">
+                      {asgn.sanitizedBrief.scope}
+                    </p>
+                    <div className="flex items-center justify-between text-[11px] text-[var(--text-muted)] pt-2 border-t border-[var(--border-subtle)]">
+                      <span>Lead: <strong className="text-[var(--text-heading)]">{asgn.assignedLeaderName}</strong></span>
+                      <span className="text-[var(--brand-teal)] font-semibold flex items-center gap-1">
+                        <span>Open Workspace</span>
+                        <ArrowRight className="w-3 h-3" />
+                      </span>
+                    </div>
+                  </Link>
+                );
+              })
+            )}
           </div>
         </div>
 
@@ -218,25 +227,32 @@ export const PortalDashboard: React.FC = () => {
           </div>
 
           <div className="space-y-3">
-            {announcements.slice(0, 3).map((ann) => (
-              <div
-                key={ann.id}
-                className="p-4 rounded-2xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] space-y-2"
-              >
-                <div className="flex items-center justify-between">
-                  <span className="text-[9px] font-black uppercase tracking-wider text-[var(--brand-teal)] bg-[var(--brand-teal-subtle)] px-2 py-0.5 rounded">
-                    {ann.scope.toUpperCase()}
-                  </span>
-                  <span className="text-[10px] font-mono text-[var(--text-muted)]">
-                    {new Date(ann.postedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                  </span>
-                </div>
-                <h5 className="font-bold text-xs text-[var(--text-heading)]">{ann.title}</h5>
-                <p className="text-[11px] text-[var(--text-body)] line-clamp-2 leading-relaxed">
-                  {ann.body}
-                </p>
+            {announcements.length === 0 ? (
+              <div className="p-6 rounded-2xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] text-center">
+                <Bell className="w-6 h-6 text-[var(--text-muted)] mx-auto mb-2 opacity-50" />
+                <p className="text-xs text-[var(--text-muted)]">No announcements posted yet.</p>
               </div>
-            ))}
+            ) : (
+              announcements.slice(0, 3).map((ann) => (
+                <div
+                  key={ann.id}
+                  className="p-4 rounded-2xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] space-y-2"
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="text-[9px] font-black uppercase tracking-wider text-[var(--brand-teal)] bg-[var(--brand-teal-subtle)] px-2 py-0.5 rounded">
+                      {ann.scope.toUpperCase()}
+                    </span>
+                    <span className="text-[10px] font-mono text-[var(--text-muted)]">
+                      {new Date(ann.postedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                    </span>
+                  </div>
+                  <h5 className="font-bold text-xs text-[var(--text-heading)]">{ann.title}</h5>
+                  <p className="text-[11px] text-[var(--text-body)] line-clamp-2 leading-relaxed">
+                    {ann.content}
+                  </p>
+                </div>
+              ))
+            )}
           </div>
         </div>
 

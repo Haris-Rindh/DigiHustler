@@ -17,8 +17,7 @@ import {
 } from 'lucide-react';
 import { SEOHead } from '../seo/SEOHead';
 import { useApp } from '../../context/AppContext';
-import { GroupId, Lead } from '../../types';
-import { notificationService } from '../../lib/notificationService';
+import { GroupId } from '../../types';
 
 const SERVICES = [
   'Website / Full-Stack App',
@@ -91,7 +90,7 @@ export const Contact: React.FC = () => {
     return Object.keys(errs).length === 0;
   };
 
-  const { submitLead } = useApp();
+  const { submitLead, siteContent } = useApp();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -100,61 +99,50 @@ export const Contact: React.FC = () => {
 
     setIsSubmitting(true);
 
-    const budgetMap: Record<string, number> = {
-      'Under $1,000': 800,
-      '$1,000 – $3,000': 2000,
-      '$3,000 – $7,500': 5000,
-      '$7,500 – $15,000': 10000,
-      '$15,000+': 20000,
-      'Flexible / Not Sure': 3000,
-    };
-    const groupMap: Record<string, GroupId> = {
-      'Website / Full-Stack App': 'tech',
-      'UI/UX & Brand Identity': 'creative',
-      'AI & Workflow Automation': 'data',
-      'Digital Marketing & SEO': 'growth',
-      'Cybersecurity Audit': 'tech',
-      'BI & Data Intelligence': 'data',
-    };
+    try {
+      const budgetMap: Record<string, number> = {
+        'Under $1,000': 800,
+        '$1,000 – $3,000': 2000,
+        '$3,000 – $7,500': 5000,
+        '$7,500 – $15,000': 10000,
+        '$15,000+': 20000,
+        'Flexible / Not Sure': 3000,
+      };
+      const groupMap: Record<string, GroupId> = {
+        'Website / Full-Stack App': 'tech',
+        'UI/UX & Brand Identity': 'creative',
+        'AI & Workflow Automation': 'data',
+        'Digital Marketing & SEO': 'growth',
+        'Cybersecurity Audit': 'tech',
+        'BI & Data Intelligence': 'data',
+        'Other Custom Scope': 'tech',
+      };
 
-    const targetGroupId = groupMap[form.services[0]] || 'tech';
-    const rawBudget = budgetMap[form.budget] || 3000;
+      const targetGroupId: GroupId = groupMap[form.services[0]] || 'tech';
+      const rawBudget = budgetMap[form.budget] || 3000;
 
-    const newLeadData = {
-      title: `${form.company || form.name} — ${form.services[0]}`,
-      clientName: form.name,
-      clientCompany: form.company || undefined,
-      clientEmail: form.email,
-      brief: `${form.description}\n\nServices: ${form.services.join(', ')}\nTimeline: ${form.timeline}\nBudget: ${form.budget}`,
-      budgetEstimate: rawBudget,
-      suggestedGroupId: targetGroupId,
-    };
+      const newLeadData = {
+        title: `${form.company || form.name} — ${form.services[0]}`,
+        clientName: form.name,
+        clientCompany: form.company || undefined,
+        clientEmail: form.email,
+        brief: `${form.description}\n\nServices: ${form.services.join(', ')}\nTimeline: ${form.timeline}\nBudget: ${form.budget}`,
+        budgetEstimate: rawBudget,
+        suggestedGroupId: targetGroupId,
+      };
 
-    submitLead(newLeadData);
+      submitLead(newLeadData);
+    } catch (err) {
+      console.error('Contact form submission error:', err);
+    }
 
-    // Trigger instant automated notification dispatch
-    const leadPayload: Lead = {
-      id: `lead-${Date.now()}`,
-      clientName: form.name,
-      email: form.email,
-      companyName: form.company,
-      scopeDescription: form.description,
-      targetGroupId: targetGroupId,
-      budgetRange: form.budget,
-      timeline: form.timeline,
-      referralSource: 'website_contact_form',
-      status: 'new',
-      createdAt: new Date().toISOString()
-    };
-    notificationService.dispatchLeadNotifications(leadPayload);
-
-    // Reliable UI state update
+    // Always show success to the user after a short delay
     setTimeout(() => {
       setIsSubmitting(false);
       setSubmitted(true);
-      window.scrollTo({ top: 180, behavior: 'smooth' });
     }, 600);
   };
+
 
   return (
     <div className="pt-20 lg:pt-24 min-h-screen bg-[var(--bg-page)] text-[var(--text-body)]">

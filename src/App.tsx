@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AppProvider } from './context/AppContext';
 import { ThemeProvider } from './context/ThemeContext';
 import { LanguageProvider } from './context/LanguageContext';
@@ -39,6 +39,7 @@ import { PeopleDirectoryView } from './components/portal/PeopleDirectoryView';
 import { AnnouncementsFeed } from './components/portal/AnnouncementsFeed';
 import { CertificateManager } from './components/portal/CertificateManager';
 import { SiteContentManager } from './components/portal/SiteContentManager';
+import { ProtectedRoute } from './components/portal/ProtectedRoute';
 
 // Utility & Error pages
 import { NotFoundPage } from './components/utility/NotFoundPage';
@@ -48,10 +49,8 @@ import { UnauthorizedPage } from './components/utility/UnauthorizedPage';
 import { MaintenancePage } from './components/utility/MaintenancePage';
 import { OfflinePage } from './components/utility/OfflinePage';
 
-// Internal platform pages (Client Portal)
-import { KanbanPipeline } from './components/dashboard/KanbanPipeline';
+// Internal platform pages
 import { PayoutLedger } from './components/dashboard/PayoutLedger';
-import { RosterView } from './components/dashboard/RosterView';
 import { AdminSettings } from './components/dashboard/AdminSettings';
 
 // Helper to scroll to top on route navigation
@@ -128,24 +127,24 @@ export const App: React.FC = () => {
 
                 {/* ── Staff Portal System (4-Tier Architecture) ── */}
                 <Route path="/portal/login" element={<PortalLogin />} />
-                <Route path="/portal" element={<PortalDashboard />} />
-                <Route path="/portal/dashboard" element={<PortalDashboard />} />
-                <Route path="/portal/assignments" element={<AssignmentWorkspace />} />
-                <Route path="/portal/roster" element={<PeopleDirectoryView />} />
-                <Route path="/portal/announcements" element={<AnnouncementsFeed />} />
-                <Route path="/portal/certificates" element={<CertificateManager />} />
-                <Route path="/portal/cms" element={<SiteContentManager />} />
-                <Route path="/portal/ledger" element={<PayoutLedger />} />
-                <Route path="/portal/settings" element={<AdminSettings />} />
+                <Route path="/portal" element={<ProtectedRoute><PortalDashboard /></ProtectedRoute>} />
+                <Route path="/portal/dashboard" element={<ProtectedRoute><PortalDashboard /></ProtectedRoute>} />
+                <Route path="/portal/assignments" element={<ProtectedRoute><AssignmentWorkspace /></ProtectedRoute>} />
+                <Route path="/portal/roster" element={<ProtectedRoute><PeopleDirectoryView /></ProtectedRoute>} />
+                <Route path="/portal/announcements" element={<ProtectedRoute><AnnouncementsFeed /></ProtectedRoute>} />
+                <Route path="/portal/certificates" element={<ProtectedRoute><CertificateManager /></ProtectedRoute>} />
+                <Route path="/portal/cms" element={<ProtectedRoute><SiteContentManager /></ProtectedRoute>} />
+                <Route path="/portal/ledger" element={<ProtectedRoute><PayoutLedger /></ProtectedRoute>} />
+                <Route path="/portal/settings" element={<ProtectedRoute><AdminSettings /></ProtectedRoute>} />
 
-                {/* ── Legacy Internal Client Portal Routes ── */}
-                <Route path="/dashboard" element={<KanbanPipeline />} />
-                <Route path="/ledger" element={<PayoutLedger />} />
-                <Route path="/roster" element={<RosterView />} />
-                <Route path="/admin" element={<AdminSettings />} />
-                <Route path="/admin/people" element={<AdminSettings />} />
-                <Route path="/admin/applicants" element={<AdminSettings />} />
-                <Route path="/admin/squads" element={<AdminSettings />} />
+                {/* ── Legacy routes redirect to portal login (security hardening) ── */}
+                <Route path="/dashboard" element={<Navigate to="/portal/login" replace />} />
+                <Route path="/ledger" element={<Navigate to="/portal/login" replace />} />
+                <Route path="/roster" element={<Navigate to="/portal/login" replace />} />
+                <Route path="/admin" element={<Navigate to="/portal/login" replace />} />
+                <Route path="/admin/people" element={<Navigate to="/portal/login" replace />} />
+                <Route path="/admin/applicants" element={<Navigate to="/portal/login" replace />} />
+                <Route path="/admin/squads" element={<Navigate to="/portal/login" replace />} />
 
                 {/* ── Utility & Error Routes ── */}
                 <Route path="/404" element={<NotFoundPage />} />

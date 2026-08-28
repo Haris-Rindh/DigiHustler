@@ -39,7 +39,8 @@ export const Apply: React.FC = () => {
   };
 
   return (
-    <div className="max-w-3xl mx-auto px-4 lg:px-8 py-12 space-y-8">
+    <div className="pt-16 min-h-screen bg-[var(--bg-page)] text-[var(--text-body)]">
+      <div className="max-w-3xl mx-auto px-4 lg:px-8 py-12 space-y-8">
       
       <div className="text-center space-y-3">
         <span className="text-[10px] font-bold px-3 py-1 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 uppercase tracking-widest">
@@ -177,6 +178,7 @@ export const Apply: React.FC = () => {
         </form>
       )}
 
+      </div>
     </div>
   );
 };

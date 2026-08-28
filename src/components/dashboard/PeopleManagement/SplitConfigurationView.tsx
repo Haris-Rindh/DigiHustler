@@ -44,21 +44,55 @@ export const SplitConfigurationView: React.FC<SplitConfigurationViewProps> = ({ 
 
   return (
     <div className="space-y-8">
+      {/* Educational Banner */}
+      <div className="p-6 rounded-3xl bg-gradient-to-r from-[var(--bg-surface)] to-[var(--bg-subtle)] border border-[var(--border-subtle)] space-y-3 shadow-md">
+        <div className="flex items-center space-x-2 text-xs font-bold text-[var(--brand-teal)] uppercase tracking-wider">
+          <Shield className="w-4 h-4" />
+          <span>How DigiHust Revenue Splits Work</span>
+        </div>
+        <h2 className="font-display font-extrabold text-xl sm:text-2xl text-[var(--text-heading)]">
+          Fair, Transparent Revenue Distribution
+        </h2>
+        <p className="text-xs sm:text-sm text-[var(--text-body)] leading-relaxed max-w-4xl">
+          When DigiHust delivers a client project, the revenue is split automatically among the three pillars of delivery: 
+          <strong> Management</strong> (infrastructure, platform, customer acquisition), 
+          <strong> Squad Leader</strong> (project management, architecture & QA review), and 
+          <strong> Specialists</strong> (developers, designers, marketers doing the execution).
+        </p>
+      </div>
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         
         {/* Global Default Split Settings Form */}
-        <form onSubmit={handleSaveGlobal} className="p-6 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] space-y-5 shadow-xl">
+        <form onSubmit={handleSaveGlobal} className="p-6 sm:p-8 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] space-y-5 shadow-xl">
           <div className="flex items-center justify-between border-b border-[var(--border-subtle)] pb-3">
             <h3 className="font-display font-bold text-lg text-[var(--text-heading)] flex items-center gap-2">
               <DollarSign className="w-5 h-5 text-[var(--brand-teal)]" />
-              <span>Global Default Split Allocation</span>
+              <span>Company-Wide Baseline Policy</span>
             </h3>
             <span className="text-[10px] text-[var(--text-muted)] uppercase font-bold">Standard Baseline</span>
           </div>
 
-          <p className="text-xs text-[var(--text-body)] leading-relaxed">
-            DigiHust standard baseline: Management takes 15–20%, Group Leader takes 20–25%, and Freelancer pool takes ~60%. Automatically auto-fills on newly scoped projects.
-          </p>
+          {/* Live Simulator Pill */}
+          <div className="p-4 rounded-2xl bg-[var(--bg-page)] border border-[var(--border-subtle)] space-y-2">
+            <span className="text-[10px] uppercase font-mono font-bold text-[var(--brand-teal)] block">
+              💡 Live Simulation on a $1,000 Project:
+            </span>
+            <div className="grid grid-cols-3 gap-2 text-center text-xs">
+              <div className="p-2 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-subtle)]">
+                <span className="text-[10px] text-[var(--text-muted)] block">Management ({mgmtPct}%)</span>
+                <strong className="text-[var(--text-heading)] font-mono text-sm">${Math.round(1000 * (mgmtPct / 100))}</strong>
+              </div>
+              <div className="p-2 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-subtle)]">
+                <span className="text-[10px] text-[var(--text-muted)] block">Squad Lead ({ldrPct}%)</span>
+                <strong className="text-cyan-400 font-mono text-sm">${Math.round(1000 * (ldrPct / 100))}</strong>
+              </div>
+              <div className="p-2 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-subtle)]">
+                <span className="text-[10px] text-[var(--text-muted)] block">Specialists ({flPct}%)</span>
+                <strong className="text-emerald-400 font-mono text-sm">${Math.round(1000 * (flPct / 100))}</strong>
+              </div>
+            </div>
+          </div>
 
           <div className="space-y-4">
             <div>

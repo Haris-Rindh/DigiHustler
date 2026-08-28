@@ -327,24 +327,38 @@ export const SiteContentManager: React.FC = () => {
         </div>
       )}
 
+      {/* Section Guide — helps users understand what each tab does */}
+      <div className="p-4 rounded-2xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] text-xs text-[var(--text-muted)] flex flex-wrap gap-4">
+        <div className="flex items-center gap-1.5">
+          <span className="w-2 h-2 rounded-full bg-emerald-400 inline-block" />
+          <span><strong className="text-[var(--text-body)]">Live</strong> — changes appear instantly on the public website</span>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <span className="w-2 h-2 rounded-full bg-amber-400 inline-block" />
+          <span><strong className="text-[var(--text-body)]">Fallback Active</strong> — website uses built-in defaults until you add your own content here</span>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <span className="w-2 h-2 rounded-full bg-[var(--text-muted)] inline-block" />
+          <span><strong className="text-[var(--text-body)]">Static</strong> — managed by code, not yet connected to CMS</span>
+        </div>
+      </div>
+
       {/* Tabs */}
       <div className="flex items-center space-x-1.5 border-b border-[var(--border-subtle)] pb-2 overflow-x-auto">
         {[
-          { id: 'hero' as const, label: 'Hero & Pitch', icon: <Sparkles className="w-3.5 h-3.5" /> },
-          { id: 'valueProps' as const, label: 'Value Props (Why Us)', icon: <Layout className="w-3.5 h-3.5" /> },
-          { id: 'caseStudies' as const, label: 'Case Studies', icon: <Briefcase className="w-3.5 h-3.5" /> },
-          { id: 'testimonials' as const, label: 'Testimonials', icon: <Star className="w-3.5 h-3.5" /> },
-          { id: 'services' as const, label: 'Services & Squads', icon: <Layers className="w-3.5 h-3.5" /> },
-          { id: 'packages' as const, label: 'Pricing Packages', icon: <DollarSign className="w-3.5 h-3.5" /> },
-          { id: 'team' as const, label: 'Team Profiles', icon: <Users className="w-3.5 h-3.5" /> },
-          { id: 'faqs' as const, label: 'FAQs', icon: <HelpCircle className="w-3.5 h-3.5" /> },
-          { id: 'about' as const, label: 'Company Story', icon: <Info className="w-3.5 h-3.5" /> },
-          { id: 'contact' as const, label: 'Contact & Socials', icon: <PhoneCall className="w-3.5 h-3.5" /> },
-          { id: 'images' as const, label: 'Image Asset Studio', icon: <ImageIcon className="w-3.5 h-3.5" /> },
+          { id: 'hero' as const,        label: '1. Hero Section',     icon: <Sparkles className="w-3.5 h-3.5" />,    status: 'live',     tip: 'Controls the main headline, subtext, badge, and stat tokens on the homepage' },
+          { id: 'services' as const,    label: '2. Services',         icon: <Layers className="w-3.5 h-3.5" />,     status: 'live',     tip: 'The capability cards shown on homepage and /services page' },
+          { id: 'caseStudies' as const, label: '3. Case Studies',     icon: <Briefcase className="w-3.5 h-3.5" />,  status: 'live',     tip: 'Work/Portfolio section on homepage and /work page' },
+          { id: 'testimonials' as const,label: '4. Testimonials',     icon: <Star className="w-3.5 h-3.5" />,       status: 'live',     tip: 'Client reviews shown on homepage' },
+          { id: 'packages' as const,    label: '5. Pricing Packages', icon: <DollarSign className="w-3.5 h-3.5" />, status: 'live',     tip: 'The sprint packages shown on the services and pricing sections' },
+          { id: 'team' as const,        label: '6. Team Profiles',    icon: <Users className="w-3.5 h-3.5" />,      status: 'live',     tip: 'Team members shown on the /team page' },
+          { id: 'about' as const,       label: '7. Company Story',    icon: <Info className="w-3.5 h-3.5" />,       status: 'live',     tip: 'Mission, vision, and company story shown on /about page' },
+          { id: 'contact' as const,     label: '8. Contact Info',     icon: <PhoneCall className="w-3.5 h-3.5" />,  status: 'live',     tip: 'Email, phone, and address shown on the /contact page sidebar' },
         ].map((tab) => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
+            title={tab.tip}
             className={`flex items-center space-x-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
               activeTab === tab.id
                 ? 'bg-[var(--brand-teal)] text-white shadow-sm'
@@ -353,6 +367,10 @@ export const SiteContentManager: React.FC = () => {
           >
             {tab.icon}
             <span>{tab.label}</span>
+            <span className={`w-1.5 h-1.5 rounded-full ml-0.5 ${
+              tab.status === 'live' ? 'bg-emerald-400' :
+              tab.status === 'fallback' ? 'bg-amber-400' : 'bg-[var(--text-muted)]'
+            }`} />
           </button>
         ))}
       </div>

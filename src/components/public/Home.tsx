@@ -136,52 +136,6 @@ const TESTIMONIALS = [
   },
 ];
 
-// ── Pricing & Investment Packages ───────────────────────────────────────────
-const PACKAGES = [
-  {
-    name: 'Startup MVP Sprint',
-    price: 'Starting from $1,500',
-    desc: 'Perfect for early-stage founders launching an initial product or high-converting landing presence.',
-    features: [
-      'Custom React / Next.js Web App or Landing',
-      'Figma UI/UX Design System & Mobile Responsive',
-      'Database Architecture & Contact Lead Routing',
-      'On-Page Technical SEO & Analytics Setup',
-      '14-Day Post-Launch Support & Warranty',
-    ],
-    popular: false,
-    color: '#1F7A8C',
-  },
-  {
-    name: 'Complete Brand & Digital Suite',
-    price: 'Starting from $3,500',
-    desc: 'The complete cross-functional package for scaling businesses needing engineering, branding, and automation.',
-    features: [
-      'Full-Stack Web App with Authentication & CMS',
-      'Complete Brand Identity, Logo Suite & Guidelines',
-      'Custom AI Workflow or Chatbot Automation',
-      'Performance SEO Audit & Growth Architecture',
-      '30-Day Post-Launch Warranty & Staging Previews',
-    ],
-    popular: true,
-    color: '#1F7A8C',
-  },
-  {
-    name: 'Dedicated Fractional Squad',
-    price: 'Starting from $5,000 / mo',
-    desc: 'A dedicated multi-disciplinary team acting as your external CTO, Lead Designer, and AI Automator.',
-    features: [
-      'Dedicated Engineering Lead + UI/UX + QA Squad',
-      'Continuous Sprint Milestones & Weekly Releases',
-      'Automated CI/CD, Server Hardening & Backups',
-      'Priority 24/7 Slack / Teams Direct Channel',
-      'Monthly Retainer with Flexible Scope Shifts',
-    ],
-    popular: false,
-    color: '#1F7A8C',
-  },
-];
-
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
@@ -228,8 +182,17 @@ export const Home: React.FC = () => {
         avatarUrl: t.avatar,
         rating: t.rating,
       }));
-  const packages = siteContent?.packages || PACKAGES;
   const valueProps = siteContent?.valueProps || [];
+  const servicesList = (siteContent?.services && siteContent.services.length > 0)
+    ? siteContent.services.map((s, idx) => ({
+        icon: SERVICES[idx]?.icon || <Code className="w-6 h-6" />,
+        title: s.title,
+        summary: s.tagline || 'Specialized Domain Squad',
+        description: s.description,
+        tags: s.features || ['Specialized Delivery'],
+        color: s.color || '#1F7A8C'
+      }))
+    : SERVICES;
 
   return (
     <div className="overflow-hidden">
@@ -433,7 +396,7 @@ export const Home: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {SERVICES.map((svc) => (
+            {servicesList.map((svc) => (
               <motion.div
                 key={svc.title}
                 initial={{ opacity: 0, y: 20 }}
@@ -680,69 +643,6 @@ export const Home: React.FC = () => {
                     <p className="text-xs text-[var(--brand-teal)] font-medium">{tItem.role}, {tItem.company}</p>
                   </div>
                 </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── SECTION 6: TRANSPARENT INVESTMENT / PRICING PACKAGES ── */}
-      <section className="py-24 px-6 lg:px-8 bg-[var(--bg-page)] border-t border-[var(--border-subtle)]">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16 max-w-2xl mx-auto">
-            <p className="text-xs font-extrabold text-[var(--brand-teal)] uppercase tracking-widest mb-3">{t('pricing_tag')}</p>
-            <h2 className="font-display font-extrabold text-3xl sm:text-4xl text-[var(--text-heading)] mb-4">
-              {t('pricing_heading')}
-            </h2>
-            <p className="text-[var(--text-body)] text-sm">
-              {t('pricing_sub')}
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {packages.map((pkg) => (
-              <motion.div
-                key={pkg.name}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                whileHover={{ y: -4 }}
-                className={`rounded-3xl p-8 border flex flex-col justify-between transition-all ${
-                  pkg.popular
-                    ? 'border-[var(--brand-teal)] bg-[var(--bg-surface)] shadow-2xl ring-2 ring-[var(--brand-teal)]/20 relative'
-                    : 'border-[var(--border-subtle)] bg-[var(--bg-surface)] hover:shadow-lg'
-                }`}
-              >
-                <div>
-                  {pkg.popular && (
-                    <span className="inline-block px-3 py-1 rounded-full bg-[var(--brand-teal)] text-white text-[10px] font-black uppercase tracking-wider mb-4">
-                      {t('pricing_popular')}
-                    </span>
-                  )}
-                  <h3 className="font-display font-bold text-xl text-[var(--text-heading)] mb-1">{pkg.name}</h3>
-                  <p className="text-2xl font-black text-[var(--brand-teal)] my-3">{pkg.price}</p>
-                  <p className="text-xs text-[var(--text-body)] leading-relaxed mb-6">{pkg.desc}</p>
-
-                  <div className="space-y-3 mb-8">
-                    {pkg.features.map((feat) => (
-                      <div key={feat} className="flex items-start space-x-2.5 text-xs text-[var(--text-body)] font-medium">
-                        <Check className="w-4 h-4 text-[var(--brand-teal)] flex-shrink-0 mt-0.5" />
-                        <span>{feat}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                <Link
-                  to="/contact"
-                  className={`block w-full py-3.5 rounded-xl text-center font-bold text-xs sm:text-sm transition-all ${
-                    pkg.popular
-                      ? 'bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-white shadow-md'
-                      : 'border border-[var(--border-subtle)] hover:border-[var(--brand-teal)] text-[var(--text-heading)] hover:text-[var(--brand-teal)] bg-[var(--bg-subtle)]'
-                  }`}
-                >
-                  {t('btn_request_proposal')}
-                </Link>
               </motion.div>
             ))}
           </div>
