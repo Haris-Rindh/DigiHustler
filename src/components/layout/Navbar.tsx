@@ -75,14 +75,14 @@ export const Navbar: React.FC = () => {
         </Link>
 
         {/* Desktop Nav with Animated Pill */}
-        <div className="hidden lg:flex items-center space-x-1 relative">
+        <div className="hidden lg:flex items-center space-x-0.5 xl:space-x-1 relative">
           {navLinks.map((link) => {
             const active = isActive(link.href);
             return (
               <Link
                 key={link.href}
                 to={link.href}
-                className={`relative px-4 py-2 rounded-xl text-sm font-semibold transition-colors duration-200 ${
+                className={`relative px-2.5 xl:px-4 py-2 rounded-xl text-xs xl:text-sm font-semibold transition-colors duration-200 whitespace-nowrap ${
                   active ? 'text-[var(--brand-teal)] font-bold' : 'text-[var(--text-body)] hover:text-[var(--text-heading)]'
                 }`}
               >

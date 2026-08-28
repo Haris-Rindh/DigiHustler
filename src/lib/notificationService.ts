@@ -10,7 +10,7 @@ export const notificationService = {
   /**
    * Generates a direct WhatsApp click-to-chat URL for management to instantly reply to a lead.
    */
-  generateWhatsAppReplyUrl(lead: Lead, managementPhone: string = '923001234567'): string {
+  generateWhatsAppReplyUrl(lead: Lead, managementPhone: string = '923206806396'): string {
     const cleanPhone = managementPhone.replace(/[^0-9]/g, '');
     const message = `*🚨 New DigiHust Client Lead Received!*\n\n` +
       `*Client:* ${lead.clientName}\n` +
@@ -40,7 +40,7 @@ export const notificationService = {
    * 2. Logs notification event
    */
   async dispatchLeadNotifications(lead: Lead, webhookUrl?: string): Promise<NotificationResult> {
-    const managementPhone = import.meta.env.VITE_MANAGEMENT_PHONE || '+923001234567';
+    const managementPhone = import.meta.env.VITE_MANAGEMENT_PHONE || '+923206806396';
     const whatsappQuickLink = this.generateWhatsAppReplyUrl(lead, managementPhone);
 
     const configuredWebhook = webhookUrl || import.meta.env.VITE_LEAD_NOTIFICATION_WEBHOOK || '';

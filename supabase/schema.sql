@@ -182,3 +182,39 @@ CREATE POLICY "Allow full access certificates" ON public.certificates FOR ALL US
 CREATE POLICY "Allow full access announcements" ON public.announcements FOR ALL USING (true) WITH CHECK (true);
 CREATE POLICY "Allow full access site_content" ON public.site_content FOR ALL USING (true) WITH CHECK (true);
 CREATE POLICY "Allow full access audit_logs" ON public.audit_logs FOR ALL USING (true) WITH CHECK (true);
+
+-- ==============================================================================
+-- INITIAL SEED: CEO ROOT MASTER CONTROLLER & PRIMARY CMS
+-- ==============================================================================
+
+INSERT INTO public.users (
+  id, name, email, role, role_tier, title, phone, member_id, password_hash, status, join_year, specialties
+) VALUES (
+  'usr-ceo-1',
+  'Mahad Abbas',
+  'digihust@gmail.com',
+  'management',
+  'ceo',
+  'Founder & CEO',
+  '+92 320 6806396',
+  'DGH2400001',
+  '5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8', -- quickHash of DigiHust@2026
+  'active',
+  2024,
+  '["Executive Strategy", "Global Delivery Governance", "Enterprise Accounts"]'::jsonb
+) ON CONFLICT (id) DO UPDATE SET 
+  name = EXCLUDED.name,
+  email = EXCLUDED.email,
+  phone = EXCLUDED.phone;
+
+INSERT INTO public.announcements (
+  id, title, content, scope, author_id, author_name, author_role
+) VALUES (
+  'ann-welcome',
+  'Welcome to DigiHust Portal',
+  'Welcome to the DigiHust enterprise platform. Manage specialized squads, client intake, and verified digital delivery from this central console.',
+  'global',
+  'usr-ceo-1',
+  'Mahad Abbas',
+  'ceo'
+) ON CONFLICT (id) DO NOTHING;

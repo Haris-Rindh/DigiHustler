@@ -36,10 +36,9 @@ export const Footer: React.FC = () => {
             {/* Social Icons */}
             <div className="flex items-center space-x-2.5 pt-2">
               {[
-                { label: 'LinkedIn', icon: 'In', href: 'https://linkedin.com' },
-                { label: 'GitHub', icon: 'Gh', href: 'https://github.com/Haris-Rindh/DigiHustler' },
-                { label: 'Twitter / X', icon: 'X', href: 'https://twitter.com' },
-                { label: 'Instagram', icon: 'Ig', href: 'https://instagram.com' },
+                { label: 'LinkedIn', icon: 'In', href: 'https://www.linkedin.com/company/digihust/' },
+                { label: 'GitHub', icon: 'Gh', href: 'https://github.com/digihust' },
+                { label: 'Facebook', icon: 'Fb', href: 'https://www.facebook.com/share/p/1EubKwa3Ce/' },
               ].map((s) => (
                 <motion.a
                   key={s.label}

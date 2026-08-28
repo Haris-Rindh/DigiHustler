@@ -184,8 +184,8 @@ export const PortalLogin: React.FC = () => {
                 className="w-full p-3 rounded-xl bg-[var(--bg-page)] border border-purple-500/40 hover:border-purple-500 text-left transition-all cursor-pointer group flex items-center justify-between shadow-sm"
               >
                 <div>
-                  <div className="font-bold text-purple-400 group-hover:text-purple-300 text-xs">👑 CEO Master Account (Haris Asad)</div>
-                  <div className="text-[10px] text-[var(--text-muted)] font-mono">ID: DGH2400001 · ceo@digihust.com</div>
+                  <div className="font-bold text-purple-400 group-hover:text-purple-300 text-xs">👑 CEO Master Account (Mahad Abbas)</div>
+                  <div className="text-[10px] text-[var(--text-muted)] font-mono">ID: DGH2400001 · digihust@gmail.com</div>
                 </div>
                 <span className="text-[11px] font-bold text-purple-400 group-hover:translate-x-0.5 transition-transform">
                   1-Click Login →

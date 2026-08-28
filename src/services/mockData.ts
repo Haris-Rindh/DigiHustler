@@ -52,14 +52,14 @@ export const INITIAL_USERS: User[] = [
   {
     id: 'usr-ceo-1',
     memberId: 'DGH2400001',
-    name: 'Haris Asad',
-    email: 'ceo@digihust.com',
-    phone: '+92 300 1234567',
+    name: 'Mahad Abbas',
+    email: 'digihust@gmail.com',
+    phone: '+92 320 6806396',
     avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=250',
     role: 'management',
     roleTier: 'ceo',
     isCeoMaster: true,
-    title: 'Chief Executive Officer & Founder',
+    title: 'Founder & CEO',
     specialties: ['Executive Strategy', 'Global Split Governance', 'Enterprise Accounts'],
     completedProjectsCount: 0,
     totalEarnings: 0,
@@ -96,7 +96,7 @@ export const INITIAL_ANNOUNCEMENTS: Announcement[] = [
     title: 'Welcome to DigiHust Portal',
     content: 'Welcome to the DigiHust enterprise platform. Manage specialized squads, client intake, and verified digital delivery from this central console.',
     postedBy: 'usr-ceo-1',
-    postedByName: 'Haris Asad',
+    postedByName: 'Mahad Abbas',
     postedByRole: 'ceo',
     postedAt: new Date().toISOString()
   }
@@ -224,10 +224,10 @@ export const DEFAULT_SITE_CONTENT: SiteContent = {
   teamMembers: [
     {
       id: 'tm-1',
-      name: 'Haris Asad',
-      role: 'Chief Executive Officer & Founder',
+      name: 'Mahad Abbas',
+      role: 'Founder & CEO',
       squad: 'Executive Leadership',
-      bio: 'Leading strategic direction, enterprise client partnerships, and company-wide delivery governance.',
+      bio: 'Leading strategic direction, enterprise client partnerships, and company-wide delivery governance at DigiHust.',
       avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=250',
       tags: ['Strategy', 'Enterprise Deals', 'Executive']
     }
@@ -264,13 +264,14 @@ export const DEFAULT_SITE_CONTENT: SiteContent = {
     ]
   },
   contact: {
-    email: 'contact@digihust.com',
-    phone: '+1 (800) 555-DIGI',
-    address: 'DigiHust Global Digital Agency, Floor 14, Executive Heights',
-    whatsapp: '+92 300 1234567',
+    email: 'digihust@gmail.com',
+    phone: '+92 320 6806396',
+    address: 'Islamabad, Pakistan',
+    whatsapp: '+92 320 6806396',
     calendlyUrl: 'https://calendly.com/digihust/discovery',
-    linkedin: 'https://linkedin.com/company/digihust',
+    linkedin: 'https://www.linkedin.com/company/digihust/',
     github: 'https://github.com/digihust',
+    facebook: 'https://www.facebook.com/share/p/1EubKwa3Ce/',
     twitter: 'https://twitter.com/digihust'
   },
   customImages: {
@@ -298,9 +299,9 @@ export const DEFAULT_SITE_CONTENT: SiteContent = {
       signatoryName: 'Mahad Abbas',
       signatoryTitle: 'Founder & CEO',
       watermarkText: 'DigiHust',
-      contactEmail: 'contact@digihust.com',
-      contactPhone: '+92 300 1234567',
-      contactAddress: 'Islamabad / Global Remote Operations',
+      contactEmail: 'digihust@gmail.com',
+      contactPhone: '+92 320 6806396',
+      contactAddress: 'Islamabad, Pakistan',
       createdAt: '2026-08-20'
     },
     {
@@ -322,9 +323,9 @@ export const DEFAULT_SITE_CONTENT: SiteContent = {
       signatoryName: 'Mahad Abbas',
       signatoryTitle: 'Founder & CEO',
       watermarkText: 'DigiHust',
-      contactEmail: 'contact@digihust.com',
-      contactPhone: '+92 300 1234567',
-      contactAddress: 'Islamabad / Global Remote Operations',
+      contactEmail: 'digihust@gmail.com',
+      contactPhone: '+92 320 6806396',
+      contactAddress: 'Islamabad, Pakistan',
       createdAt: '2026-08-20'
     },
     {
@@ -344,9 +345,9 @@ export const DEFAULT_SITE_CONTENT: SiteContent = {
       signatoryName: 'Mahad Abbas',
       signatoryTitle: 'Founder & CEO',
       watermarkText: 'DigiHust',
-      contactEmail: 'contact@digihust.com',
-      contactPhone: '+92 300 1234567',
-      contactAddress: 'Islamabad / Global Remote Operations',
+      contactEmail: 'digihust@gmail.com',
+      contactPhone: '+92 320 6806396',
+      contactAddress: 'Islamabad, Pakistan',
       createdAt: '2026-08-20'
     }
   ]

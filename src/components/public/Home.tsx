@@ -21,6 +21,7 @@ import {
   Quote,
   Building,
   Check,
+  Briefcase,
 } from 'lucide-react';
 import { SEOHead } from '../seo/SEOHead';
 import { InteractiveCanvas } from '../ui/InteractiveCanvas';
