@@ -18,6 +18,7 @@ import {
 import { SEOHead } from '../seo/SEOHead';
 import { useApp } from '../../context/AppContext';
 import { GroupId } from '../../types';
+import { notificationService } from '../../lib/notificationService';
 
 const SERVICES = [
   'Website / Full-Stack App',
@@ -133,6 +134,9 @@ export const Contact: React.FC = () => {
       };
 
       submitLead(newLeadData);
+
+      // Automated direct email dispatch to digihust@gmail.com
+      notificationService.dispatchLeadEmail(form);
 
       // Generate direct WhatsApp click-to-chat URL for management
       const cleanPhone = (siteContent?.contact?.whatsapp || '+923206806396').replace(/[^0-9]/g, '');

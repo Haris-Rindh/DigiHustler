@@ -35,6 +35,52 @@ export const notificationService = {
   },
 
   /**
+   * Dispatches automated lead email notifications directly to digihust@gmail.com
+   */
+  async dispatchLeadEmail(leadData: {
+    name: string;
+    email: string;
+    company?: string;
+    services: string[];
+    budget: string;
+    timeline: string;
+    description: string;
+  }): Promise<boolean> {
+    const accessKey = import.meta.env.VITE_WEB3FORMS_ACCESS_KEY || '';
+    
+    if (!accessKey) {
+      console.info('Tip: Add VITE_WEB3FORMS_ACCESS_KEY to .env for instant email alerts to digihust@gmail.com.');
+      return false;
+    }
+
+    try {
+      const response = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json'
+        },
+        body: JSON.stringify({
+          access_key: accessKey,
+          subject: `🚨 New DigiHust Project Lead: ${leadData.name} (${leadData.budget})`,
+          from_name: 'DigiHust Portal Lead System',
+          name: leadData.name,
+          email: leadData.email,
+          company: leadData.company || 'N/A',
+          services: leadData.services.join(', '),
+          budget: leadData.budget,
+          timeline: leadData.timeline,
+          message: `New client brief submitted on DigiHust:\n\nClient Name: ${leadData.name}\nEmail: ${leadData.email}\nCompany: ${leadData.company || 'N/A'}\nServices Requested: ${leadData.services.join(', ')}\nBudget Range: ${leadData.budget}\nTarget Timeline: ${leadData.timeline}\n\nProject Scope:\n${leadData.description}\n\n--- View and manage in Executive Portal at /portal/leads ---`
+        })
+      });
+      return response.ok;
+    } catch (err) {
+      console.warn('Direct email dispatch notice:', err);
+      return false;
+    }
+  },
+
+  /**
    * Dispatches automated notifications:
    * 1. Sends webhook payload to management notification webhook (e.g. n8n, Slack, Discord, Resend)
    * 2. Logs notification event
