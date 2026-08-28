@@ -72,7 +72,7 @@ export const INITIAL_USERS: User[] = [
     csatScore: 4.99,
     credentialsSentAt: '2024-01-15T10:00:00Z',
     forcePasswordChange: false,
-    passwordHash: quickHashSync('DigiHust@CEO2026'),
+    passwordHash: quickHashSync('DigiHust@2026'),
     notes: [
       { id: 'n-1', timestamp: '2024-01-15T10:00:00Z', authorId: 'usr-ceo-1', authorName: 'System', text: 'CEO root master account with company-wide administrative control.' }
     ],
@@ -103,7 +103,7 @@ export const INITIAL_USERS: User[] = [
     csatScore: 4.92,
     credentialsSentAt: '2025-02-01T09:00:00Z',
     forcePasswordChange: false,
-    passwordHash: quickHashSync('DigiHust@Ops2026'),
+    passwordHash: quickHashSync('DigiHust@2026'),
     notes: [],
     statusHistory: [],
     documents: []
@@ -134,7 +134,7 @@ export const INITIAL_USERS: User[] = [
     csatScore: 4.88,
     credentialsSentAt: '2025-03-10T10:00:00Z',
     forcePasswordChange: false,
-    passwordHash: quickHashSync('DigiHust@Lead2026'),
+    passwordHash: quickHashSync('DigiHust@2026'),
     notes: [],
     statusHistory: [],
     documents: []
@@ -165,7 +165,7 @@ export const INITIAL_USERS: User[] = [
     csatScore: 4.8,
     credentialsSentAt: '2026-01-10T12:00:00Z',
     forcePasswordChange: false,
-    passwordHash: quickHashSync('DigiHust@Member2026'),
+    passwordHash: quickHashSync('DigiHust@2026'),
     notes: [],
     statusHistory: [],
     documents: []

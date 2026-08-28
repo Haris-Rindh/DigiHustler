@@ -177,57 +177,57 @@ export const PortalLogin: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => {
-                    setMemberId('DGH2600001');
+                    setMemberId('DGH2400001');
                     setPassword('DigiHust@2026');
-                    const res = loginWithMemberId('DGH2600001', 'DigiHust@2026');
+                    const res = loginWithMemberId('DGH2400001', 'DigiHust@2026');
                     if (res.success) navigate(from, { replace: true });
                   }}
                   className="p-2.5 rounded-xl bg-[var(--bg-page)] border border-purple-500/30 hover:border-purple-500 text-left transition-all cursor-pointer group"
                 >
                   <div className="font-bold text-purple-400 group-hover:text-purple-300 text-[11px]">👑 CEO Master</div>
-                  <div className="text-[10px] text-[var(--text-muted)] font-mono">DGH2600001</div>
+                  <div className="text-[10px] text-[var(--text-muted)] font-mono">DGH2400001</div>
                 </button>
 
                 <button
                   type="button"
                   onClick={() => {
-                    setMemberId('DGH2600002');
+                    setMemberId('DGH2500002');
                     setPassword('DigiHust@2026');
-                    const res = loginWithMemberId('DGH2600002', 'DigiHust@2026');
+                    const res = loginWithMemberId('DGH2500002', 'DigiHust@2026');
                     if (res.success) navigate(from, { replace: true });
                   }}
                   className="p-2.5 rounded-xl bg-[var(--bg-page)] border border-blue-500/30 hover:border-blue-500 text-left transition-all cursor-pointer group"
                 >
                   <div className="font-bold text-blue-400 group-hover:text-blue-300 text-[11px]">💼 Manager</div>
-                  <div className="text-[10px] text-[var(--text-muted)] font-mono">DGH2600002</div>
+                  <div className="text-[10px] text-[var(--text-muted)] font-mono">DGH2500002</div>
                 </button>
 
                 <button
                   type="button"
                   onClick={() => {
-                    setMemberId('DGH2600003');
+                    setMemberId('DGH2500003');
                     setPassword('DigiHust@2026');
-                    const res = loginWithMemberId('DGH2600003', 'DigiHust@2026');
+                    const res = loginWithMemberId('DGH2500003', 'DigiHust@2026');
                     if (res.success) navigate(from, { replace: true });
                   }}
                   className="p-2.5 rounded-xl bg-[var(--bg-page)] border border-cyan-500/30 hover:border-cyan-500 text-left transition-all cursor-pointer group"
                 >
                   <div className="font-bold text-cyan-400 group-hover:text-cyan-300 text-[11px]">⚡ Squad Leader</div>
-                  <div className="text-[10px] text-[var(--text-muted)] font-mono">DGH2600003</div>
+                  <div className="text-[10px] text-[var(--text-muted)] font-mono">DGH2500003</div>
                 </button>
 
                 <button
                   type="button"
                   onClick={() => {
-                    setMemberId('DGH2600004');
+                    setMemberId('DGH2600101');
                     setPassword('DigiHust@2026');
-                    const res = loginWithMemberId('DGH2600004', 'DigiHust@2026');
+                    const res = loginWithMemberId('DGH2600101', 'DigiHust@2026');
                     if (res.success) navigate(from, { replace: true });
                   }}
                   className="p-2.5 rounded-xl bg-[var(--bg-page)] border border-emerald-500/30 hover:border-emerald-500 text-left transition-all cursor-pointer group"
                 >
                   <div className="font-bold text-emerald-400 group-hover:text-emerald-300 text-[11px]">🎯 Specialist</div>
-                  <div className="text-[10px] text-[var(--text-muted)] font-mono">DGH2600004</div>
+                  <div className="text-[10px] text-[var(--text-muted)] font-mono">DGH2600101</div>
                 </button>
               </div>
             </div>
