@@ -48,7 +48,7 @@ export const INITIAL_GROUPS: Group[] = [
 ];
 
 export const INITIAL_USERS: User[] = [
-  // ── 1. CEO / ROOT MASTER CONTROLLER ──
+  // ── 1. CEO / ROOT MASTER CONTROLLER (Sole Administrator) ──
   {
     id: 'usr-ceo-1',
     memberId: 'DGH2400001',
@@ -61,15 +61,15 @@ export const INITIAL_USERS: User[] = [
     isCeoMaster: true,
     title: 'Chief Executive Officer & Founder',
     specialties: ['Executive Strategy', 'Global Split Governance', 'Enterprise Accounts'],
-    completedProjectsCount: 52,
-    totalEarnings: 42800,
+    completedProjectsCount: 0,
+    totalEarnings: 0,
     rating: 5.0,
     digiskillBatch: 'Founding Member',
     status: 'active',
     joinedAt: '2024-01-15',
     joinYear: 2024,
     onTimeDeliveryPct: 100,
-    csatScore: 4.99,
+    csatScore: 5.0,
     credentialsSentAt: '2024-01-15T10:00:00Z',
     forcePasswordChange: false,
     passwordHash: quickHashSync('DigiHust@2026'),
@@ -78,322 +78,33 @@ export const INITIAL_USERS: User[] = [
     ],
     statusHistory: [],
     documents: []
-  },
-
-  // ── 2. OPERATIONS MANAGER ──
-  {
-    id: 'usr-mgmt-1',
-    memberId: 'DGH2500002',
-    name: 'Sarah Tariq',
-    email: 'sarah.ops@digihust.com',
-    phone: '+92 301 7654321',
-    avatarUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=250',
-    role: 'management',
-    roleTier: 'manager',
-    title: 'Operations Director & Client Bridge',
-    specialties: ['Client Relations', 'Scope Architecture', 'Sprint Delivery'],
-    completedProjectsCount: 38,
-    totalEarnings: 29400,
-    rating: 4.95,
-    digiskillBatch: 'Batch 10',
-    status: 'active',
-    joinedAt: '2025-02-01',
-    joinYear: 2025,
-    onTimeDeliveryPct: 98,
-    csatScore: 4.92,
-    credentialsSentAt: '2025-02-01T09:00:00Z',
-    forcePasswordChange: false,
-    passwordHash: quickHashSync('DigiHust@2026'),
-    notes: [],
-    statusHistory: [],
-    documents: []
-  },
-
-  // ── 3. GROUP LEADER (Tech Squad) ──
-  {
-    id: 'usr-ldr-tech',
-    memberId: 'DGH2500003',
-    name: 'Zubair Ahmed',
-    email: 'zubair.tech@digihust.com',
-    phone: '+92 302 9876543',
-    avatarUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=250',
-    role: 'group_leader',
-    roleTier: 'group_leader',
-    groupId: 'tech',
-    title: 'Tech Squad Leader & Solutions Architect',
-    specialties: ['React', 'Node.js', 'PostgreSQL', 'Architecture Design'],
-    hourlyRate: 35,
-    completedProjectsCount: 24,
-    totalEarnings: 18600,
-    rating: 4.9,
-    digiskillBatch: 'Batch 08',
-    status: 'active',
-    joinedAt: '2025-03-10',
-    joinYear: 2025,
-    onTimeDeliveryPct: 96,
-    csatScore: 4.88,
-    credentialsSentAt: '2025-03-10T10:00:00Z',
-    forcePasswordChange: false,
-    passwordHash: quickHashSync('DigiHust@2026'),
-    notes: [],
-    statusHistory: [],
-    documents: []
-  },
-
-  // ── 4. MEMBER SPECIALIST ──
-  {
-    id: 'usr-dev-1',
-    memberId: 'DGH2600101',
-    name: 'Bilal Farooq',
-    email: 'bilal.farooq@digihust.com',
-    phone: '+92 333 4455667',
-    avatarUrl: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=250',
-    role: 'freelancer',
-    roleTier: 'member',
-    groupId: 'tech',
-    title: 'Senior Frontend Developer',
-    specialties: ['React', 'Tailwind CSS', 'TypeScript', 'Next.js'],
-    hourlyRate: 25,
-    completedProjectsCount: 16,
-    totalEarnings: 8200,
-    rating: 4.85,
-    digiskillBatch: 'Batch 11',
-    status: 'active',
-    joinedAt: '2026-01-10',
-    joinYear: 2026,
-    onTimeDeliveryPct: 95,
-    csatScore: 4.8,
-    credentialsSentAt: '2026-01-10T12:00:00Z',
-    forcePasswordChange: false,
-    passwordHash: quickHashSync('DigiHust@2026'),
-    notes: [],
-    statusHistory: [],
-    documents: []
   }
 ];
 
-export const INITIAL_LEADS: Lead[] = [
-  {
-    id: 'lead-001',
-    clientName: 'David Sterling',
-    clientEmail: 'david@estatesdirect.co.uk',
-    clientCompany: 'Estates Direct UK',
-    groupId: 'tech',
-    title: 'UK Real Estate Portal Architecture',
-    budget: 4500,
-    brief: 'High-speed geospatial property listings portal with integrated agent CRM and sub-second filtering.',
-    submittedByUserId: 'usr-dev-1',
-    submittedByUserName: 'Bilal Farooq',
-    status: 'assigned',
-    createdAt: '2026-08-20T14:30:00Z'
-  },
-  {
-    id: 'lead-002',
-    clientName: 'Markus Vogel',
-    clientEmail: 'markus@velocemotors.de',
-    clientCompany: 'Veloce Motors DE',
-    groupId: 'creative',
-    title: 'Automotive Brand Launch & 3D Teaser Ads',
-    budget: 6200,
-    brief: 'High-end 3D product renders and commercial motion trailer for European EV reveal.',
-    submittedByUserId: 'usr-mgmt-1',
-    submittedByUserName: 'Sarah Tariq',
-    status: 'in_progress',
-    createdAt: '2026-08-22T09:15:00Z'
-  }
-];
+export const INITIAL_LEADS: Lead[] = [];
 
-export const INITIAL_PROJECTS: Project[] = [
-  {
-    id: 'proj-001',
-    leadId: 'lead-001',
-    title: 'UK Real Estate Portal Architecture',
-    clientName: 'Estates Direct UK',
-    clientEmail: 'david@estatesdirect.co.uk',
-    clientCompany: 'Estates Direct UK',
-    groupId: 'tech',
-    assignedLeaderId: 'usr-ldr-tech',
-    assignedLeaderName: 'Zubair Ahmed',
-    brief: 'High-speed geospatial property listings portal with integrated agent CRM and sub-second filtering.',
-    totalValue: 4500,
-    externalFee: 0,
-    netRevenue: 4500,
-    isLeadGenIndependent: false,
-    leadGenUserPct: 0,
-    splitManagementPct: 20,
-    splitLeaderPct: 20,
-    splitFreelancerPct: 60,
-    assignments: [
-      {
-        freelancerId: 'usr-dev-1',
-        freelancerName: 'Bilal Farooq',
-        roleTitle: 'Lead Frontend Engineer',
-        sharePct: 60
-      }
-    ],
-    status: 'completed',
-    deliverables: [
-      {
-        id: 'del-01',
-        title: 'Next.js Frontend Architecture & Filter Engine',
-        linkUrl: 'https://staging.estatesdirect.co.uk',
-        submittedByUserId: 'usr-dev-1',
-        submittedByUserName: 'Bilal Farooq',
-        submittedAt: '2026-08-24T16:00:00Z',
-        status: 'approved',
-        notes: 'Includes PostgreSQL spatial queries and Tailwind components.'
-      }
-    ],
-    comments: [],
-    createdAt: '2026-08-20T15:00:00Z',
-    completedAt: '2026-08-25T17:00:00Z'
-  }
-];
+export const INITIAL_PROJECTS: Project[] = [];
 
-export const INITIAL_ASSIGNMENTS: Assignment[] = [
-  {
-    id: 'asgn-001',
-    projectId: 'proj-001',
-    clientName: 'Estates Direct UK',
-    clientEmail: 'david@estatesdirect.co.uk',
-    clientCompany: 'Estates Direct UK',
-    totalBudget: 4500,
-    assignedLeaderId: 'usr-ldr-tech',
-    assignedLeaderName: 'Zubair Ahmed',
-    assignedMemberIds: ['usr-dev-1'],
-    squad: 'tech',
-    status: 'completed',
-    sanitizedBrief: {
-      title: 'UK Real Estate Portal Architecture',
-      scope: 'Develop high-speed geospatial property listings portal with sub-second listings search, interactive map clustering, and agent dashboard.',
-      deliverables: ['Next.js 14 App Router Front-End', 'PostgreSQL Geo-indexed DB', 'Tailwind Component Library'],
-      deadline: '2026-08-25'
-    },
-    subTasks: [
-      {
-        id: 'st-01',
-        title: 'Implement Mapbox geospatial search and property filters',
-        assignedMemberId: 'usr-dev-1',
-        assignedMemberName: 'Bilal Farooq',
-        status: 'completed',
-        dueDate: '2026-08-23'
-      }
-    ],
-    milestones: [
-      {
-        id: 'm-01',
-        title: 'Core UI & Geospatial API Complete',
-        targetDate: '2026-08-23',
-        isCompleted: true
-      }
-    ],
-    deliverables: [],
-    comments: [],
-    createdBy: 'usr-mgmt-1',
-    createdAt: '2026-08-20T15:00:00Z'
-  }
-];
+export const INITIAL_ASSIGNMENTS: Assignment[] = [];
 
-export const INITIAL_CERTIFICATES: Certificate[] = [
-  {
-    id: 'cert-off-ammar-2026',
-    memberId: 'usr-dev-ammar',
-    memberName: 'Muhammad Ammar',
-    memberDghId: 'DGH2600105',
-    type: 'offer_letter',
-    roleTitle: 'Full-Stack Developer',
-    startDate: '2026-09-01',
-    issuedDate: '2026-09-01',
-    status: 'valid',
-    clientName: 'DigiHust Engineering Squad Core',
-    projectDetails: 'Assigned to enterprise trial projects including responsive Next.js platforms, API microservices, and database architecture.',
-    issuedBy: 'Mahad Abbas, Founder & CEO',
-    qrCodeUrl: '/verify/cert-off-ammar-2026',
-    durationText: '45 Days (Remote)',
-    stipendTerms: '65–70% of the project budget, according to DigiHust\'s revenue-sharing policy',
-    evaluationCriteria: [
-      'Quality of work',
-      'Meeting deadlines',
-      'Communication & teamwork',
-      'Problem-solving',
-      'Ability to follow client requirements'
-    ],
-    signatoryName: 'Mahad Abbas',
-    signatoryTitle: 'Founder & CEO',
-    contactEmail: 'contact@digihust.com',
-    contactPhone: '+92 300 1234567',
-    contactAddress: 'Islamabad / Global Remote Operations'
-  },
-  {
-    id: 'cert-exp-8812a-2026',
-    memberId: 'usr-dev-1',
-    memberName: 'Bilal Farooq',
-    memberDghId: 'DGH2600101',
-    type: 'experience_certificate',
-    roleTitle: 'Senior Frontend Engineer',
-    startDate: '2026-01-10',
-    endDate: '2026-08-25',
-    issuedDate: '2026-08-25',
-    status: 'valid',
-    clientName: 'Estates Direct UK',
-    projectDetails: 'Architected high-speed geospatial real-estate portal with Next.js 14, Tailwind CSS, and responsive PostGIS mapping.',
-    issuedBy: 'Mahad Abbas, Founder & CEO',
-    qrCodeUrl: '/verify/cert-exp-8812a-2026',
-    durationText: '8 Months (Full Retainer)',
-    signatoryName: 'Mahad Abbas',
-    signatoryTitle: 'Founder & CEO',
-    contactEmail: 'contact@digihust.com',
-    contactPhone: '+92 300 1234567',
-    contactAddress: 'Islamabad / Global Remote Operations'
-  }
-];
+export const INITIAL_CERTIFICATES: Certificate[] = [];
 
 export const INITIAL_ANNOUNCEMENTS: Announcement[] = [
   {
-    id: 'ann-001',
+    id: 'ann-welcome',
     scope: 'global',
-    title: 'Q3 Enterprise Delivery Milestones & Split Distribution',
-    content: 'All squad leaders are requested to review stage approvals before Friday 18:00 UTC for automated batch payout releases.',
+    title: 'Welcome to DigiHust Portal',
+    content: 'Welcome to the DigiHust enterprise platform. Manage specialized squads, client intake, and verified digital delivery from this central console.',
     postedBy: 'usr-ceo-1',
     postedByName: 'Haris Asad',
     postedByRole: 'ceo',
-    postedAt: '2026-08-25T12:00:00Z'
+    postedAt: new Date().toISOString()
   }
 ];
 
-export const INITIAL_PAYOUTS: Payout[] = [
-  {
-    id: 'pay-001',
-    projectId: 'proj-001',
-    projectTitle: 'UK Real Estate Portal Architecture',
-    userId: 'usr-ceo-1',
-    userName: 'DigiHust Operations',
-    userRole: 'management',
-    groupName: 'Platform Reserve',
-    roleDescription: 'Platform Management & SLA Margin',
-    amount: 900,
-    sharePct: 20,
-    paidAt: '2026-08-25T18:00:00Z'
-  }
-];
+export const INITIAL_PAYOUTS: Payout[] = [];
 
-export const INITIAL_APPLICANTS: Applicant[] = [
-  {
-    id: 'app-001',
-    name: 'Kashif Mehmood',
-    email: 'kashif.m@gmail.com',
-    phone: '+92 334 1122334',
-    preferredGroupId: 'tech',
-    specialties: ['React', 'Node.js', 'PostgreSQL'],
-    digiskillId: 'DS-2026-8812',
-    digiskillCourse: 'Full Stack Web Development',
-    portfolioUrl: 'https://github.com/kashif-dev',
-    experienceYears: 3,
-    bio: 'Passionate full-stack developer with 3 years of commercial React & API design experience.',
-    appliedAt: '2026-08-24T11:00:00Z',
-    status: 'pending'
-  }
-];
+export const INITIAL_APPLICANTS: Applicant[] = [];
 
 export const INITIAL_SETTINGS: GlobalAdminSettings = {
   defaultManagementSplitPct: 20,
@@ -447,82 +158,8 @@ export const DEFAULT_SITE_CONTENT: SiteContent = {
       badge: 'SLA Speed'
     }
   ],
-  caseStudies: [
-    {
-      id: 'cs-1',
-      slug: 'real-estate-marketplace-portal',
-      category: 'Web Development',
-      title: 'Real-Estate Marketplace Portal & Agent CRM',
-      client: 'Estates Direct UK',
-      tags: ['React', 'Node.js', 'PostgreSQL', 'Tailwind CSS'],
-      summary: 'High-speed geospatial property portal with sub-second listings search and integrated agent CRM.',
-      impactMetric: '+140%',
-      impactLabel: 'Conversion Rate Growth',
-      imageUrl: 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=800&q=80',
-      deliverables: ['Next.js Architecture', 'Spatial Database', 'Automated Valuation API'],
-      challenge: 'The legacy portal had 6-second search latency and high lead drop-off rates across mobile browsers.',
-      solution: 'We engineered an optimized geospatial index and responsive React frontend with sub-second response times.'
-    },
-    {
-      id: 'cs-2',
-      slug: 'automotive-brand-identity',
-      category: 'Creative & Branding',
-      title: 'Automotive Brand Identity & 3D Motion Launch',
-      client: 'Veloce Motors DE',
-      tags: ['Brand Identity', 'Cinema 4D', '3D Motion', 'After Effects'],
-      summary: 'Comprehensive brand architecture, bespoke 3D vehicle renders, and motion teasers generating 2.4M impressions.',
-      impactMetric: '2.4M',
-      impactLabel: 'Global Launch Impressions',
-      imageUrl: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=800&q=80',
-      deliverables: ['Brand Design System', '3D Commercial Spots', 'Digital Asset Guidelines'],
-      challenge: 'Entering a crowded electric vehicle market required immediate premium visual credibility.',
-      solution: 'Built a sleek typography system and photorealistic 3D automotive motion assets for international rollout.'
-    },
-    {
-      id: 'cs-3',
-      slug: 'hospital-bi-dashboard',
-      category: 'AI & Data',
-      title: 'Executive Clinical & Revenue BI Dashboard',
-      client: 'Titan Healthcare',
-      tags: ['PowerBI', 'Python ETL', 'SQL Data Lake'],
-      summary: 'Automated data engineering pipeline and interactive PowerBI suite unifying 35+ regional hospitals.',
-      impactMetric: '12+ Hrs',
-      impactLabel: 'Saved Per Week / Department',
-      imageUrl: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=800&q=80',
-      deliverables: ['Automated Python ETL', 'Executive PowerBI Dashboard', 'HIPAA Hardened Schemas'],
-      challenge: 'Hospital executives spent hundreds of manual hours every month stitching fragmented spreadsheet reports.',
-      solution: 'Constructed an automated Python data lake syncing clinical and billing data in real-time.'
-    }
-  ],
-  testimonials: [
-    {
-      id: 't-1',
-      quote: 'DigiHust transformed our slow, crashing property platform into the fastest portal in our regional market. Zero headache managing separate freelancers.',
-      name: 'David Sterling',
-      role: 'Managing Director',
-      company: 'Estates Direct UK',
-      avatarUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=150',
-      rating: 5
-    },
-    {
-      id: 't-2',
-      quote: 'The 3D promotional trailers and brand system produced by DigiHust established our electric vehicle startup as an immediate serious contender in Europe.',
-      name: 'Markus Vogel',
-      role: 'Chief Brand Officer',
-      company: 'Veloce Motors DE',
-      avatarUrl: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=150',
-      rating: 5
-    },
-    {
-      id: 't-3',
-      quote: 'Their AI squad built an automated tracking bot that resolved 78% of our customer tickets within seconds. Our support team can finally focus on VIP accounts.',
-      name: 'Sarah Chen',
-      role: 'Head of Operations',
-      company: 'LogiXpress Global',
-      avatarUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=150',
-      rating: 5
-    }
-  ],
+  caseStudies: [],
+  testimonials: [],
   services: [
     {
       id: 's-web',
@@ -588,29 +225,11 @@ export const DEFAULT_SITE_CONTENT: SiteContent = {
     {
       id: 'tm-1',
       name: 'Haris Asad',
-      role: 'Chief Executive Officer',
+      role: 'Chief Executive Officer & Founder',
       squad: 'Executive Leadership',
-      bio: 'Leading strategic direction, enterprise partner allocations, and financial architecture.',
+      bio: 'Leading strategic direction, enterprise client partnerships, and company-wide delivery governance.',
       avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=250',
       tags: ['Strategy', 'Enterprise Deals', 'Executive']
-    },
-    {
-      id: 'tm-2',
-      name: 'Sarah Tariq',
-      role: 'Operations & QA Lead',
-      squad: 'Platform Management',
-      bio: 'Overseeing client lead intake, SLA compliance, and cross-squad sprint deliverables.',
-      avatarUrl: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&q=80&w=250',
-      tags: ['Operations', 'SLA QA', 'Intake Scoping']
-    },
-    {
-      id: 'tm-3',
-      name: 'Zubair Ahmed',
-      role: 'Tech Squad Leader',
-      squad: 'Technology & Development',
-      bio: 'Full-Stack software architect specializing in React 18, Next.js, and Node.js microservices.',
-      avatarUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=250',
-      tags: ['Full Stack', 'Next.js', 'System Architecture']
     }
   ],
   faqs: [

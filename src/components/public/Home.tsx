@@ -157,31 +157,8 @@ export const Home: React.FC = () => {
   const { siteContent } = useApp();
 
   const hero = siteContent?.hero;
-  const caseStudies = (siteContent?.caseStudies && siteContent.caseStudies.length > 0)
-    ? siteContent.caseStudies
-    : WORK_PREVIEWS.map((p, i) => ({
-        id: p.slug,
-        slug: p.slug,
-        title: p.title,
-        category: p.category,
-        tags: p.tags,
-        imageUrl: p.img,
-        impactMetric: p.stat.split(' ')[0],
-        impactLabel: p.stat.split(' ').slice(1).join(' '),
-        client: '',
-        summary: '',
-      }));
-  const testimonials = (siteContent?.testimonials && siteContent.testimonials.length > 0)
-    ? siteContent.testimonials
-    : TESTIMONIALS.map((t, i) => ({
-        id: String(i),
-        name: t.name,
-        role: t.role,
-        company: t.company,
-        quote: t.quote,
-        avatarUrl: t.avatar,
-        rating: t.rating,
-      }));
+  const caseStudies = siteContent?.caseStudies || [];
+  const testimonials = siteContent?.testimonials || [];
   const valueProps = siteContent?.valueProps || [];
   const servicesList = (siteContent?.services && siteContent.services.length > 0)
     ? siteContent.services.map((s, idx) => ({
@@ -546,60 +523,81 @@ export const Home: React.FC = () => {
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {caseStudies.map((project) => (
-              <motion.div
-                key={project.id || project.title}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                whileHover={{ y: -4 }}
-                transition={{ duration: 0.3 }}
-                data-cursor="view"
-                className="group border border-[var(--border-subtle)] rounded-2xl overflow-hidden bg-[var(--bg-surface)] hover:border-[var(--brand-teal)] hover:shadow-xl transition-all cursor-pointer flex flex-col justify-between"
-              >
-                <div>
-                  <div className="aspect-video overflow-hidden relative bg-[var(--bg-subtle)]">
-                    <img
-                      src={project.imageUrl || 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=800&q=80'}
-                      alt={project.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
-                    <div className="absolute top-3 right-3 px-2.5 py-1 rounded-md bg-[var(--bg-page)]/90 backdrop-blur-sm border border-[var(--border-subtle)] text-[10px] font-bold text-[var(--brand-teal)]">
-                      {project.impactMetric} {project.impactLabel}
+          {caseStudies.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {caseStudies.map((project) => (
+                <motion.div
+                  key={project.id || project.title}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  whileHover={{ y: -4 }}
+                  transition={{ duration: 0.3 }}
+                  data-cursor="view"
+                  className="group border border-[var(--border-subtle)] rounded-2xl overflow-hidden bg-[var(--bg-surface)] hover:border-[var(--brand-teal)] hover:shadow-xl transition-all cursor-pointer flex flex-col justify-between"
+                >
+                  <div>
+                    <div className="aspect-video overflow-hidden relative bg-[var(--bg-subtle)]">
+                      <img
+                        src={project.imageUrl || 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=800&q=80'}
+                        alt={project.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                      <div className="absolute top-3 right-3 px-2.5 py-1 rounded-md bg-[var(--bg-page)]/90 backdrop-blur-sm border border-[var(--border-subtle)] text-[10px] font-bold text-[var(--brand-teal)]">
+                        {project.impactMetric} {project.impactLabel}
+                      </div>
+                    </div>
+                    <div className="p-6">
+                      <p className="text-[11px] font-bold text-[var(--brand-teal)] uppercase tracking-wider mb-1">
+                        {project.category}
+                      </p>
+                      <h3 className="font-display font-bold text-lg text-[var(--text-heading)] mb-3 group-hover:text-[var(--brand-teal)] transition-colors">
+                        {project.title}
+                      </h3>
+                      <div className="flex flex-wrap gap-1.5 mb-4">
+                        {project.tags?.map((tTag) => (
+                          <span
+                            key={tTag}
+                            className="text-[10px] px-2 py-0.5 rounded bg-[var(--bg-subtle)] text-[var(--text-body)] border border-[var(--border-subtle)] font-medium"
+                          >
+                            {tTag}
+                          </span>
+                        ))}
+                      </div>
                     </div>
                   </div>
-                  <div className="p-6">
-                    <p className="text-[11px] font-bold text-[var(--brand-teal)] uppercase tracking-wider mb-1">
-                      {project.category}
-                    </p>
-                    <h3 className="font-display font-bold text-lg text-[var(--text-heading)] mb-3 group-hover:text-[var(--brand-teal)] transition-colors">
-                      {project.title}
-                    </h3>
-                    <div className="flex flex-wrap gap-1.5 mb-4">
-                      {project.tags?.map((tTag) => (
-                        <span
-                          key={tTag}
-                          className="text-[10px] px-2 py-0.5 rounded bg-[var(--bg-subtle)] text-[var(--text-body)] border border-[var(--border-subtle)] font-medium"
-                        >
-                          {tTag}
-                        </span>
-                      ))}
-                    </div>
+                  <div className="px-6 pb-6">
+                    <Link
+                      to={`/work/${project.slug}`}
+                      className="inline-flex items-center space-x-1 text-xs font-bold text-[var(--brand-teal)] group-hover:translate-x-1 transition-transform"
+                    >
+                      <span>{t('work_read_case')}</span>
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </Link>
                   </div>
-                </div>
-                <div className="px-6 pb-6">
-                  <Link
-                    to={`/work/${project.slug}`}
-                    className="inline-flex items-center space-x-1 text-xs font-bold text-[var(--brand-teal)] group-hover:translate-x-1 transition-transform"
-                  >
-                    <span>{t('work_read_case')}</span>
-                    <ArrowRight className="w-3.5 h-3.5" />
-                  </Link>
-                </div>
-              </motion.div>
-            ))}
-          </div>
+                </motion.div>
+              ))}
+            </div>
+          ) : (
+            <div className="p-12 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] text-center space-y-4 shadow-sm max-w-2xl mx-auto">
+              <Briefcase className="w-10 h-10 text-[var(--brand-teal)] mx-auto opacity-70" />
+              <h3 className="font-display font-bold text-xl text-[var(--text-heading)]">
+                Enterprise Portfolio & Client Deliverables
+              </h3>
+              <p className="text-xs text-[var(--text-body)] leading-relaxed">
+                We deliver tailored full-stack web applications, brand identity design systems, and AI automations under strict NDA standards. Add your case studies via the CMS Studio or contact our management team for a customized portfolio walkthrough.
+              </p>
+              <div className="pt-2">
+                <Link
+                  to="/contact"
+                  className="inline-flex items-center space-x-2 px-6 py-3 rounded-xl bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-white font-bold text-xs shadow transition-all"
+                >
+                  <span>Request Custom Portfolio Proposal</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </Link>
+              </div>
+            </div>
+          )}
         </div>
       </section>
 
@@ -616,36 +614,51 @@ export const Home: React.FC = () => {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {testimonials.map((tItem) => (
-              <motion.div
-                key={tItem.id || tItem.name}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                className="p-8 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] flex flex-col justify-between shadow-md"
-              >
-                <div>
-                  <div className="flex items-center space-x-1 text-[var(--color-status-warning)] mb-4">
-                    {[...Array(tItem.rating || 5)].map((_, i) => (
-                      <Star key={i} className="w-4 h-4 fill-[var(--color-status-warning)]" />
-                    ))}
-                  </div>
-                  <p className="text-sm text-[var(--text-body)] leading-relaxed italic mb-6">
-                    "{tItem.quote}"
-                  </p>
-                </div>
-
-                <div className="flex items-center space-x-3.5 pt-4 border-t border-[var(--border-subtle)]">
-                  <img src={tItem.avatarUrl} alt={tItem.name} className="w-10 h-10 rounded-full object-cover ring-2 ring-[var(--brand-teal)]/40" />
+          {testimonials.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {testimonials.map((tItem) => (
+                <motion.div
+                  key={tItem.id || tItem.name}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  className="p-8 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] flex flex-col justify-between shadow-md"
+                >
                   <div>
-                    <h4 className="font-bold text-[var(--text-heading)] text-sm">{tItem.name}</h4>
-                    <p className="text-xs text-[var(--brand-teal)] font-medium">{tItem.role}, {tItem.company}</p>
+                    <div className="flex items-center space-x-1 text-[var(--color-status-warning)] mb-4">
+                      {[...Array(tItem.rating || 5)].map((_, i) => (
+                        <Star key={i} className="w-4 h-4 fill-[var(--color-status-warning)]" />
+                      ))}
+                    </div>
+                    <p className="text-xs text-[var(--text-body)] italic leading-relaxed mb-6">
+                      "{tItem.quote}"
+                    </p>
                   </div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
+                  <div className="flex items-center space-x-3 pt-4 border-t border-[var(--border-subtle)]">
+                    <img
+                      src={tItem.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(tItem.name)}&background=1F7A8C&color=fff`}
+                      alt={tItem.name}
+                      className="w-10 h-10 rounded-full object-cover"
+                    />
+                    <div>
+                      <h4 className="font-bold text-xs text-[var(--text-heading)]">{tItem.name}</h4>
+                      <p className="text-[10px] text-[var(--text-muted)]">{tItem.role}, {tItem.company}</p>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          ) : (
+            <div className="p-10 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] text-center space-y-3 max-w-xl mx-auto shadow-sm">
+              <Shield className="w-8 h-8 text-[var(--brand-teal)] mx-auto opacity-70" />
+              <h3 className="font-display font-bold text-lg text-[var(--text-heading)]">
+                100% Quality & Milestone Guarantee
+              </h3>
+              <p className="text-xs text-[var(--text-body)] leading-relaxed">
+                Every project sprint is reviewed and verified by senior architects before delivery. Real client testimonials will appear here once added through your CMS portal.
+              </p>
+            </div>
+          )}
         </div>
       </section>
 

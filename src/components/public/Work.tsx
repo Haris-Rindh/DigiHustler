@@ -131,21 +131,21 @@ export const Work: React.FC = () => {
   const [activeFilter, setActiveFilter] = useState<string>('All');
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
 
-  const projectsList: Project[] = (siteContent?.caseStudies && siteContent.caseStudies.length > 0)
-    ? siteContent.caseStudies.map((cs) => ({
-        id: cs.slug || cs.id,
-        category: cs.category || 'Web Development',
-        filterCat: cs.category?.includes('Design') || cs.category?.includes('Brand') ? 'Creative' : cs.category?.includes('AI') ? 'AI & Data' : 'Development',
-        title: cs.title,
-        client: cs.client,
-        description: cs.summary,
-        challenge: cs.challenge || 'Client required modernized architecture and streamlined conversion funnels.',
-        solution: cs.solution || 'Engineered customized full-stack solution with enterprise performance guarantees.',
-        results: [cs.impactMetric ? `${cs.impactMetric} ${cs.impactLabel}` : '100% On-Time Delivery'],
-        tags: cs.tags || ['React', 'Full Stack'],
-        img: cs.imageUrl || 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=800&q=80'
-      }))
-    : PROJECTS;
+  const rawCaseStudies = siteContent?.caseStudies || [];
+
+  const projectsList: Project[] = rawCaseStudies.map((cs) => ({
+    id: cs.slug || cs.id,
+    category: cs.category || 'Web Development',
+    filterCat: cs.category?.includes('Design') || cs.category?.includes('Brand') ? 'Creative' : cs.category?.includes('AI') ? 'AI & Data' : 'Development',
+    title: cs.title,
+    client: cs.client,
+    description: cs.summary,
+    challenge: cs.challenge || 'Client required modernized architecture and streamlined conversion funnels.',
+    solution: cs.solution || 'Engineered customized full-stack solution with enterprise performance guarantees.',
+    results: [cs.impactMetric ? `${cs.impactMetric} ${cs.impactLabel}` : '100% On-Time Delivery'],
+    tags: cs.tags || ['React', 'Full Stack'],
+    img: cs.imageUrl || 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=800&q=80'
+  }));
 
   const filtered = activeFilter === 'All'
     ? projectsList
@@ -211,62 +211,85 @@ export const Work: React.FC = () => {
       {/* Projects Grid */}
       <section className="bg-[var(--bg-page)] py-16 px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
-          <motion.div layout className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <AnimatePresence>
-              {filtered.map((project) => (
-                <motion.div
-                  key={project.id}
-                  layout
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.95 }}
-                  transition={{ duration: 0.3 }}
-                  whileHover={{ y: -4 }}
-                  onClick={() => setSelectedProject(project)}
-                  className="group border border-[var(--border-subtle)] rounded-2xl overflow-hidden hover:shadow-xl hover:border-[var(--brand-teal)]/40 transition-all cursor-pointer bg-[var(--bg-surface)] flex flex-col justify-between"
-                >
-                  <div>
-                    <div className="aspect-video overflow-hidden bg-[var(--bg-subtle)] relative">
-                      <img
-                        src={project.img}
-                        alt={project.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                      />
-                      <div className="absolute top-3 left-3 px-2.5 py-1 rounded-md bg-[var(--bg-page)]/85 backdrop-blur-sm text-[10px] font-bold text-[var(--text-heading)] border border-[var(--border-subtle)]">
-                        {project.client}
+          {filtered.length > 0 ? (
+            <motion.div layout className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              <AnimatePresence>
+                {filtered.map((project) => (
+                  <motion.div
+                    key={project.id}
+                    layout
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    transition={{ duration: 0.3 }}
+                    whileHover={{ y: -4 }}
+                    onClick={() => setSelectedProject(project)}
+                    className="group border border-[var(--border-subtle)] rounded-2xl overflow-hidden hover:shadow-xl hover:border-[var(--brand-teal)]/40 transition-all cursor-pointer bg-[var(--bg-surface)] flex flex-col justify-between"
+                  >
+                    <div>
+                      <div className="aspect-video overflow-hidden bg-[var(--bg-subtle)] relative">
+                        <img
+                          src={project.img}
+                          alt={project.title}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        />
+                        <div className="absolute top-3 left-3 px-2.5 py-1 rounded-md bg-[var(--bg-page)]/85 backdrop-blur-sm text-[10px] font-bold text-[var(--text-heading)] border border-[var(--border-subtle)]">
+                          {project.client}
+                        </div>
+                      </div>
+                      <div className="p-6">
+                        <p className="text-[11px] font-bold text-[var(--brand-teal)] uppercase tracking-wider mb-1">
+                          {project.category}
+                        </p>
+                        <h2 className="font-display font-bold text-xl text-[var(--text-heading)] mb-3 group-hover:text-[var(--brand-teal)] transition-colors">
+                          {project.title}
+                        </h2>
+                        <p className="text-sm text-[var(--text-body)] leading-relaxed mb-4">
+                          {project.description}
+                        </p>
+                        <div className="flex flex-wrap gap-1.5 mb-2">
+                          {project.tags.map((t) => (
+                            <span
+                              key={t}
+                              className="text-[10px] px-2.5 py-1 rounded-lg bg-[var(--bg-subtle)] text-[var(--text-body)] border border-[var(--border-subtle)] font-medium"
+                            >
+                              {t}
+                            </span>
+                          ))}
+                        </div>
                       </div>
                     </div>
-                    <div className="p-6">
-                      <p className="text-[11px] font-bold text-[var(--brand-teal)] uppercase tracking-wider mb-1">
-                        {project.category}
-                      </p>
-                      <h2 className="font-display font-bold text-xl text-[var(--text-heading)] mb-3 group-hover:text-[var(--brand-teal)] transition-colors">
-                        {project.title}
-                      </h2>
-                      <p className="text-sm text-[var(--text-body)] leading-relaxed mb-4">
-                        {project.description}
-                      </p>
-                      <div className="flex flex-wrap gap-1.5 mb-2">
-                        {project.tags.map((t) => (
-                          <span
-                            key={t}
-                            className="text-[10px] px-2.5 py-1 rounded-lg bg-[var(--bg-subtle)] text-[var(--text-body)] border border-[var(--border-subtle)] font-medium"
-                          >
-                            {t}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
 
-                  <div className="px-6 pb-6 pt-2 border-t border-[var(--border-subtle)] flex items-center justify-between text-xs font-bold text-[var(--brand-teal)]">
-                    <span>Inspect Full Case Study</span>
-                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                  </div>
-                </motion.div>
-              ))}
-            </AnimatePresence>
-          </motion.div>
+                    <div className="px-6 pb-6 pt-2 border-t border-[var(--border-subtle)] flex items-center justify-between text-xs font-bold text-[var(--brand-teal)]">
+                      <span>Inspect Full Case Study</span>
+                      <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                    </div>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+            </motion.div>
+          ) : (
+            <div className="p-12 sm:p-16 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] text-center space-y-4 shadow-sm max-w-2xl mx-auto my-8">
+              <div className="w-14 h-14 rounded-2xl bg-[var(--brand-teal-subtle)] text-[var(--brand-teal)] flex items-center justify-center mx-auto border border-[var(--brand-teal)]/30">
+                <CheckCircle2 className="w-7 h-7" />
+              </div>
+              <h3 className="font-display font-extrabold text-2xl text-[var(--text-heading)]">
+                Custom Client Solutions & NDA Deliverables
+              </h3>
+              <p className="text-xs sm:text-sm text-[var(--text-body)] leading-relaxed">
+                DigiHust delivers web engineering, brand identity systems, and AI automation for international clients under strict confidentiality agreements. Add case studies directly via the Live CMS Studio or request our confidential portfolio PDF.
+              </p>
+              <div className="pt-2">
+                <Link
+                  to="/contact"
+                  className="inline-flex items-center space-x-2 px-8 py-3.5 rounded-xl bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-white font-bold text-xs shadow-lg transition-all"
+                >
+                  <span>Request Custom Proposal</span>
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
+              </div>
+            </div>
+          )}
         </div>
       </section>
 

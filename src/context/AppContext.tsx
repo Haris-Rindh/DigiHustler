@@ -128,7 +128,7 @@ interface AppContextType {
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
-const LOCAL_STORAGE_KEY = 'digihust_prod_state_v5';
+const LOCAL_STORAGE_KEY = 'digihust_clean_v6';
 
 export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   // Load initial state from local storage if available

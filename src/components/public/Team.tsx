@@ -13,73 +13,6 @@ interface TeamMember {
   img: string;
 }
 
-const TEAM_MEMBERS: TeamMember[] = [
-  {
-    name: 'Zubair Ahmed',
-    role: 'Lead Full-Stack Architect',
-    category: 'Development',
-    bio: 'Specializes in high-throughput React/Next.js platforms, cloud infrastructure, and robust API microservices.',
-    skills: ['React', 'Next.js', 'Node.js', 'PostgreSQL', 'AWS', 'Docker'],
-    img: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=250',
-  },
-  {
-    name: 'Ayesha Khan',
-    role: 'Creative & UI/UX Director',
-    category: 'Creative',
-    bio: 'Designs sophisticated brand systems, responsive Figma UI prototypes, and high-conversion landing experiences.',
-    skills: ['UI/UX', 'Figma', 'Brand Systems', 'Motion Design', 'Design Systems'],
-    img: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=250',
-  },
-  {
-    name: 'Dr. Hamza Ali',
-    role: 'Head of AI & Data Intelligence',
-    category: 'AI & Data',
-    bio: 'Deploys customized OpenAI / LLM integrations, Python ETL pipelines, and executive PowerBI dashboard architectures.',
-    skills: ['Python', 'LLMs', 'PowerBI', 'n8n Automations', 'SQL Pipelines'],
-    img: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=250',
-  },
-  {
-    name: 'Bilal Farooq',
-    role: 'Growth & Outreach Lead',
-    category: 'Marketing',
-    bio: 'Drives technical SEO strategies, paid acquisition campaigns, and B2B cold email client acquisition infrastructure.',
-    skills: ['B2B Sales', 'Cold Email', 'Technical SEO', 'Google Ads', 'Analytics'],
-    img: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=250',
-  },
-  {
-    name: 'Fatima Malik',
-    role: 'Senior Frontend Engineer',
-    category: 'Development',
-    bio: 'Builds pixel-perfect, accessible web interfaces with Tailwind CSS, Framer Motion animations, and React.',
-    skills: ['React', 'TypeScript', 'Tailwind CSS', 'Framer Motion', 'WCAG A11y'],
-    img: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&q=80&w=250',
-  },
-  {
-    name: 'Usman Tariq',
-    role: 'Security & Cloud Engineer',
-    category: 'Cybersecurity',
-    bio: 'Performs web application vulnerability assessments, OWASP penetration testing, and AWS security hardening.',
-    skills: ['Pen Testing', 'OWASP Audit', 'Network Security', 'Linux Hardening'],
-    img: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&q=80&w=250',
-  },
-  {
-    name: 'Sana Rizvi',
-    role: 'Content & Brand Strategist',
-    category: 'Marketing',
-    bio: 'Develops conversion-oriented copywriting, brand messaging guidelines, and search-optimized content libraries.',
-    skills: ['Copywriting', 'Content Strategy', 'Brand Messaging', 'SEO Writing'],
-    img: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=250',
-  },
-  {
-    name: 'Omar Siddiqui',
-    role: 'Motion Graphics & 3D Designer',
-    category: 'Creative',
-    bio: 'Creates 3D product visualizations, social video advertisements, and After Effects motion assets.',
-    skills: ['After Effects', 'Cinema 4D', '3D Visuals', 'Video Editing'],
-    img: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=250',
-  },
-];
-
 const CATS = ['All', 'Development', 'Creative', 'AI & Data', 'Marketing', 'Cybersecurity'] as const;
 
 const CAT_COLORS: Record<string, string> = {
@@ -96,16 +29,24 @@ export const Team: React.FC = () => {
   const { siteContent } = useApp();
   const [filter, setFilter] = useState<string>('All');
 
-  const teamList = (siteContent?.teamMembers && siteContent.teamMembers.length > 0)
-    ? siteContent.teamMembers.map(tm => ({
-        name: tm.name,
-        role: tm.role,
-        category: 'Development' as const,
-        bio: tm.bio,
-        skills: tm.tags || ['Specialist'],
-        img: tm.avatarUrl || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=250'
-      }))
-    : TEAM_MEMBERS;
+  const rawTeam = siteContent?.teamMembers || [];
+
+  const teamList = rawTeam.map(tm => ({
+    name: tm.name,
+    role: tm.role,
+    category: tm.squad?.includes('Design') || tm.squad?.includes('Creative') 
+      ? 'Creative' 
+      : tm.squad?.includes('AI') || tm.squad?.includes('Data') 
+      ? 'AI & Data' 
+      : tm.squad?.includes('Growth') || tm.squad?.includes('Marketing')
+      ? 'Marketing'
+      : tm.squad?.includes('Security')
+      ? 'Cybersecurity'
+      : 'Development',
+    bio: tm.bio,
+    skills: tm.tags || ['Executive Strategy', 'Management'],
+    img: tm.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(tm.name)}&background=1F7A8C&color=fff`
+  }));
 
   const displayed = filter === 'All'
     ? teamList

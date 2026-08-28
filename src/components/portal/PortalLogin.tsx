@@ -168,73 +168,34 @@ export const PortalLogin: React.FC = () => {
               <div className="flex items-center justify-between text-xs">
                 <span className="font-bold text-[var(--text-heading)] flex items-center gap-1.5">
                   <Sparkles className="w-3.5 h-3.5 text-[var(--brand-teal)]" />
-                  <span>1-Click Role Logins:</span>
+                  <span>Executive Root Master Login:</span>
                 </span>
-                <span className="text-[10px] text-[var(--text-muted)]">Click any role to test</span>
+                <span className="text-[10px] text-emerald-500 font-bold">● Clean Slate</span>
               </div>
 
-              <div className="grid grid-cols-2 gap-2 text-xs">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setMemberId('DGH2400001');
-                    setPassword('DigiHust@2026');
-                    const res = loginWithMemberId('DGH2400001', 'DigiHust@2026');
-                    if (res.success) navigate(from, { replace: true });
-                  }}
-                  className="p-2.5 rounded-xl bg-[var(--bg-page)] border border-purple-500/30 hover:border-purple-500 text-left transition-all cursor-pointer group"
-                >
-                  <div className="font-bold text-purple-400 group-hover:text-purple-300 text-[11px]">👑 CEO Master</div>
-                  <div className="text-[10px] text-[var(--text-muted)] font-mono">DGH2400001</div>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => {
-                    setMemberId('DGH2500002');
-                    setPassword('DigiHust@2026');
-                    const res = loginWithMemberId('DGH2500002', 'DigiHust@2026');
-                    if (res.success) navigate(from, { replace: true });
-                  }}
-                  className="p-2.5 rounded-xl bg-[var(--bg-page)] border border-blue-500/30 hover:border-blue-500 text-left transition-all cursor-pointer group"
-                >
-                  <div className="font-bold text-blue-400 group-hover:text-blue-300 text-[11px]">💼 Manager</div>
-                  <div className="text-[10px] text-[var(--text-muted)] font-mono">DGH2500002</div>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => {
-                    setMemberId('DGH2500003');
-                    setPassword('DigiHust@2026');
-                    const res = loginWithMemberId('DGH2500003', 'DigiHust@2026');
-                    if (res.success) navigate(from, { replace: true });
-                  }}
-                  className="p-2.5 rounded-xl bg-[var(--bg-page)] border border-cyan-500/30 hover:border-cyan-500 text-left transition-all cursor-pointer group"
-                >
-                  <div className="font-bold text-cyan-400 group-hover:text-cyan-300 text-[11px]">⚡ Squad Leader</div>
-                  <div className="text-[10px] text-[var(--text-muted)] font-mono">DGH2500003</div>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => {
-                    setMemberId('DGH2600101');
-                    setPassword('DigiHust@2026');
-                    const res = loginWithMemberId('DGH2600101', 'DigiHust@2026');
-                    if (res.success) navigate(from, { replace: true });
-                  }}
-                  className="p-2.5 rounded-xl bg-[var(--bg-page)] border border-emerald-500/30 hover:border-emerald-500 text-left transition-all cursor-pointer group"
-                >
-                  <div className="font-bold text-emerald-400 group-hover:text-emerald-300 text-[11px]">🎯 Specialist</div>
-                  <div className="text-[10px] text-[var(--text-muted)] font-mono">DGH2600101</div>
-                </button>
-              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setMemberId('DGH2400001');
+                  setPassword('DigiHust@2026');
+                  const res = loginWithMemberId('DGH2400001', 'DigiHust@2026');
+                  if (res.success) navigate(from, { replace: true });
+                }}
+                className="w-full p-3 rounded-xl bg-[var(--bg-page)] border border-purple-500/40 hover:border-purple-500 text-left transition-all cursor-pointer group flex items-center justify-between shadow-sm"
+              >
+                <div>
+                  <div className="font-bold text-purple-400 group-hover:text-purple-300 text-xs">👑 CEO Master Account (Haris Asad)</div>
+                  <div className="text-[10px] text-[var(--text-muted)] font-mono">ID: DGH2400001 · ceo@digihust.com</div>
+                </div>
+                <span className="text-[11px] font-bold text-purple-400 group-hover:translate-x-0.5 transition-transform">
+                  1-Click Login →
+                </span>
+              </button>
             </div>
 
             <div className="mt-4 pt-3 border-t border-[var(--border-subtle)] text-[11px] text-[var(--text-muted)] flex items-center justify-between">
-              <span>Secure SHA-256 Authenticator</span>
-              <span>Default Pwd: <strong className="font-mono text-[var(--brand-teal)]">DigiHust@2026</strong></span>
+              <span>Fresh Clean Database</span>
+              <span>Master Password: <strong className="font-mono text-[var(--brand-teal)]">DigiHust@2026</strong></span>
             </div>
           </motion.div>
 
