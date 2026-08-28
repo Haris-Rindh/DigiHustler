@@ -46,69 +46,38 @@ export const notificationService = {
     timeline: string;
     description: string;
   }): Promise<boolean> {
-    const subject = `🚨 New DigiHust Lead: ${leadData.name} (${leadData.budget})`;
-
-    // Primary: Direct FormSubmit.co Dispatcher to digihust@gmail.com
     try {
-      const formSubmitRes = await fetch('https://formsubmit.co/ajax/digihust@gmail.com', {
+      const formData = new FormData();
+      formData.append('_subject', `🚨 New DigiHust Project Lead: ${leadData.name} (${leadData.budget})`);
+      formData.append('_replyto', leadData.email);
+      formData.append('_captcha', 'false');
+      formData.append('_template', 'table');
+      formData.append('Client Name', leadData.name);
+      formData.append('Client Email', leadData.email);
+      formData.append('Company', leadData.company || 'Not Specified');
+      formData.append('Services Required', Array.isArray(leadData.services) ? leadData.services.join(', ') : leadData.services);
+      formData.append('Budget Range', leadData.budget);
+      formData.append('Target Timeline', leadData.timeline);
+      formData.append('Project Scope & Description', leadData.description);
+      formData.append('Submitted At', new Date().toLocaleString());
+
+      const res = await fetch('https://formsubmit.co/ajax/digihust@gmail.com', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          Accept: 'application/json'
+          'Accept': 'application/json'
         },
-        body: JSON.stringify({
-          _subject: subject,
-          _replyto: leadData.email,
-          _template: 'table',
-          _captcha: 'false',
-          name: leadData.name,
-          email: leadData.email,
-          company: leadData.company || 'Not Specified',
-          services: Array.isArray(leadData.services) ? leadData.services.join(', ') : leadData.services,
-          budget: leadData.budget,
-          timeline: leadData.timeline,
-          project_description: leadData.description,
-          submitted_at: new Date().toLocaleString()
-        })
+        body: formData
       });
 
-      if (formSubmitRes.ok) {
-        return true;
+      if (res.ok) {
+        const data = await res.json();
+        return data.success === 'true' || data.success === true;
       }
+      return false;
     } catch (err) {
-      console.warn('FormSubmit email dispatch notice:', err);
+      console.warn('Lead email dispatch warning:', err);
+      return false;
     }
-
-    // Secondary: Web3Forms Dispatcher
-    const accessKey = import.meta.env.VITE_WEB3FORMS_ACCESS_KEY || '';
-    if (accessKey) {
-      try {
-        const w3Res = await fetch('https://api.web3forms.com/submit', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Accept: 'application/json'
-          },
-          body: JSON.stringify({
-            access_key: accessKey,
-            subject: subject,
-            from_name: 'DigiHust Lead Dispatcher',
-            name: leadData.name,
-            email: leadData.email,
-            company: leadData.company || 'N/A',
-            services: leadData.services.join(', '),
-            budget: leadData.budget,
-            timeline: leadData.timeline,
-            message: `New client brief submitted on DigiHust:\n\nClient Name: ${leadData.name}\nEmail: ${leadData.email}\nCompany: ${leadData.company || 'N/A'}\nServices Requested: ${leadData.services.join(', ')}\nBudget Range: ${leadData.budget}\nTarget Timeline: ${leadData.timeline}\n\nProject Scope:\n${leadData.description}`
-          })
-        });
-        return w3Res.ok;
-      } catch (err) {
-        console.warn('Web3Forms dispatch notice:', err);
-      }
-    }
-
-    return false;
   },
 
   /**
