@@ -46,56 +46,25 @@ export const Team: React.FC = () => {
     };
   }, [selectedMember]);
 
-  // Unified roster from registered active users and CMS entries
+  // Live member roster directly driven by portal database
   const activeUsers = (users || []).filter(u => u.status === 'active');
-  const inactiveUserNames = new Set(
-    (users || []).filter(u => u.status !== 'active').map(u => u.name.toLowerCase().trim())
-  );
 
-  const allMembers: TeamMember[] = [
-    ...activeUsers.map(u => ({
-      name: u.name,
-      role: u.title || (u.roleTier === 'ceo' ? 'Founder & CEO' : u.roleTier === 'manager' ? 'Operations Director' : u.roleTier === 'group_leader' ? 'Squad Leader' : 'Domain Specialist'),
-      category: (u.groupId === 'creative' || u.title?.toLowerCase().includes('design') || u.title?.toLowerCase().includes('brand')
-        ? 'Creative'
-        : u.groupId === 'data' || u.title?.toLowerCase().includes('ai') || u.title?.toLowerCase().includes('data')
-        ? 'AI & Data'
-        : u.groupId === 'growth' || u.title?.toLowerCase().includes('market')
-        ? 'Marketing'
-        : u.title?.toLowerCase().includes('security')
-        ? 'Cybersecurity'
-        : 'Development') as 'Development' | 'Creative' | 'AI & Data' | 'Marketing' | 'Cybersecurity',
-      bio: u.bio || (u.specialties && u.specialties.length > 0 ? `Specialist in ${u.specialties.join(', ')}.` : 'Verified DigiHust specialist with proven digital delivery track record.'),
-      skills: u.specialties && u.specialties.length > 0 ? u.specialties : ['Digital Delivery', 'Verified Talent'],
-      img: u.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(u.name)}&background=1F7A8C&color=fff`
-    })),
-    ...(siteContent?.teamMembers || [])
-      .filter(tm => !inactiveUserNames.has(tm.name.toLowerCase().trim()))
-      .map(tm => ({
-        name: tm.name,
-        role: tm.role,
-        category: (tm.squad?.includes('Design') || tm.squad?.includes('Creative') 
-          ? 'Creative' 
-          : tm.squad?.includes('AI') || tm.squad?.includes('Data') 
-          ? 'AI & Data' 
-          : tm.squad?.includes('Growth') || tm.squad?.includes('Marketing')
-          ? 'Marketing'
-          : tm.squad?.includes('Security')
-          ? 'Cybersecurity'
-          : 'Development') as 'Development' | 'Creative' | 'AI & Data' | 'Marketing' | 'Cybersecurity',
-        bio: tm.bio,
-        skills: tm.tags || ['Executive Strategy', 'Management'],
-        img: tm.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(tm.name)}&background=1F7A8C&color=fff`
-      }))
-  ];
-
-  // Deduplicate by name
-  const seen = new Set<string>();
-  const teamList = allMembers.filter(m => {
-    if (!m.name || seen.has(m.name.toLowerCase().trim())) return false;
-    seen.add(m.name.toLowerCase().trim());
-    return true;
-  });
+  const teamList: TeamMember[] = activeUsers.map(u => ({
+    name: u.name,
+    role: u.title || (u.roleTier === 'ceo' ? 'Founder & CEO' : u.roleTier === 'manager' ? 'Operations Director' : u.roleTier === 'group_leader' ? 'Squad Leader' : 'Domain Specialist'),
+    category: (u.groupId === 'creative' || u.title?.toLowerCase().includes('design') || u.title?.toLowerCase().includes('brand')
+      ? 'Creative'
+      : u.groupId === 'data' || u.title?.toLowerCase().includes('ai') || u.title?.toLowerCase().includes('data')
+      ? 'AI & Data'
+      : u.groupId === 'growth' || u.title?.toLowerCase().includes('market')
+      ? 'Marketing'
+      : u.title?.toLowerCase().includes('security')
+      ? 'Cybersecurity'
+      : 'Development') as 'Development' | 'Creative' | 'AI & Data' | 'Marketing' | 'Cybersecurity',
+    bio: u.bio || (u.specialties && u.specialties.length > 0 ? `Specialist in ${u.specialties.join(', ')}.` : 'Verified DigiHust specialist with proven digital delivery track record.'),
+    skills: u.specialties && u.specialties.length > 0 ? u.specialties : ['Digital Delivery', 'Verified Talent'],
+    img: u.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(u.name)}&background=1F7A8C&color=fff`
+  }));
 
   const displayed = filter === 'All'
     ? teamList

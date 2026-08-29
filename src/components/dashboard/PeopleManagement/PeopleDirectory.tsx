@@ -16,6 +16,7 @@ import {
   Phone,
   AlertCircle,
   Sparkles,
+  Trash2,
 } from 'lucide-react';
 import { useApp } from '../../../context/AppContext';
 import { User, GroupId, UserRole, UserStatus } from '../../../types';
@@ -29,10 +30,10 @@ export const PeopleDirectory: React.FC<PeopleDirectoryProps> = ({
   onSelectUser,
   onOpenQuickInvite,
 }) => {
-  const { users, groups, currentUser, bulkUpdateStatus, bulkReassignSquad, showToast } = useApp();
+  const { users, groups, currentUser, currentTier, bulkUpdateStatus, bulkReassignSquad, deleteUserAccount, showToast } = useApp();
 
-  const isManagement = currentUser.role === 'management';
-  const isLeader = currentUser.role === 'group_leader';
+  const isManagement = currentTier === 'ceo' || currentTier === 'manager' || currentUser.role === 'management';
+  const isLeader = currentTier === 'group_leader' || currentUser.role === 'group_leader';
 
   // State
   const [searchTerm, setSearchTerm] = useState('');
@@ -465,12 +466,29 @@ export const PeopleDirectory: React.FC<PeopleDirectoryProps> = ({
 
                       {/* Action */}
                       <td className="p-4 text-center" onClick={(e) => e.stopPropagation()}>
-                        <button
-                          onClick={() => onSelectUser(person)}
-                          className="px-3 py-1 rounded-lg bg-[var(--bg-subtle)] hover:bg-[var(--bg-subtle)] border border-[var(--border-subtle)] text-[11px] font-bold text-[var(--text-body)] transition-colors"
-                        >
-                          Profile
-                        </button>
+                        <div className="flex items-center justify-center gap-1.5">
+                          <button
+                            onClick={() => onSelectUser(person)}
+                            className="px-2.5 py-1 rounded-lg bg-[var(--bg-subtle)] hover:bg-[var(--bg-page)] border border-[var(--border-subtle)] text-[11px] font-bold text-[var(--text-body)] hover:text-[var(--text-heading)] transition-colors cursor-pointer"
+                            title={`View & edit ${person.name}'s profile`}
+                          >
+                            Profile
+                          </button>
+                          {isManagement && person.id !== currentUser.id && (
+                            <button
+                              onClick={() => {
+                                if (confirm(`Permanently remove ${person.name} (${person.title || person.role}) from the platform database and website team roster?`)) {
+                                  deleteUserAccount(person.id);
+                                }
+                              }}
+                              className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/30 text-[11px] font-bold text-rose-400 hover:text-rose-300 transition-colors cursor-pointer"
+                              title={`Remove ${person.name}`}
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                              <span>Remove</span>
+                            </button>
+                          )}
+                        </div>
                       </td>
                     </tr>
                   );
