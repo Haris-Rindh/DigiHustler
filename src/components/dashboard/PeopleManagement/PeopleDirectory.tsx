@@ -29,7 +29,7 @@ export const PeopleDirectory: React.FC<PeopleDirectoryProps> = ({
   onSelectUser,
   onOpenQuickInvite,
 }) => {
-  const { users, groups, currentUser, bulkUpdateStatus, bulkReassignSquad } = useApp();
+  const { users, groups, currentUser, bulkUpdateStatus, bulkReassignSquad, showToast } = useApp();
 
   const isManagement = currentUser.role === 'management';
   const isLeader = currentUser.role === 'group_leader';
@@ -119,19 +119,21 @@ export const PeopleDirectory: React.FC<PeopleDirectoryProps> = ({
 
   const handleBulkStatusApply = () => {
     if (!bulkReason.trim()) {
-      alert('A reason is required for bulk status audit logging.');
+      showToast('A reason is required for bulk status audit logging.', 'warning');
       return;
     }
     bulkUpdateStatus(selectedIds, bulkStatus, bulkReason, currentUser.name);
     setBulkStatusModal(false);
     setSelectedIds([]);
     setBulkReason('');
+    showToast('Member statuses updated.', 'success');
   };
 
   const handleBulkSquadApply = () => {
     bulkReassignSquad(selectedIds, bulkSquad);
     setBulkSquadModal(false);
     setSelectedIds([]);
+    showToast('Squad reassignment complete.', 'success');
   };
 
   const exportToCSV = () => {

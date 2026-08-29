@@ -3,7 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { 
   Shield, LayoutDashboard, Briefcase, Users, Award, DollarSign, Bell, Settings, 
   LogOut, ChevronDown, Sparkles, Menu, X, Key, Check, AlertCircle,
-  Layers, ExternalLink
+  Layers, ExternalLink, Eye, EyeOff, User 
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { ThemeToggle } from '../ui/ThemeToggle';
@@ -20,16 +20,27 @@ interface NavItem {
 }
 
 export const PortalNavbar: React.FC = () => {
-  const { currentUser, currentTier, logout, changePassword } = useApp();
+  const { currentUser, currentTier, logout, changePassword, updateUserProfile, showToast } = useApp();
   const location = useLocation();
   const navigate = useNavigate();
 
   const [showUserDropdown, setShowUserDropdown] = useState(false);
   const [showMoreDropdown, setShowMoreDropdown] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  
+  // Password change state
   const [changePwdOpen, setChangePwdOpen] = useState(false);
   const [newPassword, setNewPassword] = useState('');
+  const [showChangePwd, setShowChangePwd] = useState(false);
   const [pwdFeedback, setPwdFeedback] = useState<{ success?: boolean; error?: string } | null>(null);
+
+  // Profile & Avatar edit state
+  const [editProfileOpen, setEditProfileOpen] = useState(false);
+  const [profileName, setProfileName] = useState(currentUser.name);
+  const [profileTitle, setProfileTitle] = useState(currentUser.title);
+  const [profileAvatarUrl, setProfileAvatarUrl] = useState(currentUser.avatarUrl || '');
+  const [profilePhone, setProfilePhone] = useState(currentUser.phone || '');
+  const [profileBio, setProfileBio] = useState(currentUser.bio || '');
 
   const userDropdownRef = useRef<HTMLDivElement>(null);
   const moreDropdownRef = useRef<HTMLDivElement>(null);
@@ -333,6 +344,22 @@ export const PortalNavbar: React.FC = () => {
                 <div className="space-y-1">
                   <button
                     onClick={() => {
+                      setProfileName(currentUser.name);
+                      setProfileTitle(currentUser.title);
+                      setProfileAvatarUrl(currentUser.avatarUrl || '');
+                      setProfilePhone(currentUser.phone || '');
+                      setProfileBio(currentUser.bio || '');
+                      setShowUserDropdown(false);
+                      setEditProfileOpen(true);
+                    }}
+                    className="w-full flex items-center space-x-2 p-2.5 rounded-xl text-xs font-semibold text-[var(--text-body)] hover:bg-[var(--bg-subtle)] hover:text-[var(--text-heading)] transition-all cursor-pointer"
+                  >
+                    <User className="w-4 h-4 text-[var(--brand-teal)]" />
+                    <span>Edit My Profile & Avatar</span>
+                  </button>
+
+                  <button
+                    onClick={() => {
                       setShowUserDropdown(false);
                       setChangePwdOpen(true);
                     }}
@@ -516,14 +543,24 @@ export const PortalNavbar: React.FC = () => {
                 <label className="block text-xs font-bold uppercase text-[var(--text-muted)] mb-1">
                   New Password
                 </label>
-                <input
-                  type="password"
-                  required
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
-                  placeholder="••••••••••••"
-                  className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3.5 py-2.5 text-xs text-[var(--text-heading)] focus:border-[var(--brand-teal)] focus:outline-none"
-                />
+                <div className="relative">
+                  <input
+                    type={showChangePwd ? 'text' : 'password'}
+                    required
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    placeholder="••••••••••••"
+                    className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl pl-3.5 pr-10 py-2.5 text-xs text-[var(--text-heading)] focus:border-[var(--brand-teal)] focus:outline-none"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowChangePwd(!showChangePwd)}
+                    className="absolute right-3 top-2 text-[var(--text-muted)] hover:text-[var(--text-heading)] p-0.5 rounded cursor-pointer"
+                    aria-label={showChangePwd ? 'Hide password' : 'Show password'}
+                  >
+                    {showChangePwd ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
               </div>
 
               <div className="flex justify-end space-x-2 pt-2">
@@ -539,6 +576,130 @@ export const PortalNavbar: React.FC = () => {
                   className="px-5 py-2 rounded-xl bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-white text-xs font-bold shadow-md cursor-pointer transition-colors"
                 >
                   Save Password
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Profile & Avatar Modal */}
+      {editProfileOpen && (
+        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl animate-in fade-in zoom-in-95 space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-[var(--border-subtle)]">
+              <h3 className="font-display font-extrabold text-lg text-[var(--text-heading)]">
+                Update Profile & Avatar
+              </h3>
+              <button
+                type="button"
+                onClick={() => setEditProfileOpen(false)}
+                className="text-[var(--text-muted)] hover:text-[var(--text-heading)] p-1 cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                updateUserProfile(currentUser.id, {
+                  name: profileName,
+                  title: profileTitle,
+                  avatarUrl: profileAvatarUrl || currentUser.avatarUrl,
+                  phone: profilePhone,
+                  bio: profileBio,
+                });
+                setEditProfileOpen(false);
+                showToast('Your profile and avatar picture have been updated!', 'success');
+              }}
+              className="space-y-4"
+            >
+              <div>
+                <label className="block text-xs font-bold uppercase text-[var(--text-muted)] mb-1">
+                  Profile Picture / Avatar URL
+                </label>
+                <div className="flex items-center space-x-3">
+                  <img
+                    src={profileAvatarUrl || currentUser.avatarUrl}
+                    alt={currentUser.name}
+                    className="w-12 h-12 rounded-2xl object-cover ring-2 ring-[var(--brand-teal)] shadow-md shrink-0"
+                  />
+                  <input
+                    type="url"
+                    value={profileAvatarUrl}
+                    onChange={(e) => setProfileAvatarUrl(e.target.value)}
+                    placeholder="https://images.unsplash.com/... or avatar URL"
+                    className="flex-1 bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs text-[var(--text-heading)] font-mono focus:border-[var(--brand-teal)] focus:outline-none"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-bold uppercase text-[var(--text-muted)] mb-1">
+                    Display Name
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={profileName}
+                    onChange={(e) => setProfileName(e.target.value)}
+                    className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs text-[var(--text-heading)] focus:border-[var(--brand-teal)] focus:outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold uppercase text-[var(--text-muted)] mb-1">
+                    Job Title / Specialty
+                  </label>
+                  <input
+                    type="text"
+                    value={profileTitle}
+                    onChange={(e) => setProfileTitle(e.target.value)}
+                    className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs text-[var(--text-heading)] focus:border-[var(--brand-teal)] focus:outline-none"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold uppercase text-[var(--text-muted)] mb-1">
+                  Phone / WhatsApp
+                </label>
+                <input
+                  type="text"
+                  value={profilePhone}
+                  onChange={(e) => setProfilePhone(e.target.value)}
+                  placeholder="+1 (555) 000-0000"
+                  className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs text-[var(--text-heading)] focus:border-[var(--brand-teal)] focus:outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold uppercase text-[var(--text-muted)] mb-1">
+                  Professional Bio
+                </label>
+                <textarea
+                  rows={3}
+                  value={profileBio}
+                  onChange={(e) => setProfileBio(e.target.value)}
+                  placeholder="Brief summary of your background, experience, and domain focus..."
+                  className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl p-3 text-xs text-[var(--text-heading)] focus:border-[var(--brand-teal)] focus:outline-none leading-relaxed"
+                />
+              </div>
+
+              <div className="flex justify-end space-x-2 pt-3 border-t border-[var(--border-subtle)]">
+                <button
+                  type="button"
+                  onClick={() => setEditProfileOpen(false)}
+                  className="px-4 py-2 rounded-xl text-xs font-semibold text-[var(--text-muted)] hover:bg-[var(--bg-subtle)] cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2 rounded-xl bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-white text-xs font-bold shadow-md cursor-pointer transition-colors"
+                >
+                  Save Profile
                 </button>
               </div>
             </form>

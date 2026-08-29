@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowRight, Clock, User, Calendar, BookOpen, Sparkles } from 'lucide-react';
 import { SEOHead } from '../seo/SEOHead';
+import { useApp } from '../../context/AppContext';
 
 export interface BlogPostItem {
   slug: string;
@@ -49,14 +50,29 @@ export const BLOG_POSTS: BlogPostItem[] = [
 ];
 
 export const Blog: React.FC = () => {
+  const { siteContent } = useApp();
   const [activeCategory, setActiveCategory] = useState('All');
 
-  const categories = ['All', 'Engineering', 'AI & Automations', 'Cybersecurity'];
+  // Merge CMS dynamic blog posts with defaults
+  const dynamicPosts: BlogPostItem[] = (siteContent?.blogPosts || []).map((bp) => ({
+    slug: bp.slug,
+    title: bp.title,
+    excerpt: bp.excerpt,
+    category: bp.category,
+    readTime: bp.readTime,
+    date: bp.publishedAt ? new Date(bp.publishedAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : 'August 2026',
+    author: bp.author,
+    image: bp.imageUrl || 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=800&q=80',
+  }));
+
+  const allPosts = dynamicPosts.length > 0 ? dynamicPosts : BLOG_POSTS;
+
+  const categories = ['All', ...Array.from(new Set(allPosts.map((p) => p.category)))];
 
   const filteredPosts =
     activeCategory === 'All'
-      ? BLOG_POSTS
-      : BLOG_POSTS.filter((p) => p.category === activeCategory);
+      ? allPosts
+      : allPosts.filter((p) => p.category === activeCategory);
 
   return (
     <div className="pt-20 lg:pt-24 min-h-screen bg-[var(--bg-page)] text-[var(--text-body)]">

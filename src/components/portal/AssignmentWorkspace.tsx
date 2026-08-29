@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Briefcase, CheckCircle2, Clock, Plus, FileText, Send, User, Check, 
   AlertCircle, Shield, ExternalLink, MessageSquare, ChevronRight, Lock, 
-  Calendar, Layers, Paperclip, CheckSquare, Sparkles 
+  Calendar, Layers, Paperclip, CheckSquare, Sparkles, Trash2 
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { Assignment, PipelineStage, GroupId } from '../../types';
@@ -12,8 +12,8 @@ import { PERMISSIONS, sanitizeAssignmentForUser } from '../../lib/permissions';
 export const AssignmentWorkspace: React.FC = () => {
   const { 
     currentUser, currentTier, assignments, users, groups, leads,
-    createAssignment, updateAssignmentStatus, addSubTask, toggleSubTask,
-    addMilestone, toggleMilestone, addAssignmentDeliverable, addAssignmentComment 
+    createAssignment, deleteAssignment, updateAssignmentStatus, addSubTask, toggleSubTask,
+    addMilestone, toggleMilestone, addAssignmentDeliverable, addAssignmentComment, showToast 
   } = useApp();
 
   const [selectedAssignmentId, setSelectedAssignmentId] = useState<string>(assignments[0]?.id || '');
@@ -220,20 +220,37 @@ export const AssignmentWorkspace: React.FC = () => {
                     </h2>
                   </div>
 
-                  {canViewClientInfo ? (
-                    <div className="p-2.5 px-4 rounded-xl bg-purple-500/10 border border-purple-500/30 text-purple-400 text-xs">
-                      <div className="font-bold flex items-center gap-1.5">
-                        <Lock className="w-3.5 h-3.5" />
-                        <span>Client: {activeAssignment.clientName} ({activeAssignment.clientCompany})</span>
+                  <div className="flex items-center gap-3">
+                    {canViewClientInfo ? (
+                      <div className="p-2.5 px-4 rounded-xl bg-purple-500/10 border border-purple-500/30 text-purple-400 text-xs">
+                        <div className="font-bold flex items-center gap-1.5">
+                          <Lock className="w-3.5 h-3.5" />
+                          <span>Client: {activeAssignment.clientName} ({activeAssignment.clientCompany})</span>
+                        </div>
+                        <div className="text-[10px] opacity-80 mt-0.5">Budget: ${activeAssignment.totalBudget} · {activeAssignment.clientEmail}</div>
                       </div>
-                      <div className="text-[10px] opacity-80 mt-0.5">Budget: ${activeAssignment.totalBudget} · {activeAssignment.clientEmail}</div>
-                    </div>
-                  ) : (
-                    <div className="p-2 px-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-[11px] font-semibold flex items-center gap-1.5">
-                      <Shield className="w-3.5 h-3.5" />
-                      <span>Sanitized Brief (Client Protected)</span>
-                    </div>
-                  )}
+                    ) : (
+                      <div className="p-2 px-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-[11px] font-semibold flex items-center gap-1.5">
+                        <Shield className="w-3.5 h-3.5" />
+                        <span>Sanitized Brief (Client Protected)</span>
+                      </div>
+                    )}
+
+                    {PERMISSIONS.canCreateAssignment(currentTier) && (
+                      <button
+                        onClick={() => {
+                          if (confirm(`Permanently delete assignment #${activeAssignment.id} (${activeAssignment.sanitizedBrief.title}) from the database?`)) {
+                            deleteAssignment(activeAssignment.id);
+                          }
+                        }}
+                        className="p-2.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/30 text-xs font-bold transition-colors cursor-pointer flex items-center gap-1.5"
+                        title="Delete Assignment from Database"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                        <span className="hidden sm:inline">Delete</span>
+                      </button>
+                    )}
+                  </div>
                 </div>
 
                 {/* Scope & Deliverables */}

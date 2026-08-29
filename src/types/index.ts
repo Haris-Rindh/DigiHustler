@@ -469,6 +469,22 @@ export interface SiteContactContent {
   twitter?: string;
 }
 
+export interface SiteBlogPost {
+  id: string;
+  slug: string;
+  title: string;
+  excerpt: string;
+  content: string;
+  category: string;
+  author: string;
+  authorAvatar?: string;
+  readTime: string;
+  publishedAt: string;
+  imageUrl: string;
+  isPublished?: boolean;
+  tags?: string[];
+}
+
 export interface SiteContent {
   hero: SiteHeroContent;
   valueProps: SiteValueProp[];
@@ -482,6 +498,7 @@ export interface SiteContent {
   contact: SiteContactContent;
   customImages: Record<string, string>;
   certificateTemplates?: CertificateTemplate[];
+  blogPosts?: SiteBlogPost[];
 }
 
 // ── SECURITY & PERMISSION AUDIT LOG TYPES ────────────────────────────────────

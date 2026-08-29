@@ -10,7 +10,7 @@ interface QuickInviteModalProps {
 }
 
 export const QuickInviteModal: React.FC<QuickInviteModalProps> = ({ isOpen, onClose }) => {
-  const { groups, quickInviteUser } = useApp();
+  const { groups, quickInviteUser, showToast } = useApp();
 
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -29,7 +29,7 @@ export const QuickInviteModal: React.FC<QuickInviteModalProps> = ({ isOpen, onCl
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim() || !email.trim() || !title.trim()) {
-      alert('Please fill out all required fields (Name, Email, Job Title).');
+      showToast('Please fill out all required fields (Name, Email, Job Title).', 'warning');
       return;
     }
 

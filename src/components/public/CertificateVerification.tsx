@@ -18,7 +18,7 @@ import {
 
 export const CertificateVerification: React.FC = () => {
   const { certId } = useParams<{ certId: string }>();
-  const { certificates } = useApp();
+  const { certificates, showToast } = useApp();
 
   const [viewMode, setViewMode] = useState<'letterhead' | 'registry'>('letterhead');
   const [copiedLink, setCopiedLink] = useState(false);
@@ -45,9 +45,10 @@ export const CertificateVerification: React.FC = () => {
 
       const safeName = `${certificate.memberName.replace(/\s+/g, '_')}_${(certificate.documentTitle || certificate.type).replace(/\s+/g, '_')}`;
       downloadPdfFile(pdfBytes, safeName);
+      showToast('Verified document downloaded successfully!', 'success');
     } catch (err) {
       console.error(err);
-      alert('Error generating PDF document.');
+      showToast('Error generating PDF document.', 'error');
     } finally {
       setIsDownloadingPdf(false);
     }

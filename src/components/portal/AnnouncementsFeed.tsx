@@ -1,11 +1,15 @@
 import React, { useState } from 'react';
-import { Bell, Plus, Shield, MessageSquare, Megaphone, Trash2, Calendar, User, Check, X } from 'lucide-react';
+import { 
+  Bell, Plus, Shield, MessageSquare, Megaphone, Trash2, Calendar, 
+  User, Check, X, Bold, Italic, List, Heading, Code, AlertTriangle, 
+  Info, Sparkles, CheckCircle2 
+} from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { Announcement, AnnouncementScope, GroupId } from '../../types';
 import { PERMISSIONS } from '../../lib/permissions';
 
 export const AnnouncementsFeed: React.FC = () => {
-  const { announcements, currentTier, currentUser, groups, postAnnouncement, deleteAnnouncement } = useApp();
+  const { announcements, currentTier, currentUser, groups, postAnnouncement, deleteAnnouncement, showToast } = useApp();
   const [selectedFilter, setSelectedFilter] = useState<'all' | 'global' | 'group'>('all');
   const [postModalOpen, setPostModalOpen] = useState(false);
   const [title, setTitle] = useState('');
@@ -17,9 +21,6 @@ export const AnnouncementsFeed: React.FC = () => {
   const canPostGroup = PERMISSIONS.canPostGroupAnnouncement(currentTier, currentUser.groupId);
   const canPostAny = canPostGlobal || canPostGroup;
 
-  // Filter announcements for current viewer:
-  // - Global announcements: visible to everyone
-  // - Group announcements: visible if CEO/Manager OR if group matches user's squad
   const visibleAnnouncements = announcements.filter((ann) => {
     if (ann.scope === 'global') return true;
     if (currentTier === 'ceo' || currentTier === 'manager') return true;
@@ -30,9 +31,16 @@ export const AnnouncementsFeed: React.FC = () => {
     return true;
   });
 
+  const insertFormatting = (prefix: string, suffix: string = '') => {
+    setBody((prev) => prev + `${prefix}${suffix}`);
+  };
+
   const handlePostSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!title.trim() || !body.trim()) return;
+    if (!title.trim() || !body.trim()) {
+      showToast('Please enter both title and announcement body.', 'warning');
+      return;
+    }
 
     postAnnouncement({
       scope,
@@ -44,12 +52,55 @@ export const AnnouncementsFeed: React.FC = () => {
     setTitle('');
     setBody('');
     setPostModalOpen(false);
+    showToast('Announcement broadcasted successfully!', 'success');
+  };
+
+  const renderRichBody = (text: string) => {
+    const lines = text.split('\n');
+    return (
+      <div className="space-y-2 text-xs sm:text-sm text-[var(--text-body)] leading-relaxed">
+        {lines.map((line, idx) => {
+          if (line.startsWith('### ')) {
+            return (
+              <h4 key={idx} className="font-bold text-sm text-[var(--text-heading)] pt-2 pb-1 border-b border-[var(--border-subtle)]">
+                {line.replace('### ', '')}
+              </h4>
+            );
+          }
+          if (line.startsWith('## ')) {
+            return (
+              <h3 key={idx} className="font-display font-extrabold text-base text-[var(--text-heading)] pt-3 pb-1 border-b border-[var(--border-subtle)]">
+                {line.replace('## ', '')}
+              </h3>
+            );
+          }
+          if (line.startsWith('- ') || line.startsWith('* ')) {
+            return (
+              <div key={idx} className="flex items-start space-x-2 pl-2">
+                <CheckCircle2 className="w-3.5 h-3.5 text-[var(--brand-teal)] flex-shrink-0 mt-0.5" />
+                <span>{line.replace(/^[-\*]\s+/, '')}</span>
+              </div>
+            );
+          }
+          if (line.startsWith('> ')) {
+            return (
+              <blockquote key={idx} className="pl-3 border-l-2 border-[var(--brand-teal)] italic text-[var(--text-heading)] bg-[var(--bg-page)] py-1.5 rounded-r-xl">
+                {line.replace('> ', '')}
+              </blockquote>
+            );
+          }
+          if (!line.trim()) {
+            return <div key={idx} className="h-1.5" />;
+          }
+          return <p key={idx}>{line}</p>;
+        })}
+      </div>
+    );
   };
 
   return (
     <div className="max-w-5xl mx-auto px-4 lg:px-8 py-8 space-y-8">
       
-      {/* Header Banner */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <div className="flex items-center space-x-2 text-xs font-bold text-[var(--brand-teal)] uppercase tracking-wider mb-1">
@@ -60,7 +111,7 @@ export const AnnouncementsFeed: React.FC = () => {
             Company & Squad Announcements
           </h1>
           <p className="text-xs sm:text-sm text-[var(--text-body)]">
-            Official operational updates, sprint guidelines, and squad directives.
+            Official operational updates, sprint guidelines, and squad directives with rich formatting.
           </p>
         </div>
 
@@ -75,7 +126,6 @@ export const AnnouncementsFeed: React.FC = () => {
         )}
       </div>
 
-      {/* Scope Filter Tabs */}
       <div className="flex items-center space-x-2 border-b border-[var(--border-subtle)] pb-3">
         {[
           { id: 'all' as const, label: `All Broadcasts (${visibleAnnouncements.length})` },
@@ -96,7 +146,6 @@ export const AnnouncementsFeed: React.FC = () => {
         ))}
       </div>
 
-      {/* Announcements Stream */}
       <div className="space-y-4">
         {visibleAnnouncements.length === 0 ? (
           <div className="p-12 text-center rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)]">
@@ -118,41 +167,44 @@ export const AnnouncementsFeed: React.FC = () => {
                   <div className="flex items-center space-x-2.5">
                     <span className={`text-[10px] font-extrabold uppercase tracking-wider px-2.5 py-0.5 rounded-full border ${
                       ann.scope === 'global'
-                        ? 'bg-purple-500/10 border-purple-500/30 text-purple-400'
-                        : 'bg-cyan-500/10 border-cyan-500/30 text-cyan-400'
+                        ? 'bg-purple-500/10 text-purple-400 border-purple-500/30'
+                        : 'bg-[var(--brand-teal-subtle)] text-[var(--brand-teal)] border-[var(--border-subtle)]'
                     }`}>
-                      {ann.scope === 'global' ? 'GLOBAL BROADCAST' : `${squadObj?.name.split('&')[0] || ann.groupId} SQUAD`}
+                      {ann.scope === 'global' ? 'Company-Wide' : `${squadObj?.name || 'Squad'} Directive`}
                     </span>
-                    <span className="text-[11px] font-mono text-[var(--text-muted)]">
-                      {new Date(ann.postedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                    <span className="text-[11px] text-[var(--text-muted)] flex items-center gap-1">
+                      <Calendar className="w-3 h-3" />
+                      <span>{new Date(ann.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
                     </span>
                   </div>
 
                   {canDelete && (
                     <button
-                      onClick={() => deleteAnnouncement(ann.id)}
-                      className="p-1 rounded-lg text-[var(--text-muted)] hover:text-rose-400 transition-colors"
-                      title="Delete Announcement"
+                      onClick={() => {
+                        if (confirm('Permanently delete this broadcast?')) {
+                          deleteAnnouncement(ann.id);
+                          showToast('Announcement deleted from broadcast network.', 'info');
+                        }
+                      }}
+                      className="p-1.5 rounded-lg text-[var(--text-muted)] hover:text-rose-400 hover:bg-rose-500/10 transition-colors cursor-pointer"
+                      title="Delete Broadcast"
                     >
-                      <Trash2 className="w-3.5 h-3.5" />
+                      <Trash2 className="w-4 h-4" />
                     </button>
                   )}
                 </div>
 
-                <h3 className="font-display font-bold text-base sm:text-lg text-[var(--text-heading)] mb-2">
+                <h3 className="font-display font-extrabold text-lg text-[var(--text-heading)] mb-3">
                   {ann.title}
                 </h3>
 
-                <p className="text-xs sm:text-sm text-[var(--text-body)] leading-relaxed mb-4">
-                  {ann.body || ann.content || ''}
-                </p>
+                <div className="bg-[var(--bg-page)] p-4 rounded-2xl border border-[var(--border-subtle)] mb-4">
+                  {renderRichBody(ann.body)}
+                </div>
 
-                <div className="pt-3 border-t border-[var(--border-subtle)] flex items-center justify-between text-xs text-[var(--text-muted)]">
-                  <span className="flex items-center gap-1.5">
-                    <User className="w-3.5 h-3.5 text-[var(--brand-teal)]" />
-                    <span>Posted by <strong className="text-[var(--text-heading)]">{ann.postedByName || 'Staff'}</strong> ({((ann.postedByRole as string) || 'STAFF').toUpperCase()})</span>
-                  </span>
-                  <span className="text-[11px] text-[var(--text-muted)]">Read-Only Notice</span>
+                <div className="flex items-center space-x-2 text-[11px] text-[var(--text-muted)] pt-2 border-t border-[var(--border-subtle)]">
+                  <User className="w-3.5 h-3.5 text-[var(--brand-teal)]" />
+                  <span>Broadcasted by: <strong className="text-[var(--text-heading)]">{ann.postedByName || 'Executive Leadership'}</strong></span>
                 </div>
               </div>
             );
@@ -160,16 +212,21 @@ export const AnnouncementsFeed: React.FC = () => {
         )}
       </div>
 
-      {/* Post Announcement Modal */}
+      {/* Post Modal */}
       {postModalOpen && (
         <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl animate-in fade-in zoom-in-95">
-            <h3 className="font-display font-extrabold text-xl text-[var(--text-heading)] mb-1">
-              Create Internal Announcement
-            </h3>
-            <p className="text-xs text-[var(--text-body)] mb-5">
-              Broadcast an operational notice or sprint requirement across the staff network.
-            </p>
+          <div className="bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-[var(--border-subtle)]">
+              <h3 className="font-display font-extrabold text-lg text-[var(--text-heading)]">
+                Broadcast Announcement
+              </h3>
+              <button
+                onClick={() => setPostModalOpen(false)}
+                className="text-[var(--text-muted)] hover:text-[var(--text-heading)] p-1 cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
 
             <form onSubmit={handlePostSubmit} className="space-y-4">
               <div>
@@ -181,19 +238,19 @@ export const AnnouncementsFeed: React.FC = () => {
                     <button
                       type="button"
                       onClick={() => setScope('global')}
-                      className={`py-2 px-3 rounded-xl text-xs font-bold border transition-all ${
+                      className={`py-2 px-3 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
                         scope === 'global'
                           ? 'bg-[var(--brand-teal)] text-white border-[var(--brand-teal)] shadow-sm'
                           : 'bg-[var(--bg-page)] border-[var(--border-subtle)] text-[var(--text-heading)]'
                       }`}
                     >
-                      Global (Pre-Login Feed)
+                      Global (All Staff)
                     </button>
                   )}
                   <button
                     type="button"
                     onClick={() => setScope('group')}
-                    className={`py-2 px-3 rounded-xl text-xs font-bold border transition-all ${
+                    className={`py-2 px-3 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
                       scope === 'group'
                         ? 'bg-[var(--brand-teal)] text-white border-[var(--brand-teal)] shadow-sm'
                         : 'bg-[var(--bg-page)] border-[var(--border-subtle)] text-[var(--text-heading)]'
@@ -229,23 +286,69 @@ export const AnnouncementsFeed: React.FC = () => {
                   type="text"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  placeholder="e.g. Next.js 15 Migration & Component Architecture"
+                  placeholder="e.g. Sprint Release & Production Standards"
                   required
                   className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3.5 py-2.5 text-xs text-[var(--text-heading)] focus:border-[var(--brand-teal)] focus:outline-none"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] mb-1">
-                  Message Content
-                </label>
+                <div className="flex items-center justify-between mb-1">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-[var(--text-muted)]">
+                    Message Content & Formatting
+                  </label>
+                  {/* Formatting Toolbar */}
+                  <div className="flex items-center space-x-1 bg-[var(--bg-page)] px-2 py-1 rounded-lg border border-[var(--border-subtle)]">
+                    <button
+                      type="button"
+                      onClick={() => insertFormatting('**Bold Text**')}
+                      title="Bold"
+                      className="p-1 hover:bg-[var(--bg-surface)] rounded text-[var(--text-muted)] hover:text-[var(--text-heading)]"
+                    >
+                      <Bold className="w-3.5 h-3.5" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => insertFormatting('*Italic Text*')}
+                      title="Italic"
+                      className="p-1 hover:bg-[var(--bg-surface)] rounded text-[var(--text-muted)] hover:text-[var(--text-heading)]"
+                    >
+                      <Italic className="w-3.5 h-3.5" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => insertFormatting('\n### Section Heading\n')}
+                      title="Heading"
+                      className="p-1 hover:bg-[var(--bg-surface)] rounded text-[var(--text-muted)] hover:text-[var(--text-heading)]"
+                    >
+                      <Heading className="w-3.5 h-3.5" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => insertFormatting('\n- Key item or deliverable\n')}
+                      title="Bullet List"
+                      className="p-1 hover:bg-[var(--bg-surface)] rounded text-[var(--text-muted)] hover:text-[var(--text-heading)]"
+                    >
+                      <List className="w-3.5 h-3.5" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => insertFormatting('\n> Important notice\n')}
+                      title="Quote Block"
+                      className="p-1 hover:bg-[var(--bg-surface)] rounded text-[var(--text-muted)] hover:text-[var(--text-heading)]"
+                    >
+                      <Info className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                </div>
+
                 <textarea
                   value={body}
                   onChange={(e) => setBody(e.target.value)}
-                  placeholder="Provide comprehensive details and deadlines..."
-                  rows={4}
+                  placeholder="Type your broadcast message... (Use formatting buttons or markdown syntax)"
+                  rows={5}
                   required
-                  className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl p-3 text-xs text-[var(--text-heading)] focus:border-[var(--brand-teal)] focus:outline-none"
+                  className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl p-3 text-xs text-[var(--text-heading)] focus:border-[var(--brand-teal)] focus:outline-none font-mono leading-relaxed"
                 />
               </div>
 

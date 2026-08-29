@@ -47,6 +47,8 @@ export const UserProfileDrawer: React.FC<UserProfileDrawerProps> = ({ user, onCl
     setUserSplitOverride,
     reassignUserSquad,
     changeUserRole,
+    deleteUserAccount,
+    showToast,
   } = useApp();
 
   const [activeTab, setActiveTab] = useState<'overview' | 'workload' | 'financials' | 'history' | 'notes' | 'documents'>('overview');
@@ -58,6 +60,7 @@ export const UserProfileDrawer: React.FC<UserProfileDrawerProps> = ({ user, onCl
   const [editBio, setEditBio] = useState('');
   const [editSpecialties, setEditSpecialties] = useState('');
   const [editPhone, setEditPhone] = useState('');
+  const [editAvatarUrl, setEditAvatarUrl] = useState('');
 
   // Status Change State
   const [newStatus, setNewStatus] = useState<UserStatus>('active');
@@ -100,6 +103,7 @@ export const UserProfileDrawer: React.FC<UserProfileDrawerProps> = ({ user, onCl
     setEditBio(user.bio || '');
     setEditSpecialties(user.specialties.join(', '));
     setEditPhone(user.phone || '');
+    setEditAvatarUrl(user.avatarUrl || '');
     setIsEditing(true);
   };
 
@@ -110,14 +114,16 @@ export const UserProfileDrawer: React.FC<UserProfileDrawerProps> = ({ user, onCl
       bio: editBio,
       specialties: editSpecialties.split(',').map((s) => s.trim()).filter(Boolean),
       phone: editPhone,
+      avatarUrl: editAvatarUrl || user.avatarUrl,
     });
     setIsEditing(false);
+    showToast('Profile details updated successfully!', 'success');
   };
 
   const handleStatusSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!statusReason.trim()) {
-      alert('A reason is required for status transition audits.');
+      showToast('A reason is required for status transition audits.', 'warning');
       return;
     }
     changeUserStatus(user.id, newStatus, statusReason, currentUser.name);
@@ -129,6 +135,14 @@ export const UserProfileDrawer: React.FC<UserProfileDrawerProps> = ({ user, onCl
     changeUserRole(user.id, newRole);
     reassignUserSquad(user.id, newGroupId);
     setShowRoleConfirm(false);
+    showToast('Member role and squad updated.', 'success');
+  };
+
+  const handleDeleteMember = () => {
+    if (confirm(`Are you sure you want to permanently remove ${user.name} from the portal? All assigned records will be updated.`)) {
+      deleteUserAccount(user.id);
+      onClose();
+    }
   };
 
   const handleAddNote = (e: React.FormEvent) => {
@@ -223,7 +237,7 @@ export const UserProfileDrawer: React.FC<UserProfileDrawerProps> = ({ user, onCl
                     setNewStatus(user.status);
                     setShowStatusModal(true);
                   }}
-                  className="px-3 py-1.5 rounded-lg bg-[var(--bg-subtle)] hover:bg-[var(--bg-subtle)] text-xs font-bold text-[var(--text-body)] border border-[var(--border-subtle)] transition-colors"
+                  className="px-3 py-1.5 rounded-lg bg-[var(--bg-subtle)] hover:bg-[var(--bg-subtle)] text-xs font-bold text-[var(--text-body)] border border-[var(--border-subtle)] transition-colors cursor-pointer"
                 >
                   Change Status
                 </button>
@@ -233,15 +247,22 @@ export const UserProfileDrawer: React.FC<UserProfileDrawerProps> = ({ user, onCl
                     setNewGroupId(user.groupId || 'tech');
                     setShowRoleConfirm(true);
                   }}
-                  className="px-3 py-1.5 rounded-lg bg-[var(--bg-subtle)] hover:bg-[var(--bg-subtle)] text-xs font-bold text-[var(--text-body)] border border-[var(--border-subtle)] transition-colors"
+                  className="px-3 py-1.5 rounded-lg bg-[var(--bg-subtle)] hover:bg-[var(--bg-subtle)] text-xs font-bold text-[var(--text-body)] border border-[var(--border-subtle)] transition-colors cursor-pointer"
                 >
                   Promote / Move Squad
                 </button>
                 <button
                   onClick={startEdit}
-                  className="px-3 py-1.5 rounded-lg bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-xs font-bold text-white shadow-sm transition-colors"
+                  className="px-3 py-1.5 rounded-lg bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-xs font-bold text-white shadow-sm transition-colors cursor-pointer"
                 >
                   Edit Profile
+                </button>
+                <button
+                  onClick={handleDeleteMember}
+                  className="px-3 py-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-xs font-bold text-rose-400 border border-rose-500/30 transition-colors cursor-pointer ml-auto flex items-center gap-1.5"
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                  <span>Remove Member</span>
                 </button>
               </div>
             )}
@@ -259,7 +280,7 @@ export const UserProfileDrawer: React.FC<UserProfileDrawerProps> = ({ user, onCl
               <button
                 key={t.id}
                 onClick={() => setActiveTab(t.id as any)}
-                className={`py-3 px-3 text-xs font-bold whitespace-nowrap transition-colors border-b-2 ${
+                className={`py-3 px-3 text-xs font-bold whitespace-nowrap transition-colors border-b-2 cursor-pointer ${
                   activeTab === t.id
                     ? 'text-[var(--text-heading)] border-[var(--brand-teal)]'
                     : 'text-[var(--text-muted)] border-transparent hover:text-[var(--text-body)]'
@@ -279,6 +300,23 @@ export const UserProfileDrawer: React.FC<UserProfileDrawerProps> = ({ user, onCl
                 {isEditing ? (
                   <div className="space-y-4 bg-[var(--bg-surface)] p-5 rounded-2xl border border-[var(--border-subtle)]">
                     <h4 className="text-xs font-bold text-[var(--text-heading)] uppercase tracking-wider">Edit Profile Details</h4>
+                    <div>
+                      <label className="block text-[11px] text-[var(--text-muted)] mb-1">Profile Avatar Image URL</label>
+                      <div className="flex items-center space-x-3">
+                        <img
+                          src={editAvatarUrl || user.avatarUrl}
+                          alt="Avatar Preview"
+                          className="w-10 h-10 rounded-xl object-cover ring-1 ring-[var(--brand-teal)]"
+                        />
+                        <input
+                          type="url"
+                          value={editAvatarUrl}
+                          onChange={(e) => setEditAvatarUrl(e.target.value)}
+                          placeholder="https://images.unsplash.com/..."
+                          className="flex-1 px-3 py-2 rounded-xl bg-[var(--bg-page)] border border-[var(--border-subtle)] text-[var(--text-heading)] text-xs font-mono"
+                        />
+                      </div>
+                    </div>
                     <div>
                       <label className="block text-[11px] text-[var(--text-muted)] mb-1">Job Title</label>
                       <input

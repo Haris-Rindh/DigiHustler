@@ -7,7 +7,7 @@ import {
 import { useApp } from '../../context/AppContext';
 import { 
   SiteContent, SiteCaseStudy, SiteTestimonial, SiteServiceItem, 
-  SiteTeamMember, SitePackage, SiteFAQ, SiteValueProp, GroupId 
+  SiteTeamMember, SitePackage, SiteFAQ, SiteValueProp, SiteBlogPost, GroupId 
 } from '../../types';
 import { PERMISSIONS } from '../../lib/permissions';
 
@@ -15,11 +15,11 @@ export const SiteContentManager: React.FC = () => {
   const { 
     siteContent, updateSiteContent, addItemToSiteContent, 
     removeItemFromSiteContent, updateItemInSiteContent, 
-    resetSiteContent, currentTier, currentUser 
+    resetSiteContent, currentTier, currentUser, showToast 
   } = useApp();
 
   const [activeTab, setActiveTab] = useState<
-    'hero' | 'valueProps' | 'caseStudies' | 'testimonials' | 'services' | 'packages' | 'team' | 'faqs' | 'about' | 'contact' | 'images'
+    'hero' | 'valueProps' | 'caseStudies' | 'testimonials' | 'services' | 'packages' | 'team' | 'blog' | 'faqs' | 'about' | 'contact' | 'images'
   >('hero');
 
   const [savedFeedback, setSavedFeedback] = useState<string | null>(null);
@@ -40,6 +40,15 @@ export const SiteContentManager: React.FC = () => {
   const [showAddTestimonial, setShowAddTestimonial] = useState(false);
   const [newTestimonial, setNewTestimonial] = useState<Partial<SiteTestimonial>>({
     name: '', role: '', company: '', quote: '', avatarUrl: '', rating: 5
+  });
+
+  const [showAddBlog, setShowAddBlog] = useState(false);
+  const [newBlog, setNewBlog] = useState<Partial<SiteBlogPost>>({
+    title: '', slug: '', excerpt: '', content: '', category: 'Engineering',
+    author: currentUser?.name || 'Haris Asad', readTime: '6 min read',
+    publishedAt: new Date().toISOString().split('T')[0],
+    imageUrl: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=800&q=80',
+    isPublished: true, tags: ['Engineering', 'Architecture']
   });
 
   const [showAddService, setShowAddService] = useState(false);
@@ -248,6 +257,35 @@ export const SiteContentManager: React.FC = () => {
     triggerSaved('New Value Proposition card added!');
   };
 
+  const handleCreateBlog = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newBlog.title || !newBlog.slug) return;
+    const item: SiteBlogPost = {
+      id: `blog-${Date.now()}`,
+      slug: newBlog.slug.toLowerCase().replace(/\s+/g, '-'),
+      title: newBlog.title,
+      excerpt: newBlog.excerpt || '',
+      content: newBlog.content || '',
+      category: newBlog.category || 'Engineering',
+      author: newBlog.author || currentUser?.name || 'Haris Asad',
+      readTime: newBlog.readTime || '6 min read',
+      publishedAt: newBlog.publishedAt || new Date().toISOString().split('T')[0],
+      imageUrl: newBlog.imageUrl || 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=800&q=80',
+      isPublished: newBlog.isPublished !== false,
+      tags: newBlog.tags || ['Engineering']
+    };
+    addItemToSiteContent('blogPosts', item);
+    setShowAddBlog(false);
+    setNewBlog({
+      title: '', slug: '', excerpt: '', content: '', category: 'Engineering',
+      author: currentUser?.name || 'Haris Asad', readTime: '6 min read',
+      publishedAt: new Date().toISOString().split('T')[0],
+      imageUrl: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=800&q=80',
+      isPublished: true, tags: ['Engineering']
+    });
+    triggerSaved('New Blog post published live!');
+  };
+
   const handleAddCustomImage = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newImageKey.trim() || !newImageUrl.trim()) return;
@@ -352,8 +390,9 @@ export const SiteContentManager: React.FC = () => {
           { id: 'testimonials' as const,label: '4. Testimonials',     icon: <Star className="w-3.5 h-3.5" />,       status: 'live',     tip: 'Client reviews shown on homepage' },
           { id: 'packages' as const,    label: '5. Pricing Packages', icon: <DollarSign className="w-3.5 h-3.5" />, status: 'live',     tip: 'The sprint packages shown on the services and pricing sections' },
           { id: 'team' as const,        label: '6. Team Profiles',    icon: <Users className="w-3.5 h-3.5" />,      status: 'live',     tip: 'Team members shown on the /team page' },
-          { id: 'about' as const,       label: '7. Company Story',    icon: <Info className="w-3.5 h-3.5" />,       status: 'live',     tip: 'Mission, vision, and company story shown on /about page' },
-          { id: 'contact' as const,     label: '8. Contact Info',     icon: <PhoneCall className="w-3.5 h-3.5" />,  status: 'live',     tip: 'Email, phone, and address shown on the /contact page sidebar' },
+          { id: 'blog' as const,        label: '7. Blog & Insights',  icon: <FileText className="w-3.5 h-3.5" />,   status: 'live',     tip: 'Manage articles and technical guides on /blog and /blog/:slug' },
+          { id: 'about' as const,       label: '8. Company Story',    icon: <Info className="w-3.5 h-3.5" />,       status: 'live',     tip: 'Mission, vision, and company story shown on /about page' },
+          { id: 'contact' as const,     label: '9. Contact Info',     icon: <PhoneCall className="w-3.5 h-3.5" />,  status: 'live',     tip: 'Email, phone, and address shown on the /contact page sidebar' },
         ].map((tab) => (
           <button
             key={tab.id}
@@ -810,7 +849,23 @@ export const SiteContentManager: React.FC = () => {
             {(siteContent.testimonials || []).map((t) => (
               <div key={t.id} className="p-6 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] space-y-4">
                 <div className="flex items-center justify-between">
-                  <span className="font-bold text-xs text-[var(--brand-teal)]">{t.name}</span>
+                  <div className="flex items-center space-x-3">
+                    <span className="font-bold text-xs text-[var(--brand-teal)]">{t.name}</span>
+                    <div className="flex items-center space-x-0.5">
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <button
+                          key={star}
+                          type="button"
+                          onClick={() => updateItemInSiteContent('testimonials', t.id, { rating: star })}
+                          className="p-0.5 hover:scale-125 transition-transform cursor-pointer"
+                          title={`Set rating to ${star} stars`}
+                        >
+                          <Star className={`w-3.5 h-3.5 ${(t.rating || 5) >= star ? 'text-amber-400 fill-amber-400' : 'text-slate-600'}`} />
+                        </button>
+                      ))}
+                      <span className="text-[11px] font-bold text-amber-400 ml-1">({t.rating || 5} Stars)</span>
+                    </div>
+                  </div>
                   <button
                     onClick={() => {
                       if (confirm(`Delete testimonial from ${t.name}?`)) {
@@ -818,7 +873,7 @@ export const SiteContentManager: React.FC = () => {
                         triggerSaved('Testimonial removed.');
                       }
                     }}
-                    className="p-1.5 rounded-lg text-[var(--text-muted)] hover:text-rose-400 hover:bg-rose-500/10"
+                    className="p-1.5 rounded-lg text-[var(--text-muted)] hover:text-rose-400 hover:bg-rose-500/10 cursor-pointer transition-colors"
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>
@@ -831,7 +886,7 @@ export const SiteContentManager: React.FC = () => {
                       type="text"
                       value={t.name}
                       onChange={(e) => updateItemInSiteContent('testimonials', t.id, { name: e.target.value })}
-                      className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs"
+                      className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs text-[var(--text-heading)]"
                     />
                   </div>
                   <div>
@@ -843,7 +898,7 @@ export const SiteContentManager: React.FC = () => {
                         const parts = e.target.value.split('·');
                         updateItemInSiteContent('testimonials', t.id, { role: parts[0]?.trim() || '', company: parts[1]?.trim() || '' });
                       }}
-                      className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs"
+                      className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs text-[var(--text-heading)]"
                     />
                   </div>
                   <div>
@@ -852,7 +907,7 @@ export const SiteContentManager: React.FC = () => {
                       type="url"
                       value={t.avatarUrl}
                       onChange={(e) => updateItemInSiteContent('testimonials', t.id, { avatarUrl: e.target.value })}
-                      className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs font-mono"
+                      className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs font-mono text-[var(--text-heading)]"
                     />
                   </div>
                 </div>
@@ -863,7 +918,7 @@ export const SiteContentManager: React.FC = () => {
                     value={t.quote}
                     onChange={(e) => updateItemInSiteContent('testimonials', t.id, { quote: e.target.value })}
                     rows={2}
-                    className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl p-3 text-xs"
+                    className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl p-3 text-xs text-[var(--text-heading)]"
                   />
                 </div>
               </div>
@@ -876,7 +931,7 @@ export const SiteContentManager: React.FC = () => {
               <form onSubmit={handleCreateTestimonial} className="bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl space-y-4">
                 <div className="flex items-center justify-between pb-3 border-b border-[var(--border-subtle)]">
                   <h3 className="font-bold text-base text-[var(--text-heading)]">Add Testimonial</h3>
-                  <button type="button" onClick={() => setShowAddTestimonial(false)}><X className="w-5 h-5" /></button>
+                  <button type="button" onClick={() => setShowAddTestimonial(false)} className="text-[var(--text-muted)] hover:text-[var(--text-heading)]"><X className="w-5 h-5" /></button>
                 </div>
                 <div>
                   <label className="block text-xs font-bold uppercase text-[var(--text-muted)] mb-1">Client Full Name</label>
@@ -885,7 +940,7 @@ export const SiteContentManager: React.FC = () => {
                     required
                     value={newTestimonial.name}
                     onChange={(e) => setNewTestimonial({ ...newTestimonial, name: e.target.value })}
-                    className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs"
+                    className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs text-[var(--text-heading)]"
                   />
                 </div>
                 <div className="grid grid-cols-2 gap-3">
@@ -895,7 +950,7 @@ export const SiteContentManager: React.FC = () => {
                       type="text"
                       value={newTestimonial.role}
                       onChange={(e) => setNewTestimonial({ ...newTestimonial, role: e.target.value })}
-                      className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs"
+                      className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs text-[var(--text-heading)]"
                     />
                   </div>
                   <div>
@@ -904,8 +959,24 @@ export const SiteContentManager: React.FC = () => {
                       type="text"
                       value={newTestimonial.company}
                       onChange={(e) => setNewTestimonial({ ...newTestimonial, company: e.target.value })}
-                      className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs"
+                      className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs text-[var(--text-heading)]"
                     />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-xs font-bold uppercase text-[var(--text-muted)] mb-1">Star Rating (1 - 5)</label>
+                  <div className="flex items-center space-x-1.5 py-1">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <button
+                        key={star}
+                        type="button"
+                        onClick={() => setNewTestimonial({ ...newTestimonial, rating: star })}
+                        className="p-1 hover:scale-125 transition-transform cursor-pointer"
+                      >
+                        <Star className={`w-5 h-5 ${(newTestimonial.rating || 5) >= star ? 'text-amber-400 fill-amber-400' : 'text-slate-600'}`} />
+                      </button>
+                    ))}
+                    <span className="text-xs font-bold text-amber-400 ml-2">({newTestimonial.rating || 5} Stars)</span>
                   </div>
                 </div>
                 <div>
@@ -914,7 +985,8 @@ export const SiteContentManager: React.FC = () => {
                     type="url"
                     value={newTestimonial.avatarUrl}
                     onChange={(e) => setNewTestimonial({ ...newTestimonial, avatarUrl: e.target.value })}
-                    className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs font-mono"
+                    placeholder="https://images.unsplash.com/..."
+                    className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs font-mono text-[var(--text-heading)]"
                   />
                 </div>
                 <div>
@@ -924,12 +996,12 @@ export const SiteContentManager: React.FC = () => {
                     rows={3}
                     value={newTestimonial.quote}
                     onChange={(e) => setNewTestimonial({ ...newTestimonial, quote: e.target.value })}
-                    className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl p-3 text-xs"
+                    className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl p-3 text-xs text-[var(--text-heading)]"
                   />
                 </div>
                 <div className="flex justify-end space-x-2 pt-3 border-t border-[var(--border-subtle)]">
-                  <button type="button" onClick={() => setShowAddTestimonial(false)} className="px-4 py-2 rounded-xl text-xs font-semibold text-[var(--text-muted)]">Cancel</button>
-                  <button type="submit" className="px-5 py-2 rounded-xl bg-[var(--brand-teal)] text-white text-xs font-bold">Add Testimonial</button>
+                  <button type="button" onClick={() => setShowAddTestimonial(false)} className="px-4 py-2 rounded-xl text-xs font-semibold text-[var(--text-muted)] hover:bg-[var(--bg-subtle)] cursor-pointer">Cancel</button>
+                  <button type="submit" className="px-5 py-2 rounded-xl bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-white text-xs font-bold cursor-pointer">Add Testimonial</button>
                 </div>
               </form>
             </div>
@@ -1033,7 +1105,478 @@ export const SiteContentManager: React.FC = () => {
         </div>
       )}
 
-      {/* ── TAB 6: FAQS ── */}
+      {/* ── TAB 6: TEAM MEMBERS & SPECIALISTS ── */}
+      {activeTab === 'team' && (
+        <div className="space-y-6">
+          <div className="flex items-center justify-between p-4 rounded-2xl bg-[var(--bg-surface)] border border-[var(--border-subtle)]">
+            <div>
+              <h3 className="font-display font-extrabold text-base text-[var(--text-heading)]">
+                Public Team Specialists & Domain Leads ({(siteContent.teamMembers || []).length})
+              </h3>
+              <p className="text-xs text-[var(--text-muted)]">
+                Manage the specialist profiles showcased on the public /team directory.
+              </p>
+            </div>
+            <button
+              onClick={() => setShowAddTeam(true)}
+              className="flex items-center space-x-1.5 px-4 py-2 rounded-xl bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-white text-xs font-bold shadow-md cursor-pointer"
+            >
+              <Plus className="w-4 h-4" />
+              <span>Add Team Profile</span>
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {(siteContent.teamMembers || []).map((member) => (
+              <div key={member.id} className="p-6 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] space-y-4">
+                <div className="flex items-center justify-between pb-3 border-b border-[var(--border-subtle)]">
+                  <div className="flex items-center space-x-3">
+                    <img
+                      src={member.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(member.name)}&background=1F7A8C&color=fff`}
+                      alt={member.name}
+                      className="w-10 h-10 rounded-xl object-cover ring-1 ring-[var(--brand-teal)]"
+                    />
+                    <div>
+                      <span className="font-bold text-xs text-[var(--text-heading)] block">{member.name}</span>
+                      <span className="text-[10px] text-[var(--brand-teal)] font-semibold uppercase">{member.squad}</span>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => {
+                      if (confirm(`Remove team profile '${member.name}' from the public website?`)) {
+                        removeItemFromSiteContent('teamMembers', member.id);
+                        triggerSaved('Team member profile removed.');
+                      }
+                    }}
+                    className="p-1.5 rounded-lg text-[var(--text-muted)] hover:text-rose-400 hover:bg-rose-500/10 cursor-pointer"
+                    title="Delete member profile"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs font-bold uppercase text-[var(--text-muted)] mb-1">Full Name</label>
+                    <input
+                      type="text"
+                      value={member.name}
+                      onChange={(e) => updateItemInSiteContent('teamMembers', member.id, { name: e.target.value })}
+                      className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs text-[var(--text-heading)]"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold uppercase text-[var(--text-muted)] mb-1">Role Title</label>
+                    <input
+                      type="text"
+                      value={member.role}
+                      onChange={(e) => updateItemInSiteContent('teamMembers', member.id, { role: e.target.value })}
+                      className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs text-[var(--text-heading)]"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs font-bold uppercase text-[var(--text-muted)] mb-1">Squad Category</label>
+                    <input
+                      type="text"
+                      value={member.squad}
+                      onChange={(e) => updateItemInSiteContent('teamMembers', member.id, { squad: e.target.value })}
+                      className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs text-[var(--text-heading)]"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold uppercase text-[var(--text-muted)] mb-1">Avatar Image URL</label>
+                    <input
+                      type="url"
+                      value={member.avatarUrl}
+                      onChange={(e) => updateItemInSiteContent('teamMembers', member.id, { avatarUrl: e.target.value })}
+                      className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs font-mono text-[var(--text-heading)]"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold uppercase text-[var(--text-muted)] mb-1">Biography</label>
+                  <textarea
+                    value={member.bio}
+                    onChange={(e) => updateItemInSiteContent('teamMembers', member.id, { bio: e.target.value })}
+                    rows={2}
+                    className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl p-2.5 text-xs text-[var(--text-body)]"
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Add Team Modal */}
+          {showAddTeam && (
+            <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+              <form onSubmit={handleCreateTeam} className="bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl space-y-4">
+                <div className="flex items-center justify-between pb-3 border-b border-[var(--border-subtle)]">
+                  <h3 className="font-bold text-base text-[var(--text-heading)]">Add Team Member Profile</h3>
+                  <button type="button" onClick={() => setShowAddTeam(false)} className="text-[var(--text-muted)] hover:text-[var(--text-heading)]"><X className="w-5 h-5" /></button>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs font-bold uppercase text-[var(--text-muted)] mb-1">Full Name</label>
+                    <input
+                      type="text"
+                      required
+                      value={newTeam.name}
+                      onChange={(e) => setNewTeam({ ...newTeam, name: e.target.value })}
+                      className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs text-[var(--text-heading)]"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold uppercase text-[var(--text-muted)] mb-1">Role Title</label>
+                    <input
+                      type="text"
+                      required
+                      value={newTeam.role}
+                      onChange={(e) => setNewTeam({ ...newTeam, role: e.target.value })}
+                      className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs text-[var(--text-heading)]"
+                    />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs font-bold uppercase text-[var(--text-muted)] mb-1">Squad Name</label>
+                    <input
+                      type="text"
+                      value={newTeam.squad}
+                      onChange={(e) => setNewTeam({ ...newTeam, squad: e.target.value })}
+                      className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs text-[var(--text-heading)]"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold uppercase text-[var(--text-muted)] mb-1">Avatar Image URL</label>
+                    <input
+                      type="url"
+                      value={newTeam.avatarUrl}
+                      onChange={(e) => setNewTeam({ ...newTeam, avatarUrl: e.target.value })}
+                      placeholder="https://images.unsplash.com/..."
+                      className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs font-mono text-[var(--text-heading)]"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-xs font-bold uppercase text-[var(--text-muted)] mb-1">Bio</label>
+                  <textarea
+                    rows={3}
+                    value={newTeam.bio}
+                    onChange={(e) => setNewTeam({ ...newTeam, bio: e.target.value })}
+                    className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl p-3 text-xs text-[var(--text-heading)]"
+                  />
+                </div>
+                <div className="flex justify-end space-x-2 pt-3 border-t border-[var(--border-subtle)]">
+                  <button type="button" onClick={() => setShowAddTeam(false)} className="px-4 py-2 rounded-xl text-xs font-semibold text-[var(--text-muted)] hover:bg-[var(--bg-subtle)]">Cancel</button>
+                  <button type="submit" className="px-5 py-2 rounded-xl bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-white text-xs font-bold">Add Profile</button>
+                </div>
+              </form>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ── TAB 7: BLOG & TECHNICAL INSIGHTS STUDIO ── */}
+      {activeTab === 'blog' && (
+        <div className="space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-4 rounded-2xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] gap-4">
+            <div>
+              <h3 className="font-display font-extrabold text-base text-[var(--text-heading)]">
+                Knowledge Hub & Technical Articles ({(siteContent.blogPosts || []).length})
+              </h3>
+              <p className="text-xs text-[var(--text-muted)]">
+                Publish, edit, and manage articles dynamically visible at /blog and /blog/:slug.
+              </p>
+            </div>
+            <button
+              onClick={() => setShowAddBlog(true)}
+              className="flex items-center space-x-1.5 px-4 py-2.5 rounded-xl bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-white text-xs font-bold shadow-md cursor-pointer self-start sm:self-auto"
+            >
+              <Plus className="w-4 h-4" />
+              <span>Create Blog Post</span>
+            </button>
+          </div>
+
+          <div className="space-y-4">
+            {(siteContent.blogPosts || []).length === 0 ? (
+              <div className="p-8 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] text-center space-y-3">
+                <FileText className="w-10 h-10 text-[var(--brand-teal)] mx-auto opacity-50" />
+                <h4 className="font-bold text-sm text-[var(--text-heading)]">No Custom Blog Posts Yet</h4>
+                <p className="text-xs text-[var(--text-muted)] max-w-md mx-auto">
+                  Click "Create Blog Post" above to write and publish your first technical article or architectural guide.
+                </p>
+              </div>
+            ) : (
+              (siteContent.blogPosts || []).map((post) => (
+                <div key={post.id} className="p-6 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] space-y-4">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 pb-3 border-b border-[var(--border-subtle)]">
+                    <div className="flex items-center space-x-3">
+                      <span className="text-[10px] font-bold uppercase px-2.5 py-0.5 rounded-full bg-[var(--brand-teal-subtle)] text-[var(--brand-teal)] border border-[var(--border-subtle)]">
+                        {post.category}
+                      </span>
+                      <span className="font-mono text-xs text-[var(--text-muted)]">/{post.slug}</span>
+                      <span className="text-[10px] text-[var(--text-muted)]">· {post.readTime}</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <a
+                        href={`/blog/${post.slug}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="flex items-center space-x-1 px-3 py-1 rounded-xl bg-[var(--bg-page)] hover:bg-[var(--bg-subtle)] border border-[var(--border-subtle)] text-xs font-semibold text-[var(--text-heading)] transition-colors"
+                      >
+                        <Eye className="w-3.5 h-3.5 text-[var(--brand-teal)]" />
+                        <span>View Article</span>
+                      </a>
+                      <button
+                        onClick={() => {
+                          if (confirm(`Permanently delete blog post '${post.title}'?`)) {
+                            removeItemFromSiteContent('blogPosts', post.id);
+                            triggerSaved('Blog post removed.');
+                          }
+                        }}
+                        className="flex items-center space-x-1 px-3 py-1 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 text-xs font-bold transition-colors cursor-pointer"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                        <span>Delete</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
+                    {post.imageUrl && (
+                      <div className="lg:col-span-3 aspect-video rounded-xl overflow-hidden bg-[var(--bg-subtle)] border border-[var(--border-subtle)]">
+                        <img src={post.imageUrl} alt={post.title} className="w-full h-full object-cover" />
+                      </div>
+                    )}
+                    <div className={post.imageUrl ? 'lg:col-span-9 space-y-3' : 'lg:col-span-12 space-y-3'}>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-[11px] font-bold uppercase text-[var(--text-muted)] mb-1">Article Title</label>
+                          <input
+                            type="text"
+                            value={post.title}
+                            onChange={(e) => updateItemInSiteContent('blogPosts', post.id, { title: e.target.value })}
+                            className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs font-bold text-[var(--text-heading)]"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-[11px] font-bold uppercase text-[var(--text-muted)] mb-1">Author Name</label>
+                          <input
+                            type="text"
+                            value={post.author}
+                            onChange={(e) => updateItemInSiteContent('blogPosts', post.id, { author: e.target.value })}
+                            className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs text-[var(--text-heading)]"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <div>
+                          <label className="block text-[11px] font-bold uppercase text-[var(--text-muted)] mb-1">Category</label>
+                          <input
+                            type="text"
+                            value={post.category}
+                            onChange={(e) => updateItemInSiteContent('blogPosts', post.id, { category: e.target.value })}
+                            className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs text-[var(--text-heading)]"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-[11px] font-bold uppercase text-[var(--text-muted)] mb-1">Read Time</label>
+                          <input
+                            type="text"
+                            value={post.readTime}
+                            onChange={(e) => updateItemInSiteContent('blogPosts', post.id, { readTime: e.target.value })}
+                            className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs text-[var(--text-heading)]"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-[11px] font-bold uppercase text-[var(--text-muted)] mb-1">Cover Image URL</label>
+                          <input
+                            type="url"
+                            value={post.imageUrl}
+                            onChange={(e) => updateItemInSiteContent('blogPosts', post.id, { imageUrl: e.target.value })}
+                            className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs font-mono text-[var(--text-heading)]"
+                          />
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-[11px] font-bold uppercase text-[var(--text-muted)] mb-1">Excerpt / Summary</label>
+                        <textarea
+                          value={post.excerpt}
+                          onChange={(e) => updateItemInSiteContent('blogPosts', post.id, { excerpt: e.target.value })}
+                          rows={2}
+                          className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl p-2.5 text-xs text-[var(--text-body)]"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-[11px] font-bold uppercase text-[var(--text-muted)] mb-1">Full Article Body (Markdown supported)</label>
+                        <textarea
+                          value={post.content || ''}
+                          onChange={(e) => updateItemInSiteContent('blogPosts', post.id, { content: e.target.value })}
+                          rows={5}
+                          placeholder="Write article content using markdown (e.g. ## Heading 2, ### Heading 3, - Bullet item)..."
+                          className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl p-3 text-xs font-mono text-[var(--text-body)] leading-relaxed"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+
+          {/* Add Blog Post Modal */}
+          {showAddBlog && (
+            <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+              <form onSubmit={handleCreateBlog} className="bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-3xl p-6 sm:p-8 max-w-3xl w-full shadow-2xl space-y-4 my-8 max-h-[90vh] overflow-y-auto">
+                <div className="flex items-center justify-between pb-3 border-b border-[var(--border-subtle)]">
+                  <div>
+                    <h3 className="font-display font-extrabold text-lg text-[var(--text-heading)]">Write & Publish New Blog Article</h3>
+                    <p className="text-xs text-[var(--text-muted)]">This will be published live to the DigiHust Insights Hub</p>
+                  </div>
+                  <button type="button" onClick={() => setShowAddBlog(false)} className="text-[var(--text-muted)] hover:text-[var(--text-heading)] p-1">
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-bold uppercase text-[var(--text-muted)] mb-1">Post Title *</label>
+                    <input
+                      type="text"
+                      required
+                      value={newBlog.title}
+                      onChange={(e) => {
+                        const title = e.target.value;
+                        const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+                        setNewBlog({ ...newBlog, title, slug });
+                      }}
+                      placeholder="e.g. Building Resilient Microservices with Golang"
+                      className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3.5 py-2.5 text-xs text-[var(--text-heading)] font-semibold"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold uppercase text-[var(--text-muted)] mb-1">URL Slug (Auto-Generated) *</label>
+                    <input
+                      type="text"
+                      required
+                      value={newBlog.slug}
+                      onChange={(e) => setNewBlog({ ...newBlog, slug: e.target.value })}
+                      placeholder="e.g. building-resilient-microservices"
+                      className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3.5 py-2.5 text-xs font-mono text-[var(--text-heading)]"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <div>
+                    <label className="block text-xs font-bold uppercase text-[var(--text-muted)] mb-1">Category</label>
+                    <select
+                      value={newBlog.category}
+                      onChange={(e) => setNewBlog({ ...newBlog, category: e.target.value })}
+                      className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs text-[var(--text-heading)]"
+                    >
+                      <option value="Engineering">Engineering</option>
+                      <option value="AI & Automations">AI & Automations</option>
+                      <option value="Cybersecurity">Cybersecurity</option>
+                      <option value="Digital Strategy">Digital Strategy</option>
+                      <option value="Product & Design">Product & Design</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold uppercase text-[var(--text-muted)] mb-1">Estimated Read Time</label>
+                    <input
+                      type="text"
+                      value={newBlog.readTime}
+                      onChange={(e) => setNewBlog({ ...newBlog, readTime: e.target.value })}
+                      placeholder="e.g. 6 min read"
+                      className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs text-[var(--text-heading)]"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold uppercase text-[var(--text-muted)] mb-1">Author Name</label>
+                    <input
+                      type="text"
+                      value={newBlog.author}
+                      onChange={(e) => setNewBlog({ ...newBlog, author: e.target.value })}
+                      className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs text-[var(--text-heading)]"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold uppercase text-[var(--text-muted)] mb-1">Cover Image URL</label>
+                  <input
+                    type="url"
+                    value={newBlog.imageUrl}
+                    onChange={(e) => setNewBlog({ ...newBlog, imageUrl: e.target.value })}
+                    placeholder="https://images.unsplash.com/..."
+                    className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3.5 py-2.5 text-xs font-mono text-[var(--text-heading)]"
+                  />
+                  {newBlog.imageUrl && (
+                    <div className="mt-2 aspect-[21/9] max-h-36 rounded-xl overflow-hidden border border-[var(--border-subtle)]">
+                      <img src={newBlog.imageUrl} alt="Cover preview" className="w-full h-full object-cover" />
+                    </div>
+                  )}
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold uppercase text-[var(--text-muted)] mb-1">Excerpt / Summary *</label>
+                  <textarea
+                    required
+                    rows={2}
+                    value={newBlog.excerpt}
+                    onChange={(e) => setNewBlog({ ...newBlog, excerpt: e.target.value })}
+                    placeholder="Brief 1-2 sentence overview shown in cards and SEO meta tags..."
+                    className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl p-3 text-xs text-[var(--text-heading)] leading-relaxed"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold uppercase text-[var(--text-muted)] mb-1">
+                    Article Full Content (Markdown supported) *
+                  </label>
+                  <textarea
+                    required
+                    rows={8}
+                    value={newBlog.content}
+                    onChange={(e) => setNewBlog({ ...newBlog, content: e.target.value })}
+                    placeholder={`### Introduction\nExplain the context here...\n\n### Architectural Approach\nDetail the solution...\n\n- Key Point 1\n- Key Point 2\n\n### Conclusion\nFinal wrap up...`}
+                    className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl p-3 text-xs font-mono text-[var(--text-heading)] leading-relaxed"
+                  />
+                </div>
+
+                <div className="flex justify-end space-x-3 pt-4 border-t border-[var(--border-subtle)]">
+                  <button
+                    type="button"
+                    onClick={() => setShowAddBlog(false)}
+                    className="px-4 py-2.5 rounded-xl text-xs font-semibold text-[var(--text-muted)] hover:bg-[var(--bg-subtle)] cursor-pointer"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-6 py-2.5 rounded-xl bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-white text-xs font-bold shadow-md cursor-pointer"
+                  >
+                    Publish Article Live
+                  </button>
+                </div>
+              </form>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ── TAB 8: FAQS ── */}
       {activeTab === 'faqs' && (
         <div className="space-y-6">
           <div className="flex items-center justify-between p-4 rounded-2xl bg-[var(--bg-surface)] border border-[var(--border-subtle)]">

@@ -650,7 +650,7 @@ export const Home: React.FC = () => {
               ))}
             </div>
           ) : (
-            <div className="p-10 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] text-center space-y-3 max-w-xl mx-auto shadow-sm">
+            <div className="p-10 rounded-3xl bg-[var(--bg-  )] border border-[var(--border-subtle)] text-center space-y-3 max-w-xl mx-auto shadow-sm">
               <Shield className="w-8 h-8 text-[var(--brand-teal)] mx-auto opacity-70" />
               <h3 className="font-display font-bold text-lg text-[var(--text-heading)]">
                 100% Quality & Milestone Guarantee

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Shield, ArrowRight, Lock, User as UserIcon, Bell, Sparkles, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { Shield, ArrowRight, Lock, User as UserIcon, Bell, Sparkles, AlertCircle, CheckCircle2, Eye, EyeOff } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { SEOHead } from '../seo/SEOHead';
 
@@ -13,6 +13,7 @@ export const PortalLogin: React.FC = () => {
 
   const [memberId, setMemberId] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [resetEmail, setResetEmail] = useState('');
   const [resetModalOpen, setResetModalOpen] = useState(false);
@@ -144,13 +145,21 @@ export const PortalLogin: React.FC = () => {
                 <div className="relative">
                   <Lock className="w-4 h-4 text-[var(--text-muted)] absolute left-3.5 top-3" />
                   <input
-                    type="password"
+                    type={showPassword ? 'text' : 'password'}
                     required
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="••••••••••••"
-                    className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl pl-10 pr-4 py-2.5 text-sm text-[var(--text-heading)] focus:border-[var(--brand-teal)] focus:outline-none transition-all"
+                    className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl pl-10 pr-10 py-2.5 text-sm text-[var(--text-heading)] focus:border-[var(--brand-teal)] focus:outline-none transition-all"
                   />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-2.5 text-[var(--text-muted)] hover:text-[var(--text-heading)] p-0.5 rounded cursor-pointer transition-colors"
+                    aria-label={showPassword ? 'Hide password' : 'Show password'}
+                  >
+                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
                 </div>
               </div>
 

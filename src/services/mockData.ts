@@ -351,6 +351,72 @@ export const DEFAULT_SITE_CONTENT: SiteContent = {
       contactAddress: 'Islamabad, Pakistan',
       createdAt: '2026-08-20'
     }
+  ],
+  blogPosts: [
+    {
+      id: 'blog-1',
+      slug: 'how-to-architect-nextjs-for-ai-crawlers',
+      title: 'Architecting Modern Web Apps for AI Search Engines & LLM Crawlers',
+      excerpt: 'Why traditional client-side SPAs fail against non-JS AI search engines (GPTBot, ClaudeBot, Perplexity), and how static pre-rendering bridges the semantic discovery gap.',
+      content: `In the modern web landscape, search is rapidly transitioning from traditional keyword indexing to deep semantic synthesis powered by LLMs (Large Language Models) such as ChatGPT, Perplexity, Claude, and Gemini.
+
+### The Challenge with Client-Side Rendering
+Traditional Single Page Applications (SPAs) load an empty HTML shell and rely on client-side JavaScript execution to fetch and render content. While major search engines like Googlebot have partial JS rendering capabilities, most AI crawlers (like GPTBot, ClaudeBot, and CCBot) bypass heavy JS execution entirely to conserve compute.
+
+### The DigiHust Pre-rendering Solution
+By implementing static HTML generation and pre-rendering at build time, every technical insight, case study, and public showcase is instantly readable by all bots with 100% semantic clarity, boosting organic discoverability and citation authority.`,
+      category: 'Engineering',
+      readTime: '6 min read',
+      publishedAt: '2026-08-24',
+      author: 'Haris Asad',
+      authorAvatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=150',
+      imageUrl: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=800&q=80',
+      isPublished: true,
+      tags: ['Architecture', 'SEO', 'AI Crawlers']
+    },
+    {
+      id: 'blog-2',
+      slug: 'demystifying-ai-automations-n8n-vs-custom-python',
+      title: 'Automating Business Workflows: n8n vs. Custom Python LLM Microservices',
+      excerpt: 'A pragmatic framework for deciding when to use visual workflow tools versus specialized Python function-calling pipelines for enterprise operations.',
+      content: `Enterprise operations are racing to incorporate intelligent automations into their CRM, support, and lead nurturing pipelines. But technical decision-makers face a recurring dilemma: Should we build with visual orchestration tools like n8n/Make, or develop tailored Python microservices?
+
+### When to Choose n8n
+- **Rapid Prototyping**: Connect standard SaaS APIs (HubSpot, Slack, PostgreSQL) in hours.
+- **Low-Code Maintenance**: Transparent node workflows that non-engineers can visually inspect.
+
+### When to Choose Custom Python LLM Services
+- **Complex RAG & Vector Embeddings**: Dynamic chunking, hybrid search, and multi-step reasoning agents.
+- **Strict Latency & Token Budget Constraints**: Granular token optimization and custom schema validation.`,
+      category: 'AI & Automations',
+      readTime: '8 min read',
+      publishedAt: '2026-08-18',
+      author: 'AI Engineering Lead',
+      authorAvatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=150',
+      imageUrl: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=800&q=80',
+      isPublished: true,
+      tags: ['n8n', 'Python', 'Automation']
+    },
+    {
+      id: 'blog-3',
+      slug: 'owasp-top-10-web-security-checklist-for-startups',
+      title: 'The Essential OWASP Web Application Security & Hardening Checklist',
+      excerpt: 'Protecting your digital infrastructure against injection, broken access controls, and data exposure before production deployment.',
+      content: `Security is not an afterthought—it must be architected from day zero. Startups moving fast often overlook basic security hygiene, leaving their infrastructure vulnerable to credential stuffing, broken object-level authorization, and unprotected secrets.
+
+### Core Hardening Pillars
+1. **Zero-Trust Access Control**: Enforce strict server-side authorization checks on every state mutation.
+2. **Environment Variable Sanitization**: Never commit raw API keys or database connection strings to client bundles.
+3. **Automated Audit Logging**: Log high-privilege actions (password resets, role elevations, ledger payouts) with immutable timestamps and actor IDs.`,
+      category: 'Cybersecurity',
+      readTime: '7 min read',
+      publishedAt: '2026-08-10',
+      author: 'Cybersecurity Lead',
+      authorAvatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=150',
+      imageUrl: 'https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=800&q=80',
+      isPublished: true,
+      tags: ['Security', 'OWASP', 'Compliance']
+    }
   ]
 };
 

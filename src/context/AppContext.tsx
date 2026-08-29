@@ -1,10 +1,10 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
 import { 
   User, Group, Lead, Project, Payout, Applicant, GlobalAdminSettings, PipelineStage, 
   Deliverable, Comment, ProjectAssignment, GroupId, UserRole, UserRoleTier, UserStatus, 
   SplitOverride, Assignment, SubTask, Milestone, Certificate, CertificateType, CertificateStatus, 
   CertificateTemplate, Announcement, AnnouncementScope, SiteContent, SecurityAuditLog,
-  SiteCaseStudy, SiteTestimonial, SiteServiceItem, SitePackage, SiteTeamMember, SiteFAQ, SiteValueProp
+  SiteCaseStudy, SiteTestimonial, SiteServiceItem, SitePackage, SiteTeamMember, SiteFAQ, SiteValueProp, SiteBlogPost
 } from '../types';
 import { 
   INITIAL_GROUPS, INITIAL_USERS, INITIAL_LEADS, INITIAL_PROJECTS, INITIAL_PAYOUTS, 
@@ -16,6 +16,7 @@ import { getUserRoleTier, PERMISSIONS } from '../lib/permissions';
 import { quickHashSync } from '../lib/crypto';
 import { dbService } from '../lib/dbService';
 import { isSupabaseConfigured } from '../lib/supabase';
+import { ToastContainer, ToastMessage } from '../components/common/ToastContainer';
 
 interface AppContextType {
   // Auth & Session
@@ -46,6 +47,7 @@ interface AppContextType {
     userData: Omit<User, 'id' | 'completedProjectsCount' | 'totalEarnings' | 'rating' | 'statusHistory' | 'notes' | 'documents'>, 
     initialPlainPassword?: string
   ) => { success: boolean; newUser?: User; error?: string };
+  deleteUserAccount: (targetUserId: string, reason?: string) => { success: boolean; error?: string };
   resetUserPasswordByCeo: (targetUserId: string, newPlainPassword: string) => { success: boolean; error?: string };
   toggleUserAccountStatus: (targetUserId: string, reason: string) => { success: boolean; error?: string };
   updateUserRoleWithAuth: (targetUserId: string, newRoleTier: UserRoleTier, reason: string) => { success: boolean; error?: string };
@@ -54,6 +56,7 @@ interface AppContextType {
 
   // Pipeline & Project Actions
   submitLead: (leadData: Omit<Lead, 'id' | 'createdAt' | 'status' | 'submittedByUserId' | 'submittedByUserName'>) => void;
+  deleteLead: (leadId: string) => void;
   reviewLeadToProject: (
     leadId: string, 
     groupId: GroupId, 
@@ -68,6 +71,7 @@ interface AppContextType {
   ) => void;
   assignProjectTeam: (projectId: string, assignments: ProjectAssignment[]) => void;
   updateProjectStatus: (projectId: string, newStatus: PipelineStage) => void;
+  deleteProject: (projectId: string) => void;
   addDeliverable: (projectId: string, title: string, linkUrl?: string, notes?: string) => void;
   addComment: (projectId: string, text: string) => void;
   releaseProjectPayout: (projectId: string) => void;
@@ -75,6 +79,7 @@ interface AppContextType {
   // Assignment Workspace Actions
   createAssignment: (assignmentData: Omit<Assignment, 'id' | 'createdAt' | 'subTasks' | 'milestones' | 'deliverables' | 'comments'>) => void;
   updateAssignmentStatus: (assignmentId: string, newStatus: PipelineStage) => void;
+  deleteAssignment: (assignmentId: string) => void;
   addSubTask: (assignmentId: string, title: string, assignedMemberId: string, dueDate?: string) => void;
   toggleSubTask: (assignmentId: string, subTaskId: string) => void;
   addMilestone: (assignmentId: string, title: string, targetDate: string) => void;
@@ -91,6 +96,7 @@ interface AppContextType {
   deleteCertificateTemplate: (templateId: string) => void;
   revokeCertificate: (certId: string, reason?: string) => void;
   restoreCertificate: (certId: string) => void;
+  deleteCertificate: (certId: string) => void;
 
   // Announcement Actions
   postAnnouncement: (announcementData: Omit<Announcement, 'id' | 'postedBy' | 'postedByName' | 'postedByRole' | 'postedAt'>) => void;
@@ -124,6 +130,9 @@ interface AppContextType {
   // Platform & Settings Actions
   updateGlobalSettings: (newSettings: GlobalAdminSettings) => void;
   resetToDefaultData: () => void;
+
+  // Global Custom Notification Toast Box
+  showToast: (message: string, type?: 'success' | 'error' | 'warning' | 'info', title?: string, duration?: number) => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -199,6 +208,30 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     const saved = localStorage.getItem(`${LOCAL_STORAGE_KEY}_audit_logs`);
     return saved ? JSON.parse(saved) : INITIAL_AUDIT_LOGS;
   });
+
+  // ── GLOBAL CUSTOM TOAST NOTIFICATION SYSTEM ─────────────────────────────────
+  const [toasts, setToasts] = useState<ToastMessage[]>([]);
+
+  const dismissToast = useCallback((id: string) => {
+    setToasts(prev => prev.filter(t => t.id !== id));
+  }, []);
+
+  const showToast = useCallback((
+    message: string, 
+    type: 'success' | 'error' | 'warning' | 'info' = 'info', 
+    title?: string, 
+    duration: number = 3500
+  ) => {
+    const id = `toast-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`;
+    const newToast: ToastMessage = { id, message, type, title, duration };
+    setToasts(prev => [...prev, newToast]);
+
+    if (duration > 0) {
+      setTimeout(() => {
+        dismissToast(id);
+      }, duration);
+    }
+  }, [dismissToast]);
 
   // ── CLOUD DATABASE INITIALIZATION (Supabase PostgreSQL) ───────────────────
   useEffect(() => {
@@ -539,6 +572,39 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     return { success: true, newUser };
   };
 
+  const deleteUserAccount = (targetUserId: string, reason: string = 'Account removed by CEO Master'): { success: boolean; error?: string } => {
+    if (!PERMISSIONS.canDistributeRoles(currentTier)) {
+      return { success: false, error: 'Access Denied: Only CEO Master authority can remove user accounts.' };
+    }
+
+    const targetUser = users.find(u => u.id === targetUserId);
+    if (!targetUser) return { success: false, error: 'User not found.' };
+
+    if (targetUser.id === currentUser.id) {
+      return { success: false, error: 'Cannot remove the active logged-in master administrator account.' };
+    }
+
+    setUsers(prev => prev.filter(u => u.id !== targetUserId));
+    dbService.deleteUser(targetUserId);
+
+    const auditEntry: SecurityAuditLog = {
+      id: `audit-${Date.now()}`,
+      timestamp: new Date().toISOString(),
+      actorId: currentUser.id,
+      actorName: currentUser.name,
+      actorRole: currentTier,
+      action: 'ACCOUNT_SUSPENDED',
+      targetId: targetUser.id,
+      targetName: targetUser.name,
+      details: `Permanently removed account for ${targetUser.name} (${targetUser.memberId}). Reason: ${reason}`
+    };
+    setAuditLogs(prev => [auditEntry, ...prev]);
+    dbService.insertAuditLog(auditEntry);
+
+    showToast(`Removed member ${targetUser.name} from the platform database.`, 'success', 'Member Deleted');
+    return { success: true };
+  };
+
   const resetUserPasswordByCeo = (targetUserId: string, newPlainPassword: string): { success: boolean; error?: string } => {
     if (!PERMISSIONS.canResetAnyPassword(currentTier)) {
       return { success: false, error: 'Access Denied: Only CEO Master authority can reset user credentials.' };
@@ -642,6 +708,12 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     dbService.insertLead(newLead);
   };
 
+  const deleteLead = (leadId: string) => {
+    setLeads(prev => prev.filter(l => l.id !== leadId));
+    dbService.deleteLead(leadId);
+    showToast('Lead deleted from pipeline.', 'info', 'Lead Removed');
+  };
+
   const reviewLeadToProject = (
     leadId: string, 
     groupId: GroupId, 
@@ -721,6 +793,12 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       }
       return p;
     }));
+  };
+
+  const deleteProject = (projectId: string) => {
+    setProjects(prev => prev.filter(p => p.id !== projectId));
+    dbService.deleteProject(projectId);
+    showToast('Project removed from delivery ledger.', 'info', 'Project Deleted');
   };
 
   const addDeliverable = (projectId: string, title: string, linkUrl?: string, notes?: string) => {
@@ -857,6 +935,12 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       }
       return a;
     }));
+  };
+
+  const deleteAssignment = (assignmentId: string) => {
+    setAssignments(prev => prev.filter(a => a.id !== assignmentId));
+    dbService.deleteAssignment(assignmentId);
+    showToast('Sprint assignment removed from workspace.', 'info', 'Assignment Deleted');
   };
 
   const addSubTask = (assignmentId: string, title: string, assignedMemberId: string, dueDate?: string) => {
@@ -1174,6 +1258,12 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       }
       return c;
     }));
+  };
+
+  const deleteCertificate = (certId: string) => {
+    setCertificates(prev => prev.filter(c => c.id !== certId));
+    dbService.deleteCertificate(certId);
+    showToast('Certificate removed from registry.', 'info', 'Certificate Deleted');
   };
 
   // ── ANNOUNCEMENT ACTIONS ──────────────────────────────────────────────────
@@ -1642,6 +1732,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
         // CEO Master User Governance
         createUserAccount,
+        deleteUserAccount,
         resetUserPasswordByCeo,
         toggleUserAccountStatus,
         updateUserRoleWithAuth,
@@ -1650,9 +1741,11 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
         // Pipeline & Project
         submitLead,
+        deleteLead,
         reviewLeadToProject,
         assignProjectTeam,
         updateProjectStatus,
+        deleteProject,
         addDeliverable,
         addComment,
         releaseProjectPayout,
@@ -1660,6 +1753,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         // Assignment Workspace
         createAssignment,
         updateAssignmentStatus,
+        deleteAssignment,
         addSubTask,
         toggleSubTask,
         addMilestone,
@@ -1676,6 +1770,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         deleteCertificateTemplate,
         revokeCertificate,
         restoreCertificate,
+        deleteCertificate,
 
         // Announcements
         postAnnouncement,
@@ -1708,10 +1803,14 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
         // Settings
         updateGlobalSettings,
-        resetToDefaultData
+        resetToDefaultData,
+
+        // Global Custom Toast Box Notification
+        showToast
       }}
     >
       {children}
+      <ToastContainer toasts={toasts} onDismiss={dismissToast} />
     </AppContext.Provider>
   );
 };

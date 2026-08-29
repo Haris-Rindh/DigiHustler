@@ -22,7 +22,8 @@ export const CertificateManager: React.FC = () => {
     certificates, users, currentTier, currentUser, 
     certificateTemplates, createCertificateTemplate, 
     updateCertificateTemplate, deleteCertificateTemplate,
-    generateMemberCertificate, revokeCertificate, restoreCertificate 
+    generateMemberCertificate, revokeCertificate, restoreCertificate,
+    deleteCertificate, showToast 
   } = useApp();
 
   const [activeTab, setActiveTab] = useState<'issued' | 'templates'>('issued');
@@ -114,9 +115,10 @@ export const CertificateManager: React.FC = () => {
 
       const safeName = `${cert.memberName.replace(/\s+/g, '_')}_${(cert.documentTitle || cert.type).replace(/\s+/g, '_')}`;
       downloadPdfFile(pdfBytes, safeName);
+      showToast('Certificate PDF downloaded successfully!', 'success');
     } catch (err) {
       console.error(err);
-      alert('Error generating PDF document. Please try again.');
+      showToast('Error generating PDF document. Please try again.', 'error');
     } finally {
       setIsGeneratingPdf(false);
     }

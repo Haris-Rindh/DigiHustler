@@ -123,6 +123,15 @@ export const dbService = {
     }
   },
 
+  async deleteLead(leadId: string) {
+    if (!isSupabaseConfigured || !supabase) return;
+    try {
+      await supabase.from('leads').delete().eq('id', leadId);
+    } catch (err) {
+      console.error('Failed to delete lead in Supabase:', err);
+    }
+  },
+
   // ── 4. Projects CRUD ──
   async upsertProject(project: Project) {
     if (!isSupabaseConfigured || !supabase) return;
@@ -150,6 +159,15 @@ export const dbService = {
       });
     } catch (err) {
       console.error('Failed to upsert project in Supabase:', err);
+    }
+  },
+
+  async deleteProject(projectId: string) {
+    if (!isSupabaseConfigured || !supabase) return;
+    try {
+      await supabase.from('projects').delete().eq('id', projectId);
+    } catch (err) {
+      console.error('Failed to delete project in Supabase:', err);
     }
   },
 
@@ -191,6 +209,15 @@ export const dbService = {
     }
   },
 
+  async deleteAssignment(assignmentId: string) {
+    if (!isSupabaseConfigured || !supabase) return;
+    try {
+      await supabase.from('assignments').delete().eq('id', assignmentId);
+    } catch (err) {
+      console.error('Failed to delete assignment in Supabase:', err);
+    }
+  },
+
   // ── 6. Certificates CRUD ──
   async upsertCertificate(cert: Certificate) {
     if (!isSupabaseConfigured || !supabase) return;
@@ -228,6 +255,15 @@ export const dbService = {
       });
     } catch (err) {
       console.error('Failed to upsert certificate in Supabase:', err);
+    }
+  },
+
+  async deleteCertificate(certId: string) {
+    if (!isSupabaseConfigured || !supabase) return;
+    try {
+      await supabase.from('certificates').delete().eq('id', certId);
+    } catch (err) {
+      console.error('Failed to delete certificate in Supabase:', err);
     }
   },
 

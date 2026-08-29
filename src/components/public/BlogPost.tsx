@@ -1,23 +1,53 @@
 import React from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, Clock, Calendar, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { ArrowLeft, Clock, Calendar, ArrowRight, CheckCircle2, Tag, User } from 'lucide-react';
 import { SEOHead } from '../seo/SEOHead';
 import { BLOG_POSTS } from './Blog';
+import { useApp } from '../../context/AppContext';
 
 export const BlogPost: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
-  const post = BLOG_POSTS.find((p) => p.slug === slug) || {
-    slug: 'post-not-found',
-    title: 'Architecting Modern Web Apps for AI Search Engines & LLM Crawlers',
-    excerpt: 'Why traditional client-side SPAs fail against non-JS AI search engines (GPTBot, ClaudeBot, Perplexity), and how static pre-rendering bridges the semantic discovery gap.',
-    category: 'Engineering',
-    readTime: '6 min read',
-    date: 'August 24, 2026',
-    author: 'Haris Asad',
-    authorRole: 'Managing Lead & Architect',
-    image: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=1200&q=80',
-    tags: ['Web Engineering', 'SEO', 'AI Crawlers', 'Next.js', 'Vite'],
-  };
+  const { siteContent } = useApp();
+
+  const dynamicPost = (siteContent?.blogPosts || []).find((p) => p.slug === slug);
+  const staticPost = BLOG_POSTS.find((p) => p.slug === slug);
+
+  const post = dynamicPost
+    ? {
+        slug: dynamicPost.slug,
+        title: dynamicPost.title,
+        excerpt: dynamicPost.excerpt,
+        content: dynamicPost.content,
+        category: dynamicPost.category,
+        readTime: dynamicPost.readTime,
+        date: dynamicPost.publishedAt
+          ? new Date(dynamicPost.publishedAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+          : 'August 2026',
+        author: dynamicPost.author,
+        authorRole: 'Domain Specialist & Lead',
+        image: dynamicPost.imageUrl || 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=1200&q=80',
+        tags: dynamicPost.tags || ['Engineering', 'Digital Strategy', 'DigiHust'],
+      }
+    : staticPost
+    ? {
+        ...staticPost,
+        authorRole: 'Managing Lead & Architect',
+        tags: ['Web Engineering', 'SEO', 'AI Crawlers', 'Next.js', 'Vite'],
+        content: '',
+      }
+    : {
+        slug: 'post-not-found',
+        title: 'Architecting Modern Web Apps for AI Search Engines & LLM Crawlers',
+        excerpt: 'Why traditional client-side SPAs fail against non-JS AI search engines (GPTBot, ClaudeBot, Perplexity), and how static pre-rendering bridges the semantic discovery gap.',
+        content: '',
+        category: 'Engineering',
+        readTime: '6 min read',
+        date: 'August 24, 2026',
+        author: 'Haris Asad',
+        authorRole: 'Managing Lead & Architect',
+        image: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=1200&q=80',
+        tags: ['Web Engineering', 'SEO', 'AI Crawlers', 'Next.js', 'Vite'],
+      };
 
   return (
     <div className="pt-20 lg:pt-24 min-h-screen bg-[var(--bg-page)] text-[var(--text-body)]">
@@ -81,32 +111,72 @@ export const BlogPost: React.FC = () => {
             "{post.excerpt}"
           </p>
 
-          <h2 className="font-display font-extrabold text-2xl sm:text-3xl text-[var(--text-heading)] pt-6">
-            1. The Evolution of Search & AI Bot Crawlers
-          </h2>
-          <p className="text-[var(--text-body)]">
-            Search engines are undergoing their largest shift in two decades. Traditional search engine indexers like Googlebot are increasingly supplemented by automated LLM retrieval spiders (such as OpenAI's GPTBot, Anthropic's ClaudeBot, and PerplexityBot).
-          </p>
-          <p className="text-[var(--text-body)]">
-            Unlike classical desktop browsers, many AI scrapers fetch raw responses without executing client-side JavaScript. This means standard single-page applications (SPAs) serving bare root nodes are invisible to semantic AI citations unless pre-rendered at build time.
-          </p>
+          {post.content ? (
+            <div className="space-y-6 text-[var(--text-body)]">
+              {post.content.split('\n\n').map((block, idx) => {
+                if (block.startsWith('### ')) {
+                  return (
+                    <h3 key={idx} className="font-display font-extrabold text-xl sm:text-2xl text-[var(--text-heading)] pt-4">
+                      {block.replace('### ', '')}
+                    </h3>
+                  );
+                }
+                if (block.startsWith('## ')) {
+                  return (
+                    <h2 key={idx} className="font-display font-extrabold text-2xl sm:text-3xl text-[var(--text-heading)] pt-6">
+                      {block.replace('## ', '')}
+                    </h2>
+                  );
+                }
+                if (block.startsWith('- ')) {
+                  const items = block.split('\n').filter(Boolean);
+                  return (
+                    <ul key={idx} className="space-y-2 pl-4 list-disc text-sm sm:text-base">
+                      {items.map((item, i) => (
+                        <li key={i} className="leading-relaxed">
+                          {item.replace(/^[-\*]\s+/, '')}
+                        </li>
+                      ))}
+                    </ul>
+                  );
+                }
+                return (
+                  <p key={idx} className="leading-relaxed">
+                    {block}
+                  </p>
+                );
+              })}
+            </div>
+          ) : (
+            <>
+              <h2 className="font-display font-extrabold text-2xl sm:text-3xl text-[var(--text-heading)] pt-6">
+                1. The Evolution of Search & AI Bot Crawlers
+              </h2>
+              <p className="text-[var(--text-body)]">
+                Search engines are undergoing their largest shift in two decades. Traditional search engine indexers like Googlebot are increasingly supplemented by automated LLM retrieval spiders (such as OpenAI's GPTBot, Anthropic's ClaudeBot, and PerplexityBot).
+              </p>
+              <p className="text-[var(--text-body)]">
+                Unlike classical desktop browsers, many AI scrapers fetch raw responses without executing client-side JavaScript. This means standard single-page applications (SPAs) serving bare root nodes are invisible to semantic AI citations unless pre-rendered at build time.
+              </p>
 
-          <h2 className="font-display font-extrabold text-2xl sm:text-3xl text-[var(--text-heading)] pt-6">
-            2. Key Architectural Takeaways for Teams
-          </h2>
-          <div className="space-y-4 pt-2">
-            {[
-              'Pre-render all public marketing, case study, and documentation routes into valid static HTML at build time.',
-              'Provide an explicit /llms.txt file declaring corporate capabilities, squad structures, and indexable endpoints.',
-              'Embed structured Schema.org JSON-LD (ProfessionalService, FAQPage, Article) for maximum search engine precision.',
-              'Maintain strict Web Content Accessibility Guidelines (WCAG) to ensure both humans and AI parsers navigate with zero ambiguity.',
-            ].map((point) => (
-              <div key={point} className="flex items-start space-x-3 p-4 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-subtle)]">
-                <CheckCircle2 className="w-5 h-5 text-[var(--brand-teal)] flex-shrink-0 mt-0.5" />
-                <span className="text-sm sm:text-base text-[var(--text-heading)] font-medium">{point}</span>
+              <h2 className="font-display font-extrabold text-2xl sm:text-3xl text-[var(--text-heading)] pt-6">
+                2. Key Architectural Takeaways for Teams
+              </h2>
+              <div className="space-y-4 pt-2">
+                {[
+                  'Pre-render all public marketing, case study, and documentation routes into valid static HTML at build time.',
+                  'Provide an explicit /llms.txt file declaring corporate capabilities, squad structures, and indexable endpoints.',
+                  'Embed structured Schema.org JSON-LD (ProfessionalService, FAQPage, Article) for maximum search engine precision.',
+                  'Maintain strict Web Content Accessibility Guidelines (WCAG) to ensure both humans and AI parsers navigate with zero ambiguity.',
+                ].map((point) => (
+                  <div key={point} className="flex items-start space-x-3 p-4 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-subtle)]">
+                    <CheckCircle2 className="w-5 h-5 text-[var(--brand-teal)] flex-shrink-0 mt-0.5" />
+                    <span className="text-sm sm:text-base text-[var(--text-heading)] font-medium">{point}</span>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
+            </>
+          )}
 
           {/* Tags */}
           <div className="pt-8 border-t border-[var(--border-subtle)] flex flex-wrap gap-2">
