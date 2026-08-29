@@ -24,10 +24,14 @@ import {
   MessageSquare,
   Tag,
   Lock,
+  Upload,
+  Camera,
+  RefreshCw,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useApp } from '../../../context/AppContext';
 import { User, UserRole, UserStatus, GroupId, SplitOverride } from '../../../types';
+import { PRESET_AVATARS } from '../../portal/PortalNavbar';
 
 interface UserProfileDrawerProps {
   user: User | null;
@@ -61,6 +65,7 @@ export const UserProfileDrawer: React.FC<UserProfileDrawerProps> = ({ user, onCl
   const [editSpecialties, setEditSpecialties] = useState('');
   const [editPhone, setEditPhone] = useState('');
   const [editAvatarUrl, setEditAvatarUrl] = useState('');
+  const drawerFileInputRef = React.useRef<HTMLInputElement>(null);
 
   // Status Change State
   const [newStatus, setNewStatus] = useState<UserStatus>('active');
@@ -300,22 +305,84 @@ export const UserProfileDrawer: React.FC<UserProfileDrawerProps> = ({ user, onCl
                 {isEditing ? (
                   <div className="space-y-4 bg-[var(--bg-surface)] p-5 rounded-2xl border border-[var(--border-subtle)]">
                     <h4 className="text-xs font-bold text-[var(--text-heading)] uppercase tracking-wider">Edit Profile Details</h4>
-                    <div>
-                      <label className="block text-[11px] text-[var(--text-muted)] mb-1">Profile Avatar Image URL</label>
+                    <div className="p-3.5 rounded-xl bg-[var(--bg-page)] border border-[var(--border-subtle)] space-y-3">
+                      <label className="block text-[11px] font-bold text-[var(--brand-teal)] uppercase">Profile Avatar Picture</label>
                       <div className="flex items-center space-x-3">
                         <img
                           src={editAvatarUrl || user.avatarUrl}
                           alt="Avatar Preview"
-                          className="w-10 h-10 rounded-xl object-cover ring-1 ring-[var(--brand-teal)]"
+                          className="w-12 h-12 rounded-xl object-cover ring-2 ring-[var(--brand-teal)]/40 shadow"
                         />
-                        <input
-                          type="url"
-                          value={editAvatarUrl}
-                          onChange={(e) => setEditAvatarUrl(e.target.value)}
-                          placeholder="https://images.unsplash.com/..."
-                          className="flex-1 px-3 py-2 rounded-xl bg-[var(--bg-page)] border border-[var(--border-subtle)] text-[var(--text-heading)] text-xs font-mono"
-                        />
+                        <div className="flex-1 space-y-2">
+                          <div className="flex flex-wrap gap-2">
+                            <input
+                              type="file"
+                              ref={drawerFileInputRef}
+                              accept="image/*"
+                              className="hidden"
+                              onChange={(e) => {
+                                const file = e.target.files?.[0];
+                                if (!file) return;
+                                if (file.size > 3 * 1024 * 1024) {
+                                  showToast('Please upload an image smaller than 3MB.', 'warning');
+                                  return;
+                                }
+                                const reader = new FileReader();
+                                reader.onload = (event) => {
+                                  if (event.target?.result) {
+                                    setEditAvatarUrl(event.target.result as string);
+                                    showToast('Photo loaded from device.', 'info');
+                                  }
+                                };
+                                reader.readAsDataURL(file);
+                              }}
+                            />
+                            <button
+                              type="button"
+                              onClick={() => drawerFileInputRef.current?.click()}
+                              className="flex items-center space-x-1 px-2.5 py-1 rounded-lg bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-white text-[11px] font-bold cursor-pointer transition-colors"
+                            >
+                              <Upload className="w-3 h-3" />
+                              <span>Upload Photo</span>
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const initialsUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=1F7A8C&color=fff&size=256`;
+                                setEditAvatarUrl(initialsUrl);
+                              }}
+                              className="flex items-center space-x-1 px-2.5 py-1 rounded-lg bg-[var(--bg-surface)] border border-[var(--border-subtle)] text-[var(--text-heading)] text-[11px] font-medium cursor-pointer hover:bg-[var(--bg-subtle)]"
+                            >
+                              <RefreshCw className="w-3 h-3 text-[var(--brand-teal)]" />
+                              <span>Use Initials</span>
+                            </button>
+                          </div>
+                        </div>
                       </div>
+
+                      {/* Preset Avatar Selection */}
+                      <div className="grid grid-cols-6 gap-1.5 pt-1">
+                        {PRESET_AVATARS.slice(0, 6).map((avatar, idx) => (
+                          <button
+                            key={idx}
+                            type="button"
+                            onClick={() => setEditAvatarUrl(avatar)}
+                            className={`aspect-square rounded-lg overflow-hidden border-2 cursor-pointer transition-all ${
+                              editAvatarUrl === avatar ? 'border-[var(--brand-teal)] ring-1 ring-[var(--brand-teal)]' : 'border-[var(--border-subtle)] hover:border-[var(--brand-teal)]/50'
+                            }`}
+                          >
+                            <img src={avatar} alt={`Avatar ${idx + 1}`} className="w-full h-full object-cover" />
+                          </button>
+                        ))}
+                      </div>
+
+                      <input
+                        type="url"
+                        value={editAvatarUrl}
+                        onChange={(e) => setEditAvatarUrl(e.target.value)}
+                        placeholder="Or paste image URL (https://...)"
+                        className="w-full px-3 py-1.5 rounded-lg bg-[var(--bg-surface)] border border-[var(--border-subtle)] text-[var(--text-heading)] text-[11px] font-mono"
+                      />
                     </div>
                     <div>
                       <label className="block text-[11px] text-[var(--text-muted)] mb-1">Job Title</label>

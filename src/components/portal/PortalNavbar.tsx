@@ -3,7 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { 
   Shield, LayoutDashboard, Briefcase, Users, Award, DollarSign, Bell, Settings, 
   LogOut, ChevronDown, Sparkles, Menu, X, Key, Check, AlertCircle,
-  Layers, ExternalLink, Eye, EyeOff, User 
+  Layers, ExternalLink, Eye, EyeOff, User, Upload, Camera, RefreshCw, Trash2 
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { ThemeToggle } from '../ui/ThemeToggle';
@@ -18,6 +18,21 @@ interface NavItem {
   description?: string;
   show: boolean;
 }
+
+export const PRESET_AVATARS = [
+  'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=250',
+  'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=250',
+  'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=250',
+  'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=250',
+  'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=250',
+  'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&q=80&w=250',
+  'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&q=80&w=250',
+  'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=250',
+  'https://api.dicebear.com/7.x/bottts/svg?seed=DigiTech',
+  'https://api.dicebear.com/7.x/bottts/svg?seed=DigiHustler',
+  'https://api.dicebear.com/7.x/avataaars/svg?seed=Haris',
+  'https://api.dicebear.com/7.x/avataaars/svg?seed=Alex',
+];
 
 export const PortalNavbar: React.FC = () => {
   const { currentUser, currentTier, logout, changePassword, updateUserProfile, showToast } = useApp();
@@ -45,6 +60,7 @@ export const PortalNavbar: React.FC = () => {
   const userDropdownRef = useRef<HTMLDivElement>(null);
   const moreDropdownRef = useRef<HTMLDivElement>(null);
   const mobileMenuRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Close dropdowns on outside click or Escape key
   useEffect(() => {
@@ -585,22 +601,37 @@ export const PortalNavbar: React.FC = () => {
 
       {/* Edit Profile & Avatar Modal */}
       {editProfileOpen && (
-        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl animate-in fade-in zoom-in-95 space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b border-[var(--border-subtle)]">
-              <h3 className="font-display font-extrabold text-lg text-[var(--text-heading)]">
-                Update Profile & Avatar
-              </h3>
+        <div className="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+          <div className="bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-3xl max-w-xl w-full shadow-2xl animate-in fade-in zoom-in-95 my-auto max-h-[90vh] flex flex-col overflow-hidden">
+            
+            {/* Modal Header */}
+            <div className="flex items-center justify-between p-5 sm:p-6 border-b border-[var(--border-subtle)] bg-[var(--bg-page)] shrink-0">
+              <div className="flex items-center space-x-2.5">
+                <div className="w-8 h-8 rounded-xl bg-[var(--brand-teal-subtle)] flex items-center justify-center text-[var(--brand-teal)] border border-[var(--border-subtle)]">
+                  <User className="w-4 h-4" />
+                </div>
+                <div>
+                  <h3 className="font-display font-extrabold text-base sm:text-lg text-[var(--text-heading)]">
+                    Edit Profile & Avatar Picture
+                  </h3>
+                  <p className="text-[11px] text-[var(--text-muted)]">
+                    Update your personal profile information and choose your platform avatar
+                  </p>
+                </div>
+              </div>
               <button
                 type="button"
                 onClick={() => setEditProfileOpen(false)}
-                className="text-[var(--text-muted)] hover:text-[var(--text-heading)] p-1 cursor-pointer"
+                className="text-[var(--text-muted)] hover:text-[var(--text-heading)] p-1.5 rounded-xl hover:bg-[var(--bg-subtle)] cursor-pointer transition-colors"
+                aria-label="Close"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
+            {/* Modal Body (Scrollable) */}
             <form
+              id="edit-profile-form"
               onSubmit={(e) => {
                 e.preventDefault();
                 updateUserProfile(currentUser.id, {
@@ -611,98 +642,203 @@ export const PortalNavbar: React.FC = () => {
                   bio: profileBio,
                 });
                 setEditProfileOpen(false);
-                showToast('Your profile and avatar picture have been updated!', 'success');
+                showToast('Your profile and avatar picture have been updated!', 'success', 'Profile Saved');
               }}
-              className="space-y-4"
+              className="p-5 sm:p-6 space-y-6 overflow-y-auto flex-1"
             >
-              <div>
-                <label className="block text-xs font-bold uppercase text-[var(--text-muted)] mb-1">
-                  Profile Picture / Avatar URL
+              {/* Avatar Section */}
+              <div className="p-4 sm:p-5 rounded-2xl bg-[var(--bg-page)] border border-[var(--border-subtle)] space-y-4">
+                <label className="block text-xs font-bold uppercase tracking-wider text-[var(--brand-teal)]">
+                  1. Choose Your Profile Avatar
                 </label>
-                <div className="flex items-center space-x-3">
-                  <img
-                    src={profileAvatarUrl || currentUser.avatarUrl}
-                    alt={currentUser.name}
-                    className="w-12 h-12 rounded-2xl object-cover ring-2 ring-[var(--brand-teal)] shadow-md shrink-0"
-                  />
+
+                <div className="flex flex-col sm:flex-row items-center gap-4">
+                  {/* Current Preview */}
+                  <div className="relative group">
+                    <img
+                      src={profileAvatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(profileName || currentUser.name)}&background=1F7A8C&color=fff&size=256`}
+                      alt={profileName}
+                      className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl object-cover ring-4 ring-[var(--brand-teal)]/40 shadow-xl"
+                    />
+                    <div className="absolute inset-0 bg-black/40 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">
+                      <Camera className="w-6 h-6 text-white" />
+                    </div>
+                  </div>
+
+                  {/* Actions: Upload or Use Initials */}
+                  <div className="flex-1 space-y-2 text-center sm:text-left">
+                    <div className="flex flex-wrap gap-2 justify-center sm:justify-start">
+                      {/* Hidden File Input */}
+                      <input
+                        type="file"
+                        ref={fileInputRef}
+                        accept="image/*"
+                        className="hidden"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (!file) return;
+                          if (file.size > 3 * 1024 * 1024) {
+                            showToast('Please upload an image smaller than 3MB.', 'warning');
+                            return;
+                          }
+                          const reader = new FileReader();
+                          reader.onload = (event) => {
+                            if (event.target?.result) {
+                              setProfileAvatarUrl(event.target.result as string);
+                              showToast('Custom photo loaded from device!', 'info');
+                            }
+                          };
+                          reader.readAsDataURL(file);
+                        }}
+                      />
+                      
+                      <button
+                        type="button"
+                        onClick={() => fileInputRef.current?.click()}
+                        className="flex items-center space-x-1.5 px-3.5 py-2 rounded-xl bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-white text-xs font-bold shadow-md cursor-pointer transition-all"
+                      >
+                        <Upload className="w-3.5 h-3.5" />
+                        <span>Upload from Device</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const initialsUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(profileName || currentUser.name)}&background=1F7A8C&color=fff&size=256`;
+                          setProfileAvatarUrl(initialsUrl);
+                          showToast('Generated clean initials avatar.', 'info');
+                        }}
+                        className="flex items-center space-x-1.5 px-3.5 py-2 rounded-xl bg-[var(--bg-surface)] hover:bg-[var(--bg-subtle)] border border-[var(--border-subtle)] text-[var(--text-heading)] text-xs font-semibold cursor-pointer transition-all"
+                      >
+                        <RefreshCw className="w-3.5 h-3.5 text-[var(--brand-teal)]" />
+                        <span>Use Initials</span>
+                      </button>
+                    </div>
+                    <p className="text-[11px] text-[var(--text-muted)]">
+                      Upload any JPG/PNG from your phone or PC, select a preset below, or paste an image URL.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Preset Avatars Library */}
+                <div>
+                  <span className="block text-[11px] font-bold uppercase text-[var(--text-muted)] mb-2">
+                    Or Select from Preset Avatars:
+                  </span>
+                  <div className="grid grid-cols-6 sm:grid-cols-6 gap-2">
+                    {PRESET_AVATARS.map((avatar, idx) => (
+                      <button
+                        key={idx}
+                        type="button"
+                        onClick={() => {
+                          setProfileAvatarUrl(avatar);
+                        }}
+                        className={`aspect-square rounded-xl overflow-hidden border-2 transition-all cursor-pointer hover:scale-105 ${
+                          profileAvatarUrl === avatar
+                            ? 'border-[var(--brand-teal)] ring-2 ring-[var(--brand-teal)] shadow-md'
+                            : 'border-[var(--border-subtle)] hover:border-[var(--brand-teal)]/60'
+                        }`}
+                      >
+                        <img src={avatar} alt={`Preset ${idx + 1}`} className="w-full h-full object-cover" />
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Direct Image URL fallback input */}
+                <div>
+                  <label className="block text-[11px] font-bold uppercase text-[var(--text-muted)] mb-1">
+                    Direct Image URL
+                  </label>
                   <input
                     type="url"
                     value={profileAvatarUrl}
                     onChange={(e) => setProfileAvatarUrl(e.target.value)}
-                    placeholder="https://images.unsplash.com/... or avatar URL"
-                    className="flex-1 bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs text-[var(--text-heading)] font-mono focus:border-[var(--brand-teal)] focus:outline-none"
+                    placeholder="https://images.unsplash.com/... or any image link"
+                    className="w-full bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl px-3.5 py-2 text-xs text-[var(--text-heading)] font-mono focus:border-[var(--brand-teal)] focus:outline-none"
                   />
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {/* Profile Details Section */}
+              <div className="space-y-4">
+                <label className="block text-xs font-bold uppercase tracking-wider text-[var(--brand-teal)]">
+                  2. Account Profile Information
+                </label>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-[11px] font-bold uppercase text-[var(--text-muted)] mb-1">
+                      Full Name *
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={profileName}
+                      onChange={(e) => setProfileName(e.target.value)}
+                      className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3.5 py-2.5 text-xs text-[var(--text-heading)] focus:border-[var(--brand-teal)] focus:outline-none"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-bold uppercase text-[var(--text-muted)] mb-1">
+                      Job Title / Specialty *
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={profileTitle}
+                      onChange={(e) => setProfileTitle(e.target.value)}
+                      className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3.5 py-2.5 text-xs text-[var(--text-heading)] focus:border-[var(--brand-teal)] focus:outline-none"
+                    />
+                  </div>
+                </div>
+
                 <div>
-                  <label className="block text-xs font-bold uppercase text-[var(--text-muted)] mb-1">
-                    Display Name
+                  <label className="block text-[11px] font-bold uppercase text-[var(--text-muted)] mb-1">
+                    Phone / WhatsApp Contact
                   </label>
                   <input
                     type="text"
-                    required
-                    value={profileName}
-                    onChange={(e) => setProfileName(e.target.value)}
-                    className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs text-[var(--text-heading)] focus:border-[var(--brand-teal)] focus:outline-none"
+                    value={profilePhone}
+                    onChange={(e) => setProfilePhone(e.target.value)}
+                    placeholder="+1 (555) 000-0000"
+                    className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3.5 py-2.5 text-xs text-[var(--text-heading)] focus:border-[var(--brand-teal)] focus:outline-none"
                   />
                 </div>
+
                 <div>
-                  <label className="block text-xs font-bold uppercase text-[var(--text-muted)] mb-1">
-                    Job Title / Specialty
+                  <label className="block text-[11px] font-bold uppercase text-[var(--text-muted)] mb-1">
+                    Professional Bio
                   </label>
-                  <input
-                    type="text"
-                    value={profileTitle}
-                    onChange={(e) => setProfileTitle(e.target.value)}
-                    className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs text-[var(--text-heading)] focus:border-[var(--brand-teal)] focus:outline-none"
+                  <textarea
+                    rows={3}
+                    value={profileBio}
+                    onChange={(e) => setProfileBio(e.target.value)}
+                    placeholder="Brief overview of your experience, domain expertise, and role responsibilities..."
+                    className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl p-3 text-xs text-[var(--text-heading)] focus:border-[var(--brand-teal)] focus:outline-none leading-relaxed"
                   />
                 </div>
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold uppercase text-[var(--text-muted)] mb-1">
-                  Phone / WhatsApp
-                </label>
-                <input
-                  type="text"
-                  value={profilePhone}
-                  onChange={(e) => setProfilePhone(e.target.value)}
-                  placeholder="+1 (555) 000-0000"
-                  className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs text-[var(--text-heading)] focus:border-[var(--brand-teal)] focus:outline-none"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold uppercase text-[var(--text-muted)] mb-1">
-                  Professional Bio
-                </label>
-                <textarea
-                  rows={3}
-                  value={profileBio}
-                  onChange={(e) => setProfileBio(e.target.value)}
-                  placeholder="Brief summary of your background, experience, and domain focus..."
-                  className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl p-3 text-xs text-[var(--text-heading)] focus:border-[var(--brand-teal)] focus:outline-none leading-relaxed"
-                />
-              </div>
-
-              <div className="flex justify-end space-x-2 pt-3 border-t border-[var(--border-subtle)]">
-                <button
-                  type="button"
-                  onClick={() => setEditProfileOpen(false)}
-                  className="px-4 py-2 rounded-xl text-xs font-semibold text-[var(--text-muted)] hover:bg-[var(--bg-subtle)] cursor-pointer"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-5 py-2 rounded-xl bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-white text-xs font-bold shadow-md cursor-pointer transition-colors"
-                >
-                  Save Profile
-                </button>
               </div>
             </form>
+
+            {/* Modal Footer (Sticky) */}
+            <div className="flex items-center justify-end space-x-3 p-4 sm:p-5 border-t border-[var(--border-subtle)] bg-[var(--bg-page)] shrink-0">
+              <button
+                type="button"
+                onClick={() => setEditProfileOpen(false)}
+                className="px-4 py-2.5 rounded-xl text-xs font-semibold text-[var(--text-muted)] hover:bg-[var(--bg-subtle)] cursor-pointer transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                form="edit-profile-form"
+                className="px-6 py-2.5 rounded-xl bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-white text-xs font-bold shadow-md cursor-pointer transition-all"
+              >
+                Save Profile
+              </button>
+            </div>
+
           </div>
         </div>
       )}

@@ -240,128 +240,68 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     dbService.fetchInitialData().then((cloudData) => {
       if (!cloudData) return;
 
-      // 1. Users merge
+      // 1. Users authoritative cloud sync
       if (cloudData.users && cloudData.users.length > 0) {
-        setUsers(prev => {
-          const cloudMap = new Map(cloudData.users!.map(u => [u.id, u]));
-          const merged = prev.map(localUser => {
-            const cloudUser = cloudMap.get(localUser.id);
-            if (cloudUser) {
-              cloudMap.delete(localUser.id);
-              // Merge cloud user but preserve local changes if any
-              return { ...cloudUser, ...localUser };
-            }
-            // Local user not yet in cloud: sync up to cloud
-            dbService.upsertUser(localUser);
-            return localUser;
-          });
-          return [...merged, ...Array.from(cloudMap.values())];
-        });
+        setUsers(cloudData.users);
+      } else if (cloudData.users && cloudData.users.length === 0) {
+        INITIAL_USERS.forEach(u => dbService.upsertUser(u));
+        setUsers(INITIAL_USERS);
       }
 
-      // 2. Leads merge
+      // 2. Leads authoritative cloud sync
       if (cloudData.leads && cloudData.leads.length > 0) {
-        setLeads(prev => {
-          const cloudMap = new Map(cloudData.leads!.map(l => [l.id, l]));
-          const merged = prev.map(localLead => {
-            const cloudLead = cloudMap.get(localLead.id);
-            if (cloudLead) {
-              cloudMap.delete(localLead.id);
-              return { ...cloudLead, ...localLead };
-            }
-            dbService.insertLead(localLead);
-            return localLead;
-          });
-          return [...merged, ...Array.from(cloudMap.values())];
-        });
+        setLeads(cloudData.leads);
+      } else if (cloudData.leads && cloudData.leads.length === 0) {
+        INITIAL_LEADS.forEach(l => dbService.insertLead(l));
+        setLeads(INITIAL_LEADS);
       }
 
-      // 3. Projects merge
+      // 3. Projects authoritative cloud sync
       if (cloudData.projects && cloudData.projects.length > 0) {
-        setProjects(prev => {
-          const cloudMap = new Map(cloudData.projects!.map(p => [p.id, p]));
-          const merged = prev.map(localProj => {
-            const cloudProj = cloudMap.get(localProj.id);
-            if (cloudProj) {
-              cloudMap.delete(localProj.id);
-              return { ...cloudProj, ...localProj };
-            }
-            dbService.upsertProject(localProj);
-            return localProj;
-          });
-          return [...merged, ...Array.from(cloudMap.values())];
-        });
+        setProjects(cloudData.projects);
+      } else if (cloudData.projects && cloudData.projects.length === 0) {
+        INITIAL_PROJECTS.forEach(p => dbService.upsertProject(p));
+        setProjects(INITIAL_PROJECTS);
       }
 
-      // 4. Assignments merge
+      // 4. Assignments authoritative cloud sync
       if (cloudData.assignments && cloudData.assignments.length > 0) {
-        setAssignments(prev => {
-          const cloudMap = new Map(cloudData.assignments!.map(a => [a.id, a]));
-          const merged = prev.map(localAsgn => {
-            const cloudAsgn = cloudMap.get(localAsgn.id);
-            if (cloudAsgn) {
-              cloudMap.delete(localAsgn.id);
-              return { ...cloudAsgn, ...localAsgn };
-            }
-            dbService.upsertAssignment(localAsgn);
-            return localAsgn;
-          });
-          return [...merged, ...Array.from(cloudMap.values())];
-        });
-      } else {
-        // If cloud assignments are empty, sync local assignments to cloud
-        setAssignments(prev => {
-          prev.forEach(a => dbService.upsertAssignment(a));
-          return prev;
-        });
+        setAssignments(cloudData.assignments);
+      } else if (cloudData.assignments && cloudData.assignments.length === 0) {
+        INITIAL_ASSIGNMENTS.forEach(a => dbService.upsertAssignment(a));
+        setAssignments(INITIAL_ASSIGNMENTS);
       }
 
-      // 5. Certificates merge
+      // 5. Certificates authoritative cloud sync
       if (cloudData.certificates && cloudData.certificates.length > 0) {
-        setCertificates(prev => {
-          const cloudMap = new Map(cloudData.certificates!.map(c => [c.id, c]));
-          const merged = prev.map(localCert => {
-            const cloudCert = cloudMap.get(localCert.id);
-            if (cloudCert) {
-              cloudMap.delete(localCert.id);
-              return { ...cloudCert, ...localCert };
-            }
-            dbService.upsertCertificate(localCert);
-            return localCert;
-          });
-          return [...merged, ...Array.from(cloudMap.values())];
-        });
+        setCertificates(cloudData.certificates);
+      } else if (cloudData.certificates && cloudData.certificates.length === 0) {
+        INITIAL_CERTIFICATES.forEach(c => dbService.upsertCertificate(c));
+        setCertificates(INITIAL_CERTIFICATES);
       }
 
-      // 6. Announcements merge
+      // 6. Announcements authoritative cloud sync
       if (cloudData.announcements && cloudData.announcements.length > 0) {
-        setAnnouncements(prev => {
-          const cloudMap = new Map(cloudData.announcements!.map(a => [a.id, a]));
-          const merged = prev.map(localAnn => {
-            const cloudAnn = cloudMap.get(localAnn.id);
-            if (cloudAnn) {
-              cloudMap.delete(localAnn.id);
-              return { ...cloudAnn, ...localAnn };
-            }
-            dbService.upsertAnnouncement(localAnn);
-            return localAnn;
-          });
-          return [...merged, ...Array.from(cloudMap.values())];
+        setAnnouncements(cloudData.announcements);
+      } else if (cloudData.announcements && cloudData.announcements.length === 0) {
+        INITIAL_ANNOUNCEMENTS.forEach(a => dbService.upsertAnnouncement(a));
+        setAnnouncements(INITIAL_ANNOUNCEMENTS);
+      }
+
+      // 7. Site Content CMS authoritative cloud sync
+      if (cloudData.siteContent) {
+        setSiteContent({
+          ...DEFAULT_SITE_CONTENT,
+          ...cloudData.siteContent
         });
       } else {
-        setAnnouncements(prev => {
-          prev.forEach(ann => dbService.upsertAnnouncement(ann));
-          return prev;
-        });
+        dbService.upsertSiteContent(DEFAULT_SITE_CONTENT);
+        setSiteContent(DEFAULT_SITE_CONTENT);
       }
 
-      // 7. Site Content merge
-      if (cloudData.siteContent) {
-        setSiteContent(prev => ({
-          ...DEFAULT_SITE_CONTENT,
-          ...prev,
-          ...cloudData.siteContent
-        }));
+      // 8. Audit logs cloud sync
+      if (cloudData.auditLogs && cloudData.auditLogs.length > 0) {
+        setAuditLogs(cloudData.auditLogs);
       }
 
       // 8. Audit Logs merge
