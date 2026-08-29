@@ -206,43 +206,139 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
     dbService.fetchInitialData().then((cloudData) => {
       if (!cloudData) return;
+
+      // 1. Users merge
       if (cloudData.users && cloudData.users.length > 0) {
         setUsers(prev => {
-          const cloudIds = new Set(cloudData.users!.map(u => u.id));
-          const localOnly = prev.filter(u => !cloudIds.has(u.id));
-          // If there are local users not yet in cloud, sync them up
-          localOnly.forEach(u => dbService.upsertUser(u));
-          return [...cloudData.users!, ...localOnly];
+          const cloudMap = new Map(cloudData.users!.map(u => [u.id, u]));
+          const merged = prev.map(localUser => {
+            const cloudUser = cloudMap.get(localUser.id);
+            if (cloudUser) {
+              cloudMap.delete(localUser.id);
+              // Merge cloud user but preserve local changes if any
+              return { ...cloudUser, ...localUser };
+            }
+            // Local user not yet in cloud: sync up to cloud
+            dbService.upsertUser(localUser);
+            return localUser;
+          });
+          return [...merged, ...Array.from(cloudMap.values())];
         });
       }
+
+      // 2. Leads merge
       if (cloudData.leads && cloudData.leads.length > 0) {
         setLeads(prev => {
-          const cloudIds = new Set(cloudData.leads!.map(l => l.id));
-          const localOnly = prev.filter(l => !cloudIds.has(l.id));
-          localOnly.forEach(l => dbService.insertLead(l));
-          return [...cloudData.leads!, ...localOnly];
+          const cloudMap = new Map(cloudData.leads!.map(l => [l.id, l]));
+          const merged = prev.map(localLead => {
+            const cloudLead = cloudMap.get(localLead.id);
+            if (cloudLead) {
+              cloudMap.delete(localLead.id);
+              return { ...cloudLead, ...localLead };
+            }
+            dbService.insertLead(localLead);
+            return localLead;
+          });
+          return [...merged, ...Array.from(cloudMap.values())];
         });
       }
+
+      // 3. Projects merge
       if (cloudData.projects && cloudData.projects.length > 0) {
         setProjects(prev => {
-          const cloudIds = new Set(cloudData.projects!.map(p => p.id));
-          const localOnly = prev.filter(p => !cloudIds.has(p.id));
-          localOnly.forEach(p => dbService.upsertProject(p));
-          return [...cloudData.projects!, ...localOnly];
+          const cloudMap = new Map(cloudData.projects!.map(p => [p.id, p]));
+          const merged = prev.map(localProj => {
+            const cloudProj = cloudMap.get(localProj.id);
+            if (cloudProj) {
+              cloudMap.delete(localProj.id);
+              return { ...cloudProj, ...localProj };
+            }
+            dbService.upsertProject(localProj);
+            return localProj;
+          });
+          return [...merged, ...Array.from(cloudMap.values())];
         });
       }
-      if (cloudData.assignments && cloudData.assignments.length > 0) setAssignments(cloudData.assignments);
+
+      // 4. Assignments merge
+      if (cloudData.assignments && cloudData.assignments.length > 0) {
+        setAssignments(prev => {
+          const cloudMap = new Map(cloudData.assignments!.map(a => [a.id, a]));
+          const merged = prev.map(localAsgn => {
+            const cloudAsgn = cloudMap.get(localAsgn.id);
+            if (cloudAsgn) {
+              cloudMap.delete(localAsgn.id);
+              return { ...cloudAsgn, ...localAsgn };
+            }
+            dbService.upsertAssignment(localAsgn);
+            return localAsgn;
+          });
+          return [...merged, ...Array.from(cloudMap.values())];
+        });
+      } else {
+        // If cloud assignments are empty, sync local assignments to cloud
+        setAssignments(prev => {
+          prev.forEach(a => dbService.upsertAssignment(a));
+          return prev;
+        });
+      }
+
+      // 5. Certificates merge
       if (cloudData.certificates && cloudData.certificates.length > 0) {
         setCertificates(prev => {
-          const cloudIds = new Set(cloudData.certificates!.map(c => c.id));
-          const localOnly = prev.filter(c => !cloudIds.has(c.id));
-          localOnly.forEach(c => dbService.upsertCertificate(c));
-          return [...cloudData.certificates!, ...localOnly];
+          const cloudMap = new Map(cloudData.certificates!.map(c => [c.id, c]));
+          const merged = prev.map(localCert => {
+            const cloudCert = cloudMap.get(localCert.id);
+            if (cloudCert) {
+              cloudMap.delete(localCert.id);
+              return { ...cloudCert, ...localCert };
+            }
+            dbService.upsertCertificate(localCert);
+            return localCert;
+          });
+          return [...merged, ...Array.from(cloudMap.values())];
         });
       }
-      if (cloudData.announcements && cloudData.announcements.length > 0) setAnnouncements(cloudData.announcements);
-      if (cloudData.siteContent) setSiteContent(cloudData.siteContent);
-      if (cloudData.auditLogs && cloudData.auditLogs.length > 0) setAuditLogs(cloudData.auditLogs);
+
+      // 6. Announcements merge
+      if (cloudData.announcements && cloudData.announcements.length > 0) {
+        setAnnouncements(prev => {
+          const cloudMap = new Map(cloudData.announcements!.map(a => [a.id, a]));
+          const merged = prev.map(localAnn => {
+            const cloudAnn = cloudMap.get(localAnn.id);
+            if (cloudAnn) {
+              cloudMap.delete(localAnn.id);
+              return { ...cloudAnn, ...localAnn };
+            }
+            dbService.upsertAnnouncement(localAnn);
+            return localAnn;
+          });
+          return [...merged, ...Array.from(cloudMap.values())];
+        });
+      } else {
+        setAnnouncements(prev => {
+          prev.forEach(ann => dbService.upsertAnnouncement(ann));
+          return prev;
+        });
+      }
+
+      // 7. Site Content merge
+      if (cloudData.siteContent) {
+        setSiteContent(prev => ({
+          ...DEFAULT_SITE_CONTENT,
+          ...prev,
+          ...cloudData.siteContent
+        }));
+      }
+
+      // 8. Audit Logs merge
+      if (cloudData.auditLogs && cloudData.auditLogs.length > 0) {
+        setAuditLogs(prev => {
+          const cloudIds = new Set(cloudData.auditLogs!.map(l => l.id));
+          const localOnly = prev.filter(l => !cloudIds.has(l.id));
+          return [...cloudData.auditLogs!, ...localOnly];
+        });
+      }
     }).catch(err => {
       console.warn('Cloud sync on mount failed, using local cache:', err);
     });
@@ -369,8 +465,10 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       return { success: false, error: 'Password must be at least 6 characters.' };
     }
     const newHash = quickHashSync(newPassword);
-    setUsers(prev => prev.map(u => u.id === currentUser.id ? { ...u, passwordHash: newHash, forcePasswordChange: false } : u));
-    setCurrentUser(prev => ({ ...prev, passwordHash: newHash, forcePasswordChange: false }));
+    const updatedUser = { ...currentUser, passwordHash: newHash, forcePasswordChange: false };
+    setUsers(prev => prev.map(u => u.id === currentUser.id ? updatedUser : u));
+    setCurrentUser(updatedUser);
+    dbService.upsertUser(updatedUser);
     return { success: true };
   };
 
@@ -436,6 +534,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       details: `Created new ${newUser.roleTier} account for ${newUser.name} with Member ID ${newUser.memberId}.`
     };
     setAuditLogs(prev => [auditEntry, ...prev]);
+    dbService.insertAuditLog(auditEntry);
 
     return { success: true, newUser };
   };
@@ -449,7 +548,9 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     if (!targetUser) return { success: false, error: 'User not found.' };
 
     const newHash = quickHashSync(newPlainPassword);
-    setUsers(prev => prev.map(u => u.id === targetUserId ? { ...u, passwordHash: newHash, forcePasswordChange: true } : u));
+    const updatedUser = { ...targetUser, passwordHash: newHash, forcePasswordChange: true };
+    setUsers(prev => prev.map(u => u.id === targetUserId ? updatedUser : u));
+    dbService.upsertUser(updatedUser);
 
     const auditEntry: SecurityAuditLog = {
       id: `audit-${Date.now()}`,
@@ -463,6 +564,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       details: `CEO reset password for ${targetUser.name} (${targetUser.memberId}).`
     };
     setAuditLogs(prev => [auditEntry, ...prev]);
+    dbService.insertAuditLog(auditEntry);
 
     return { success: true };
   };
@@ -476,7 +578,9 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     if (!targetUser) return { success: false, error: 'User not found.' };
 
     const newStatus: UserStatus = targetUser.status === 'active' ? 'suspended' : 'active';
-    setUsers(prev => prev.map(u => u.id === targetUserId ? { ...u, status: newStatus } : u));
+    const updatedUser: User = { ...targetUser, status: newStatus };
+    setUsers(prev => prev.map(u => u.id === targetUserId ? updatedUser : u));
+    dbService.upsertUser(updatedUser);
 
     const auditEntry: SecurityAuditLog = {
       id: `audit-${Date.now()}`,
@@ -490,6 +594,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       details: `Changed account status to ${newStatus}. Reason: ${reason}`
     };
     setAuditLogs(prev => [auditEntry, ...prev]);
+    dbService.insertAuditLog(auditEntry);
 
     return { success: true };
   };
@@ -499,9 +604,13 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       return { success: false, error: 'Access Denied: Only CEO Master authority can assign delegated permissions.' };
     }
 
-    setUsers(prev => prev.map(u => u.id === targetUserId ? { ...u, delegatedPermissions: permissions } : u));
-
     const targetUser = users.find(u => u.id === targetUserId);
+    if (!targetUser) return { success: false, error: 'User not found.' };
+
+    const updatedUser: User = { ...targetUser, delegatedPermissions: permissions };
+    setUsers(prev => prev.map(u => u.id === targetUserId ? updatedUser : u));
+    dbService.upsertUser(updatedUser);
+
     const auditEntry: SecurityAuditLog = {
       id: `audit-${Date.now()}`,
       timestamp: new Date().toISOString(),
@@ -510,10 +619,11 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       actorRole: currentTier,
       action: 'PERMISSIONS_UPDATED',
       targetId: targetUserId,
-      targetName: targetUser?.name,
+      targetName: targetUser.name,
       details: `Delegated permissions updated: ${permissions.join(', ')}`
     };
     setAuditLogs(prev => [auditEntry, ...prev]);
+    dbService.insertAuditLog(auditEntry);
 
     return { success: true };
   };
@@ -578,16 +688,20 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
     setProjects(prev => [newProject, ...prev]);
     setLeads(prev => prev.map(l => l.id === leadId ? { ...l, status: 'assigned' } : l));
+    dbService.upsertProject(newProject);
+    dbService.updateLead(leadId, { status: 'assigned' });
   };
 
   const assignProjectTeam = (projectId: string, projectAssignments: ProjectAssignment[]) => {
     setProjects(prev => prev.map(p => {
       if (p.id === projectId) {
-        return {
+        const updated = {
           ...p,
           assignments: projectAssignments,
-          status: 'in_progress'
+          status: 'in_progress' as PipelineStage
         };
+        dbService.upsertProject(updated);
+        return updated;
       }
       return p;
     }));
@@ -596,12 +710,14 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const updateProjectStatus = (projectId: string, newStatus: PipelineStage) => {
     setProjects(prev => prev.map(p => {
       if (p.id === projectId) {
-        return {
+        const updated = {
           ...p,
           status: newStatus,
           completedAt: newStatus === 'completed' ? new Date().toISOString() : p.completedAt,
           paidAt: newStatus === 'paid' ? new Date().toISOString() : p.paidAt
         };
+        dbService.upsertProject(updated);
+        return updated;
       }
       return p;
     }));
@@ -619,7 +735,14 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       notes
     };
 
-    setProjects(prev => prev.map(p => p.id === projectId ? { ...p, deliverables: [newDeliverable, ...p.deliverables] } : p));
+    setProjects(prev => prev.map(p => {
+      if (p.id === projectId) {
+        const updated = { ...p, deliverables: [newDeliverable, ...p.deliverables] };
+        dbService.upsertProject(updated);
+        return updated;
+      }
+      return p;
+    }));
   };
 
   const addComment = (projectId: string, text: string) => {
@@ -633,7 +756,14 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       timestamp: new Date().toISOString()
     };
 
-    setProjects(prev => prev.map(p => p.id === projectId ? { ...p, comments: [...p.comments, newComment] } : p));
+    setProjects(prev => prev.map(p => {
+      if (p.id === projectId) {
+        const updated = { ...p, comments: [...p.comments, newComment] };
+        dbService.upsertProject(updated);
+        return updated;
+      }
+      return p;
+    }));
   };
 
   const releaseProjectPayout = (projectId: string) => {
@@ -715,10 +845,18 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       createdAt: new Date().toISOString()
     };
     setAssignments(prev => [newAssignment, ...prev]);
+    dbService.upsertAssignment(newAssignment);
   };
 
   const updateAssignmentStatus = (assignmentId: string, newStatus: PipelineStage) => {
-    setAssignments(prev => prev.map(a => a.id === assignmentId ? { ...a, status: newStatus } : a));
+    setAssignments(prev => prev.map(a => {
+      if (a.id === assignmentId) {
+        const updated = { ...a, status: newStatus };
+        dbService.upsertAssignment(updated);
+        return updated;
+      }
+      return a;
+    }));
   };
 
   const addSubTask = (assignmentId: string, title: string, assignedMemberId: string, dueDate?: string) => {
@@ -731,22 +869,31 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       status: 'todo',
       dueDate
     };
-    setAssignments(prev => prev.map(a => a.id === assignmentId ? { ...a, subTasks: [...a.subTasks, newSubTask] } : a));
+    setAssignments(prev => prev.map(a => {
+      if (a.id === assignmentId) {
+        const updated = { ...a, subTasks: [...a.subTasks, newSubTask] };
+        dbService.upsertAssignment(updated);
+        return updated;
+      }
+      return a;
+    }));
   };
 
   const toggleSubTask = (assignmentId: string, subTaskId: string) => {
     setAssignments(prev => prev.map(a => {
       if (a.id === assignmentId) {
-        return {
+        const updated = {
           ...a,
           subTasks: a.subTasks.map(st => {
             if (st.id === subTaskId) {
               const nextStatus = st.status === 'completed' ? 'in_progress' : 'completed';
-              return { ...st, status: nextStatus };
+              return { ...st, status: nextStatus as any };
             }
             return st;
           })
         };
+        dbService.upsertAssignment(updated);
+        return updated;
       }
       return a;
     }));
@@ -759,16 +906,25 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       targetDate,
       isCompleted: false
     };
-    setAssignments(prev => prev.map(a => a.id === assignmentId ? { ...a, milestones: [...a.milestones, newMilestone] } : a));
+    setAssignments(prev => prev.map(a => {
+      if (a.id === assignmentId) {
+        const updated = { ...a, milestones: [...a.milestones, newMilestone] };
+        dbService.upsertAssignment(updated);
+        return updated;
+      }
+      return a;
+    }));
   };
 
   const toggleMilestone = (assignmentId: string, milestoneId: string) => {
     setAssignments(prev => prev.map(a => {
       if (a.id === assignmentId) {
-        return {
+        const updated = {
           ...a,
           milestones: a.milestones.map(m => m.id === milestoneId ? { ...m, isCompleted: !m.isCompleted } : m)
         };
+        dbService.upsertAssignment(updated);
+        return updated;
       }
       return a;
     }));
@@ -785,7 +941,14 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       status: 'pending',
       notes
     };
-    setAssignments(prev => prev.map(a => a.id === assignmentId ? { ...a, deliverables: [newDeliverable, ...a.deliverables] } : a));
+    setAssignments(prev => prev.map(a => {
+      if (a.id === assignmentId) {
+        const updated = { ...a, deliverables: [newDeliverable, ...a.deliverables] };
+        dbService.upsertAssignment(updated);
+        return updated;
+      }
+      return a;
+    }));
   };
 
   const addAssignmentComment = (assignmentId: string, text: string) => {
@@ -798,7 +961,14 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       text,
       timestamp: new Date().toISOString()
     };
-    setAssignments(prev => prev.map(a => a.id === assignmentId ? { ...a, comments: [...a.comments, newComment] } : a));
+    setAssignments(prev => prev.map(a => {
+      if (a.id === assignmentId) {
+        const updated = { ...a, comments: [...a.comments, newComment] };
+        dbService.upsertAssignment(updated);
+        return updated;
+      }
+      return a;
+    }));
   };
 
   // ── CERTIFICATE & TEMPLATE ACTIONS ────────────────────────────────────────
@@ -840,10 +1010,12 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       createdAt: new Date().toISOString().split('T')[0]
     };
 
-    setSiteContent(prev => ({
-      ...prev,
-      certificateTemplates: [...(prev.certificateTemplates || certificateTemplates), newTpl]
-    }));
+    const newContent = {
+      ...siteContent,
+      certificateTemplates: [...(siteContent.certificateTemplates || certificateTemplates), newTpl]
+    };
+    setSiteContent(newContent);
+    dbService.saveSiteContent(newContent);
 
     const auditEntry: SecurityAuditLog = {
       id: `audit-${Date.now()}`,
@@ -855,22 +1027,27 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       details: `Created new certificate template: ${newTpl.name}`
     };
     setAuditLogs(prev => [auditEntry, ...prev]);
+    dbService.insertAuditLog(auditEntry);
 
     return newTpl;
   };
 
   const updateCertificateTemplate = (templateId: string, updates: Partial<CertificateTemplate>) => {
-    setSiteContent(prev => ({
-      ...prev,
-      certificateTemplates: (prev.certificateTemplates || certificateTemplates).map(t => t.id === templateId ? { ...t, ...updates } : t)
-    }));
+    const newContent = {
+      ...siteContent,
+      certificateTemplates: (siteContent.certificateTemplates || certificateTemplates).map(t => t.id === templateId ? { ...t, ...updates } : t)
+    };
+    setSiteContent(newContent);
+    dbService.saveSiteContent(newContent);
   };
 
   const deleteCertificateTemplate = (templateId: string) => {
-    setSiteContent(prev => ({
-      ...prev,
-      certificateTemplates: (prev.certificateTemplates || certificateTemplates).filter(t => t.id !== templateId)
-    }));
+    const newContent = {
+      ...siteContent,
+      certificateTemplates: (siteContent.certificateTemplates || certificateTemplates).filter(t => t.id !== templateId)
+    };
+    setSiteContent(newContent);
+    dbService.saveSiteContent(newContent);
   };
 
   const generateMemberCertificate = (memberId: string, templateId?: string, overrides?: Partial<Certificate>): Certificate => {
@@ -912,6 +1089,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     };
 
     setCertificates(prev => [newCert, ...prev]);
+    dbService.upsertCertificate(newCert);
 
     const auditEntry: SecurityAuditLog = {
       id: `audit-${Date.now()}`,
@@ -925,6 +1103,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       details: `Generated ${newCert.documentTitle || newCert.type} for ${newCert.memberName} (${newCert.memberDghId}) with unique QR code.`
     };
     setAuditLogs(prev => [auditEntry, ...prev]);
+    dbService.insertAuditLog(auditEntry);
 
     return newCert;
   };
@@ -939,6 +1118,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       qrCodeUrl: `/verify/${uuidToken}`
     };
     setCertificates(prev => [newCert, ...prev]);
+    dbService.upsertCertificate(newCert);
 
     // Record in Security Audit Logs
     const auditEntry: SecurityAuditLog = {
@@ -953,12 +1133,20 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       details: `Issued ${certData.type.replace('_', ' ')} to ${certData.memberName} (${certData.memberDghId}) for ${certData.clientName}.`
     };
     setAuditLogs(prev => [auditEntry, ...prev]);
+    dbService.insertAuditLog(auditEntry);
 
     return newCert;
   };
 
   const revokeCertificate = (certId: string, reason?: string) => {
-    setCertificates(prev => prev.map(c => c.id === certId ? { ...c, status: 'revoked', revocationReason: reason || 'Revoked by Executive Management' } : c));
+    setCertificates(prev => prev.map(c => {
+      if (c.id === certId) {
+        const updated = { ...c, status: 'revoked' as const, revocationReason: reason || 'Revoked by Executive Management' };
+        dbService.upsertCertificate(updated);
+        return updated;
+      }
+      return c;
+    }));
     const cert = certificates.find(c => c.id === certId);
     if (cert) {
       const auditEntry: SecurityAuditLog = {
@@ -973,11 +1161,19 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         details: `Revoked certificate ${certId}. Reason: ${reason || 'Executive discretion'}`
       };
       setAuditLogs(prev => [auditEntry, ...prev]);
+      dbService.insertAuditLog(auditEntry);
     }
   };
 
   const restoreCertificate = (certId: string) => {
-    setCertificates(prev => prev.map(c => c.id === certId ? { ...c, status: 'valid', revocationReason: undefined } : c));
+    setCertificates(prev => prev.map(c => {
+      if (c.id === certId) {
+        const updated = { ...c, status: 'valid' as const, revocationReason: undefined };
+        dbService.upsertCertificate(updated);
+        return updated;
+      }
+      return c;
+    }));
   };
 
   // ── ANNOUNCEMENT ACTIONS ──────────────────────────────────────────────────
@@ -992,16 +1188,25 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       postedAt: new Date().toISOString()
     };
     setAnnouncements(prev => [newAnnouncement, ...prev]);
+    dbService.upsertAnnouncement(newAnnouncement);
   };
 
   const deleteAnnouncement = (announcementId: string) => {
     setAnnouncements(prev => prev.filter(a => a.id !== announcementId));
+    dbService.deleteAnnouncement(announcementId);
   };
 
   // ── PEOPLE & COMMUNITY MANAGEMENT ACTIONS (STRICT EXECUTIVE GOVERNANCE) ────
 
   const updateUserProfile = (userId: string, updates: Partial<User>) => {
-    setUsers(prev => prev.map(u => u.id === userId ? { ...u, ...updates } : u));
+    setUsers(prev => prev.map(u => {
+      if (u.id === userId) {
+        const updated = { ...u, ...updates };
+        dbService.upsertUser(updated);
+        return updated;
+      }
+      return u;
+    }));
     if (currentUser.id === userId) {
       setCurrentUser(prev => ({ ...prev, ...updates }));
     }
@@ -1017,11 +1222,13 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
           reason,
           changedBy
         };
-        return {
+        const updated: User = {
           ...u,
           status: newStatus,
           statusHistory: [log, ...(u.statusHistory || [])]
         };
+        dbService.upsertUser(updated);
+        return updated;
       }
       return u;
     }));
@@ -1029,26 +1236,56 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   const addUserNote = (userId: string, text: string, authorId: string, authorName: string) => {
     const newNote = { id: `note-${Date.now()}`, timestamp: new Date().toISOString(), authorId, authorName, text };
-    setUsers(prev => prev.map(u => u.id === userId ? { ...u, notes: [newNote, ...(u.notes || [])] } : u));
+    setUsers(prev => prev.map(u => {
+      if (u.id === userId) {
+        const updated = { ...u, notes: [newNote, ...(u.notes || [])] };
+        dbService.upsertUser(updated);
+        return updated;
+      }
+      return u;
+    }));
   };
 
   const deleteUserNote = (userId: string, noteId: string) => {
-    setUsers(prev => prev.map(u => u.id === userId ? { ...u, notes: (u.notes || []).filter(n => n.id !== noteId) } : u));
+    setUsers(prev => prev.map(u => {
+      if (u.id === userId) {
+        const updated = { ...u, notes: (u.notes || []).filter(n => n.id !== noteId) };
+        dbService.upsertUser(updated);
+        return updated;
+      }
+      return u;
+    }));
   };
 
   const setUserSplitOverride = (userId: string, splitOverride?: SplitOverride) => {
-    setUsers(prev => prev.map(u => u.id === userId ? { ...u, splitOverride } : u));
+    setUsers(prev => prev.map(u => {
+      if (u.id === userId) {
+        const updated = { ...u, splitOverride };
+        dbService.upsertUser(updated);
+        return updated;
+      }
+      return u;
+    }));
   };
 
   const reassignUserSquad = (userId: string, newGroupId?: GroupId) => {
-    setUsers(prev => prev.map(u => u.id === userId ? { ...u, groupId: newGroupId } : u));
+    setUsers(prev => prev.map(u => {
+      if (u.id === userId) {
+        const updated = { ...u, groupId: newGroupId };
+        dbService.upsertUser(updated);
+        return updated;
+      }
+      return u;
+    }));
   };
 
   const changeUserRole = (userId: string, newRole: UserRole) => {
     setUsers(prev => prev.map(u => {
       if (u.id === userId) {
         const newTier: UserRoleTier = newRole === 'management' ? 'manager' : newRole === 'group_leader' ? 'group_leader' : 'member';
-        return { ...u, role: newRole, roleTier: newTier };
+        const updated = { ...u, role: newRole, roleTier: newTier };
+        dbService.upsertUser(updated);
+        return updated;
       }
       return u;
     }));
@@ -1067,7 +1304,9 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
     setUsers(prev => prev.map(u => {
       if (u.id === targetUserId) {
-        return { ...u, roleTier: newRoleTier, role: mappedRole };
+        const updated = { ...u, roleTier: newRoleTier, role: mappedRole };
+        dbService.upsertUser(updated);
+        return updated;
       }
       return u;
     }));
@@ -1085,6 +1324,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       details: `Changed role tier from ${targetUser.roleTier || targetUser.role} to ${newRoleTier}. Reason: ${reason}`
     };
     setAuditLogs(prev => [auditEntry, ...prev]);
+    dbService.insertAuditLog(auditEntry);
 
     return { success: true };
   };
@@ -1097,7 +1337,14 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     const targetUser = users.find(u => u.id === targetUserId);
     if (!targetUser) return { success: false, error: 'User not found.' };
 
-    setUsers(prev => prev.map(u => u.id === targetUserId ? { ...u, groupId: newGroupId } : u));
+    setUsers(prev => prev.map(u => {
+      if (u.id === targetUserId) {
+        const updated = { ...u, groupId: newGroupId };
+        dbService.upsertUser(updated);
+        return updated;
+      }
+      return u;
+    }));
 
     const auditEntry: SecurityAuditLog = {
       id: `audit-${Date.now()}`,
@@ -1111,6 +1358,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       details: `Reassigned squad to ${newGroupId || 'None'}.`
     };
     setAuditLogs(prev => [auditEntry, ...prev]);
+    dbService.insertAuditLog(auditEntry);
 
     return { success: true };
   };
@@ -1223,18 +1471,19 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       details: `Updated website content section: ${String(section)}`
     };
     setAuditLogs(prev => [auditEntry, ...prev]);
+    dbService.insertAuditLog(auditEntry);
   };
 
   const addItemToSiteContent = <K extends keyof SiteContent>(section: K, item: any) => {
     if (!PERMISSIONS.canEditWebsiteContent(currentTier, currentUser)) return;
 
-    setSiteContent(prev => {
-      const currentList = Array.isArray(prev[section]) ? (prev[section] as any[]) : [];
-      return {
-        ...prev,
-        [section]: [...currentList, item]
-      };
-    });
+    const currentList = Array.isArray(siteContent[section]) ? (siteContent[section] as any[]) : [];
+    const newContent = {
+      ...siteContent,
+      [section]: [...currentList, item]
+    };
+    setSiteContent(newContent);
+    dbService.saveSiteContent(newContent);
 
     const auditEntry: SecurityAuditLog = {
       id: `audit-${Date.now()}`,
@@ -1246,18 +1495,19 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       details: `Added new item to ${String(section)} (ID: ${item.id || 'new'})`
     };
     setAuditLogs(prev => [auditEntry, ...prev]);
+    dbService.insertAuditLog(auditEntry);
   };
 
   const removeItemFromSiteContent = <K extends keyof SiteContent>(section: K, itemId: string) => {
     if (!PERMISSIONS.canEditWebsiteContent(currentTier, currentUser)) return;
 
-    setSiteContent(prev => {
-      const currentList = Array.isArray(prev[section]) ? (prev[section] as any[]) : [];
-      return {
-        ...prev,
-        [section]: currentList.filter(item => item.id !== itemId)
-      };
-    });
+    const currentList = Array.isArray(siteContent[section]) ? (siteContent[section] as any[]) : [];
+    const newContent = {
+      ...siteContent,
+      [section]: currentList.filter(item => item.id !== itemId)
+    };
+    setSiteContent(newContent);
+    dbService.saveSiteContent(newContent);
 
     const auditEntry: SecurityAuditLog = {
       id: `audit-${Date.now()}`,
@@ -1269,23 +1519,25 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       details: `Removed item from ${String(section)} (ID: ${itemId})`
     };
     setAuditLogs(prev => [auditEntry, ...prev]);
+    dbService.insertAuditLog(auditEntry);
   };
 
   const updateItemInSiteContent = <K extends keyof SiteContent>(section: K, itemId: string, updatedItem: any) => {
     if (!PERMISSIONS.canEditWebsiteContent(currentTier, currentUser)) return;
 
-    setSiteContent(prev => {
-      const currentList = Array.isArray(prev[section]) ? (prev[section] as any[]) : [];
-      return {
-        ...prev,
-        [section]: currentList.map(item => item.id === itemId ? { ...item, ...updatedItem } : item)
-      };
-    });
+    const currentList = Array.isArray(siteContent[section]) ? (siteContent[section] as any[]) : [];
+    const newContent = {
+      ...siteContent,
+      [section]: currentList.map(item => item.id === itemId ? { ...item, ...updatedItem } : item)
+    };
+    setSiteContent(newContent);
+    dbService.saveSiteContent(newContent);
   };
 
   const resetSiteContent = () => {
     if (!PERMISSIONS.canEditWebsiteContent(currentTier, currentUser)) return;
     setSiteContent(DEFAULT_SITE_CONTENT);
+    dbService.saveSiteContent(DEFAULT_SITE_CONTENT);
   };
 
   // Applicant Actions
@@ -1331,6 +1583,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     };
 
     setUsers(prev => [newUser, ...prev]);
+    dbService.upsertUser(newUser);
     setApplicants(prev => prev.map(a => a.id === applicantId ? { ...a, status: 'approved' } : a));
   };
 

@@ -1,5 +1,5 @@
 import { supabase, isSupabaseConfigured } from './supabase';
-import { User, Lead, Project, Assignment, Certificate, Announcement, SiteContent, SecurityAuditLog } from '../types';
+import { User, Lead, Project, Assignment, Certificate, Announcement, SiteContent, SecurityAuditLog, GroupId, PipelineStage, UserRole, UserRoleTier } from '../types';
 
 export const dbService = {
   // ── 1. Fetch All Initial Application State ──
@@ -20,11 +20,11 @@ export const dbService = {
         auditsRes
       ] = await Promise.all([
         supabase.from('users').select('*'),
-        supabase.from('leads').select('*'),
-        supabase.from('projects').select('*'),
-        supabase.from('assignments').select('*'),
-        supabase.from('certificates').select('*'),
-        supabase.from('announcements').select('*'),
+        supabase.from('leads').select('*').order('created_at', { ascending: false }),
+        supabase.from('projects').select('*').order('created_at', { ascending: false }),
+        supabase.from('assignments').select('*').order('created_at', { ascending: false }),
+        supabase.from('certificates').select('*').order('created_at', { ascending: false }),
+        supabase.from('announcements').select('*').order('created_at', { ascending: false }),
         supabase.from('site_content').select('*').eq('id', 'primary_cms').single(),
         supabase.from('audit_logs').select('*').order('timestamp', { ascending: false }).limit(200)
       ]);
@@ -60,13 +60,13 @@ export const dbService = {
         avatar_url: user.avatarUrl,
         specialties: user.specialties || [],
         status: user.status,
-        join_year: user.joinYear,
-        bio: user.bio,
-        phone: user.phone,
-        member_id: user.memberId,
-        password_hash: user.passwordHash,
-        is_first_login: user.isFirstLogin || false,
-        custom_permissions: user.customPermissions || [],
+        join_year: user.joinYear || 2026,
+        bio: user.bio || '',
+        phone: user.phone || '',
+        member_id: user.memberId || '',
+        password_hash: user.passwordHash || '',
+        is_first_login: user.forcePasswordChange || false,
+        custom_permissions: user.delegatedPermissions || [],
         updated_at: new Date().toISOString()
       });
     } catch (err) {
@@ -87,19 +87,19 @@ export const dbService = {
   async insertLead(lead: Lead) {
     if (!isSupabaseConfigured || !supabase) return;
     try {
-      await supabase.from('leads').insert({
+      await supabase.from('leads').upsert({
         id: lead.id,
         client_name: lead.clientName,
-        email: lead.email,
-        company_name: lead.companyName,
-        scope_description: lead.scopeDescription,
-        target_group_id: lead.targetGroupId,
-        budget_range: lead.budgetRange,
-        timeline: lead.timeline,
-        referral_source: lead.referralSource,
+        email: lead.clientEmail,
+        company_name: lead.clientCompany || '',
+        scope_description: lead.brief,
+        target_group_id: lead.suggestedGroupId,
+        budget_range: String(lead.budgetEstimate || 0),
+        timeline: 'Flexible',
+        referral_source: 'Website Client Portal',
         status: lead.status,
-        created_at: lead.createdAt,
-        assigned_to: lead.assignedTo
+        created_at: lead.createdAt || new Date().toISOString(),
+        assigned_to: lead.submittedByUserId
       });
     } catch (err) {
       console.error('Failed to insert lead to Supabase:', err);
@@ -111,8 +111,12 @@ export const dbService = {
     try {
       const payload: Record<string, any> = {};
       if (updates.status) payload.status = updates.status;
-      if (updates.assignedTo !== undefined) payload.assigned_to = updates.assignedTo;
-      if (updates.scopeDescription) payload.scope_description = updates.scopeDescription;
+      if (updates.clientName) payload.client_name = updates.clientName;
+      if (updates.clientEmail) payload.email = updates.clientEmail;
+      if (updates.clientCompany !== undefined) payload.company_name = updates.clientCompany;
+      if (updates.brief) payload.scope_description = updates.brief;
+      if (updates.suggestedGroupId) payload.target_group_id = updates.suggestedGroupId;
+      if (updates.budgetEstimate !== undefined) payload.budget_range = String(updates.budgetEstimate);
       await supabase.from('leads').update(payload).eq('id', leadId);
     } catch (err) {
       console.error('Failed to update lead in Supabase:', err);
@@ -129,18 +133,18 @@ export const dbService = {
         title: project.title,
         client_name: project.clientName,
         group_id: project.groupId,
-        stage: project.stage,
-        total_budget: project.totalBudget,
-        currency: project.currency,
-        client_deposit: project.clientDeposit,
-        split_type: project.splitType,
-        custom_freelancer_share: project.customFreelancerShare,
-        custom_group_leader_share: project.customGroupLeaderShare,
-        custom_management_share: project.customManagementShare,
-        payout_released: project.payoutReleased,
-        start_date: project.startDate,
-        target_delivery_date: project.targetDeliveryDate,
-        completed_date: project.completedDate,
+        stage: project.status,
+        total_budget: project.totalValue,
+        currency: 'USD',
+        client_deposit: project.externalFee || 0,
+        split_type: project.isLeadGenIndependent ? 'independent_lead' : 'standard_squad',
+        custom_freelancer_share: project.splitFreelancerPct,
+        custom_group_leader_share: project.splitLeaderPct,
+        custom_management_share: project.splitManagementPct,
+        payout_released: project.status === 'paid',
+        start_date: project.createdAt ? project.createdAt.split('T')[0] : new Date().toISOString().split('T')[0],
+        target_delivery_date: project.completedAt ? project.completedAt.split('T')[0] : new Date().toISOString().split('T')[0],
+        completed_date: project.completedAt ? project.completedAt.split('T')[0] : null,
         deliverables: project.deliverables || [],
         updated_at: new Date().toISOString()
       });
@@ -155,18 +159,32 @@ export const dbService = {
     try {
       await supabase.from('assignments').upsert({
         id: assignment.id,
-        project_id: assignment.projectId,
-        title: assignment.title,
-        description: assignment.description,
-        assigned_to_user_id: assignment.assignedToUserId,
+        project_id: assignment.projectId || assignment.id,
+        title: assignment.sanitizedBrief?.title || 'Assignment Sprint',
+        description: assignment.sanitizedBrief?.scope || '',
+        assigned_to_user_id: assignment.assignedLeaderId || assignment.assignedMemberIds?.[0] || 'usr-ceo-1',
         status: assignment.status,
-        deadline: assignment.deadline,
-        payout_amount: assignment.payoutAmount,
-        currency: assignment.currency,
+        deadline: assignment.sanitizedBrief?.deadline || new Date().toISOString().split('T')[0],
+        payout_amount: assignment.totalBudget || 0,
+        currency: 'USD',
         deliverables: assignment.deliverables || [],
-        submission_notes: assignment.submissionNotes,
-        submitted_at: assignment.submittedAt,
-        comments: assignment.comments || []
+        submission_notes: JSON.stringify({
+          sanitizedBrief: assignment.sanitizedBrief,
+          subTasks: assignment.subTasks || [],
+          milestones: assignment.milestones || [],
+          assignedLeaderId: assignment.assignedLeaderId,
+          assignedLeaderName: assignment.assignedLeaderName,
+          assignedMemberIds: assignment.assignedMemberIds || [],
+          squad: assignment.squad,
+          clientName: assignment.clientName,
+          clientEmail: assignment.clientEmail,
+          clientCompany: assignment.clientCompany,
+          totalBudget: assignment.totalBudget,
+          createdBy: assignment.createdBy
+        }),
+        submitted_at: assignment.createdAt || new Date().toISOString(),
+        comments: assignment.comments || [],
+        created_at: assignment.createdAt || new Date().toISOString()
       });
     } catch (err) {
       console.error('Failed to upsert assignment in Supabase:', err);
@@ -184,28 +202,29 @@ export const dbService = {
         member_name: cert.memberName,
         member_dgh_id: cert.memberDghId,
         type: cert.type,
-        document_title: cert.documentTitle,
+        document_title: cert.documentTitle || 'Official Certificate',
         role_title: cert.roleTitle,
-        start_date: cert.startDate,
+        start_date: cert.startDate || new Date().toISOString().split('T')[0],
         end_date: cert.endDate,
-        issued_date: cert.issuedDate,
+        issued_date: cert.issuedDate || new Date().toISOString().split('T')[0],
         status: cert.status,
         client_name: cert.clientName,
         project_details: cert.projectDetails,
         issued_by: cert.issuedBy,
-        qr_code_url: cert.qrCodeUrl,
+        qr_code_url: cert.qrCodeUrl || `/verify/${cert.id}`,
         duration_text: cert.durationText,
         stipend_terms: cert.stipendTerms,
         evaluation_criteria: cert.evaluationCriteria || [],
         intro_paragraph: cert.introParagraph,
         closing_paragraph: cert.closingParagraph,
-        signatory_name: cert.signatoryName,
-        signatory_title: cert.signatoryTitle,
-        watermark_text: cert.watermarkText,
-        contact_email: cert.contactEmail,
-        contact_phone: cert.contactPhone,
-        contact_address: cert.contactAddress,
-        pdf_config: cert.pdfConfig
+        signatory_name: cert.signatoryName || 'Mahad Abbas',
+        signatory_title: cert.signatoryTitle || 'Founder & CEO',
+        watermark_text: cert.watermarkText || 'DigiHust',
+        contact_email: cert.contactEmail || 'contact@digihust.com',
+        contact_phone: cert.contactPhone || '+92 300 1234567',
+        contact_address: cert.contactAddress || 'Islamabad / Global Remote Operations',
+        pdf_config: cert.pdfConfig,
+        created_at: cert.issuedDate ? new Date(cert.issuedDate).toISOString() : new Date().toISOString()
       });
     } catch (err) {
       console.error('Failed to upsert certificate in Supabase:', err);
@@ -219,16 +238,16 @@ export const dbService = {
       await supabase.from('announcements').upsert({
         id: announcement.id,
         title: announcement.title,
-        content: announcement.content,
-        scope: announcement.scope,
-        group_id: announcement.groupId,
-        author_id: announcement.authorId,
-        author_name: announcement.authorName,
-        author_role: announcement.authorRole,
-        is_pinned: announcement.isPinned,
-        priority: announcement.priority,
-        created_at: announcement.createdAt,
-        expires_at: announcement.expiresAt
+        content: announcement.content || announcement.body || '',
+        scope: announcement.scope || 'global',
+        group_id: announcement.groupId || null,
+        author_id: announcement.postedBy || 'usr-ceo-1',
+        author_name: announcement.postedByName || 'Mahad Abbas',
+        author_role: announcement.postedByRole || 'ceo',
+        is_pinned: false,
+        priority: 'normal',
+        created_at: announcement.postedAt || new Date().toISOString(),
+        expires_at: announcement.expiresAt || null
       });
     } catch (err) {
       console.error('Failed to upsert announcement in Supabase:', err);
@@ -264,12 +283,12 @@ export const dbService = {
     try {
       await supabase.from('audit_logs').insert({
         id: log.id,
-        timestamp: log.timestamp,
+        timestamp: log.timestamp || new Date().toISOString(),
         actor_id: log.actorId,
         actor_name: log.actorName,
         actor_role: log.actorRole,
         action: log.action,
-        target_id: log.targetId,
+        target_id: log.targetId || null,
         details: log.details
       });
     } catch (err) {
@@ -285,78 +304,108 @@ function mapUserFromDb(row: any): User {
     id: row.id,
     name: row.name,
     email: row.email,
-    role: row.role,
-    roleTier: row.role_tier,
-    groupId: row.group_id,
-    title: row.title,
-    avatarUrl: row.avatar_url,
-    specialties: row.specialties || [],
-    status: row.status,
-    joinYear: row.join_year,
-    bio: row.bio,
-    phone: row.phone,
-    memberId: row.member_id,
-    passwordHash: row.password_hash,
-    isFirstLogin: row.is_first_login,
-    customPermissions: row.custom_permissions || []
+    role: (row.role as UserRole) || 'freelancer',
+    roleTier: (row.role_tier as UserRoleTier) || 'member',
+    groupId: row.group_id as GroupId,
+    title: row.title || 'Specialist',
+    avatarUrl: row.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(row.name || 'User')}&background=1F7A8C&color=fff`,
+    specialties: Array.isArray(row.specialties) ? row.specialties : [],
+    status: row.status || 'active',
+    joinYear: row.join_year || 2026,
+    bio: row.bio || '',
+    phone: row.phone || '',
+    memberId: row.member_id || 'DGH2600001',
+    passwordHash: row.password_hash || '',
+    forcePasswordChange: row.is_first_login || false,
+    completedProjectsCount: 0,
+    totalEarnings: 0,
+    rating: 5.0,
+    delegatedPermissions: Array.isArray(row.custom_permissions) ? row.custom_permissions : []
   };
 }
 
 function mapLeadFromDb(row: any): Lead {
   return {
     id: row.id,
-    clientName: row.client_name,
-    email: row.email,
-    companyName: row.company_name,
-    scopeDescription: row.scope_description,
-    targetGroupId: row.target_group_id,
-    budgetRange: row.budget_range,
-    timeline: row.timeline,
-    referralSource: row.referral_source,
-    status: row.status,
-    createdAt: row.created_at,
-    assignedTo: row.assigned_to
+    title: row.title || (row.scope_description ? row.scope_description.slice(0, 40) : `Inquiry from ${row.client_name}`),
+    clientName: row.client_name || 'Client',
+    clientEmail: row.email || '',
+    clientCompany: row.company_name || '',
+    submittedByUserId: row.assigned_to || 'usr-ceo-1',
+    submittedByUserName: 'Client Portal Intake',
+    brief: row.scope_description || '',
+    budgetEstimate: Number(row.budget_range?.replace(/[^0-9.]/g, '') || 500),
+    suggestedGroupId: (row.target_group_id as GroupId) || 'tech',
+    status: (row.status === 'new' ? 'new_lead' : row.status) as PipelineStage,
+    createdAt: row.created_at || new Date().toISOString()
   };
 }
 
 function mapProjectFromDb(row: any): Project {
+  const totalValue = Number(row.total_budget || 0);
+  const externalFee = Number(row.client_deposit || 0);
   return {
     id: row.id,
     leadId: row.lead_id,
-    title: row.title,
-    clientName: row.client_name,
-    groupId: row.group_id,
-    stage: row.stage,
-    totalBudget: Number(row.total_budget || 0),
-    currency: row.currency,
-    clientDeposit: Number(row.client_deposit || 0),
-    splitType: row.split_type,
-    customFreelancerShare: row.custom_freelancer_share ? Number(row.custom_freelancer_share) : undefined,
-    customGroupLeaderShare: row.custom_group_leader_share ? Number(row.custom_group_leader_share) : undefined,
-    customManagementShare: row.custom_management_share ? Number(row.custom_management_share) : undefined,
-    payoutReleased: row.payout_released,
-    startDate: row.start_date,
-    targetDeliveryDate: row.target_delivery_date,
-    completedDate: row.completed_date,
-    deliverables: row.deliverables || []
+    title: row.title || 'Client Project',
+    clientName: row.client_name || 'Client',
+    clientEmail: row.client_email || '',
+    clientCompany: row.client_company || '',
+    groupId: (row.group_id as GroupId) || 'tech',
+    assignedLeaderId: row.assigned_leader_id || 'usr-leader-1',
+    assignedLeaderName: row.assigned_leader_name || 'Squad Leader',
+    brief: row.brief || row.title || '',
+    totalValue,
+    externalFee,
+    netRevenue: totalValue - externalFee,
+    isLeadGenIndependent: row.split_type === 'independent_lead',
+    leadGenUserPct: 15,
+    splitManagementPct: Number(row.custom_management_share || 20),
+    splitLeaderPct: Number(row.custom_group_leader_share || 20),
+    splitFreelancerPct: Number(row.custom_freelancer_share || 60),
+    assignments: Array.isArray(row.assignments) ? row.assignments : [],
+    status: (row.stage as PipelineStage) || 'assigned',
+    deliverables: Array.isArray(row.deliverables) ? row.deliverables : [],
+    comments: Array.isArray(row.comments) ? row.comments : [],
+    createdAt: row.created_at || new Date().toISOString(),
+    completedAt: row.completed_date || undefined
   };
 }
 
 function mapAssignmentFromDb(row: any): Assignment {
+  let parsedDetails: any = {};
+  if (row.submission_notes && typeof row.submission_notes === 'string') {
+    try {
+      parsedDetails = JSON.parse(row.submission_notes);
+    } catch {
+      parsedDetails = {};
+    }
+  }
+
   return {
     id: row.id,
-    projectId: row.project_id,
-    title: row.title,
-    description: row.description,
-    assignedToUserId: row.assigned_to_user_id,
-    status: row.status,
-    deadline: row.deadline,
-    payoutAmount: Number(row.payout_amount || 0),
-    currency: row.currency,
-    deliverables: row.deliverables || [],
-    submissionNotes: row.submission_notes,
-    submittedAt: row.submitted_at,
-    comments: row.comments || []
+    projectId: row.project_id || parsedDetails.projectId,
+    clientName: parsedDetails.clientName || 'Enterprise Client',
+    clientEmail: parsedDetails.clientEmail,
+    clientCompany: parsedDetails.clientCompany,
+    totalBudget: parsedDetails.totalBudget || Number(row.payout_amount || 0),
+    assignedLeaderId: parsedDetails.assignedLeaderId || row.assigned_to_user_id || 'usr-ceo-1',
+    assignedLeaderName: parsedDetails.assignedLeaderName || 'Lead Coordinator',
+    assignedMemberIds: parsedDetails.assignedMemberIds || [row.assigned_to_user_id || 'usr-member-1'],
+    squad: (parsedDetails.squad as GroupId) || 'tech',
+    status: (row.status as PipelineStage) || 'in_progress',
+    sanitizedBrief: parsedDetails.sanitizedBrief || {
+      title: row.title || 'Active Sprint Assignment',
+      scope: row.description || 'Deliver project milestones according to specification.',
+      deliverables: ['Production Code', 'Documentation'],
+      deadline: row.deadline || new Date().toISOString().split('T')[0]
+    },
+    subTasks: Array.isArray(parsedDetails.subTasks) ? parsedDetails.subTasks : [],
+    milestones: Array.isArray(parsedDetails.milestones) ? parsedDetails.milestones : [],
+    deliverables: Array.isArray(row.deliverables) ? row.deliverables : [],
+    comments: Array.isArray(row.comments) ? row.comments : [],
+    createdBy: parsedDetails.createdBy || 'Management',
+    createdAt: row.created_at || new Date().toISOString()
   };
 }
 
@@ -368,7 +417,7 @@ function mapCertFromDb(row: any): Certificate {
     memberName: row.member_name,
     memberDghId: row.member_dgh_id,
     type: row.type,
-    documentTitle: row.document_title,
+    documentTitle: row.document_title || 'Official Certificate',
     roleTitle: row.role_title,
     startDate: row.start_date,
     endDate: row.end_date,
@@ -377,15 +426,15 @@ function mapCertFromDb(row: any): Certificate {
     clientName: row.client_name,
     projectDetails: row.project_details,
     issuedBy: row.issued_by,
-    qrCodeUrl: row.qr_code_url,
+    qrCodeUrl: row.qr_code_url || `/verify/${row.id}`,
     durationText: row.duration_text,
     stipendTerms: row.stipend_terms,
-    evaluationCriteria: row.evaluation_criteria || [],
+    evaluationCriteria: Array.isArray(row.evaluation_criteria) ? row.evaluation_criteria : [],
     introParagraph: row.intro_paragraph,
     closingParagraph: row.closing_paragraph,
-    signatoryName: row.signatory_name,
-    signatoryTitle: row.signatory_title,
-    watermarkText: row.watermark_text,
+    signatoryName: row.signatory_name || 'Mahad Abbas',
+    signatoryTitle: row.signatory_title || 'Founder & CEO',
+    watermarkText: row.watermark_text || 'DigiHust',
     contactEmail: row.contact_email,
     contactPhone: row.contact_phone,
     contactAddress: row.contact_address,
@@ -397,15 +446,15 @@ function mapAnnouncementFromDb(row: any): Announcement {
   return {
     id: row.id,
     title: row.title,
-    content: row.content,
-    scope: row.scope,
+    content: row.content || '',
+    body: row.content || '',
+    scope: row.scope || 'global',
     groupId: row.group_id,
-    authorId: row.author_id,
-    authorName: row.author_name,
-    authorRole: row.author_role,
-    isPinned: row.is_pinned,
-    priority: row.priority,
-    createdAt: row.created_at,
+    postedBy: row.author_id || row.posted_by || 'usr-ceo-1',
+    postedByName: row.author_name || row.posted_by_name || 'Mahad Abbas',
+    postedByRole: (row.author_role || row.posted_by_role || 'ceo') as UserRoleTier,
+    postedAt: row.created_at || row.posted_at || new Date().toISOString(),
     expiresAt: row.expires_at
   };
 }
+
