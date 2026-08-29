@@ -94,7 +94,7 @@ export const Contact: React.FC = () => {
   const { submitLead, siteContent } = useApp();
   const [whatsappLink, setWhatsappLink] = useState<string>('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (form.honeypot) return; // silent bot rejection
     if (!validate()) return;
@@ -135,8 +135,8 @@ export const Contact: React.FC = () => {
 
       submitLead(newLeadData);
 
-      // Automated direct email dispatch to digihust@gmail.com
-      notificationService.dispatchLeadEmail(form);
+      // Automated direct email dispatch to digihust@gmail.com via EmailJS
+      await notificationService.dispatchLeadEmail(form);
 
       // Generate direct WhatsApp click-to-chat URL for management
       const cleanPhone = (siteContent?.contact?.whatsapp || '+923206806396').replace(/[^0-9]/g, '');
@@ -155,11 +155,8 @@ export const Contact: React.FC = () => {
       console.error('Contact form submission error:', err);
     }
 
-    // Always show success to the user after a short delay
-    setTimeout(() => {
-      setIsSubmitting(false);
-      setSubmitted(true);
-    }, 600);
+    setIsSubmitting(false);
+    setSubmitted(true);
   };
 
 

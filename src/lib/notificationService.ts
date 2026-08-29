@@ -47,11 +47,11 @@ export const notificationService = {
     timeline: string;
     description: string;
   }): Promise<boolean> {
-    const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID || '';
-    const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID || '';
-    const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY || '';
+    const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID || 'service_kk1oyko';
+    const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID || 'template_xcxoq8x';
+    const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY || 'hvCezH1wrH-95AZDc';
 
-    // 1. Primary: EmailJS SDK (Zero-block, direct connection to your Gmail)
+    // 1. Primary: EmailJS SDK (Direct connection to your Gmail)
     if (serviceId && templateId && publicKey) {
       try {
         const emailParams = {
@@ -73,10 +73,11 @@ export const notificationService = {
 
         const res = await emailjs.send(serviceId, templateId, emailParams, publicKey);
         if (res.status === 200) {
+          console.log('✓ EmailJS Lead Dispatched Successfully:', res);
           return true;
         }
       } catch (err) {
-        console.warn('EmailJS delivery warning:', err);
+        console.error('EmailJS delivery error:', err);
       }
     }
 
