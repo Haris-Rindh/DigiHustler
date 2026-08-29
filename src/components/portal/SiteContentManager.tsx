@@ -30,6 +30,14 @@ export const SiteContentManager: React.FC = () => {
   const [contactDraft, setContactDraft] = useState(siteContent.contact || { email: '', phone: '', address: '' });
   const [customImagesDraft, setCustomImagesDraft] = useState(siteContent.customImages || {});
 
+  // Keep drafts synchronized with latest cloud state
+  useEffect(() => {
+    if (siteContent.hero) setHeroDraft(siteContent.hero);
+    if (siteContent.about) setAboutDraft(siteContent.about);
+    if (siteContent.contact) setContactDraft(siteContent.contact);
+    if (siteContent.customImages) setCustomImagesDraft(siteContent.customImages);
+  }, [siteContent]);
+
   // New item modal states
   const [showAddCaseStudy, setShowAddCaseStudy] = useState(false);
   const [newCaseStudy, setNewCaseStudy] = useState<Partial<SiteCaseStudy>>({
@@ -739,7 +747,7 @@ export const SiteContentManager: React.FC = () => {
                   <h3 className="font-bold text-base text-[var(--text-heading)]">Add New Case Study</h3>
                   <button type="button" onClick={() => setShowAddCaseStudy(false)}><X className="w-5 h-5" /></button>
                 </div>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
                     <label className="block text-xs font-bold uppercase text-[var(--text-muted)] mb-1">Title</label>
                     <input
@@ -761,7 +769,7 @@ export const SiteContentManager: React.FC = () => {
                     />
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
                     <label className="block text-xs font-bold uppercase text-[var(--text-muted)] mb-1">Client Name</label>
                     <input
@@ -792,7 +800,7 @@ export const SiteContentManager: React.FC = () => {
                     className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs font-mono"
                   />
                 </div>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
                     <label className="block text-xs font-bold uppercase text-[var(--text-muted)] mb-1">Impact Metric</label>
                     <input
@@ -1213,12 +1221,12 @@ export const SiteContentManager: React.FC = () => {
           {/* Add Team Modal */}
           {showAddTeam && (
             <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
-              <form onSubmit={handleCreateTeam} className="bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl space-y-4">
+              <form onSubmit={handleCreateTeam} className="bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
                 <div className="flex items-center justify-between pb-3 border-b border-[var(--border-subtle)]">
                   <h3 className="font-bold text-base text-[var(--text-heading)]">Add Team Member Profile</h3>
                   <button type="button" onClick={() => setShowAddTeam(false)} className="text-[var(--text-muted)] hover:text-[var(--text-heading)]"><X className="w-5 h-5" /></button>
                 </div>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
                     <label className="block text-xs font-bold uppercase text-[var(--text-muted)] mb-1">Full Name</label>
                     <input
@@ -1240,7 +1248,7 @@ export const SiteContentManager: React.FC = () => {
                     />
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
                     <label className="block text-xs font-bold uppercase text-[var(--text-muted)] mb-1">Squad Name</label>
                     <input

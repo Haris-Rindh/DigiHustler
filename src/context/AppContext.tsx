@@ -15,7 +15,7 @@ import { getNextMemberId } from '../lib/memberIdGenerator';
 import { getUserRoleTier, PERMISSIONS } from '../lib/permissions';
 import { quickHashSync } from '../lib/crypto';
 import { dbService } from '../lib/dbService';
-import { isSupabaseConfigured } from '../lib/supabase';
+import { isSupabaseConfigured, supabase } from '../lib/supabase';
 import { ToastContainer, ToastMessage } from '../components/common/ToastContainer';
 
 interface AppContextType {
@@ -233,88 +233,101 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     }
   }, [dismissToast]);
 
-  // ── CLOUD DATABASE INITIALIZATION (Supabase PostgreSQL) ───────────────────
+  // ── CLOUD DATABASE INITIALIZATION & REAL-TIME MULTI-DEVICE SYNC ───────────
   useEffect(() => {
-    if (!isSupabaseConfigured) return;
+    if (!isSupabaseConfigured || !supabase) return;
 
-    dbService.fetchInitialData().then((cloudData) => {
-      if (!cloudData) return;
+    const syncCloudData = async () => {
+      try {
+        const cloudData = await dbService.fetchInitialData();
+        if (!cloudData) return;
 
-      // 1. Users authoritative cloud sync
-      if (cloudData.users && cloudData.users.length > 0) {
-        setUsers(cloudData.users);
-      } else if (cloudData.users && cloudData.users.length === 0) {
-        INITIAL_USERS.forEach(u => dbService.upsertUser(u));
-        setUsers(INITIAL_USERS);
+        // 1. Users authoritative cloud sync
+        if (cloudData.users && cloudData.users.length > 0) {
+          setUsers(cloudData.users);
+        } else if (cloudData.users && cloudData.users.length === 0) {
+          INITIAL_USERS.forEach(u => dbService.upsertUser(u));
+          setUsers(INITIAL_USERS);
+        }
+
+        // 2. Leads authoritative cloud sync
+        if (cloudData.leads && cloudData.leads.length > 0) {
+          setLeads(cloudData.leads);
+        } else if (cloudData.leads && cloudData.leads.length === 0) {
+          INITIAL_LEADS.forEach(l => dbService.insertLead(l));
+          setLeads(INITIAL_LEADS);
+        }
+
+        // 3. Projects authoritative cloud sync
+        if (cloudData.projects && cloudData.projects.length > 0) {
+          setProjects(cloudData.projects);
+        } else if (cloudData.projects && cloudData.projects.length === 0) {
+          INITIAL_PROJECTS.forEach(p => dbService.upsertProject(p));
+          setProjects(INITIAL_PROJECTS);
+        }
+
+        // 4. Assignments authoritative cloud sync
+        if (cloudData.assignments && cloudData.assignments.length > 0) {
+          setAssignments(cloudData.assignments);
+        } else if (cloudData.assignments && cloudData.assignments.length === 0) {
+          INITIAL_ASSIGNMENTS.forEach(a => dbService.upsertAssignment(a));
+          setAssignments(INITIAL_ASSIGNMENTS);
+        }
+
+        // 5. Certificates authoritative cloud sync
+        if (cloudData.certificates && cloudData.certificates.length > 0) {
+          setCertificates(cloudData.certificates);
+        } else if (cloudData.certificates && cloudData.certificates.length === 0) {
+          INITIAL_CERTIFICATES.forEach(c => dbService.upsertCertificate(c));
+          setCertificates(INITIAL_CERTIFICATES);
+        }
+
+        // 6. Announcements authoritative cloud sync
+        if (cloudData.announcements && cloudData.announcements.length > 0) {
+          setAnnouncements(cloudData.announcements);
+        } else if (cloudData.announcements && cloudData.announcements.length === 0) {
+          INITIAL_ANNOUNCEMENTS.forEach(a => dbService.upsertAnnouncement(a));
+          setAnnouncements(INITIAL_ANNOUNCEMENTS);
+        }
+
+        // 7. Site Content CMS authoritative cloud sync
+        if (cloudData.siteContent) {
+          setSiteContent({
+            ...DEFAULT_SITE_CONTENT,
+            ...cloudData.siteContent
+          });
+        } else {
+          dbService.saveSiteContent(DEFAULT_SITE_CONTENT);
+          setSiteContent(DEFAULT_SITE_CONTENT);
+        }
+
+        // 8. Audit logs cloud sync
+        if (cloudData.auditLogs && cloudData.auditLogs.length > 0) {
+          setAuditLogs(cloudData.auditLogs);
+        }
+      } catch (err) {
+        console.warn('Cloud sync failed, using local cache fallback:', err);
       }
+    };
 
-      // 2. Leads authoritative cloud sync
-      if (cloudData.leads && cloudData.leads.length > 0) {
-        setLeads(cloudData.leads);
-      } else if (cloudData.leads && cloudData.leads.length === 0) {
-        INITIAL_LEADS.forEach(l => dbService.insertLead(l));
-        setLeads(INITIAL_LEADS);
-      }
+    // Initial mount sync
+    syncCloudData();
 
-      // 3. Projects authoritative cloud sync
-      if (cloudData.projects && cloudData.projects.length > 0) {
-        setProjects(cloudData.projects);
-      } else if (cloudData.projects && cloudData.projects.length === 0) {
-        INITIAL_PROJECTS.forEach(p => dbService.upsertProject(p));
-        setProjects(INITIAL_PROJECTS);
-      }
+    // Supabase Real-Time Channel for instant multi-device synchronization
+    const channel = supabase
+      .channel('app-db-realtime-changes')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public' },
+        () => {
+          syncCloudData();
+        }
+      )
+      .subscribe();
 
-      // 4. Assignments authoritative cloud sync
-      if (cloudData.assignments && cloudData.assignments.length > 0) {
-        setAssignments(cloudData.assignments);
-      } else if (cloudData.assignments && cloudData.assignments.length === 0) {
-        INITIAL_ASSIGNMENTS.forEach(a => dbService.upsertAssignment(a));
-        setAssignments(INITIAL_ASSIGNMENTS);
-      }
-
-      // 5. Certificates authoritative cloud sync
-      if (cloudData.certificates && cloudData.certificates.length > 0) {
-        setCertificates(cloudData.certificates);
-      } else if (cloudData.certificates && cloudData.certificates.length === 0) {
-        INITIAL_CERTIFICATES.forEach(c => dbService.upsertCertificate(c));
-        setCertificates(INITIAL_CERTIFICATES);
-      }
-
-      // 6. Announcements authoritative cloud sync
-      if (cloudData.announcements && cloudData.announcements.length > 0) {
-        setAnnouncements(cloudData.announcements);
-      } else if (cloudData.announcements && cloudData.announcements.length === 0) {
-        INITIAL_ANNOUNCEMENTS.forEach(a => dbService.upsertAnnouncement(a));
-        setAnnouncements(INITIAL_ANNOUNCEMENTS);
-      }
-
-      // 7. Site Content CMS authoritative cloud sync
-      if (cloudData.siteContent) {
-        setSiteContent({
-          ...DEFAULT_SITE_CONTENT,
-          ...cloudData.siteContent
-        });
-      } else {
-        dbService.upsertSiteContent(DEFAULT_SITE_CONTENT);
-        setSiteContent(DEFAULT_SITE_CONTENT);
-      }
-
-      // 8. Audit logs cloud sync
-      if (cloudData.auditLogs && cloudData.auditLogs.length > 0) {
-        setAuditLogs(cloudData.auditLogs);
-      }
-
-      // 8. Audit Logs merge
-      if (cloudData.auditLogs && cloudData.auditLogs.length > 0) {
-        setAuditLogs(prev => {
-          const cloudIds = new Set(cloudData.auditLogs!.map(l => l.id));
-          const localOnly = prev.filter(l => !cloudIds.has(l.id));
-          return [...cloudData.auditLogs!, ...localOnly];
-        });
-      }
-    }).catch(err => {
-      console.warn('Cloud sync on mount failed, using local cache:', err);
-    });
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   // Sync to LocalStorage (Offline Resilience)

@@ -592,7 +592,7 @@ export const AssignmentWorkspace: React.FC = () => {
                 <label className="block text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] mb-1">
                   Assign Specific Members (Multi-Select)
                 </label>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-36 overflow-y-auto p-2 bg-[var(--bg-page)] rounded-2xl border border-[var(--border-subtle)]">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 max-h-40 overflow-y-auto p-2 bg-[var(--bg-page)] rounded-2xl border border-[var(--border-subtle)]">
                   {squadMembers.map((m) => {
                     const isSelected = selectedMembers.includes(m.id);
                     return (

@@ -302,7 +302,7 @@ export const PeopleDirectory: React.FC<PeopleDirectoryProps> = ({
       {/* People Table */}
       <div className="rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] overflow-hidden shadow-2xl">
         <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse text-xs">
+          <table className="w-full min-w-[720px] text-left border-collapse text-xs">
             <thead>
               <tr className="border-b border-[var(--border-subtle)] bg-[var(--bg-page)] text-[var(--text-muted)] font-bold uppercase tracking-wider text-[10px]">
                 {isManagement && (
