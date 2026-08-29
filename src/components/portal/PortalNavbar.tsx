@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { 
   Shield, LayoutDashboard, Briefcase, Users, Award, DollarSign, Bell, Settings, 
@@ -97,6 +98,18 @@ export const PortalNavbar: React.FC = () => {
     setShowUserDropdown(false);
   }, [location.pathname]);
 
+  // Lock body scroll when modal window is open to avoid page layout disturbances
+  useEffect(() => {
+    if (editProfileOpen || changePwdOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [editProfileOpen, changePwdOpen]);
+
   const handleLogout = () => {
     logout();
     navigate('/portal/login');
@@ -114,6 +127,8 @@ export const PortalNavbar: React.FC = () => {
       }, 1200);
     }
   };
+
+  const canAccessCms = PERMISSIONS.canEditWebsiteContent(currentTier, currentUser);
 
   // Core Primary Items (Always visible directly in desktop bar)
   const primaryNavItems: NavItem[] = [
@@ -141,6 +156,12 @@ export const PortalNavbar: React.FC = () => {
       icon: <Bell className="w-3.5 h-3.5" />, 
       show: true 
     },
+    { 
+      label: 'Site CMS', 
+      href: '/portal/cms', 
+      icon: <Sparkles className="w-3.5 h-3.5 text-cyan-400" />, 
+      show: canAccessCms 
+    },
   ].filter(i => i.show);
 
   // Secondary Items (Compressed into the "More" dropdown on desktop)
@@ -164,7 +185,7 @@ export const PortalNavbar: React.FC = () => {
       href: '/portal/cms', 
       icon: <Sparkles className="w-4 h-4 text-cyan-400" />, 
       description: 'Public page copywriting & SEO manager',
-      show: PERMISSIONS.canEditWebsiteContent(currentTier, currentUser) 
+      show: canAccessCms 
     },
     { 
       label: 'Split Settings', 
@@ -385,6 +406,17 @@ export const PortalNavbar: React.FC = () => {
                     <span>Change Password</span>
                   </button>
 
+                  {canAccessCms && (
+                    <Link
+                      to="/portal/cms"
+                      onClick={() => setShowUserDropdown(false)}
+                      className="w-full flex items-center space-x-2 p-2.5 rounded-xl text-xs font-semibold text-[var(--text-body)] hover:bg-[var(--bg-subtle)] hover:text-[var(--text-heading)] transition-all cursor-pointer"
+                    >
+                      <Sparkles className="w-4 h-4 text-cyan-400" />
+                      <span>Site CMS Studio</span>
+                    </Link>
+                  )}
+
                   <a
                     href="/"
                     className="w-full flex items-center justify-between p-2.5 rounded-xl text-xs font-semibold text-[var(--text-body)] hover:bg-[var(--bg-subtle)] hover:text-[var(--text-heading)] transition-all"
@@ -532,9 +564,9 @@ export const PortalNavbar: React.FC = () => {
         </div>
       )}
 
-      {/* Change Password Modal */}
-      {changePwdOpen && (
-        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+      {/* Change Password Modal (Portal to document.body) */}
+      {changePwdOpen && createPortal(
+        <div className="fixed inset-0 z-[99999] bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl animate-in fade-in zoom-in-95">
             <h3 className="font-display font-extrabold text-lg text-[var(--text-heading)] mb-1">
               Update Account Password
@@ -596,12 +628,13 @@ export const PortalNavbar: React.FC = () => {
               </div>
             </form>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
-      {/* Edit Profile & Avatar Modal */}
-      {editProfileOpen && (
-        <div className="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+      {/* Edit Profile & Avatar Modal (Portal to document.body) */}
+      {editProfileOpen && createPortal(
+        <div className="fixed inset-0 z-[99999] bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
           <div className="bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-3xl max-w-xl w-full shadow-2xl animate-in fade-in zoom-in-95 my-auto max-h-[90vh] flex flex-col overflow-hidden">
             
             {/* Modal Header */}
@@ -840,7 +873,8 @@ export const PortalNavbar: React.FC = () => {
             </div>
 
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </nav>
   );

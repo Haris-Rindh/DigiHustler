@@ -47,8 +47,13 @@ export const Team: React.FC = () => {
   }, [selectedMember]);
 
   // Unified roster from registered users and CMS entries
+  // Active verified registered users (excluding suspended or deleted)
+  const activeUsers = (users || []).filter(u => u.status === 'active' || u.status === 'on_leave');
+  const activeUserNames = new Set(activeUsers.map(u => u.name.toLowerCase().trim()));
+
+  // Unified roster from registered active users and CMS entries
   const allMembers: TeamMember[] = [
-    ...(users || []).map(u => ({
+    ...activeUsers.map(u => ({
       name: u.name,
       role: u.title || (u.roleTier === 'ceo' ? 'Founder & CEO' : u.roleTier === 'manager' ? 'Operations Director' : u.roleTier === 'group_leader' ? 'Squad Leader' : 'Domain Specialist'),
       category: (u.groupId === 'creative' || u.title?.toLowerCase().includes('design') || u.title?.toLowerCase().includes('brand')
@@ -64,22 +69,24 @@ export const Team: React.FC = () => {
       skills: u.specialties && u.specialties.length > 0 ? u.specialties : ['Digital Delivery', 'Verified Talent'],
       img: u.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(u.name)}&background=1F7A8C&color=fff`
     })),
-    ...(siteContent?.teamMembers || []).map(tm => ({
-      name: tm.name,
-      role: tm.role,
-      category: (tm.squad?.includes('Design') || tm.squad?.includes('Creative') 
-        ? 'Creative' 
-        : tm.squad?.includes('AI') || tm.squad?.includes('Data') 
-        ? 'AI & Data' 
-        : tm.squad?.includes('Growth') || tm.squad?.includes('Marketing')
-        ? 'Marketing'
-        : tm.squad?.includes('Security')
-        ? 'Cybersecurity'
-        : 'Development') as 'Development' | 'Creative' | 'AI & Data' | 'Marketing' | 'Cybersecurity',
-      bio: tm.bio,
-      skills: tm.tags || ['Executive Strategy', 'Management'],
-      img: tm.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(tm.name)}&background=1F7A8C&color=fff`
-    }))
+    ...(siteContent?.teamMembers || [])
+      .filter(tm => tm.name && !activeUserNames.has(tm.name.toLowerCase().trim()))
+      .map(tm => ({
+        name: tm.name,
+        role: tm.role,
+        category: (tm.squad?.includes('Design') || tm.squad?.includes('Creative') 
+          ? 'Creative' 
+          : tm.squad?.includes('AI') || tm.squad?.includes('Data') 
+          ? 'AI & Data' 
+          : tm.squad?.includes('Growth') || tm.squad?.includes('Marketing')
+          ? 'Marketing'
+          : tm.squad?.includes('Security')
+          ? 'Cybersecurity'
+          : 'Development') as 'Development' | 'Creative' | 'AI & Data' | 'Marketing' | 'Cybersecurity',
+        bio: tm.bio,
+        skills: tm.tags || ['Executive Strategy', 'Management'],
+        img: tm.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(tm.name)}&background=1F7A8C&color=fff`
+      }))
   ];
 
   // Deduplicate by name
