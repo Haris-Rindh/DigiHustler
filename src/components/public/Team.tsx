@@ -46,12 +46,12 @@ export const Team: React.FC = () => {
     };
   }, [selectedMember]);
 
-  // Unified roster from registered users and CMS entries
-  // Active verified registered users (excluding suspended or deleted)
-  const activeUsers = (users || []).filter(u => u.status === 'active' || u.status === 'on_leave');
-  const activeUserNames = new Set(activeUsers.map(u => u.name.toLowerCase().trim()));
-
   // Unified roster from registered active users and CMS entries
+  const activeUsers = (users || []).filter(u => u.status === 'active');
+  const inactiveUserNames = new Set(
+    (users || []).filter(u => u.status !== 'active').map(u => u.name.toLowerCase().trim())
+  );
+
   const allMembers: TeamMember[] = [
     ...activeUsers.map(u => ({
       name: u.name,
@@ -70,7 +70,7 @@ export const Team: React.FC = () => {
       img: u.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(u.name)}&background=1F7A8C&color=fff`
     })),
     ...(siteContent?.teamMembers || [])
-      .filter(tm => tm.name && !activeUserNames.has(tm.name.toLowerCase().trim()))
+      .filter(tm => !inactiveUserNames.has(tm.name.toLowerCase().trim()))
       .map(tm => ({
         name: tm.name,
         role: tm.role,

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   FileText, Image as ImageIcon, Sparkles, Check, RotateCcw, 
   Plus, Trash2, Eye, Layout, Star, Briefcase, Users, Layers, ExternalLink,
@@ -9,6 +9,7 @@ import {
   SiteContent, SiteCaseStudy, SiteTestimonial, SiteServiceItem, 
   SiteTeamMember, SitePackage, SiteFAQ, SiteValueProp, SiteBlogPost, GroupId 
 } from '../../types';
+import { DEFAULT_SITE_CONTENT } from '../../services/mockData';
 import { PERMISSIONS } from '../../lib/permissions';
 
 export const SiteContentManager: React.FC = () => {
@@ -24,18 +25,19 @@ export const SiteContentManager: React.FC = () => {
 
   const [savedFeedback, setSavedFeedback] = useState<string | null>(null);
 
-  // Active drafts
-  const [heroDraft, setHeroDraft] = useState(siteContent.hero);
-  const [aboutDraft, setAboutDraft] = useState(siteContent.about || { mission: '', vision: '', story: '', values: [] });
-  const [contactDraft, setContactDraft] = useState(siteContent.contact || { email: '', phone: '', address: '' });
-  const [customImagesDraft, setCustomImagesDraft] = useState(siteContent.customImages || {});
+  // Active drafts with robust default fallbacks
+  const safeContent = siteContent || DEFAULT_SITE_CONTENT;
+  const [heroDraft, setHeroDraft] = useState(safeContent.hero || DEFAULT_SITE_CONTENT.hero);
+  const [aboutDraft, setAboutDraft] = useState(safeContent.about || DEFAULT_SITE_CONTENT.about);
+  const [contactDraft, setContactDraft] = useState(safeContent.contact || DEFAULT_SITE_CONTENT.contact);
+  const [customImagesDraft, setCustomImagesDraft] = useState(safeContent.customImages || {});
 
   // Keep drafts synchronized with latest cloud state
   useEffect(() => {
-    if (siteContent.hero) setHeroDraft(siteContent.hero);
-    if (siteContent.about) setAboutDraft(siteContent.about);
-    if (siteContent.contact) setContactDraft(siteContent.contact);
-    if (siteContent.customImages) setCustomImagesDraft(siteContent.customImages);
+    if (siteContent?.hero) setHeroDraft(siteContent.hero);
+    if (siteContent?.about) setAboutDraft(siteContent.about);
+    if (siteContent?.contact) setContactDraft(siteContent.contact);
+    if (siteContent?.customImages) setCustomImagesDraft(siteContent.customImages);
   }, [siteContent]);
 
   // New item modal states

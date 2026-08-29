@@ -26,11 +26,11 @@ export const PERMISSIONS = {
   canCreateUserAccount: (tier: UserRoleTier) => tier === 'ceo',
   canDeleteUserAccount: (tier: UserRoleTier) => tier === 'ceo',
 
-  // Live Website CMS (CEO Master, Manager, or explicitly delegated staff)
+  // Live Website CMS (CEO Master or explicitly delegated staff)
   canEditWebsiteContent: (tier: UserRoleTier, user?: User) => 
-    tier === 'ceo' || tier === 'manager' || (user?.delegatedPermissions?.includes('cms_editor') ?? false),
+    tier === 'ceo' || (user?.delegatedPermissions?.includes('cms_editor') ?? false),
   canPublishLiveChanges: (tier: UserRoleTier, user?: User) => 
-    tier === 'ceo' || tier === 'manager' || (user?.delegatedPermissions?.includes('cms_editor') ?? false),
+    tier === 'ceo' || (user?.delegatedPermissions?.includes('cms_editor') ?? false),
 
   // Client Records & Data Isolation (Strict Privacy Wall)
   canViewFullClientRecord: (tier: UserRoleTier) => tier === 'ceo' || tier === 'manager',

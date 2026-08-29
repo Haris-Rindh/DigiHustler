@@ -540,15 +540,20 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     setUsers(prev => prev.filter(u => u.id !== targetUserId));
     dbService.deleteUser(targetUserId);
 
-    // Also remove from public siteContent.teamMembers so they disappear from /team
-    setSiteContent(prev => {
-      const filteredTeam = (prev.teamMembers || []).filter(
+    // Also remove from CMS team members showcase if present
+    if (siteContent.teamMembers && siteContent.teamMembers.length > 0) {
+      const updatedTeamMembers = siteContent.teamMembers.filter(
         tm => tm.id !== targetUserId && tm.name.toLowerCase().trim() !== targetUser.name.toLowerCase().trim()
       );
-      const updatedCms = { ...prev, teamMembers: filteredTeam };
-      dbService.saveSiteContent(updatedCms);
-      return updatedCms;
-    });
+      if (updatedTeamMembers.length !== siteContent.teamMembers.length) {
+        const updatedSiteContent = {
+          ...siteContent,
+          teamMembers: updatedTeamMembers
+        };
+        setSiteContent(updatedSiteContent);
+        dbService.saveSiteContent(updatedSiteContent);
+      }
+    }
 
     const auditEntry: SecurityAuditLog = {
       id: `audit-${Date.now()}`,
@@ -564,7 +569,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     setAuditLogs(prev => [auditEntry, ...prev]);
     dbService.insertAuditLog(auditEntry);
 
-    showToast(`Removed member ${targetUser.name} from the platform database and public website.`, 'success', 'Member Deleted');
+    showToast(`Removed member ${targetUser.name} from the platform database.`, 'success', 'Member Deleted');
     return { success: true };
   };
 
