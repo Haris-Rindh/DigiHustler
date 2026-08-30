@@ -16,6 +16,7 @@ import { getUserRoleTier, PERMISSIONS } from '../lib/permissions';
 import { quickHashSync } from '../lib/crypto';
 import { dbService } from '../lib/dbService';
 import { isSupabaseConfigured, supabase } from '../lib/supabase';
+import { realtimeSync } from '../lib/realtimeSync';
 import { ToastContainer, ToastMessage } from '../components/common/ToastContainer';
 
 interface AppContextType {
@@ -246,11 +247,28 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     }
   };
 
-  // ── CLOUD DATABASE INITIALIZATION & REAL-TIME MULTI-DEVICE SYNC ───────────
+  // ── REAL-TIME HOT LOADING & MULTI-DEVICE MESH SYNCHRONIZER ───────────────
   useEffect(() => {
-    if (!isSupabaseConfigured || !supabase) return;
+    // 1. Subscribe to Real-Time Mesh Channel for instantaneous millisecond updates
+    const unsubscribeMesh = realtimeSync.subscribe((payload) => {
+      if (payload.type === 'USERS_UPDATED' && Array.isArray(payload.data)) {
+        setUsers(payload.data);
+      } else if (payload.type === 'PROFILE_UPDATED' && payload.data) {
+        const { userId, updates } = payload.data;
+        setUsers((prev) =>
+          prev.map((u) => (u.id === userId ? { ...u, ...updates } : u))
+        );
+        setCurrentUser((prev) =>
+          prev && prev.id === userId ? { ...prev, ...updates } : prev
+        );
+      } else if (payload.type === 'CMS_UPDATED' && payload.data) {
+        setSiteContent((prev) => ({ ...prev, ...payload.data }));
+      }
+    });
 
+    // 2. Authoritative Cloud Database Sync & Supabase Real-Time Channel
     const syncCloudData = async () => {
+      if (!isSupabaseConfigured || !supabase) return;
       try {
         const cloudData = await dbService.fetchInitialData();
         if (!cloudData) return;
@@ -378,25 +396,32 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     syncCloudData();
 
     // Supabase Real-Time Channel for instant multi-device synchronization
-    const channel = supabase
-      .channel('app-db-realtime-changes')
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public' },
-        () => {
-          syncCloudData();
-        }
-      )
-      .subscribe();
+    let channel: any = null;
+    if (isSupabaseConfigured && supabase) {
+      channel = supabase
+        .channel('app-db-realtime-changes')
+        .on(
+          'postgres_changes',
+          { event: '*', schema: 'public' },
+          () => {
+            syncCloudData();
+          }
+        )
+        .subscribe();
+    }
 
     return () => {
-      supabase.removeChannel(channel);
+      unsubscribeMesh();
+      if (channel && supabase) {
+        supabase.removeChannel(channel);
+      }
     };
   }, []);
 
-  // Sync to LocalStorage (Offline Resilience with safe try-catch)
+  // Sync to LocalStorage (Offline Resilience with safe try-catch & Real-Time Broadcast)
   useEffect(() => {
     safeSetItem(`${LOCAL_STORAGE_KEY}_users`, JSON.stringify(users));
+    realtimeSync.broadcast('USERS_UPDATED', users);
   }, [users]);
 
   useEffect(() => {
@@ -441,6 +466,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   useEffect(() => {
     safeSetItem(`${LOCAL_STORAGE_KEY}_site_content`, JSON.stringify(siteContent));
+    realtimeSync.broadcast('CMS_UPDATED', siteContent);
   }, [siteContent]);
 
   useEffect(() => {
@@ -1428,17 +1454,28 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   // ── PEOPLE & COMMUNITY MANAGEMENT ACTIONS (STRICT EXECUTIVE GOVERNANCE) ────
 
   const updateUserProfile = (userId: string, updates: Partial<User>) => {
-    setUsers(prev => prev.map(u => {
-      if (u.id === userId) {
-        const updated = { ...u, ...updates };
-        dbService.upsertUser(updated);
-        return updated;
-      }
-      return u;
-    }));
-    if (currentUser.id === userId) {
-      setCurrentUser(prev => ({ ...prev, ...updates }));
+    setUsers(prev => {
+      const updated = prev.map(u => {
+        if (u.id === userId) {
+          const next = { ...u, ...updates };
+          dbService.upsertUser(next);
+          return next;
+        }
+        return u;
+      });
+      realtimeSync.broadcast('USERS_UPDATED', updated);
+      return updated;
+    });
+
+    if (currentUser && currentUser.id === userId) {
+      setCurrentUser(prev => {
+        const next = { ...prev, ...updates };
+        safeSetItem(`${LOCAL_STORAGE_KEY}_current_user`, JSON.stringify(next));
+        return next;
+      });
     }
+
+    realtimeSync.broadcast('PROFILE_UPDATED', { userId, updates });
   };
 
   const changeUserStatus = (userId: string, newStatus: UserStatus, reason: string, changedBy: string) => {

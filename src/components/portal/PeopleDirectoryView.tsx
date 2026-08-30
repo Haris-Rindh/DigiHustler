@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Users, Mail, Shield, Send, CheckCircle2, AlertCircle, Plus, 
   FileSpreadsheet, Sparkles, Filter, Search, UserCheck, Key, Lock, 
@@ -17,6 +17,8 @@ import {
   downloadPdfFile 
 } from '../../lib/pdfTemplateEngine';
 
+import { realtimeSync } from '../../lib/realtimeSync';
+
 export const PeopleDirectoryView: React.FC = () => {
   const { 
     users, groups, currentTier, currentUser, sendBatchCredentials, 
@@ -34,7 +36,7 @@ export const PeopleDirectoryView: React.FC = () => {
   const [selectedUserForRole, setSelectedUserForRole] = useState<UserType | null>(null);
   const [dispatchResult, setDispatchResult] = useState<{ count: number; memberNames: string[] } | null>(null);
 
-  // Pinned Member IDs (Saved in Local Storage)
+  // Pinned Member IDs (Saved in Local Storage & Live Synced)
   const [pinnedIds, setPinnedIds] = useState<string[]>(() => {
     try {
       const saved = localStorage.getItem('digihust_pinned_members');
@@ -43,6 +45,15 @@ export const PeopleDirectoryView: React.FC = () => {
       return [];
     }
   });
+
+  useEffect(() => {
+    const unsub = realtimeSync.subscribe((payload) => {
+      if (payload.type === 'PINNED_UPDATED' && Array.isArray(payload.data)) {
+        setPinnedIds(payload.data);
+      }
+    });
+    return unsub;
+  }, []);
 
   const togglePinUser = (userId: string) => {
     setPinnedIds((prev) => {
@@ -53,6 +64,7 @@ export const PeopleDirectoryView: React.FC = () => {
       } catch (err) {
         console.warn('Could not save pinned members:', err);
       }
+      realtimeSync.broadcast('PINNED_UPDATED', updated);
       showToast(isPinned ? 'Member unpinned.' : 'Member pinned to top.', 'info');
       return updated;
     });

@@ -24,10 +24,31 @@ const CAT_COLORS: Record<string, string> = {
   Cybersecurity: '#A85C4A',
 };
 
+import { realtimeSync } from '../../lib/realtimeSync';
+
 export const Team: React.FC = () => {
   const { siteContent, users } = useApp();
   const [filter, setFilter] = useState<string>('All');
   const [selectedMember, setSelectedMember] = useState<TeamMember | null>(null);
+
+  // Live Pinned Member IDs (Preserves exact pinning sequence in real time)
+  const [pinnedIds, setPinnedIds] = useState<string[]>(() => {
+    try {
+      const saved = localStorage.getItem('digihust_pinned_members');
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  useEffect(() => {
+    const unsub = realtimeSync.subscribe((payload) => {
+      if (payload.type === 'PINNED_UPDATED' && Array.isArray(payload.data)) {
+        setPinnedIds(payload.data);
+      }
+    });
+    return unsub;
+  }, []);
 
   // Close modal on Escape key
   useEffect(() => {
@@ -53,16 +74,6 @@ export const Team: React.FC = () => {
     const r = (u.role || '').toLowerCase();
     return t.includes('ceo') || t.includes('founder') || t.includes('co-founder') || r.includes('ceo');
   };
-
-  // Pinned Member IDs (Preserves exact pinning sequence)
-  const pinnedIds: string[] = (() => {
-    try {
-      const saved = localStorage.getItem('digihust_pinned_members');
-      return saved ? JSON.parse(saved) : [];
-    } catch {
-      return [];
-    }
-  })();
 
   // Live member roster directly driven by portal database and sorted (CEO -> Co-founders -> Pinned in order -> Others)
   const sortedActiveUsers = [...(users || []).filter((u) => u && u.status === 'active')].sort((a, b) => {

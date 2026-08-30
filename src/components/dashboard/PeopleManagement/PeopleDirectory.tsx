@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import {
   Search,
@@ -23,6 +23,7 @@ import {
 } from 'lucide-react';
 import { useApp } from '../../../context/AppContext';
 import { User, GroupId, UserRole, UserStatus } from '../../../types';
+import { realtimeSync } from '../../../lib/realtimeSync';
 
 interface PeopleDirectoryProps {
   onSelectUser: (user: User) => void;
@@ -46,7 +47,7 @@ export const PeopleDirectory: React.FC<PeopleDirectoryProps> = ({
   const [sortField, setSortField] = useState<'name' | 'earnings' | 'projects' | 'rating' | 'joined'>('name');
   const [sortAsc, setSortAsc] = useState(true);
 
-  // Pinned Member IDs (Saved in Local Storage)
+  // Pinned Member IDs (Saved in Local Storage & Live Synced)
   const [pinnedIds, setPinnedIds] = useState<string[]>(() => {
     try {
       const saved = localStorage.getItem('digihust_pinned_members');
@@ -55,6 +56,15 @@ export const PeopleDirectory: React.FC<PeopleDirectoryProps> = ({
       return [];
     }
   });
+
+  useEffect(() => {
+    const unsub = realtimeSync.subscribe((payload) => {
+      if (payload.type === 'PINNED_UPDATED' && Array.isArray(payload.data)) {
+        setPinnedIds(payload.data);
+      }
+    });
+    return unsub;
+  }, []);
 
   const togglePinUser = (userId: string, e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
@@ -66,6 +76,7 @@ export const PeopleDirectory: React.FC<PeopleDirectoryProps> = ({
       } catch (err) {
         console.warn('Could not save pinned members:', err);
       }
+      realtimeSync.broadcast('PINNED_UPDATED', updated);
       showToast(isPinned ? 'Member unpinned.' : 'Member pinned to top.', 'info');
       return updated;
     });
