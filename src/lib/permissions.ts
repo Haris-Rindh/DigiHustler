@@ -46,6 +46,7 @@ export const PERMISSIONS = {
   
   // People & Roster
   canViewAllPeople: (tier: UserRoleTier) => tier === 'ceo' || tier === 'manager',
+  canManagePeople: (tier: UserRoleTier) => tier === 'ceo' || tier === 'manager',
   canViewSquadRoster: (tier: UserRoleTier) => tier === 'ceo' || tier === 'manager' || tier === 'group_leader',
   canImportMembers: (tier: UserRoleTier) => tier === 'ceo',
   canSendCredentials: (tier: UserRoleTier) => tier === 'ceo',

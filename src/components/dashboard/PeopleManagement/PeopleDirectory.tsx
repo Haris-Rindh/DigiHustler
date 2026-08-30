@@ -428,79 +428,79 @@ export const PeopleDirectory: React.FC<PeopleDirectoryProps> = ({
                     <tr
                       key={person.id}
                       onClick={() => onSelectUser(person)}
-                      className={`h-16 hover:bg-[var(--brand-teal)]/10 cursor-pointer transition-colors border-b border-[var(--border-subtle)] ${
+                      className={`hover:bg-[var(--brand-teal)]/10 cursor-pointer transition-colors ${
                         isSelected ? 'bg-[var(--brand-teal)]/15' : ''
                       }`}
                     >
                       {isManagement && (
                         <td
-                          className="px-4 py-2 text-center w-12 align-middle"
+                          className="p-4 text-center"
                           onClick={(e) => {
                             e.stopPropagation();
                             toggleSelectUser(person.id);
                           }}
                         >
                           {isSelected ? (
-                            <CheckSquare className="w-4 h-4 text-[var(--brand-teal)] mx-auto" />
+                            <CheckSquare className="w-4 h-4 text-[var(--brand-teal)]" />
                           ) : (
-                            <Square className="w-4 h-4 text-slate-600 mx-auto" />
+                            <Square className="w-4 h-4 text-slate-600" />
                           )}
                         </td>
                       )}
 
                       {/* Name & Avatar */}
-                      <td className="px-4 py-2 align-middle max-w-[280px]">
+                      <td className="p-4">
                         <div className="flex items-center space-x-3">
                           <div className="relative shrink-0">
                             <img
                               src={person.avatarUrl}
                               alt={person.name}
-                              className="w-10 h-10 rounded-xl object-cover ring-1 ring-[var(--border-subtle)]"
+                              className="w-9 h-9 rounded-xl object-cover ring-1 ring-[var(--border-subtle)]"
                             />
                             {isCeoOrFounder(person) && (
-                              <span className="absolute -top-1 -right-1 p-0.5 rounded-full bg-amber-400 text-slate-950 shadow">
+                              <span className="absolute -top-1.5 -right-1.5 p-0.5 rounded-full bg-amber-400 text-slate-950 shadow">
                                 <Crown className="w-2.5 h-2.5 fill-current" />
                               </span>
                             )}
                             {!isCeoOrFounder(person) && pinnedIds.includes(person.id) && (
-                              <span className="absolute -top-1 -right-1 p-0.5 rounded-full bg-[var(--brand-teal)] text-white shadow">
+                              <span className="absolute -top-1.5 -right-1.5 p-0.5 rounded-full bg-[var(--brand-teal)] text-white shadow">
                                 <Pin className="w-2.5 h-2.5 fill-current" />
                               </span>
                             )}
                           </div>
-                          <div className="min-w-0 flex-1">
-                            <div className="flex items-center gap-1.5 overflow-hidden">
-                              <p className="font-bold text-[var(--text-heading)] text-sm truncate">{person.name}</p>
+                          <div>
+                            <div className="flex flex-wrap items-center gap-1.5">
+                              <p className="font-bold text-[var(--text-heading)] text-sm">{person.name}</p>
                               {isCeoOrFounder(person) && (
-                                <span className="shrink-0 px-1.5 py-0.2 rounded bg-amber-400/15 text-amber-500 border border-amber-400/30 text-[9px] font-black uppercase tracking-wider flex items-center gap-0.5">
+                                <span className="px-1.5 py-0.2 rounded bg-amber-400/15 text-amber-500 border border-amber-400/30 text-[9px] font-black uppercase tracking-wider flex items-center gap-0.5">
                                   <Crown className="w-2.5 h-2.5" /> Leadership
                                 </span>
                               )}
                               {!isCeoOrFounder(person) && pinnedIds.includes(person.id) && (
-                                <span className="shrink-0 px-1.5 py-0.2 rounded bg-[var(--brand-teal-subtle)] text-[var(--brand-teal)] border border-[var(--brand-teal)]/30 text-[9px] font-extrabold uppercase tracking-wider flex items-center gap-0.5">
+                                <span className="px-1.5 py-0.2 rounded bg-[var(--brand-teal-subtle)] text-[var(--brand-teal)] border border-[var(--brand-teal)]/30 text-[9px] font-extrabold uppercase tracking-wider flex items-center gap-0.5">
                                   <Pin className="w-2.5 h-2.5 fill-current" /> Pinned
                                 </span>
                               )}
                               {person.memberId && (
-                                <span className="shrink-0 font-mono text-[10px] font-bold px-1.5 py-0.5 rounded bg-[var(--brand-teal-subtle)] text-[var(--brand-teal)] border border-[var(--border-subtle)]">
+                                <span className="font-mono text-[10px] font-bold px-1.5 py-0.5 rounded bg-[var(--brand-teal-subtle)] text-[var(--brand-teal)] border border-[var(--border-subtle)]">
                                   {person.memberId}
                                 </span>
                               )}
                             </div>
-                            <p className="text-[11px] text-[var(--text-muted)] truncate">{person.title}</p>
+                            <p className="text-[11px] text-[var(--text-muted)]">{person.title}</p>
                           </div>
                         </div>
                       </td>
 
                       {/* Role */}
-                      <td className="px-4 py-2 align-middle whitespace-nowrap">
+                      <td className="p-4">
                         <span className="px-2 py-0.5 rounded-md bg-[var(--bg-subtle)] border border-[var(--border-subtle)] text-[10px] font-bold text-[var(--text-body)] uppercase tracking-wide">
                           {person.role.replace('_', ' ')}
                         </span>
                       </td>
 
                       {/* Squad */}
-                      <td className="px-4 py-2 align-middle whitespace-nowrap">
+                      <td className="p-4">
                         {group ? (
                           <span className="text-xs font-semibold text-[var(--text-heading)]">
                             {group.name}
@@ -511,21 +511,21 @@ export const PeopleDirectory: React.FC<PeopleDirectoryProps> = ({
                       </td>
 
                       {/* Status */}
-                      <td className="px-4 py-2 align-middle whitespace-nowrap">{getStatusBadge(person.status)}</td>
+                      <td className="p-4">{getStatusBadge(person.status)}</td>
 
                       {/* Skills */}
-                      <td className="px-4 py-2 align-middle max-w-[200px]">
-                        <div className="flex items-center gap-1 overflow-hidden">
+                      <td className="p-4">
+                        <div className="flex flex-wrap gap-1 max-w-xs">
                           {person.specialties.slice(0, 2).map((s) => (
                             <span
                               key={s}
-                              className="px-1.5 py-0.5 rounded bg-[var(--bg-page)] text-[var(--text-body)] text-[10px] border border-[var(--border-subtle)] truncate max-w-[90px]"
+                              className="px-1.5 py-0.5 rounded bg-[var(--bg-page)] text-[var(--text-body)] text-[10px] border border-[var(--border-subtle)]"
                             >
                               {s}
                             </span>
                           ))}
                           {person.specialties.length > 2 && (
-                            <span className="text-[10px] text-[var(--text-dim)] font-bold shrink-0">
+                            <span className="text-[10px] text-[var(--text-dim)] font-bold">
                               +{person.specialties.length - 2}
                             </span>
                           )}
@@ -533,12 +533,12 @@ export const PeopleDirectory: React.FC<PeopleDirectoryProps> = ({
                       </td>
 
                       {/* Completed Projects */}
-                      <td className="px-4 py-2 text-center font-bold text-[var(--text-heading)] align-middle whitespace-nowrap">
+                      <td className="p-4 text-center font-bold text-[var(--text-heading)]">
                         {person.completedProjectsCount || 0}
                       </td>
 
                       {/* Rating */}
-                      <td className="px-4 py-2 text-center align-middle whitespace-nowrap">
+                      <td className="p-4 text-center">
                         <span className="inline-flex items-center gap-0.5 text-emerald-400 font-bold">
                           <Star className="w-3 h-3 fill-emerald-400" />
                           <span>{person.rating}</span>
@@ -546,7 +546,7 @@ export const PeopleDirectory: React.FC<PeopleDirectoryProps> = ({
                       </td>
 
                       {/* Action */}
-                      <td className="px-4 py-2 text-center align-middle whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
+                      <td className="p-4 text-center" onClick={(e) => e.stopPropagation()}>
                         <div className="flex items-center justify-center gap-1.5">
                           {/* Pin/Unpin Button for Management (Non-leadership members) */}
                           {isManagement && !isCeoOrFounder(person) && (

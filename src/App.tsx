@@ -127,6 +127,8 @@ export const App: React.FC = () => {
                 <Route path="/portal/dashboard" element={<ProtectedRoute><PortalDashboard /></ProtectedRoute>} />
                 <Route path="/portal/assignments" element={<ProtectedRoute><AssignmentWorkspace /></ProtectedRoute>} />
                 <Route path="/portal/roster" element={<ProtectedRoute><PeopleDirectoryView /></ProtectedRoute>} />
+                <Route path="/portal/people" element={<ProtectedRoute><PeopleDirectoryView /></ProtectedRoute>} />
+                <Route path="/portal/directory" element={<ProtectedRoute><PeopleDirectoryView /></ProtectedRoute>} />
                 <Route path="/portal/announcements" element={<ProtectedRoute><AnnouncementsFeed /></ProtectedRoute>} />
                 <Route path="/portal/certificates" element={<ProtectedRoute><CertificateManager /></ProtectedRoute>} />
                 <Route path="/portal/cms" element={<ProtectedRoute><SiteContentManager /></ProtectedRoute>} />

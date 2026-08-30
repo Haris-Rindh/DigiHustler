@@ -553,14 +553,15 @@ export const Home: React.FC = () => {
                           alt={project.title}
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200 ease-out"
                         />
-                        <div className="absolute top-3 right-3 px-2.5 py-1 rounded-md bg-[var(--bg-page)]/90 backdrop-blur-sm border border-[var(--border-subtle)] text-[10px] font-bold text-[var(--brand-teal)]">
-                          {project.impactMetric} {project.impactLabel}
+                        <div className="absolute top-3 right-3 px-3 py-1 rounded-full bg-black/60 backdrop-blur-md border border-white/20 text-[11px] font-extrabold text-white shadow-lg flex items-center gap-1.5">
+                          <span className="text-emerald-400">{project.impactMetric}</span>
+                          <span>{project.impactLabel}</span>
                         </div>
                       </div>
                       <div className="p-6">
-                        <p className="text-[11px] font-bold text-[var(--brand-teal)] uppercase tracking-wider mb-1">
+                        <span className="inline-block px-2.5 py-0.5 rounded-md bg-[var(--brand-teal-subtle)] text-[var(--brand-teal)] border border-[var(--brand-teal)]/30 text-[10px] font-extrabold uppercase tracking-wider mb-2">
                           {project.category}
-                        </p>
+                        </span>
                         <h3 className="font-display font-bold text-lg text-[var(--text-heading)] mb-3 group-hover:text-[var(--brand-teal)] transition-colors duration-150">
                           {project.title}
                         </h3>
@@ -568,7 +569,7 @@ export const Home: React.FC = () => {
                           {project.tags?.map((tTag) => (
                             <span
                               key={tTag}
-                              className="text-[10px] px-2 py-0.5 rounded bg-[var(--bg-subtle)] text-[var(--text-body)] border border-[var(--border-subtle)] font-medium"
+                              className="text-[10px] px-2.5 py-0.5 rounded-md bg-[var(--bg-subtle)] text-[var(--text-heading)] border border-[var(--border-subtle)] font-semibold"
                             >
                               {tTag}
                             </span>

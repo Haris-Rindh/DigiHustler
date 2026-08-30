@@ -94,31 +94,37 @@ export const PeopleDirectoryView: React.FC = () => {
   const visibleUsers = (users || []).filter((u) => {
     if (!u) return false;
     if (currentTier === 'ceo' || currentTier === 'manager') return true;
-    if (currentTier === 'group_leader') return u.groupId === currentUser.groupId;
-    return u.id === currentUser.id;
+    if (currentTier === 'group_leader') return u.groupId === currentUser?.groupId;
+    return u.id === currentUser?.id;
   });
 
+  const query = (searchQuery || '').toLowerCase().trim();
+
   const filteredUsers = visibleUsers.filter((u) => {
-    const matchesSearch = u.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      u.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      u.memberId?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      u.title.toLowerCase().includes(searchQuery.toLowerCase());
+    if (!u) return false;
+    const name = (u.name || '').toLowerCase();
+    const email = (u.email || '').toLowerCase();
+    const memberId = (u.memberId || '').toLowerCase();
+    const title = (u.title || '').toLowerCase();
+    const matchesSearch = !query || name.includes(query) || email.includes(query) || memberId.includes(query) || title.includes(query);
     const matchesSquad = selectedSquad === 'all' || u.groupId === selectedSquad;
     return matchesSearch && matchesSquad;
   }).sort((a, b) => {
+    if (!a || !b) return 0;
     // 1. Leadership always top priority
     const aLeader = isCeoOrFounder(a);
     const bLeader = isCeoOrFounder(b);
     if (aLeader && !bLeader) return -1;
     if (!aLeader && bLeader) return 1;
 
-    // 2. Pinned members next
-    const aPinned = pinnedIds.includes(a.id);
-    const bPinned = pinnedIds.includes(b.id);
-    if (aPinned && !bPinned) return -1;
-    if (!aPinned && bPinned) return 1;
+    // 2. Pinned members next in exact chronological order
+    const aPinnedIdx = pinnedIds.indexOf(a.id);
+    const bPinnedIdx = pinnedIds.indexOf(b.id);
+    if (aPinnedIdx !== -1 && bPinnedIdx === -1) return -1;
+    if (aPinnedIdx === -1 && bPinnedIdx !== -1) return 1;
+    if (aPinnedIdx !== -1 && bPinnedIdx !== -1) return aPinnedIdx - bPinnedIdx;
 
-    return a.name.localeCompare(b.name);
+    return (a.name || '').localeCompare(b.name || '');
   });
 
   const handleOpenCertModal = (user: UserType) => {
@@ -341,7 +347,7 @@ export const PeopleDirectoryView: React.FC = () => {
                     </div>
                   </div>
                   <div className="flex items-center space-x-1.5">
-                    {PERMISSIONS.canManagePeople(currentTier) && !isCeoOrFounder(u) && (
+                    {(currentTier === 'ceo' || currentTier === 'manager') && !isCeoOrFounder(u) && (
                       <button
                         onClick={() => togglePinUser(u.id)}
                         className={`p-1.5 rounded-xl border transition-all cursor-pointer ${
