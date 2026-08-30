@@ -83,6 +83,48 @@ export const dbService = {
     }
   },
 
+  // ── Upload Avatar to Supabase Storage → returns permanent public URL ──
+  async uploadAvatar(userId: string, file: File): Promise<string | null> {
+    if (!isSupabaseConfigured || !supabase) return null;
+    try {
+      const ext = file.name.split('.').pop()?.toLowerCase() || 'jpg';
+      const path = `${userId}.${ext}`;
+      // upsert: replace if exists so the same path always reflects latest
+      const { error } = await supabase.storage
+        .from('avatars')
+        .upload(path, file, { upsert: true, contentType: file.type });
+      if (error) {
+        console.error('Avatar upload error:', error.message);
+        return null;
+      }
+      const { data } = supabase.storage.from('avatars').getPublicUrl(path);
+      // Append cache-buster so browsers immediately show the new image
+      return `${data.publicUrl}?t=${Date.now()}`;
+    } catch (err) {
+      console.error('Avatar upload failed:', err);
+      return null;
+    }
+  },
+
+  // ── Convert Base64 avatar → upload to Supabase Storage → return URL ──
+  async migrateBase64Avatar(userId: string, base64DataUrl: string): Promise<string | null> {
+    if (!isSupabaseConfigured || !supabase) return null;
+    if (!base64DataUrl.startsWith('data:image/')) return base64DataUrl; // already a URL
+    try {
+      const [header, data] = base64DataUrl.split(',');
+      const mime = header.match(/data:(image\/\w+)/)?.[1] || 'image/jpeg';
+      const ext = mime.split('/')[1] || 'jpg';
+      const binary = atob(data);
+      const bytes = new Uint8Array(binary.length);
+      for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+      const file = new File([bytes], `${userId}.${ext}`, { type: mime });
+      return await dbService.uploadAvatar(userId, file);
+    } catch (err) {
+      console.error('Base64 migration failed:', err);
+      return null;
+    }
+  },
+
   // ── 3. Leads CRUD ──
   async insertLead(lead: Lead) {
     if (!isSupabaseConfigured || !supabase) return;

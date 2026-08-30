@@ -273,23 +273,27 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         const cloudData = await dbService.fetchInitialData();
         if (!cloudData) return;
 
-        // 1. Users authoritative cloud sync with non-destructive merge
+        // 1. Users — cloud is authoritative. Push any locally-added users that don't exist in cloud yet.
         if (cloudData.users && cloudData.users.length > 0) {
           setUsers((prev) => {
             const cloudList = cloudData.users || [];
-            const merged = [...cloudList];
-            // Merge any locally added users that haven't reached cloud yet
+            const merged = [...cloudList]; // Cloud wins: start from cloud list
+            // Push any locally-added users that haven't synced to cloud yet
             prev.forEach((localUser) => {
-              const existingIdx = merged.findIndex((u) => u.id === localUser.id);
-              if (existingIdx === -1) {
+              const existsInCloud = merged.some((u) => u.id === localUser.id);
+              if (!existsInCloud) {
                 merged.push(localUser);
-                dbService.upsertUser(localUser); // push to cloud
-              } else {
-                // If local user has custom avatar or data, preserve
-                if (localUser.avatarUrl && localUser.avatarUrl !== merged[existingIdx].avatarUrl) {
-                  merged[existingIdx] = { ...merged[existingIdx], ...localUser };
-                  dbService.upsertUser(merged[existingIdx]);
-                }
+                dbService.upsertUser(localUser); // push new local user to cloud
+              }
+              // If this user has a Base64 avatar, migrate it to Supabase Storage
+              const cloudUser = merged.find((u) => u.id === localUser.id);
+              if (cloudUser?.avatarUrl?.startsWith('data:image/')) {
+                dbService.migrateBase64Avatar(cloudUser.id, cloudUser.avatarUrl)
+                  .then((url) => {
+                    if (url && url !== cloudUser.avatarUrl) {
+                      dbService.upsertUser({ ...cloudUser, avatarUrl: url });
+                    }
+                  });
               }
             });
             return merged;
@@ -338,7 +342,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
             const cloudAssignments = cloudData.assignments || [];
             const merged = [...cloudAssignments];
             prev.forEach((a) => {
-              if (!merged.some((m) => m.id === m.id)) {
+              if (!merged.some((m) => m.id === a.id)) {
                 merged.push(a);
                 dbService.upsertAssignment(a);
               }

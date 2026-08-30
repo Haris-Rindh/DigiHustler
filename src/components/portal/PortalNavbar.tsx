@@ -12,6 +12,7 @@ import { ThemeToggle } from '../ui/ThemeToggle';
 import { UserRoleTier } from '../../types';
 import { PERMISSIONS } from '../../lib/permissions';
 import { compressAvatarFile } from '../../lib/utils';
+import { dbService } from '../../lib/dbService';
 import logoImg from '../../assets/logo.png';
 
 interface NavItem {
@@ -686,12 +687,20 @@ export const PortalNavbar: React.FC = () => {
                           const file = e.target.files?.[0];
                           if (!file) return;
                           try {
-                            showToast('Optimizing & loading photo...', 'info');
-                            const optimizedUrl = await compressAvatarFile(file, 320, 0.85);
-                            setProfileAvatarUrl(optimizedUrl);
-                            showToast('Custom photo optimized & loaded!', 'success');
+                            showToast('Uploading photo to cloud...', 'info');
+                            // 1. Try Supabase Storage first (cross-device permanent URL)
+                            const cloudUrl = await dbService.uploadAvatar(currentUser.id, file);
+                            if (cloudUrl) {
+                              setProfileAvatarUrl(cloudUrl);
+                              showToast('Photo uploaded to cloud! Visible on all devices.', 'success');
+                            } else {
+                              // 2. Fallback: compress to Base64 if Supabase Storage unavailable
+                              const optimizedUrl = await compressAvatarFile(file, 320, 0.85);
+                              setProfileAvatarUrl(optimizedUrl);
+                              showToast('Photo loaded locally.', 'info');
+                            }
                           } catch (err) {
-                            console.error('Avatar optimization error:', err);
+                            console.error('Avatar upload error:', err);
                             showToast('Failed to load image. Please try another.', 'error');
                           }
                         }}
