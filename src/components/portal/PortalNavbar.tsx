@@ -7,10 +7,11 @@ import {
   Layers, ExternalLink, Eye, EyeOff, User, Upload, Camera, RefreshCw, Trash2 
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
-import { ThemeToggle } from '../ui/ThemeToggle';
 import { LanguageSelector } from '../ui/LanguageSelector';
+import { ThemeToggle } from '../ui/ThemeToggle';
 import { UserRoleTier } from '../../types';
 import { PERMISSIONS } from '../../lib/permissions';
+import logoImg from '../../assets/logo.png';
 
 interface NavItem {
   label: string;
@@ -52,11 +53,22 @@ export const PortalNavbar: React.FC = () => {
 
   // Profile & Avatar edit state
   const [editProfileOpen, setEditProfileOpen] = useState(false);
-  const [profileName, setProfileName] = useState(currentUser.name);
-  const [profileTitle, setProfileTitle] = useState(currentUser.title);
-  const [profileAvatarUrl, setProfileAvatarUrl] = useState(currentUser.avatarUrl || '');
-  const [profilePhone, setProfilePhone] = useState(currentUser.phone || '');
-  const [profileBio, setProfileBio] = useState(currentUser.bio || '');
+  const [profileName, setProfileName] = useState(currentUser?.name || '');
+  const [profileTitle, setProfileTitle] = useState(currentUser?.title || '');
+  const [profileAvatarUrl, setProfileAvatarUrl] = useState(currentUser?.avatarUrl || '');
+  const [profilePhone, setProfilePhone] = useState(currentUser?.phone || '');
+  const [profileBio, setProfileBio] = useState(currentUser?.bio || '');
+
+  // Keep state in sync with currentUser when it updates
+  useEffect(() => {
+    if (currentUser) {
+      setProfileName(currentUser.name || '');
+      setProfileTitle(currentUser.title || '');
+      setProfileAvatarUrl(currentUser.avatarUrl || '');
+      setProfilePhone(currentUser.phone || '');
+      setProfileBio(currentUser.bio || '');
+    }
+  }, [currentUser]);
 
   const userDropdownRef = useRef<HTMLDivElement>(null);
   const moreDropdownRef = useRef<HTMLDivElement>(null);
@@ -147,13 +159,6 @@ export const PortalNavbar: React.FC = () => {
   // Secondary Items (Compressed into the "More" dropdown on desktop)
   const secondaryNavItems: NavItem[] = [
     { 
-      label: 'Payout Ledger', 
-      href: '/portal/ledger', 
-      icon: <DollarSign className="w-4 h-4 text-emerald-400" />, 
-      description: 'Disbursements & financial audit records',
-      show: true 
-    },
-    { 
       label: 'Certificates', 
       href: '/portal/certificates', 
       icon: <Award className="w-4 h-4 text-purple-400" />, 
@@ -166,13 +171,6 @@ export const PortalNavbar: React.FC = () => {
       icon: <Sparkles className="w-4 h-4 text-cyan-400" />, 
       description: 'Public page copywriting & SEO manager',
       show: PERMISSIONS.canEditWebsiteContent(currentTier, currentUser) 
-    },
-    { 
-      label: 'Split Settings', 
-      href: '/portal/settings', 
-      icon: <Settings className="w-4 h-4 text-amber-400" />, 
-      description: 'Tier commission & squad split controls',
-      show: currentTier === 'ceo' 
     },
   ].filter(i => i.show);
 
@@ -190,8 +188,15 @@ export const PortalNavbar: React.FC = () => {
         return { label: 'SQUAD LEAD', shortLabel: 'LEAD', color: 'bg-cyan-500/15 text-cyan-400 border-cyan-500/30' };
       case 'member':
         return { label: 'SPECIALIST', shortLabel: 'SPEC', color: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30' };
+      case 'intern':
+        return { label: 'INTERN SPECIALIST', shortLabel: 'INTERN', color: 'bg-amber-500/15 text-amber-400 border-amber-500/30' };
     }
+    return { label: 'SPECIALIST', shortLabel: 'SPEC', color: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30' };
   };
+
+  if (!currentUser) {
+    return null;
+  }
 
   const badge = getTierBadge(currentTier);
 
@@ -202,10 +207,12 @@ export const PortalNavbar: React.FC = () => {
         {/* Left Side: Brand Logo + Tier Indicator + Compressed Nav Bar */}
         <div className="flex items-center space-x-2 sm:space-x-4 lg:space-x-5">
           {/* Logo & Tier */}
-          <Link to="/portal/dashboard" className="flex items-center space-x-2 shrink-0 group">
-            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-gradient-to-br from-[#022B3A] via-[#1F7A8C] to-[#E1E5F2] flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform">
-              <Shield className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white" />
-            </div>
+          <Link to="/portal/dashboard" className="flex items-center space-x-2.5 shrink-0 group">
+            <img 
+              src={logoImg} 
+              alt="DigiHust Logo" 
+              className="h-7 sm:h-8 w-auto max-w-[36px] object-contain group-hover:scale-105 transition-all drop-shadow-sm dark:drop-shadow-[0_0_8px_rgba(255,255,255,0.75)]" 
+            />
             <div className="flex items-center gap-1.5">
               <span className="font-display font-extrabold text-sm sm:text-base text-[var(--text-heading)]">DigiHust</span>
               <span className={`text-[8px] sm:text-[9px] uppercase font-black px-1.5 sm:px-2 py-0.5 rounded-full border ${badge.color}`}>

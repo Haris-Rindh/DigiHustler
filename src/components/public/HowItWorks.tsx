@@ -65,8 +65,8 @@ const FAQS = [
     a: 'Landing pages and brand identity kits typically take 1–2 weeks. Full-stack web applications and AI automations range between 3–8 weeks depending on complexity. We establish fixed milestone dates before contract signing.',
   },
   {
-    q: 'How are project quotes and milestones structured?',
-    a: 'We work on milestone-based fixed pricing or structured sprint retainers. You only approve payments as verified deliverables are demonstrated on staging environments.',
+    q: 'How are project scopes and milestones structured?',
+    a: 'We work on structured milestone deliverables and agile sprint scopes. You review and approve each milestone as verified features are demonstrated on live staging environments.',
   },
   {
     q: 'Can DigiHust handle ongoing maintenance after launch?',

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { 
   Users, Mail, Shield, Send, CheckCircle2, AlertCircle, Plus, 
-  FileSpreadsheet, Sparkles, Filter, Search, UserCheck, Key, Lock, History, 
+  FileSpreadsheet, Sparkles, Filter, Search, UserCheck, Key, Lock, 
   ShieldCheck, Settings, UserPlus, Ban, Check, X, Award, Printer, Eye 
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
@@ -27,7 +27,6 @@ export const PeopleDirectoryView: React.FC = () => {
   const [selectedSquad, setSelectedSquad] = useState<string>('all');
   const [isImportOpen, setIsImportOpen] = useState(false);
   const [credentialModalOpen, setCredentialModalOpen] = useState(false);
-  const [auditLogModalOpen, setAuditLogModalOpen] = useState(false);
   const [createAccountModalOpen, setCreateAccountModalOpen] = useState(false);
   const [resetPwdUser, setResetPwdUser] = useState<UserType | null>(null);
   const [newPlainPwd, setNewPlainPwd] = useState('');
@@ -51,7 +50,16 @@ export const PeopleDirectoryView: React.FC = () => {
   const [newAccPassword, setNewAccPassword] = useState('');
   const [createFeedback, setCreateFeedback] = useState<{ success?: boolean; message?: string } | null>(null);
 
-  const visibleUsers = users.filter((u) => {
+  if (!currentUser) {
+    return (
+      <div className="max-w-7xl mx-auto px-4 py-16 text-center">
+        <p className="text-xs text-[var(--text-muted)]">Loading directory...</p>
+      </div>
+    );
+  }
+
+  const visibleUsers = (users || []).filter((u) => {
+    if (!u) return false;
     if (currentTier === 'ceo' || currentTier === 'manager') return true;
     if (currentTier === 'group_leader') return u.groupId === currentUser.groupId;
     return u.id === currentUser.id;
@@ -100,7 +108,9 @@ export const PeopleDirectoryView: React.FC = () => {
     e.preventDefault();
     if (!newAccName || !newAccEmail) return;
 
-    const mappedRole = (newAccRoleTier === 'ceo' || newAccRoleTier === 'manager') ? 'management' : (newAccRoleTier === 'group_leader' ? 'group_leader' : 'freelancer');
+    const mappedRole = (newAccRoleTier === 'ceo' || newAccRoleTier === 'manager') 
+      ? 'management' 
+      : (newAccRoleTier === 'group_leader' ? 'group_leader' : (newAccRoleTier === 'intern' ? 'intern' : 'freelancer'));
 
     const res = createUserAccount({
       name: newAccName,
@@ -173,16 +183,6 @@ export const PeopleDirectoryView: React.FC = () => {
         {/* Action Buttons (CEO & Manager only) */}
         {PERMISSIONS.canSendCredentials(currentTier) && (
           <div className="flex flex-wrap items-center gap-2 sm:gap-2.5">
-            {PERMISSIONS.canViewAuditLogs(currentTier) && (
-              <button
-                onClick={() => setAuditLogModalOpen(true)}
-                className="flex items-center space-x-1.5 px-3.5 py-2 rounded-xl border border-purple-500/30 text-purple-400 hover:bg-purple-500/10 text-xs font-bold transition-all cursor-pointer"
-              >
-                <History className="w-4 h-4" />
-                <span>Audit Logs ({auditLogs.length})</span>
-              </button>
-            )}
-
             {PERMISSIONS.canCreateUserAccount(currentTier) && (
               <button
                 onClick={() => setCreateAccountModalOpen(true)}
@@ -535,6 +535,7 @@ export const PeopleDirectoryView: React.FC = () => {
                     className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs text-[var(--text-heading)]"
                   >
                     <option value="member">Member Specialist</option>
+                    <option value="intern">Intern Specialist</option>
                     <option value="group_leader">Squad Lead</option>
                     <option value="manager">Operations Manager</option>
                     <option value="ceo">CEO / Executive</option>
@@ -622,54 +623,6 @@ export const PeopleDirectoryView: React.FC = () => {
           user={selectedUserForRole}
           onClose={() => setSelectedUserForRole(null)}
         />
-      )}
-
-      {/* Security Audit Logs Modal */}
-      {auditLogModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-3xl p-6 sm:p-8 max-w-2xl w-full shadow-2xl animate-in fade-in zoom-in-95 max-h-[90vh] flex flex-col justify-between">
-            <div>
-              <div className="flex items-center justify-between pb-3 border-b border-[var(--border-subtle)] mb-4">
-                <div className="flex items-center space-x-2.5">
-                  <ShieldCheck className="w-5 h-5 text-purple-400" />
-                  <h3 className="font-display font-extrabold text-lg text-[var(--text-heading)]">
-                    Executive Security & Role Audit Trail
-                  </h3>
-                </div>
-                <button
-                  onClick={() => setAuditLogModalOpen(false)}
-                  className="p-1 rounded-xl text-[var(--text-muted)] hover:text-[var(--text-heading)]"
-                >
-                  ✕
-                </button>
-              </div>
-
-              <div className="max-h-96 overflow-y-auto space-y-2 font-mono text-xs pr-1">
-                {auditLogs.map((log) => (
-                  <div key={log.id} className="p-3 rounded-2xl bg-[var(--bg-page)] border border-[var(--border-subtle)] space-y-1">
-                    <div className="flex items-center justify-between text-[10px]">
-                      <span className="font-bold text-purple-400 uppercase tracking-wider">{log.action}</span>
-                      <span className="text-[var(--text-muted)]">{new Date(log.timestamp).toLocaleString()}</span>
-                    </div>
-                    <p className="text-[var(--text-heading)] font-sans text-xs">{log.details}</p>
-                    <div className="text-[10px] text-[var(--text-muted)] pt-1 border-t border-[var(--border-subtle)]">
-                      Actor: {log.actorName} ({log.actorRole.toUpperCase()})
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="pt-4 border-t border-[var(--border-subtle)] flex justify-end">
-              <button
-                onClick={() => setAuditLogModalOpen(false)}
-                className="px-5 py-2 rounded-xl bg-[var(--brand-teal)] text-white text-xs font-bold cursor-pointer"
-              >
-                Close Audit Records
-              </button>
-            </div>
-          </div>
-        </div>
       )}
 
       {/* Bulk Import Modal */}

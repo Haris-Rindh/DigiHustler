@@ -1,6 +1,6 @@
-export type UserRole = 'management' | 'group_leader' | 'freelancer';
+export type UserRole = 'management' | 'group_leader' | 'freelancer' | 'intern';
 
-export type UserRoleTier = 'ceo' | 'manager' | 'group_leader' | 'member';
+export type UserRoleTier = 'ceo' | 'manager' | 'group_leader' | 'member' | 'intern';
 
 export type GroupId = 'tech' | 'creative' | 'data' | 'growth';
 
@@ -315,17 +315,21 @@ export interface Certificate {
   customTypeName?: string;
   documentTitle?: string;
   roleTitle: string;
-  startDate: string;
+  startDate?: string;
   endDate?: string;
   issuedDate: string;
   status: CertificateStatus;
-  clientName: string; // Real client name
-  projectDetails: string; // Real project details
-  issuedBy: string;
+  isLocked?: boolean; // true = locked by Management, false = released to member portal
+  releasedAt?: string;
+  driveUrl?: string; // Google Drive PDF or download link
+  clientName?: string; // Real client name / DigiHust authority
+  projectDetails?: string; // Real project details
+  issuedBy?: string;
   qrCodeUrl?: string;
   revocationReason?: string;
   durationText?: string; // e.g. "45 Days (Remote)"
-  stipendTerms?: string; // e.g. "65–70% of the project budget"
+  notes?: string;
+  stipendTerms?: string;
   evaluationCriteria?: string[];
   introParagraph?: string;
   closingParagraph?: string;

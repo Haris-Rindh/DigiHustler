@@ -45,7 +45,7 @@ export const MaintenancePage: React.FC = () => {
           transition={{ delay: 0.3, duration: 0.4 }}
           className="text-base sm:text-lg text-[var(--text-body)] max-w-lg mx-auto leading-relaxed mb-10"
         >
-          We are currently deploying performance optimizations and real-time ledger pipeline upgrades. Systems are expected to be fully restored within the maintenance window.
+          We are currently deploying performance optimizations and real-time synchronization upgrades. Systems are expected to be fully restored within the maintenance window.
         </motion.p>
 
         <motion.div

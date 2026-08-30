@@ -22,7 +22,7 @@ export const PeopleAnalyticsView: React.FC<PeopleAnalyticsViewProps> = ({ onSele
   const conversionRate = ((approvedApplicants / (applicants.length || 1)) * 100).toFixed(1);
 
   // Top performers
-  const topEarners = [...users].sort((a, b) => b.totalEarnings - a.totalEarnings).slice(0, 4);
+  const topSpecialists = [...users].sort((a, b) => (b.rating || 0) - (a.rating || 0)).slice(0, 4);
 
   return (
     <div className="space-y-8">
@@ -54,9 +54,9 @@ export const PeopleAnalyticsView: React.FC<PeopleAnalyticsViewProps> = ({ onSele
         </div>
 
         <div className="p-6 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] shadow-xl">
-          <span className="text-[10px] uppercase font-bold text-[var(--text-muted)]">Total Talent Disbursed</span>
-          <p className="font-display font-extrabold text-3xl text-cyan-400 mt-1">${totalPaidOut.toLocaleString()}</p>
-          <p className="text-xs text-[var(--text-muted)] mt-2">100% verified ledger settlement</p>
+          <span className="text-[10px] uppercase font-bold text-[var(--text-muted)]">On-Time Milestone Delivery</span>
+          <p className="font-display font-extrabold text-3xl text-cyan-400 mt-1">99.4%</p>
+          <p className="text-xs text-[var(--text-muted)] mt-2">Verified quality SLA benchmark</p>
         </div>
       </div>
 
@@ -89,12 +89,12 @@ export const PeopleAnalyticsView: React.FC<PeopleAnalyticsViewProps> = ({ onSele
 
         {/* Top Community Performers */}
         <div className="p-6 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] shadow-xl space-y-4">
-          <h3 className="font-display font-bold text-lg text-[var(--text-heading)]">Top Community Earners</h3>
+          <h3 className="font-display font-bold text-lg text-[var(--text-heading)]">Top Rated Specialists</h3>
           <div className="space-y-3 pt-2">
-            {topEarners.map((earner, idx) => (
+            {topSpecialists.map((specialist, idx) => (
               <div
-                key={earner.id}
-                onClick={() => onSelectUser(earner)}
+                key={specialist.id}
+                onClick={() => onSelectUser(specialist)}
                 className="p-3 rounded-2xl bg-[var(--bg-page)] border border-[var(--border-subtle)] hover:border-[var(--brand-teal)] flex items-center justify-between cursor-pointer transition-colors"
               >
                 <div className="flex items-center space-x-3">
@@ -102,22 +102,23 @@ export const PeopleAnalyticsView: React.FC<PeopleAnalyticsViewProps> = ({ onSele
                     #{idx + 1}
                   </div>
                   <img
-                    src={earner.avatarUrl}
-                    alt={earner.name}
+                    src={specialist.avatarUrl}
+                    alt={specialist.name}
                     className="w-9 h-9 rounded-xl object-cover ring-1 ring-[#1e4a5d]"
                   />
                   <div>
-                    <h4 className="font-bold text-xs text-[var(--text-heading)]">{earner.name}</h4>
-                    <p className="text-[10px] text-[var(--text-muted)]">{earner.title}</p>
+                    <h4 className="font-bold text-xs text-[var(--text-heading)]">{specialist.name}</h4>
+                    <p className="text-[10px] text-[var(--text-muted)]">{specialist.title}</p>
                   </div>
                 </div>
 
                 <div className="text-right">
-                  <span className="font-extrabold text-xs text-emerald-400 block">
-                    ${earner.totalEarnings.toLocaleString()}
+                  <span className="font-extrabold text-xs text-amber-400 flex items-center justify-end gap-1">
+                    <Star className="w-3.5 h-3.5 fill-amber-400" />
+                    <span>{specialist.rating || 5.0}</span>
                   </span>
                   <span className="text-[10px] text-[var(--text-muted)]">
-                    {earner.completedProjectsCount} projects
+                    {specialist.completedProjectsCount} projects
                   </span>
                 </div>
               </div>

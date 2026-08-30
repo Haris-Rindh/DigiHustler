@@ -121,7 +121,7 @@ export const About: React.FC = () => {
               DigiHust operates as a centralized management and delivery engine. We acquire clients centrally, architect technical solutions, and route development directly to specialized squads.
             </p>
             <p className="text-base text-[var(--text-body)] leading-relaxed">
-              Clients receive agency-grade reliability, transparent communication, and structured delivery. Our specialists receive consistent work, fair compensation splits, and a supportive team environment.
+              Clients receive agency-grade reliability, transparent communication, and structured delivery. Our specialists receive continuous growth, mentorship, and a collaborative team environment.
             </p>
           </motion.div>
 
@@ -135,8 +135,8 @@ export const About: React.FC = () => {
             {[
               {
                 icon: <Target className="w-5 h-5 text-[var(--text-heading)]" />,
-                title: 'Centralized Client Acquisition',
-                desc: 'Single contract, professional scoping, and dedicated management oversight.',
+                title: 'Centralized Client Scoping',
+                desc: 'Single point of contact, professional scoping, and dedicated sprint management.',
               },
               {
                 icon: <Zap className="w-5 h-5 text-amber-400" />,
@@ -145,8 +145,8 @@ export const About: React.FC = () => {
               },
               {
                 icon: <ShieldCheck className="w-5 h-5 text-emerald-400" />,
-                title: 'Transparent Ledger Payouts',
-                desc: 'Fair, contribution-based revenue distribution calculated and recorded on internal ledgers.',
+                title: 'Verified Quality Standards',
+                desc: 'Structured code reviews, strict staging QA passes, and verifiable credentials.',
               },
             ].map((item) => (
               <div

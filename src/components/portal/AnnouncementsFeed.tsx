@@ -17,11 +17,20 @@ export const AnnouncementsFeed: React.FC = () => {
   const [scope, setScope] = useState<AnnouncementScope>('global');
   const [targetGroupId, setTargetGroupId] = useState<GroupId>('tech');
 
+  if (!currentUser) {
+    return (
+      <div className="max-w-7xl mx-auto px-4 py-16 text-center">
+        <p className="text-xs text-[var(--text-muted)]">Loading announcements...</p>
+      </div>
+    );
+  }
+
   const canPostGlobal = PERMISSIONS.canPostGlobalAnnouncement(currentTier);
   const canPostGroup = PERMISSIONS.canPostGroupAnnouncement(currentTier, currentUser.groupId);
   const canPostAny = canPostGlobal || canPostGroup;
 
-  const visibleAnnouncements = announcements.filter((ann) => {
+  const visibleAnnouncements = (announcements || []).filter((ann) => {
+    if (!ann) return false;
     if (ann.scope === 'global') return true;
     if (currentTier === 'ceo' || currentTier === 'manager') return true;
     return ann.groupId === currentUser.groupId;

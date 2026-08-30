@@ -35,7 +35,7 @@ export const RoleManagementModal: React.FC<RoleManagementModalProps> = ({ user, 
     );
   }
 
-  const userAuditLogs = auditLogs.filter(log => log.targetId === user.id);
+  const userAuditLogs = (auditLogs || []).filter(log => log.targetId === user.id);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -116,7 +116,7 @@ export const RoleManagementModal: React.FC<RoleManagementModalProps> = ({ user, 
                 { 
                   tier: 'ceo' as UserRoleTier, 
                   title: 'CEO / Executive', 
-                  desc: 'Root governance, platform split config, role management, financial overview.', 
+                  desc: 'Root governance, team supervision, role management, platform controls.', 
                   color: 'border-purple-500/40 text-purple-400' 
                 },
                 { 
@@ -134,8 +134,14 @@ export const RoleManagementModal: React.FC<RoleManagementModalProps> = ({ user, 
                 { 
                   tier: 'member' as UserRoleTier, 
                   title: 'Domain Specialist Member', 
-                  desc: 'Task execution, staging deliverable submissions, personal ledger.', 
+                  desc: 'Task execution, staging deliverable submissions, verified credentials.', 
                   color: 'border-emerald-500/40 text-emerald-400' 
+                },
+                { 
+                  tier: 'intern' as UserRoleTier, 
+                  title: 'Intern Specialist', 
+                  desc: 'Learning tracks, supervised sprint tasks, skill development & mentorship.', 
+                  color: 'border-amber-500/40 text-amber-400' 
                 },
               ].map((t) => {
                 const isSelected = selectedTier === t.tier;

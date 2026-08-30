@@ -32,8 +32,8 @@ export const ApplicantWorkflowQueue: React.FC = () => {
     return a.status === filterTab;
   });
 
-  const handleApprove = (id: string, preferredGroupId: GroupId) => {
-    approveApplicant(id, 'freelancer', preferredGroupId);
+  const handleApprove = (id: string, preferredGroupId: GroupId, role: UserRole = 'freelancer') => {
+    approveApplicant(id, role, preferredGroupId);
   };
 
   const handleRejectSubmit = (e: React.FormEvent) => {
@@ -196,18 +196,28 @@ export const ApplicantWorkflowQueue: React.FC = () => {
                 {/* Workflow Actions (Management Only) */}
                 {isManagement && app.status !== 'approved' && (
                   <div className="pt-4 border-t border-[var(--border-subtle)] flex flex-wrap items-center justify-between gap-2">
-                    <div className="flex items-center space-x-2">
+                    <div className="flex flex-wrap items-center gap-2">
                       <button
-                        onClick={() => handleApprove(app.id, app.preferredGroupId)}
-                        className="px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-md transition-colors flex items-center space-x-1"
+                        onClick={() => handleApprove(app.id, app.preferredGroupId, 'freelancer')}
+                        className="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-md transition-colors flex items-center space-x-1 cursor-pointer"
+                        title="Approve as full Specialist member"
                       >
                         <CheckCircle2 className="w-3.5 h-3.5" />
-                        <span>Approve</span>
+                        <span>Approve Specialist</span>
+                      </button>
+
+                      <button
+                        onClick={() => handleApprove(app.id, app.preferredGroupId, 'intern')}
+                        className="px-3 py-1.5 rounded-xl bg-amber-600 hover:bg-amber-500 text-white font-bold text-xs shadow-md transition-colors flex items-center space-x-1 cursor-pointer"
+                        title="Approve as Intern Specialist"
+                      >
+                        <Award className="w-3.5 h-3.5" />
+                        <span>Approve Intern</span>
                       </button>
 
                       <button
                         onClick={() => setInfoModalAppId(app.id)}
-                        className="px-3 py-1.5 rounded-xl bg-blue-600/20 hover:bg-blue-600/30 border border-blue-500/40 text-blue-300 font-bold text-xs transition-colors flex items-center space-x-1"
+                        className="px-3 py-1.5 rounded-xl bg-blue-600/20 hover:bg-blue-600/30 border border-blue-500/40 text-blue-300 font-bold text-xs transition-colors flex items-center space-x-1 cursor-pointer"
                       >
                         <HelpCircle className="w-3.5 h-3.5" />
                         <span>Request Info</span>

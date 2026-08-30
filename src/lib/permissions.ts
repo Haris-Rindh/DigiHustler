@@ -1,21 +1,23 @@
 import { User, UserRoleTier, Assignment, SanitizedBrief } from '../types';
 
-export function getUserRoleTier(user: User): UserRoleTier {
+export function getUserRoleTier(user?: User | null): UserRoleTier {
+  if (!user) return 'member';
   if (user.roleTier) return user.roleTier;
   // Fallback map from legacy role
   if (user.role === 'management') {
-    if (user.title.toLowerCase().includes('ceo') || user.title.toLowerCase().includes('founder') || user.isCeoMaster) {
+    if (user.title?.toLowerCase().includes('ceo') || user.title?.toLowerCase().includes('founder') || user.isCeoMaster) {
       return 'ceo';
     }
     return 'manager';
   }
   if (user.role === 'group_leader') return 'group_leader';
+  if (user.role === 'intern') return 'intern';
   return 'member';
 }
 
 export const PERMISSIONS = {
   // Executive Root Master Governance (CEO Exclusive)
-  isCeoMaster: (user: User) => user.roleTier === 'ceo' || user.isCeoMaster === true,
+  isCeoMaster: (user?: User | null) => user?.roleTier === 'ceo' || user?.isCeoMaster === true,
   canDistributeRoles: (tier: UserRoleTier) => tier === 'ceo',
   canReassignSquad: (tier: UserRoleTier) => tier === 'ceo',
   canManageManagers: (tier: UserRoleTier) => tier === 'ceo',

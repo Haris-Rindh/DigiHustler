@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { Shield, ArrowRight, Lock, User as UserIcon, Bell, Sparkles, AlertCircle, CheckCircle2, Eye, EyeOff } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { SEOHead } from '../seo/SEOHead';
+import logoImg from '../../assets/logo.png';
 
 export const PortalLogin: React.FC = () => {
   const { loginWithMemberId, announcements, requestPasswordReset } = useApp();
@@ -64,9 +65,11 @@ export const PortalLogin: React.FC = () => {
       {/* Header Logo */}
       <div className="max-w-6xl mx-auto w-full flex items-center justify-between py-4">
         <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#022B3A] via-[#1F7A8C] to-[#E1E5F2] flex items-center justify-center shadow-md">
-            <Shield className="w-5 h-5 text-white" />
-          </div>
+          <img 
+            src={logoImg} 
+            alt="DigiHust Logo" 
+            className="h-9 sm:h-10 w-auto max-w-[44px] object-contain drop-shadow-sm dark:drop-shadow-[0_0_8px_rgba(255,255,255,0.75)]" 
+          />
           <div>
             <span className="font-display font-extrabold text-xl text-[var(--text-heading)] tracking-tight">DigiHust</span>
             <span className="ml-2 text-[10px] uppercase font-bold px-2.5 py-0.5 rounded-full bg-[var(--brand-teal-subtle)] text-[var(--brand-teal)] border border-[var(--border-subtle)]">

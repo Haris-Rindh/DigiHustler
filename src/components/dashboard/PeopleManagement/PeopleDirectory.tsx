@@ -64,6 +64,7 @@ export const PeopleDirectory: React.FC<PeopleDirectoryProps> = ({
       const matchSearch =
         u.name.toLowerCase().includes(term) ||
         u.email.toLowerCase().includes(term) ||
+        (u.memberId && u.memberId.toLowerCase().includes(term)) ||
         u.title.toLowerCase().includes(term) ||
         u.specialties.some((s) => s.toLowerCase().includes(term));
 
@@ -211,6 +212,7 @@ export const PeopleDirectory: React.FC<PeopleDirectoryProps> = ({
             <option value="management">Management</option>
             <option value="group_leader">Group Leaders</option>
             <option value="freelancer">Freelancers</option>
+            <option value="intern">Interns</option>
           </select>
 
           {/* Squad Filter (Scoped if Leader) */}
@@ -335,13 +337,13 @@ export const PeopleDirectory: React.FC<PeopleDirectoryProps> = ({
                 <th className="p-4">Skills</th>
                 <th
                   onClick={() => {
-                    setSortField('earnings');
+                    setSortField('projects');
                     setSortAsc(!sortAsc);
                   }}
-                  className="p-4 cursor-pointer hover:text-[var(--text-heading)] text-right"
+                  className="p-4 cursor-pointer hover:text-[var(--text-heading)] text-center"
                 >
-                  <span className="flex items-center justify-end gap-1">
-                    <span>Total Earned</span>
+                  <span className="flex items-center justify-center gap-1">
+                    <span>Projects</span>
                     <ArrowUpDown className="w-3 h-3 opacity-50" />
                   </span>
                 </th>
@@ -405,7 +407,14 @@ export const PeopleDirectory: React.FC<PeopleDirectoryProps> = ({
                             className="w-9 h-9 rounded-xl object-cover ring-1 ring-[#1e4a5d]"
                           />
                           <div>
-                            <p className="font-bold text-[var(--text-heading)] text-sm">{person.name}</p>
+                            <div className="flex items-center gap-2">
+                              <p className="font-bold text-[var(--text-heading)] text-sm">{person.name}</p>
+                              {person.memberId && (
+                                <span className="font-mono text-[10px] font-bold px-1.5 py-0.5 rounded bg-[var(--brand-teal-subtle)] text-[var(--brand-teal)] border border-[var(--border-subtle)]">
+                                  {person.memberId}
+                                </span>
+                              )}
+                            </div>
                             <p className="text-[11px] text-[var(--text-muted)]">{person.title}</p>
                           </div>
                         </div>
@@ -451,9 +460,9 @@ export const PeopleDirectory: React.FC<PeopleDirectoryProps> = ({
                         </div>
                       </td>
 
-                      {/* Total Earned */}
-                      <td className="p-4 text-right font-extrabold text-[var(--text-heading)]">
-                        ${person.totalEarnings.toLocaleString()}
+                      {/* Completed Projects */}
+                      <td className="p-4 text-center font-bold text-[var(--text-heading)]">
+                        {person.completedProjectsCount || 0}
                       </td>
 
                       {/* Rating */}

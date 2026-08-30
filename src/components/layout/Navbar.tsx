@@ -1,21 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, ArrowRight, Shield } from 'lucide-react';
+import { Menu, X, ArrowRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { LanguageSelector } from '../ui/LanguageSelector';
 import { ThemeToggle } from '../ui/ThemeToggle';
 import { useLanguage } from '../../context/LanguageContext';
+import { useApp } from '../../context/AppContext';
+import logoImg from '../../assets/logo.png';
 
 import { PortalNavbar } from '../portal/PortalNavbar';
 
 export const Navbar: React.FC = () => {
   const location = useLocation();
   const { t } = useLanguage();
+  const { isAuthenticated } = useApp();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
   const isPortalLogin = location.pathname === '/portal/login';
-  const isPortal = location.pathname.startsWith('/portal') || ['/dashboard', '/ledger', '/roster', '/admin'].some(p => location.pathname.startsWith(p));
+  const isPortal = location.pathname.startsWith('/portal') || ['/dashboard', '/roster', '/admin'].some(p => location.pathname.startsWith(p));
   const isVerify = location.pathname.startsWith('/verify') || location.pathname.startsWith('/cert');
 
   useEffect(() => {
@@ -41,6 +44,9 @@ export const Navbar: React.FC = () => {
   }
 
   if (isPortal) {
+    if (!isAuthenticated) {
+      return null;
+    }
     return <PortalNavbar />;
   }
 
@@ -61,13 +67,11 @@ export const Navbar: React.FC = () => {
         {/* Logo */}
         <Link to="/" className="flex items-center space-x-2.5 group">
           <motion.div
-            whileHover={{ scale: 1.05, rotate: 5 }}
+            whileHover={{ scale: 1.05, rotate: 3 }}
             whileTap={{ scale: 0.95 }}
-            className="w-8 h-8 rounded-xl bg-gradient-to-br from-[#022B3A] via-[#1F7A8C] to-[#E1E5F2] flex items-center justify-center shadow-md"
+            className="w-9 h-9 rounded-xl overflow-hidden flex items-center justify-center shadow-md bg-white border border-[var(--border-subtle)] p-0.5"
           >
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <path d="M2 4h12M2 8h8M2 12h10" stroke="white" strokeWidth="2" strokeLinecap="round"/>
-            </svg>
+            <img src={logoImg} alt="DigiHust Logo" className="w-full h-full object-contain" />
           </motion.div>
           <span className="font-display font-extrabold text-xl tracking-tight text-[var(--text-heading)] group-hover:text-[var(--brand-teal)] transition-colors">
             DigiHust

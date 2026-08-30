@@ -398,11 +398,10 @@ export const SiteContentManager: React.FC = () => {
           { id: 'services' as const,    label: '2. Services',         icon: <Layers className="w-3.5 h-3.5" />,     status: 'live',     tip: 'The capability cards shown on homepage and /services page' },
           { id: 'caseStudies' as const, label: '3. Case Studies',     icon: <Briefcase className="w-3.5 h-3.5" />,  status: 'live',     tip: 'Work/Portfolio section on homepage and /work page' },
           { id: 'testimonials' as const,label: '4. Testimonials',     icon: <Star className="w-3.5 h-3.5" />,       status: 'live',     tip: 'Client reviews shown on homepage' },
-          { id: 'packages' as const,    label: '5. Pricing Packages', icon: <DollarSign className="w-3.5 h-3.5" />, status: 'live',     tip: 'The sprint packages shown on the services and pricing sections' },
-          { id: 'team' as const,        label: '6. Team Profiles',    icon: <Users className="w-3.5 h-3.5" />,      status: 'live',     tip: 'Team members shown on the /team page' },
-          { id: 'blog' as const,        label: '7. Blog & Insights',  icon: <FileText className="w-3.5 h-3.5" />,   status: 'live',     tip: 'Manage articles and technical guides on /blog and /blog/:slug' },
-          { id: 'about' as const,       label: '8. Company Story',    icon: <Info className="w-3.5 h-3.5" />,       status: 'live',     tip: 'Mission, vision, and company story shown on /about page' },
-          { id: 'contact' as const,     label: '9. Contact Info',     icon: <PhoneCall className="w-3.5 h-3.5" />,  status: 'live',     tip: 'Email, phone, and address shown on the /contact page sidebar' },
+          { id: 'team' as const,        label: '5. Team Profiles',    icon: <Users className="w-3.5 h-3.5" />,      status: 'live',     tip: 'Team members shown on the /team page' },
+          { id: 'blog' as const,        label: '6. Blog & Insights',  icon: <FileText className="w-3.5 h-3.5" />,   status: 'live',     tip: 'Manage articles and technical guides on /blog and /blog/:slug' },
+          { id: 'about' as const,       label: '7. Company Story',    icon: <Info className="w-3.5 h-3.5" />,       status: 'live',     tip: 'Mission, vision, and company story shown on /about page' },
+          { id: 'contact' as const,     label: '8. Contact Info',     icon: <PhoneCall className="w-3.5 h-3.5" />,  status: 'live',     tip: 'Email, phone, and address shown on the /contact page sidebar' },
         ].map((tab) => (
           <button
             key={tab.id}
@@ -1019,103 +1018,7 @@ export const SiteContentManager: React.FC = () => {
         </div>
       )}
 
-      {/* ── TAB 5: PRICING PACKAGES ── */}
-      {activeTab === 'packages' && (
-        <div className="space-y-6">
-          <div className="flex items-center justify-between p-4 rounded-2xl bg-[var(--bg-surface)] border border-[var(--border-subtle)]">
-            <h3 className="font-display font-extrabold text-base text-[var(--text-heading)]">Investment & Pricing Packages ({(siteContent.packages || []).length})</h3>
-            <button
-              onClick={() => setShowAddPackage(true)}
-              className="flex items-center space-x-1.5 px-4 py-2 rounded-xl bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-white text-xs font-bold shadow-md cursor-pointer"
-            >
-              <Plus className="w-4 h-4" />
-              <span>Add Package</span>
-            </button>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-            {(siteContent.packages || []).map((pkg) => (
-              <div key={pkg.id} className="p-6 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] space-y-3 flex flex-col justify-between">
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="font-bold text-sm text-[var(--text-heading)]">{pkg.name}</span>
-                    <button
-                      onClick={() => {
-                        if (confirm(`Delete package '${pkg.name}'?`)) {
-                          removeItemFromSiteContent('packages', pkg.id);
-                          triggerSaved('Package deleted.');
-                        }
-                      }}
-                      className="p-1 text-[var(--text-muted)] hover:text-rose-400"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  </div>
-                  <input
-                    type="text"
-                    value={pkg.price}
-                    onChange={(e) => updateItemInSiteContent('packages', pkg.id, { price: e.target.value })}
-                    className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-sm font-black text-[var(--brand-teal)]"
-                  />
-                  <textarea
-                    value={pkg.desc}
-                    onChange={(e) => updateItemInSiteContent('packages', pkg.id, { desc: e.target.value })}
-                    rows={2}
-                    className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl p-2.5 text-xs text-[var(--text-body)]"
-                  />
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Add Package Modal */}
-          {showAddPackage && (
-            <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
-              <form onSubmit={handleCreatePackage} className="bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl space-y-4">
-                <div className="flex items-center justify-between pb-3 border-b border-[var(--border-subtle)]">
-                  <h3 className="font-bold text-base text-[var(--text-heading)]">Add Pricing Package</h3>
-                  <button type="button" onClick={() => setShowAddPackage(false)}><X className="w-5 h-5" /></button>
-                </div>
-                <div>
-                  <label className="block text-xs font-bold uppercase text-[var(--text-muted)] mb-1">Package Name</label>
-                  <input
-                    type="text"
-                    required
-                    value={newPackage.name}
-                    onChange={(e) => setNewPackage({ ...newPackage, name: e.target.value })}
-                    className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold uppercase text-[var(--text-muted)] mb-1">Price String</label>
-                  <input
-                    type="text"
-                    required
-                    value={newPackage.price}
-                    onChange={(e) => setNewPackage({ ...newPackage, price: e.target.value })}
-                    className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs font-bold"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold uppercase text-[var(--text-muted)] mb-1">Description</label>
-                  <textarea
-                    rows={2}
-                    value={newPackage.desc}
-                    onChange={(e) => setNewPackage({ ...newPackage, desc: e.target.value })}
-                    className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl p-2.5 text-xs"
-                  />
-                </div>
-                <div className="flex justify-end space-x-2 pt-3 border-t border-[var(--border-subtle)]">
-                  <button type="button" onClick={() => setShowAddPackage(false)} className="px-4 py-2 rounded-xl text-xs font-semibold text-[var(--text-muted)]">Cancel</button>
-                  <button type="submit" className="px-5 py-2 rounded-xl bg-[var(--brand-teal)] text-white text-xs font-bold">Add Package</button>
-                </div>
-              </form>
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* ── TAB 6: TEAM MEMBERS & SPECIALISTS ── */}
+      {/* ── TAB 5: TEAM MEMBERS & SPECIALISTS ── */}
       {activeTab === 'team' && (
         <div className="space-y-6">
           <div className="flex items-center justify-between p-4 rounded-2xl bg-[var(--bg-surface)] border border-[var(--border-subtle)]">

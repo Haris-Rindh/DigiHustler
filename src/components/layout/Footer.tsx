@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowUpRight, ShieldCheck, Heart } from 'lucide-react';
+import logoImg from '../../assets/logo.png';
 
 export const Footer: React.FC = () => {
   return (
@@ -17,12 +18,12 @@ export const Footer: React.FC = () => {
           {/* Brand Column */}
           <div className="md:col-span-2 space-y-4">
             <Link to="/" className="flex items-center space-x-2.5 group">
-              <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-[#022B3A] via-[#1F7A8C] to-[#E1E5F2] flex items-center justify-center shadow-md">
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                  <path d="M2 4h12M2 8h8M2 12h10" stroke="white" strokeWidth="2" strokeLinecap="round"/>
-                </svg>
-              </div>
-              <span className="font-display font-extrabold text-xl text-[var(--text-heading)] group-hover:text-[var(--text-heading)] transition-colors">
+              <img 
+                src={logoImg} 
+                alt="DigiHust Logo" 
+                className="h-8 sm:h-9 w-auto max-w-[42px] object-contain group-hover:scale-105 transition-all drop-shadow-sm dark:drop-shadow-[0_0_8px_rgba(255,255,255,0.75)]" 
+              />
+              <span className="font-display font-extrabold text-xl text-[var(--text-heading)] group-hover:text-[var(--brand-teal)] transition-colors">
                 DigiHust
               </span>
             </Link>

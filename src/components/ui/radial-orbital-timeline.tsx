@@ -4,6 +4,7 @@ import { ArrowRight, Link as LinkIcon, Zap, Code, Palette, Cpu, TrendingUp, Shie
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import logoImg from "../../assets/logo.png";
 
 export interface TimelineItem {
   id: number;
@@ -229,10 +230,14 @@ export default function RadialOrbitalTimeline({
     return () => window.removeEventListener('resize', check);
   }, []);
 
+  const primaryRingRadius = isMobile ? (embedded ? 105 : 135) : (embedded ? 130 : 175);
+  const primaryRingDiameter = primaryRingRadius * 2;
+  const secondaryRingDiameter = primaryRingDiameter + (isMobile ? 30 : 40);
+
   const calculateNodePosition = (index: number, totalNodes: number) => {
     const angleStep = (2 * Math.PI) / totalNodes;
     const currentAngle = angleStep * index + (rotationAngle * Math.PI) / 180;
-    const radius = isMobile ? (embedded ? 105 : 135) : (embedded ? 130 : 175);
+    const radius = primaryRingRadius;
     const x = radius * Math.cos(currentAngle);
     const y = radius * Math.sin(currentAngle);
     const zIndex = Math.round(100 + 50 * Math.sin(currentAngle));
@@ -264,10 +269,10 @@ export default function RadialOrbitalTimeline({
             perspective: "1000px",
           }}
         >
-          {/* Central Hub Core */}
+          {/* Central Hub Core with Logo (Clean pure orb without harsh border outline) */}
           <div
-            className={`absolute rounded-full bg-gradient-to-br from-[#022B3A] via-[#1F7A8C] to-[#E1E5F2] border-2 border-[var(--border-subtle)] shadow-xl flex items-center justify-center z-10 cursor-pointer transition-transform hover:scale-105 ${
-              embedded ? "w-12 h-12 sm:w-14 sm:h-14" : "w-14 h-14 sm:w-18 sm:h-18"
+            className={`absolute rounded-full bg-white dark:bg-white shadow-xl shadow-slate-900/10 flex items-center justify-center z-10 cursor-pointer transition-transform hover:scale-105 p-3 overflow-hidden ${
+              embedded ? "w-14 h-14 sm:w-16 sm:h-16" : "w-16 h-16 sm:w-20 sm:h-20"
             }`}
             onClick={(e) => {
               e.stopPropagation();
@@ -275,28 +280,29 @@ export default function RadialOrbitalTimeline({
             }}
             title={autoRotate ? "Click to pause rotation" : "Click to resume rotation"}
           >
-            <div className="text-center px-1">
-              <span className="font-display font-black text-[10px] sm:text-xs text-white uppercase tracking-tighter block leading-tight">
-                DIGI
-              </span>
-              <span className="font-mono text-[8px] sm:text-[9px] text-[var(--brand-teal)] bg-white/90 px-1 py-0.2 rounded font-extrabold block">
-                SQUADS
-              </span>
-            </div>
+            <img
+              src={logoImg}
+              alt="DigiHust Logo"
+              className="w-full h-full object-contain"
+            />
           </div>
 
-          {/* Primary Orbit Rings */}
+          {/* Primary Orbit Rings (Mathematically aligned so icons sit exactly on the ring on all devices) */}
           <div
-            className={`absolute rounded-full border pointer-events-none transition-colors ${
-              embedded ? "w-[250px] h-[250px]" : "w-[340px] h-[340px]"
-            }`}
-            style={{ borderColor: "var(--orbit-ring)" }}
+            className="absolute rounded-full border pointer-events-none transition-all duration-300"
+            style={{ 
+              width: `${primaryRingDiameter}px`,
+              height: `${primaryRingDiameter}px`,
+              borderColor: "var(--orbit-ring)" 
+            }}
           />
           <div
-            className={`absolute rounded-full border border-dashed pointer-events-none transition-colors ${
-              embedded ? "w-[280px] h-[280px]" : "w-[380px] h-[380px]"
-            }`}
-            style={{ borderColor: "var(--orbit-ring-dashed)" }}
+            className="absolute rounded-full border border-dashed pointer-events-none transition-all duration-300"
+            style={{ 
+              width: `${secondaryRingDiameter}px`,
+              height: `${secondaryRingDiameter}px`,
+              borderColor: "var(--orbit-ring-dashed)" 
+            }}
           />
 
           {/* Orbit Nodes */}

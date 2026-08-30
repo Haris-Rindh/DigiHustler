@@ -8,7 +8,7 @@ export const TermsOfService: React.FC = () => {
     <div className="pt-16">
       <SEOHead
         title="Terms of Service — DigiHust"
-        description="Terms and conditions governing client service delivery, milestone payments, intellectual property ownership, and warranties."
+        description="Terms and conditions governing client service delivery, milestone sign-offs, intellectual property ownership, and warranties."
         canonical="https://digihust.com/terms"
       />
 
@@ -40,14 +40,14 @@ export const TermsOfService: React.FC = () => {
           <div>
             <h2 className="font-display font-bold text-2xl text-[var(--text-heading)] mb-3">2. Intellectual Property (IP) Transfer</h2>
             <p>
-              Upon full settlement of milestone payments, 100% of custom source code, vector design files, databases, and digital assets created specifically for the client are irrevocably assigned and transferred to the client.
+              Upon formal milestone completion and sign-off, 100% of custom source code, vector design files, databases, and digital assets created specifically for the client are irrevocably assigned and transferred to the client.
             </p>
           </div>
 
           <div>
             <h2 className="font-display font-bold text-2xl text-[var(--text-heading)] mb-3">3. Milestone Acceptance & QA</h2>
             <p>
-              Clients are provided private staging environments to review sprint deliverables. Following written milestone approval, payments are processed and the next project sprint is initiated.
+              Clients are provided private staging environments to review sprint deliverables. Following written milestone approval, acceptance is confirmed and the next project sprint is initiated.
             </p>
           </div>
 

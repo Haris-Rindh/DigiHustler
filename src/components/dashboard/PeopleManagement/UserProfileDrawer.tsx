@@ -214,6 +214,11 @@ export const UserProfileDrawer: React.FC<UserProfileDrawerProps> = ({ user, onCl
               />
               <div className="flex-1 pr-8">
                 <div className="flex items-center space-x-2 mb-1">
+                  {user.memberId && (
+                    <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-[var(--brand-teal-subtle)] text-[var(--brand-teal)] border border-[var(--border-subtle)]">
+                      {user.memberId}
+                    </span>
+                  )}
                   <span className="text-[10px] uppercase font-extrabold px-2 py-0.5 rounded bg-[var(--brand-teal)]/20 text-[var(--text-heading)] border border-[var(--brand-teal)]/40">
                     {user.role.replace('_', ' ')}
                   </span>
@@ -278,7 +283,6 @@ export const UserProfileDrawer: React.FC<UserProfileDrawerProps> = ({ user, onCl
             {[
               { id: 'overview', label: 'Overview' },
               { id: 'workload', label: `Workload (${userProjects.length})` },
-              { id: 'financials', label: 'Financials & Splits' },
               { id: 'history', label: `Status Logs (${user.statusHistory?.length || 0})` },
               { id: 'notes', label: `Admin Notes (${user.notes?.length || 0})` },
             ].map((t) => (
@@ -394,15 +398,6 @@ export const UserProfileDrawer: React.FC<UserProfileDrawerProps> = ({ user, onCl
                       />
                     </div>
                     <div>
-                      <label className="block text-[11px] text-[var(--text-muted)] mb-1">Hourly Rate ($/hr)</label>
-                      <input
-                        type="number"
-                        value={editHourlyRate}
-                        onChange={(e) => setEditHourlyRate(Number(e.target.value))}
-                        className="w-full px-3 py-2 rounded-xl bg-[var(--bg-page)] border border-[var(--border-subtle)] text-[var(--text-heading)] text-xs"
-                      />
-                    </div>
-                    <div>
                       <label className="block text-[11px] text-[var(--text-muted)] mb-1">Phone / WhatsApp</label>
                       <input
                         type="text"
@@ -449,9 +444,9 @@ export const UserProfileDrawer: React.FC<UserProfileDrawerProps> = ({ user, onCl
                     {/* Performance Stat Strip */}
                     <div className="grid grid-cols-3 gap-3">
                       <div className="p-4 rounded-2xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] text-center">
-                        <span className="text-[10px] text-[var(--text-muted)] uppercase font-bold">Total Earned</span>
-                        <p className="font-display font-extrabold text-lg text-[var(--text-heading)] mt-0.5">
-                          ${totalEarned.toLocaleString()}
+                        <span className="text-[10px] text-[var(--text-muted)] uppercase font-bold">Client CSAT</span>
+                        <p className="font-display font-extrabold text-lg text-amber-400 mt-0.5">
+                          {user.rating || 5.0} / 5.0
                         </p>
                       </div>
                       <div className="p-4 rounded-2xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] text-center">
@@ -552,13 +547,12 @@ export const UserProfileDrawer: React.FC<UserProfileDrawerProps> = ({ user, onCl
                           <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-cyan-500/20 text-cyan-300 uppercase">
                             {p.status.replace('_', ' ')}
                           </span>
-                          <span className="text-xs text-[var(--text-muted)] font-medium">Net: ${p.netRevenue.toLocaleString()}</span>
                         </div>
                         <h5 className="font-bold text-sm text-[var(--text-heading)] mt-1">{p.title}</h5>
                         <p className="text-xs text-[var(--text-muted)]">Client: {p.clientName}</p>
                       </div>
                       <Link
-                        to="/dashboard"
+                        to="/portal/assignments"
                         className="px-3 py-1.5 rounded-lg bg-[var(--bg-subtle)] hover:bg-[var(--bg-subtle)] text-xs font-bold text-[var(--text-body)] border border-[var(--border-subtle)] transition-colors"
                       >
                         View Project
@@ -569,115 +563,7 @@ export const UserProfileDrawer: React.FC<UserProfileDrawerProps> = ({ user, onCl
               </div>
             )}
 
-            {/* ── TAB 3: FINANCIALS & SPLITS ── */}
-            {activeTab === 'financials' && (
-              <div className="space-y-6">
-                <form onSubmit={handleSaveSplitOverride} className="p-5 rounded-2xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h4 className="font-bold text-sm text-[var(--text-heading)] flex items-center gap-2">
-                        <DollarSign className="w-4 h-4 text-[var(--brand-teal)]" />
-                        <span>Individual Split Override Configuration</span>
-                      </h4>
-                      <p className="text-xs text-[var(--text-muted)] mt-0.5">
-                        Customize compensation splits for this individual rather than applying global defaults.
-                      </p>
-                    </div>
-                    {isManagement && (
-                      <label className="relative inline-flex items-center cursor-pointer">
-                        <input
-                          type="checkbox"
-                          checked={hasSplitOverride}
-                          onChange={(e) => setHasSplitOverride(e.target.checked)}
-                          className="sr-only peer"
-                        />
-                        <div className="w-9 h-5 bg-[var(--bg-subtle)] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[var(--brand-teal)]"></div>
-                      </label>
-                    )}
-                  </div>
-
-                  {hasSplitOverride && isManagement && (
-                    <div className="grid grid-cols-3 gap-3 pt-2 text-center text-xs">
-                      <div>
-                        <label className="block text-[var(--text-muted)] mb-1">Management Cut %</label>
-                        <input
-                          type="number"
-                          value={overrideMgmt}
-                          onChange={(e) => setOverrideMgmt(Number(e.target.value))}
-                          className="w-full text-center py-1.5 rounded-lg bg-[var(--bg-page)] border border-[var(--border-subtle)] text-[var(--text-heading)]"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-[var(--text-muted)] mb-1">Leader Cut %</label>
-                        <input
-                          type="number"
-                          value={overrideLdr}
-                          onChange={(e) => setOverrideLdr(Number(e.target.value))}
-                          className="w-full text-center py-1.5 rounded-lg bg-[var(--bg-page)] border border-[var(--border-subtle)] text-[var(--text-heading)]"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-[var(--text-muted)] mb-1">Freelancer Cut %</label>
-                        <input
-                          type="number"
-                          value={overrideFl}
-                          onChange={(e) => setOverrideFl(Number(e.target.value))}
-                          className="w-full text-center py-1.5 rounded-lg bg-[var(--bg-page)] border border-[var(--border-subtle)] text-[var(--text-heading)]"
-                        />
-                      </div>
-                    </div>
-                  )}
-
-                  {isManagement && (
-                    <div className="flex justify-end">
-                      <button
-                        type="submit"
-                        className="px-4 py-2 rounded-xl bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-xs font-bold text-white transition-colors"
-                      >
-                        Save Split Configuration
-                      </button>
-                    </div>
-                  )}
-                </form>
-
-                {/* Ledger Payout Records */}
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <h4 className="text-xs font-bold text-[var(--text-heading)] uppercase tracking-wider">
-                      Ledger Payout History ({userPayouts.length})
-                    </h4>
-                    <Link to="/ledger" className="text-xs font-bold text-[var(--text-heading)] hover:underline flex items-center gap-1">
-                      <span>Open Platform Ledger</span>
-                      <ExternalLink className="w-3 h-3" />
-                    </Link>
-                  </div>
-
-                  {userPayouts.length === 0 ? (
-                    <div className="p-6 text-center rounded-2xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] text-[var(--text-muted)] text-xs">
-                      No disbursed payouts recorded in ledger yet.
-                    </div>
-                  ) : (
-                    userPayouts.map((payout) => (
-                      <div
-                        key={payout.id}
-                        className="p-4 rounded-2xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] flex items-center justify-between"
-                      >
-                        <div>
-                          <p className="text-xs font-bold text-[var(--text-heading)]">{payout.projectTitle}</p>
-                          <p className="text-[11px] text-[var(--text-muted)]">{payout.roleDescription}</p>
-                        </div>
-                        <div className="text-right">
-                          <p className="text-sm font-extrabold text-emerald-400">+${payout.amount.toLocaleString()}</p>
-                          <p className="text-[10px] text-[var(--text-dim)]">{new Date(payout.paidAt).toLocaleDateString()}</p>
-                        </div>
-                      </div>
-                    ))
-                  )}
-                </div>
-              </div>
-            )}
-
-            {/* ── TAB 4: STATUS & AUDIT HISTORY ── */}
+            {/* ── TAB 3: STATUS & AUDIT HISTORY ── */}
             {activeTab === 'history' && (
               <div className="space-y-4">
                 <h4 className="text-xs font-bold text-[var(--text-heading)] uppercase tracking-wider">
@@ -855,6 +741,7 @@ export const UserProfileDrawer: React.FC<UserProfileDrawerProps> = ({ user, onCl
                   className="w-full px-3 py-2 rounded-xl bg-[var(--bg-page)] border border-[var(--border-subtle)] text-[var(--text-heading)] text-xs"
                 >
                   <option value="freelancer">Freelancer / Specialist</option>
+                  <option value="intern">Intern Specialist</option>
                   <option value="group_leader">Group Leader</option>
                   <option value="management">Management Core</option>
                 </select>

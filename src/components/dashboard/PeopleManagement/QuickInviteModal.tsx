@@ -175,6 +175,7 @@ export const QuickInviteModal: React.FC<QuickInviteModalProps> = ({ isOpen, onCl
                   className="w-full px-3 py-2.5 rounded-xl bg-[var(--bg-page)] border border-[var(--border-subtle)] text-[var(--text-heading)] text-xs focus:outline-none focus:border-[var(--brand-teal)]"
                 >
                   <option value="freelancer">Freelancer / Specialist</option>
+                  <option value="intern">Intern Specialist</option>
                   <option value="group_leader">Group Leader</option>
                   <option value="management">Management Core</option>
                 </select>
@@ -224,57 +225,6 @@ export const QuickInviteModal: React.FC<QuickInviteModalProps> = ({ isOpen, onCl
                 placeholder="e.g. Next.js, Python, n8n, Tailwind, PostgreSQL"
                 className="w-full px-4 py-2.5 rounded-xl bg-[var(--bg-page)] border border-[var(--border-subtle)] text-[var(--text-heading)] text-xs focus:outline-none focus:border-[var(--brand-teal)]"
               />
-            </div>
-
-            {/* Optional Custom Split Override */}
-            <div className="p-4 rounded-2xl bg-[var(--bg-page)]/80 border border-[var(--border-subtle)] space-y-3">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-2">
-                  <DollarSign className="w-4 h-4 text-[var(--brand-teal)]" />
-                  <span className="text-xs font-bold text-[var(--text-heading)]">Custom Per-Person Split Override</span>
-                </div>
-                <label className="relative inline-flex items-center cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={hasSplitOverride}
-                    onChange={(e) => setHasSplitOverride(e.target.checked)}
-                    className="sr-only peer"
-                  />
-                  <div className="w-9 h-5 bg-[var(--bg-subtle)] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[var(--brand-teal)]"></div>
-                </label>
-              </div>
-
-              {hasSplitOverride && (
-                <div className="grid grid-cols-3 gap-3 pt-2 text-center text-xs">
-                  <div>
-                    <label className="block text-[var(--text-muted)] mb-1">Mgmt %</label>
-                    <input
-                      type="number"
-                      value={mgmtSplit}
-                      onChange={(e) => setMgmtSplit(Number(e.target.value))}
-                      className="w-full text-center py-1.5 rounded-lg bg-[var(--bg-surface)] border border-[var(--border-subtle)] text-[var(--text-heading)]"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-[var(--text-muted)] mb-1">Leader %</label>
-                    <input
-                      type="number"
-                      value={ldrSplit}
-                      onChange={(e) => setLdrSplit(Number(e.target.value))}
-                      className="w-full text-center py-1.5 rounded-lg bg-[var(--bg-surface)] border border-[var(--border-subtle)] text-[var(--text-heading)]"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-[var(--text-muted)] mb-1">Talent %</label>
-                    <input
-                      type="number"
-                      value={flSplit}
-                      onChange={(e) => setFlSplit(Number(e.target.value))}
-                      className="w-full text-center py-1.5 rounded-lg bg-[var(--bg-surface)] border border-[var(--border-subtle)] text-[var(--text-heading)]"
-                    />
-                  </div>
-                </div>
-              )}
             </div>
 
             {/* Action Buttons */}

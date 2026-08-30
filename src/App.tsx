@@ -49,10 +49,6 @@ import { UnauthorizedPage } from './components/utility/UnauthorizedPage';
 import { MaintenancePage } from './components/utility/MaintenancePage';
 import { OfflinePage } from './components/utility/OfflinePage';
 
-// Internal platform pages
-import { PayoutLedger } from './components/dashboard/PayoutLedger';
-import { AdminSettings } from './components/dashboard/AdminSettings';
-
 // Helper to scroll to top on route navigation
 const ScrollToTop: React.FC = () => {
   const { pathname } = useLocation();
@@ -134,8 +130,8 @@ export const App: React.FC = () => {
                 <Route path="/portal/announcements" element={<ProtectedRoute><AnnouncementsFeed /></ProtectedRoute>} />
                 <Route path="/portal/certificates" element={<ProtectedRoute><CertificateManager /></ProtectedRoute>} />
                 <Route path="/portal/cms" element={<ProtectedRoute><SiteContentManager /></ProtectedRoute>} />
-                <Route path="/portal/ledger" element={<ProtectedRoute><PayoutLedger /></ProtectedRoute>} />
-                <Route path="/portal/settings" element={<ProtectedRoute><AdminSettings /></ProtectedRoute>} />
+                <Route path="/portal/ledger" element={<Navigate to="/portal/dashboard" replace />} />
+                <Route path="/portal/settings" element={<Navigate to="/portal/dashboard" replace />} />
 
                 {/* ── Legacy routes redirect to portal login (security hardening) ── */}
                 <Route path="/dashboard" element={<Navigate to="/portal/login" replace />} />

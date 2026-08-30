@@ -60,15 +60,15 @@ export const FreelancerProfileModal: React.FC<Props> = ({ user, onClose }) => {
           </div>
 
           <div className="p-3 rounded-2xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] text-center">
-            <DollarSign className="w-4 h-4 text-emerald-400 mx-auto mb-1" />
-            <span className="text-[10px] text-[var(--text-muted)] uppercase font-bold">Earnings</span>
-            <p className="font-display font-extrabold text-lg text-emerald-400 mt-0.5">${user.totalEarnings.toLocaleString()}</p>
+            <CheckCircle className="w-4 h-4 text-emerald-400 mx-auto mb-1" />
+            <span className="text-[10px] text-[var(--text-muted)] uppercase font-bold">On-Time SLA</span>
+            <p className="font-display font-extrabold text-lg text-emerald-400 mt-0.5">{user.onTimeDeliveryPct || 99}%</p>
           </div>
 
           <div className="p-3 rounded-2xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] text-center">
             <Award className="w-4 h-4 text-cyan-400 mx-auto mb-1" />
-            <span className="text-[10px] text-[var(--text-muted)] uppercase font-bold">Hourly</span>
-            <p className="font-display font-extrabold text-lg text-[var(--text-heading)] mt-0.5">${user.hourlyRate || 25}/hr</p>
+            <span className="text-[10px] text-[var(--text-muted)] uppercase font-bold">Status</span>
+            <p className="font-display font-extrabold text-lg text-[var(--text-heading)] mt-0.5 capitalize">{user.status.replace('_', ' ')}</p>
           </div>
         </div>
 

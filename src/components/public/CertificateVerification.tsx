@@ -143,6 +143,19 @@ export const CertificateVerification: React.FC = () => {
               </button>
             </div>
 
+            {/* Google Drive Official Document Link */}
+            {certificate.driveUrl && (
+              <a
+                href={certificate.driveUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center space-x-1.5 px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-500 text-white text-xs font-bold transition-all shadow-md cursor-pointer"
+              >
+                <ExternalLink className="w-3.5 h-3.5" />
+                <span>Open in Google Drive</span>
+              </a>
+            )}
+
             {/* LinkedIn Share */}
             <a
               href={getLinkedInCertUrl()}

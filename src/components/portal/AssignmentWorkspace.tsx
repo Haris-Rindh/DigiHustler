@@ -38,14 +38,23 @@ export const AssignmentWorkspace: React.FC = () => {
   const [newClientCompany, setNewClientCompany] = useState('');
   const [newTotalBudget, setNewTotalBudget] = useState<number>(3500);
 
+  if (!currentUser) {
+    return (
+      <div className="max-w-7xl mx-auto px-4 py-16 text-center">
+        <p className="text-xs text-[var(--text-muted)]">Loading assignments...</p>
+      </div>
+    );
+  }
+
   // Filter assignments based on 4-Tier Access Matrix:
   // - CEO & Manager: All assignments
   // - Leader: Assignments where they are assignedLeaderId or squad matches
   // - Member: Assignments where they are inside assignedMemberIds
-  const visibleAssignments = assignments.filter((asgn) => {
+  const visibleAssignments = (assignments || []).filter((asgn) => {
+    if (!asgn) return false;
     if (currentTier === 'ceo' || currentTier === 'manager') return true;
     if (currentTier === 'group_leader') return asgn.assignedLeaderId === currentUser.id || asgn.squad === currentUser.groupId;
-    return asgn.assignedMemberIds.includes(currentUser.id);
+    return (asgn.assignedMemberIds || []).includes(currentUser.id);
   });
 
   const activeRawAssignment = visibleAssignments.find(a => a.id === selectedAssignmentId) || visibleAssignments[0];
@@ -55,15 +64,15 @@ export const AssignmentWorkspace: React.FC = () => {
   const canManageSubtasks = PERMISSIONS.canManageProjectSubtasks(currentTier, isAssignedLeader);
   const canViewClientInfo = PERMISSIONS.canViewFullClientRecord(currentTier);
 
-  // Candidate members for squad
-  const squadMembers = users.filter(u => u.groupId === newSquad && u.role === 'freelancer');
+  // Candidate members for squad (freelancers, specialists, interns)
+  const squadMembers = users.filter(u => u.groupId === newSquad && (u.role === 'freelancer' || u.roleTier === 'specialist' || u.roleTier === 'intern' || u.role === 'member'));
   const squadLeaders = users.filter(u => u.groupId === newSquad && u.role === 'group_leader');
 
   const handleCreateAssignmentSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newTitle.trim() || !newLeaderId) return;
+    if (!newTitle.trim()) return;
 
-    const leader = users.find(u => u.id === newLeaderId);
+    const leader = newLeaderId ? users.find(u => u.id === newLeaderId) : null;
 
     createAssignment({
       projectId: `proj-${Date.now()}`,
@@ -71,8 +80,8 @@ export const AssignmentWorkspace: React.FC = () => {
       clientEmail: newClientEmail || 'client@domain.com',
       clientCompany: newClientCompany || 'Enterprise Client',
       totalBudget: newTotalBudget,
-      assignedLeaderId: newLeaderId,
-      assignedLeaderName: leader ? leader.name : 'Squad Leader',
+      assignedLeaderId: newLeaderId || '',
+      assignedLeaderName: leader ? leader.name : 'Direct Management',
       assignedMemberIds: selectedMembers,
       squad: newSquad,
       status: 'assigned',
@@ -572,15 +581,14 @@ export const AssignmentWorkspace: React.FC = () => {
 
                 <div>
                   <label className="block text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] mb-1">
-                    Assign Squad Leader
+                    Assign Squad Leader <span className="text-[10px] font-normal lowercase text-[var(--text-muted)]">(optional)</span>
                   </label>
                   <select
                     value={newLeaderId}
                     onChange={(e) => setNewLeaderId(e.target.value)}
-                    required
                     className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3.5 py-2.5 text-xs text-[var(--text-heading)] focus:border-[var(--brand-teal)] focus:outline-none"
                   >
-                    <option value="">Select Squad Leader...</option>
+                    <option value="">Direct Assignment / No Squad Leader (Optional)</option>
                     {squadLeaders.map((ldr) => (
                       <option key={ldr.id} value={ldr.id}>{ldr.name} ({ldr.title})</option>
                     ))}

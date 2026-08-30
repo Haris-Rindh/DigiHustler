@@ -91,6 +91,9 @@ interface AppContextType {
   certificateTemplates: CertificateTemplate[];
   issueCertificate: (certData: Omit<Certificate, 'id' | 'issuedDate' | 'status' | 'qrCodeUrl'>) => Certificate;
   generateMemberCertificate: (memberId: string, templateId: string, overrides?: Partial<Certificate>) => Certificate;
+  attachMemberDriveDocument: (memberUserId: string, data: { type: CertificateType; documentTitle: string; driveUrl: string; isLocked?: boolean; durationText?: string; notes?: string }) => Certificate;
+  toggleCertificateLock: (certId: string, isLocked: boolean) => void;
+  updateCertificateDriveUrl: (certId: string, driveUrl: string, documentTitle?: string) => void;
   createCertificateTemplate: (templateData: Omit<CertificateTemplate, 'id' | 'createdAt'>) => CertificateTemplate;
   updateCertificateTemplate: (templateId: string, updates: Partial<CertificateTemplate>) => void;
   deleteCertificateTemplate: (templateId: string) => void;
@@ -1228,6 +1231,111 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     }));
   };
 
+  const attachMemberDriveDocument = (
+    memberUserId: string,
+    data: {
+      type: CertificateType;
+      documentTitle: string;
+      driveUrl: string;
+      isLocked?: boolean;
+      durationText?: string;
+      notes?: string;
+    }
+  ): Certificate => {
+    const member = users.find(u => u.id === memberUserId);
+    const uuidToken = `doc-${data.type === 'offer_letter' ? 'off' : 'cert'}-${Math.random().toString(36).substring(2, 10)}-${Date.now().toString(36)}`;
+
+    const newDoc: Certificate = {
+      id: uuidToken,
+      memberId: member?.id || memberUserId,
+      memberName: member?.name || 'Specialist',
+      memberDghId: member?.memberId || 'DGH2600001',
+      type: data.type,
+      documentTitle: data.documentTitle,
+      roleTitle: member?.title || 'Specialist',
+      issuedDate: new Date().toISOString().split('T')[0],
+      status: 'valid',
+      isLocked: data.isLocked ?? true, // Locked by default until Management releases it
+      releasedAt: data.isLocked === false ? new Date().toISOString() : undefined,
+      driveUrl: data.driveUrl,
+      durationText: data.durationText || '45 Days (Remote)',
+      notes: data.notes,
+      clientName: 'DigiHust Operations & Client Delivery Core',
+      projectDetails: 'Official credential document verified by DigiHust Executive Management.',
+      issuedBy: `${currentUser.name}, ${currentUser.roleTier?.toUpperCase() || 'Management'}`,
+      qrCodeUrl: `/verify/${uuidToken}`
+    };
+
+    setCertificates(prev => [newDoc, ...prev]);
+    dbService.upsertCertificate(newDoc);
+
+    const auditEntry: SecurityAuditLog = {
+      id: `audit-${Date.now()}`,
+      timestamp: new Date().toISOString(),
+      actorId: currentUser.id,
+      actorName: currentUser.name,
+      actorRole: currentTier,
+      action: 'CERTIFICATE_ISSUED',
+      targetId: newDoc.memberId,
+      targetName: newDoc.memberName,
+      details: `Attached ${newDoc.documentTitle} (${newDoc.isLocked ? 'Locked' : 'Released'}) for ${newDoc.memberName} with Drive Link.`
+    };
+    setAuditLogs(prev => [auditEntry, ...prev]);
+    dbService.insertAuditLog(auditEntry);
+    showToast(`${newDoc.documentTitle} linked for ${newDoc.memberName}.`, 'success', 'Credential Attached');
+
+    return newDoc;
+  };
+
+  const toggleCertificateLock = (certId: string, isLocked: boolean) => {
+    setCertificates(prev => prev.map(c => {
+      if (c.id === certId) {
+        const updated = { 
+          ...c, 
+          isLocked, 
+          releasedAt: !isLocked ? (c.releasedAt || new Date().toISOString()) : undefined 
+        };
+        dbService.upsertCertificate(updated);
+        return updated;
+      }
+      return c;
+    }));
+
+    const cert = certificates.find(c => c.id === certId);
+    if (cert) {
+      const auditEntry: SecurityAuditLog = {
+        id: `audit-${Date.now()}`,
+        timestamp: new Date().toISOString(),
+        actorId: currentUser.id,
+        actorName: currentUser.name,
+        actorRole: currentTier,
+        action: isLocked ? 'CERTIFICATE_REVOKED' : 'CMS_UPDATED',
+        targetId: cert.memberId,
+        targetName: cert.memberName,
+        details: `${isLocked ? 'Locked / Held' : 'Released to Portal'} document ${cert.documentTitle || cert.type} for ${cert.memberName}.`
+      };
+      setAuditLogs(prev => [auditEntry, ...prev]);
+      dbService.insertAuditLog(auditEntry);
+      showToast(`${cert.documentTitle || 'Document'} is now ${isLocked ? 'Locked' : 'Released to Portal'}.`, isLocked ? 'info' : 'success');
+    }
+  };
+
+  const updateCertificateDriveUrl = (certId: string, driveUrl: string, documentTitle?: string) => {
+    setCertificates(prev => prev.map(c => {
+      if (c.id === certId) {
+        const updated = { 
+          ...c, 
+          driveUrl, 
+          documentTitle: documentTitle || c.documentTitle 
+        };
+        dbService.upsertCertificate(updated);
+        return updated;
+      }
+      return c;
+    }));
+    showToast('Drive URL updated successfully.', 'success');
+  };
+
   const deleteCertificate = (certId: string) => {
     setCertificates(prev => prev.filter(c => c.id !== certId));
     dbService.deleteCertificate(certId);
@@ -1733,6 +1841,9 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         certificateTemplates,
         issueCertificate,
         generateMemberCertificate,
+        attachMemberDriveDocument,
+        toggleCertificateLock,
+        updateCertificateDriveUrl,
         createCertificateTemplate,
         updateCertificateTemplate,
         deleteCertificateTemplate,

@@ -120,8 +120,8 @@ Zainab Bibi,zainab.b@digihust.com,freelancer,growth,Technical SEO & Funnel Close
     const toImport: Partial<User>[] = validRows.map(r => ({
       name: r.name,
       email: r.email,
-      role: (r.role === 'group_leader' ? 'group_leader' : 'freelancer'),
-      roleTier: (r.role === 'group_leader' ? 'group_leader' : 'member') as UserRoleTier,
+      role: (r.role === 'group_leader' ? 'group_leader' : (r.role === 'intern' ? 'intern' : (r.role === 'management' ? 'management' : 'freelancer'))),
+      roleTier: (r.role === 'group_leader' ? 'group_leader' : (r.role === 'intern' ? 'intern' : (r.role === 'management' ? 'manager' : 'member'))) as UserRoleTier,
       groupId: (r.squad as GroupId) || 'tech',
       title: r.title,
       hourlyRate: r.hourlyRate || 25,
