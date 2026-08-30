@@ -253,6 +253,12 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     const unsubscribeMesh = realtimeSync.subscribe((payload) => {
       if (payload.type === 'USERS_UPDATED' && Array.isArray(payload.data)) {
         setUsers(payload.data);
+        // Keep currentUser in sync with the new user list
+        setCurrentUser((prev) => {
+          if (!prev) return prev;
+          const updated = payload.data.find((u: any) => u.id === prev.id);
+          return updated || prev;
+        });
       } else if (payload.type === 'PROFILE_UPDATED' && payload.data) {
         const { userId, updates } = payload.data;
         setUsers((prev) =>
@@ -267,26 +273,23 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     });
 
     // 2. Authoritative Cloud Database Sync & Supabase Real-Time Channel
+    // RULE: Cloud Supabase is the single source of truth. Local localStorage is
+    //       only a display cache. We NEVER push localStorage back to cloud because
+    //       that would resurrect deleted members and override real cloud changes.
     const syncCloudData = async () => {
       if (!isSupabaseConfigured || !supabase) return;
       try {
         const cloudData = await dbService.fetchInitialData();
         if (!cloudData) return;
 
-        // 1. Users — cloud is authoritative. Push any locally-added users that don't exist in cloud yet.
-        if (cloudData.users && cloudData.users.length > 0) {
-          setUsers((prev) => {
-            const cloudList = cloudData.users || [];
-            const merged = [...cloudList]; // Cloud wins: start from cloud list
-            // Push any locally-added users that haven't synced to cloud yet
-            prev.forEach((localUser) => {
-              const existsInCloud = merged.some((u) => u.id === localUser.id);
-              if (!existsInCloud) {
-                merged.push(localUser);
-                dbService.upsertUser(localUser); // push new local user to cloud
-              }
-              // If this user has a Base64 avatar, migrate it to Supabase Storage
-              const cloudUser = merged.find((u) => u.id === localUser.id);
+        // 1. USERS — Cloud is 100% authoritative. Replace local state with cloud.
+        //    Only seed cloud from local IF cloud is completely empty (first-time setup).
+        if (cloudData.users !== null) {
+          if (cloudData.users && cloudData.users.length > 0) {
+            // Cloud has data → use cloud as the truth, migrate any Base64 avatars
+            setUsers(cloudData.users);
+            // Migrate any Base64 avatars to Supabase Storage in background
+            cloudData.users.forEach((cloudUser) => {
               if (cloudUser?.avatarUrl?.startsWith('data:image/')) {
                 dbService.migrateBase64Avatar(cloudUser.id, cloudUser.avatarUrl)
                   .then((url) => {
@@ -296,98 +299,66 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
                   });
               }
             });
-            return merged;
-          });
-        } else if (cloudData.users && cloudData.users.length === 0) {
-          users.forEach((u) => dbService.upsertUser(u));
+          } else {
+            // Cloud is empty → this is first-time setup, seed from localStorage
+            // But only seed INITIAL_USERS-like data, not anything that looks stale
+            users.forEach((u) => dbService.upsertUser(u));
+          }
         }
 
-        // 2. Leads authoritative cloud sync
-        if (cloudData.leads && cloudData.leads.length > 0) {
-          setLeads((prev) => {
-            const cloudLeads = cloudData.leads || [];
-            const merged = [...cloudLeads];
-            prev.forEach((l) => {
-              if (!merged.some((m) => m.id === l.id)) {
-                merged.push(l);
-                dbService.insertLead(l);
-              }
-            });
-            return merged;
-          });
-        } else if (cloudData.leads && cloudData.leads.length === 0 && leads.length > 0) {
-          leads.forEach((l) => dbService.insertLead(l));
+        // 2. LEADS — Cloud authoritative
+        if (cloudData.leads !== null) {
+          if (cloudData.leads.length > 0) {
+            setLeads(cloudData.leads);
+          } else if (leads.length > 0) {
+            leads.forEach((l) => dbService.insertLead(l));
+          }
         }
 
-        // 3. Projects authoritative cloud sync
-        if (cloudData.projects && cloudData.projects.length > 0) {
-          setProjects((prev) => {
-            const cloudProjects = cloudData.projects || [];
-            const merged = [...cloudProjects];
-            prev.forEach((p) => {
-              if (!merged.some((m) => m.id === p.id)) {
-                merged.push(p);
-                dbService.upsertProject(p);
-              }
-            });
-            return merged;
-          });
-        } else if (cloudData.projects && cloudData.projects.length === 0 && projects.length > 0) {
-          projects.forEach((p) => dbService.upsertProject(p));
+        // 3. PROJECTS — Cloud authoritative
+        if (cloudData.projects !== null) {
+          if (cloudData.projects.length > 0) {
+            setProjects(cloudData.projects);
+          } else if (projects.length > 0) {
+            projects.forEach((p) => dbService.upsertProject(p));
+          }
         }
 
-        // 4. Assignments authoritative cloud sync
-        if (cloudData.assignments && cloudData.assignments.length > 0) {
-          setAssignments((prev) => {
-            const cloudAssignments = cloudData.assignments || [];
-            const merged = [...cloudAssignments];
-            prev.forEach((a) => {
-              if (!merged.some((m) => m.id === a.id)) {
-                merged.push(a);
-                dbService.upsertAssignment(a);
-              }
-            });
-            return merged;
-          });
-        } else if (cloudData.assignments && cloudData.assignments.length === 0 && assignments.length > 0) {
-          assignments.forEach((a) => dbService.upsertAssignment(a));
+        // 4. ASSIGNMENTS — Cloud authoritative
+        if (cloudData.assignments !== null) {
+          if (cloudData.assignments.length > 0) {
+            setAssignments(cloudData.assignments);
+          } else if (assignments.length > 0) {
+            assignments.forEach((a) => dbService.upsertAssignment(a));
+          }
         }
 
-        // 5. Certificates authoritative cloud sync
-        if (cloudData.certificates && cloudData.certificates.length > 0) {
-          setCertificates((prev) => {
-            const cloudCerts = cloudData.certificates || [];
-            const merged = [...cloudCerts];
-            prev.forEach((c) => {
-              if (!merged.some((m) => m.id === c.id)) {
-                merged.push(c);
-                dbService.upsertCertificate(c);
-              }
-            });
-            return merged;
-          });
-        } else if (cloudData.certificates && cloudData.certificates.length === 0 && certificates.length > 0) {
-          certificates.forEach((c) => dbService.upsertCertificate(c));
+        // 5. CERTIFICATES — Cloud authoritative
+        if (cloudData.certificates !== null) {
+          if (cloudData.certificates.length > 0) {
+            setCertificates(cloudData.certificates);
+          } else if (certificates.length > 0) {
+            certificates.forEach((c) => dbService.upsertCertificate(c));
+          }
         }
 
-        // 6. Announcements authoritative cloud sync
-        if (cloudData.announcements && cloudData.announcements.length > 0) {
-          setAnnouncements(cloudData.announcements);
-        } else if (cloudData.announcements && cloudData.announcements.length === 0 && announcements.length > 0) {
-          announcements.forEach((a) => dbService.upsertAnnouncement(a));
+        // 6. ANNOUNCEMENTS — Cloud authoritative
+        if (cloudData.announcements !== null) {
+          if (cloudData.announcements.length > 0) {
+            setAnnouncements(cloudData.announcements);
+          } else if (announcements.length > 0) {
+            announcements.forEach((a) => dbService.upsertAnnouncement(a));
+          }
         }
 
-        // 7. Site Content CMS authoritative cloud sync
+        // 7. SITE CONTENT CMS — Cloud authoritative
         if (cloudData.siteContent) {
-          setSiteContent({
-            ...DEFAULT_SITE_CONTENT,
-            ...cloudData.siteContent,
-          });
+          setSiteContent({ ...DEFAULT_SITE_CONTENT, ...cloudData.siteContent });
         } else {
           dbService.saveSiteContent(siteContent || DEFAULT_SITE_CONTENT);
         }
 
-        // 8. Audit logs cloud sync
+        // 8. AUDIT LOGS — Cloud authoritative
         if (cloudData.auditLogs && cloudData.auditLogs.length > 0) {
           setAuditLogs(cloudData.auditLogs);
         }
