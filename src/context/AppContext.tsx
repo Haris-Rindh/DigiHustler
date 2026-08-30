@@ -418,10 +418,9 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     };
   }, []);
 
-  // Sync to LocalStorage (Offline Resilience with safe try-catch & Real-Time Broadcast)
+  // Sync to LocalStorage (Offline Resilience with safe try-catch)
   useEffect(() => {
     safeSetItem(`${LOCAL_STORAGE_KEY}_users`, JSON.stringify(users));
-    realtimeSync.broadcast('USERS_UPDATED', users);
   }, [users]);
 
   useEffect(() => {
@@ -466,7 +465,6 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   useEffect(() => {
     safeSetItem(`${LOCAL_STORAGE_KEY}_site_content`, JSON.stringify(siteContent));
-    realtimeSync.broadcast('CMS_UPDATED', siteContent);
   }, [siteContent]);
 
   useEffect(() => {
@@ -564,8 +562,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     userData: Omit<User, 'id' | 'completedProjectsCount' | 'totalEarnings' | 'rating' | 'statusHistory' | 'notes' | 'documents'>, 
     initialPlainPassword?: string
   ): { success: boolean; newUser?: User; error?: string } => {
-    if (!PERMISSIONS.canCreateUserAccount(currentTier)) {
-      return { success: false, error: 'Access Denied: Only CEO Master authority can create user accounts.' };
+    if (!PERMISSIONS.canCreateUserAccount(currentTier) && currentUser.role !== 'management') {
+      return { success: false, error: 'Access Denied: Only CEO Master or Management authority can create user accounts.' };
     }
 
     const { memberId } = getNextMemberId(userData.joinYear);
@@ -588,7 +586,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
           timestamp: new Date().toISOString(),
           from: 'pending_onboarding',
           to: userData.status,
-          reason: 'Created by CEO Master',
+          reason: 'Created by Management',
           changedBy: currentUser.name
         }
       ],
@@ -596,7 +594,11 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       documents: []
     };
 
-    setUsers(prev => [newUser, ...prev]);
+    setUsers(prev => {
+      const next = [newUser, ...prev];
+      realtimeSync.broadcast('USERS_UPDATED', next);
+      return next;
+    });
     dbService.upsertUser(newUser);
 
     // Record Security Audit Log
@@ -614,12 +616,13 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     setAuditLogs(prev => [auditEntry, ...prev]);
     dbService.insertAuditLog(auditEntry);
 
+    showToast(`Created account for ${newUser.name} (${newUser.memberId}).`, 'success', 'Account Created');
     return { success: true, newUser };
   };
 
-  const deleteUserAccount = (targetUserId: string, reason: string = 'Account removed by CEO Master'): { success: boolean; error?: string } => {
-    if (!PERMISSIONS.canDistributeRoles(currentTier)) {
-      return { success: false, error: 'Access Denied: Only CEO Master authority can remove user accounts.' };
+  const deleteUserAccount = (targetUserId: string, reason: string = 'Account removed by Management'): { success: boolean; error?: string } => {
+    if (!PERMISSIONS.canDeleteUserAccount(currentTier) && currentUser.role !== 'management') {
+      return { success: false, error: 'Access Denied: Only CEO Master or Management authority can remove user accounts.' };
     }
 
     const targetUser = users.find(u => u.id === targetUserId);
@@ -629,7 +632,11 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       return { success: false, error: 'Cannot remove the active logged-in master administrator account.' };
     }
 
-    setUsers(prev => prev.filter(u => u.id !== targetUserId));
+    setUsers(prev => {
+      const next = prev.filter(u => u.id !== targetUserId);
+      realtimeSync.broadcast('USERS_UPDATED', next);
+      return next;
+    });
     dbService.deleteUser(targetUserId);
 
     // Also remove from CMS team members showcase if present
@@ -644,6 +651,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         };
         setSiteContent(updatedSiteContent);
         dbService.saveSiteContent(updatedSiteContent);
+        realtimeSync.broadcast('CMS_UPDATED', updatedSiteContent);
       }
     }
 
@@ -1653,7 +1661,11 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       notes: [],
       documents: []
     };
-    setUsers(prev => [newUser, ...prev]);
+    setUsers(prev => {
+      const next = [newUser, ...prev];
+      realtimeSync.broadcast('USERS_UPDATED', next);
+      return next;
+    });
     dbService.upsertUser(newUser);
     return newUser;
   };
@@ -1693,7 +1705,11 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       createdUsers.push(newUser);
     });
 
-    setUsers(prev => [...createdUsers, ...prev]);
+    setUsers(prev => {
+      const next = [...createdUsers, ...prev];
+      realtimeSync.broadcast('USERS_UPDATED', next);
+      return next;
+    });
     createdUsers.forEach(u => dbService.upsertUser(u));
     return { count: createdUsers.length, newUsers: createdUsers };
   };
@@ -1703,14 +1719,18 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     const timestamp = new Date().toISOString();
     const names = pendingMembers.map(u => `${u.name} (${u.memberId})`);
 
-    setUsers(prev => prev.map(u => {
-      if (u.credentialsSentAt === null || u.credentialsSentAt === undefined) {
-        const updated = { ...u, credentialsSentAt: timestamp };
-        dbService.upsertUser(updated);
-        return updated;
-      }
-      return u;
-    }));
+    setUsers(prev => {
+      const updated = prev.map(u => {
+        if (u.credentialsSentAt === null || u.credentialsSentAt === undefined) {
+          const up = { ...u, credentialsSentAt: timestamp };
+          dbService.upsertUser(up);
+          return up;
+        }
+        return u;
+      });
+      realtimeSync.broadcast('USERS_UPDATED', updated);
+      return updated;
+    });
 
     return { count: pendingMembers.length, memberNames: names };
   };
@@ -1726,6 +1746,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     };
     setSiteContent(newContent);
     dbService.saveSiteContent(newContent);
+    realtimeSync.broadcast('CMS_UPDATED', newContent);
 
     const auditEntry: SecurityAuditLog = {
       id: `audit-${Date.now()}`,
@@ -1750,6 +1771,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     };
     setSiteContent(newContent);
     dbService.saveSiteContent(newContent);
+    realtimeSync.broadcast('CMS_UPDATED', newContent);
 
     const auditEntry: SecurityAuditLog = {
       id: `audit-${Date.now()}`,
@@ -1774,6 +1796,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     };
     setSiteContent(newContent);
     dbService.saveSiteContent(newContent);
+    realtimeSync.broadcast('CMS_UPDATED', newContent);
 
     const auditEntry: SecurityAuditLog = {
       id: `audit-${Date.now()}`,
@@ -1798,12 +1821,14 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     };
     setSiteContent(newContent);
     dbService.saveSiteContent(newContent);
+    realtimeSync.broadcast('CMS_UPDATED', newContent);
   };
 
   const resetSiteContent = () => {
     if (!PERMISSIONS.canEditWebsiteContent(currentTier, currentUser)) return;
     setSiteContent(DEFAULT_SITE_CONTENT);
     dbService.saveSiteContent(DEFAULT_SITE_CONTENT);
+    realtimeSync.broadcast('CMS_UPDATED', DEFAULT_SITE_CONTENT);
   };
 
   // Applicant Actions

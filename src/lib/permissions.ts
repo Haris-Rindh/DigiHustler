@@ -16,17 +16,17 @@ export function getUserRoleTier(user?: User | null): UserRoleTier {
 }
 
 export const PERMISSIONS = {
-  // Executive Root Master Governance (CEO Exclusive)
+  // Executive Root Master Governance (CEO & Management)
   isCeoMaster: (user?: User | null) => user?.roleTier === 'ceo' || user?.isCeoMaster === true,
-  canDistributeRoles: (tier: UserRoleTier) => tier === 'ceo',
-  canReassignSquad: (tier: UserRoleTier) => tier === 'ceo',
+  canDistributeRoles: (tier: UserRoleTier) => tier === 'ceo' || tier === 'manager',
+  canReassignSquad: (tier: UserRoleTier) => tier === 'ceo' || tier === 'manager',
   canManageManagers: (tier: UserRoleTier) => tier === 'ceo',
-  canViewAuditLogs: (tier: UserRoleTier) => tier === 'ceo',
+  canViewAuditLogs: (tier: UserRoleTier) => tier === 'ceo' || tier === 'manager',
   canManageSplitConfig: (tier: UserRoleTier) => tier === 'ceo',
   canViewCompanyFinancialOverview: (tier: UserRoleTier) => tier === 'ceo',
-  canResetAnyPassword: (tier: UserRoleTier) => tier === 'ceo',
-  canCreateUserAccount: (tier: UserRoleTier) => tier === 'ceo',
-  canDeleteUserAccount: (tier: UserRoleTier) => tier === 'ceo',
+  canResetAnyPassword: (tier: UserRoleTier) => tier === 'ceo' || tier === 'manager',
+  canCreateUserAccount: (tier: UserRoleTier) => tier === 'ceo' || tier === 'manager',
+  canDeleteUserAccount: (tier: UserRoleTier) => tier === 'ceo' || tier === 'manager',
 
   // Live Website CMS (CEO Master or explicitly delegated staff)
   canEditWebsiteContent: (tier: UserRoleTier, user?: User) => 

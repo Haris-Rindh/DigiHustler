@@ -23,55 +23,55 @@ class RealtimeSyncEngine {
 
   constructor() {
     if (typeof window !== 'undefined') {
-      try {
-        if ('BroadcastChannel' in window) {
+      if ('BroadcastChannel' in window) {
+        try {
           this.channel = new BroadcastChannel('digihust_realtime_mesh');
           this.channel.onmessage = (event) => {
-            if (event.data && event.data.senderId !== this.clientId) {
+            if (event.data && event.data.senderId && event.data.senderId !== this.clientId) {
               this.notifyListeners(event.data);
             }
           };
+        } catch (err) {
+          console.warn('BroadcastChannel initialization fallback:', err);
         }
-      } catch (err) {
-        console.warn('BroadcastChannel initialization fallback:', err);
-      }
-
-      // Storage event listener for cross-window reactivity
-      window.addEventListener('storage', (e) => {
-        if (e.key && e.newValue) {
-          if (e.key.includes('users')) {
-            try {
-              const users = JSON.parse(e.newValue);
-              this.notifyListeners({
-                type: 'USERS_UPDATED',
-                timestamp: Date.now(),
-                senderId: 'storage_event',
-                data: users,
-              });
-            } catch {}
-          } else if (e.key.includes('pinned_members')) {
-            try {
-              const pinned = JSON.parse(e.newValue);
-              this.notifyListeners({
-                type: 'PINNED_UPDATED',
-                timestamp: Date.now(),
-                senderId: 'storage_event',
-                data: pinned,
-              });
-            } catch {}
-          } else if (e.key.includes('site_content')) {
-            try {
-              const cms = JSON.parse(e.newValue);
-              this.notifyListeners({
-                type: 'CMS_UPDATED',
-                timestamp: Date.now(),
-                senderId: 'storage_event',
-                data: cms,
-              });
-            } catch {}
+      } else {
+        // Fallback for legacy browsers without BroadcastChannel
+        window.addEventListener('storage', (e) => {
+          if (e.key && e.newValue) {
+            if (e.key.includes('users')) {
+              try {
+                const users = JSON.parse(e.newValue);
+                this.notifyListeners({
+                  type: 'USERS_UPDATED',
+                  timestamp: Date.now(),
+                  senderId: 'storage_fallback',
+                  data: users,
+                });
+              } catch {}
+            } else if (e.key.includes('pinned_members')) {
+              try {
+                const pinned = JSON.parse(e.newValue);
+                this.notifyListeners({
+                  type: 'PINNED_UPDATED',
+                  timestamp: Date.now(),
+                  senderId: 'storage_fallback',
+                  data: pinned,
+                });
+              } catch {}
+            } else if (e.key.includes('site_content')) {
+              try {
+                const cms = JSON.parse(e.newValue);
+                this.notifyListeners({
+                  type: 'CMS_UPDATED',
+                  timestamp: Date.now(),
+                  senderId: 'storage_fallback',
+                  data: cms,
+                });
+              } catch {}
+            }
           }
-        }
-      });
+        });
+      }
     }
   }
 
