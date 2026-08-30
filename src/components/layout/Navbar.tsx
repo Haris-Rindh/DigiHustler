@@ -103,7 +103,7 @@ export const Navbar: React.FC = () => {
           })}
         </div>
 
-        {/* CTA, Language & Theme Controls */}
+        {/* CTA, Language & Theme Controls (Desktop) */}
         <div className="hidden lg:flex items-center space-x-3">
           <LanguageSelector />
           <ThemeToggle />
@@ -118,14 +118,17 @@ export const Navbar: React.FC = () => {
           </motion.div>
         </div>
 
-        {/* Mobile toggle */}
-        <button
-          onClick={() => setMobileOpen(!mobileOpen)}
-          className="lg:hidden p-2 rounded-xl text-[var(--text-heading)] hover:bg-[var(--bg-subtle)] transition-colors"
-          aria-label={mobileOpen ? 'Close Menu' : 'Open Menu'}
-        >
-          {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-        </button>
+        {/* Mobile Action Bar: Theme Toggle pulled out + Menu Trigger */}
+        <div className="flex items-center space-x-2 lg:hidden">
+          <ThemeToggle />
+          <button
+            onClick={() => setMobileOpen(!mobileOpen)}
+            className="p-2 rounded-xl text-[var(--text-heading)] hover:bg-[var(--bg-subtle)] transition-colors cursor-pointer"
+            aria-label={mobileOpen ? 'Close Menu' : 'Open Menu'}
+          >
+            {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          </button>
+        </div>
       </nav>
 
       {/* Mobile Menu with Framer Motion */}
@@ -156,7 +159,6 @@ export const Navbar: React.FC = () => {
               <span className="text-xs font-bold text-[var(--text-muted)]">{t('preferences')}</span>
               <div className="flex items-center space-x-2">
                 <LanguageSelector />
-                <ThemeToggle />
               </div>
             </div>
             <Link

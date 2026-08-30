@@ -128,8 +128,9 @@ export const HowItWorks: React.FC = () => {
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.4 }}
-              className={`flex flex-col lg:flex-row items-stretch rounded-3xl border border-[var(--border-subtle)] overflow-hidden shadow-sm hover:shadow-md transition-shadow ${
+              whileHover={{ y: -4, scale: 1.005 }}
+              transition={{ duration: 0.18, ease: 'easeOut' }}
+              className={`flex flex-col lg:flex-row items-stretch rounded-3xl border border-[var(--border-subtle)] hover:border-[var(--brand-teal)]/50 overflow-hidden shadow-sm hover:shadow-xl transition-all duration-200 ease-out ${
                 i % 2 === 1 ? 'lg:flex-row-reverse' : ''
               }`}
             >

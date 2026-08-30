@@ -128,17 +128,18 @@ export const Blog: React.FC = () => {
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {filteredPosts.map((post) => (
-              <article
+              <Link
                 key={post.slug}
+                to={`/blog/${post.slug}`}
                 data-cursor="view"
-                className="group border border-[var(--border-subtle)] rounded-2xl overflow-hidden bg-[var(--bg-surface)] hover:shadow-xl hover:border-[var(--brand-teal)] transition-all flex flex-col justify-between"
+                className="group border border-[var(--border-subtle)] rounded-2xl overflow-hidden bg-[var(--bg-surface)] hover:shadow-xl hover:border-[var(--brand-teal)] transition-all duration-200 ease-out hover:-translate-y-1.5 flex flex-col justify-between cursor-pointer select-none block"
               >
                 <div>
                   <div className="aspect-video overflow-hidden bg-[var(--bg-subtle)] relative">
                     <img
                       src={post.image}
                       alt={post.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200 ease-out"
                     />
                     <div className="absolute top-3 left-3 px-2.5 py-1 rounded-md bg-[var(--bg-page)]/90 backdrop-blur-sm text-[10px] font-bold text-[var(--brand-teal)] border border-[var(--border-subtle)]">
                       {post.category}
@@ -158,8 +159,8 @@ export const Blog: React.FC = () => {
                       </span>
                     </div>
 
-                    <h2 className="font-display font-bold text-xl text-[var(--text-heading)] mb-3 group-hover:text-[var(--brand-teal)] transition-colors leading-snug">
-                      <Link to={`/blog/${post.slug}`}>{post.title}</Link>
+                    <h2 className="font-display font-bold text-xl text-[var(--text-heading)] mb-3 group-hover:text-[var(--brand-teal)] transition-colors duration-150 leading-snug">
+                      {post.title}
                     </h2>
 
                     <p className="text-sm text-[var(--text-body)] leading-relaxed mb-6">
@@ -175,15 +176,14 @@ export const Blog: React.FC = () => {
                     </div>
                     <span className="text-xs font-semibold text-[var(--text-heading)]">{post.author}</span>
                   </div>
-                  <Link
-                    to={`/blog/${post.slug}`}
-                    className="inline-flex items-center space-x-1 text-xs font-bold text-[var(--brand-teal)] pt-4 group-hover:translate-x-1 transition-transform"
+                  <div
+                    className="inline-flex items-center space-x-1 text-xs font-bold text-[var(--brand-teal)] pt-4 group-hover:translate-x-1 transition-transform duration-150"
                   >
                     <span>Read Guide</span>
                     <ArrowRight className="w-3.5 h-3.5" />
-                  </Link>
+                  </div>
                 </div>
-              </article>
+              </Link>
             ))}
           </div>
         </div>

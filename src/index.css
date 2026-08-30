@@ -150,20 +150,24 @@ h1, h2, h3, h4, h5, h6 {
 /* Universal Card Class */
 .card-surface,
 .matte-card,
-.breeze-card {
+.breeze-card,
+.glass-card {
   background-color: var(--bg-surface);
   border: 1px solid var(--border-subtle);
   color: var(--text-body);
   box-shadow: 0 4px 20px rgba(2, 43, 58, 0.08);
   border-radius: 1.25rem;
-  transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, color 0.2s ease;
+  transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.18s ease-out, border-color 0.18s ease-out, box-shadow 0.18s cubic-bezier(0.16, 1, 0.3, 1), color 0.18s ease-out;
+  will-change: transform, box-shadow;
 }
 
 .card-surface:hover,
 .matte-card:hover,
-.breeze-card-hover:hover {
+.breeze-card-hover:hover,
+.glass-card:hover {
   border-color: var(--border-hover);
-  box-shadow: 0 8px 30px rgba(2, 43, 58, 0.16);
+  box-shadow: 0 10px 30px rgba(2, 43, 58, 0.18);
+  transform: translateY(-3px);
 }
 
 /* Primary Button */

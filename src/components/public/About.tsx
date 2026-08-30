@@ -199,9 +199,9 @@ export const About: React.FC = () => {
                 initial={{ opacity: 0, y: 15 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                whileHover={{ y: -4 }}
-                transition={{ duration: 0.3 }}
-                className="p-8 rounded-3xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] hover:shadow-xl hover:border-[var(--brand-teal)]/40 transition-all"
+                whileHover={{ y: -6, scale: 1.01 }}
+                transition={{ duration: 0.18, ease: 'easeOut' }}
+                className="p-8 rounded-3xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] hover:shadow-xl hover:border-[var(--brand-teal)] transition-all duration-200 ease-out cursor-default select-none"
               >
                 <span className="text-xs font-bold text-[var(--brand-teal)] uppercase tracking-wider">
                   {val.tag}

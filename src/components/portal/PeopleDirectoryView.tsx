@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { 
   Users, Mail, Shield, Send, CheckCircle2, AlertCircle, Plus, 
   FileSpreadsheet, Sparkles, Filter, Search, UserCheck, Key, Lock, 
-  ShieldCheck, Settings, UserPlus, Ban, Check, X, Award, Printer, Eye 
+  ShieldCheck, Settings, UserPlus, Ban, Check, X, Award, Printer, Eye,
+  Pin, PinOff, Crown
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { User as UserType, UserRoleTier, GroupId, Certificate } from '../../types';
@@ -20,7 +21,7 @@ export const PeopleDirectoryView: React.FC = () => {
   const { 
     users, groups, currentTier, currentUser, sendBatchCredentials, 
     auditLogs, createUserAccount, resetUserPasswordByCeo, toggleUserAccountStatus,
-    certificateTemplates, generateMemberCertificate 
+    certificateTemplates, generateMemberCertificate, showToast 
   } = useApp();
 
   const [searchQuery, setSearchQuery] = useState('');
@@ -32,6 +33,38 @@ export const PeopleDirectoryView: React.FC = () => {
   const [newPlainPwd, setNewPlainPwd] = useState('');
   const [selectedUserForRole, setSelectedUserForRole] = useState<UserType | null>(null);
   const [dispatchResult, setDispatchResult] = useState<{ count: number; memberNames: string[] } | null>(null);
+
+  // Pinned Member IDs (Saved in Local Storage)
+  const [pinnedIds, setPinnedIds] = useState<string[]>(() => {
+    try {
+      const saved = localStorage.getItem('digihust_pinned_members');
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  const togglePinUser = (userId: string) => {
+    setPinnedIds((prev) => {
+      const isPinned = prev.includes(userId);
+      const updated = isPinned ? prev.filter((id) => id !== userId) : [...prev, userId];
+      try {
+        localStorage.setItem('digihust_pinned_members', JSON.stringify(updated));
+      } catch (err) {
+        console.warn('Could not save pinned members:', err);
+      }
+      showToast(isPinned ? 'Member unpinned.' : 'Member pinned to top.', 'info');
+      return updated;
+    });
+  };
+
+  // Helper to check CEO & Co-founders (Permanent Top Tier)
+  const isCeoOrFounder = (u: UserType) => {
+    if (u.isCeoMaster || u.roleTier === 'ceo') return true;
+    const t = (u.title || '').toLowerCase();
+    const r = (u.role || '').toLowerCase();
+    return t.includes('ceo') || t.includes('founder') || t.includes('co-founder') || r.includes('ceo');
+  };
 
   // Certificate Generator Modal States
   const [certModalUser, setCertModalUser] = useState<UserType | null>(null);
@@ -72,6 +105,20 @@ export const PeopleDirectoryView: React.FC = () => {
       u.title.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesSquad = selectedSquad === 'all' || u.groupId === selectedSquad;
     return matchesSearch && matchesSquad;
+  }).sort((a, b) => {
+    // 1. Leadership always top priority
+    const aLeader = isCeoOrFounder(a);
+    const bLeader = isCeoOrFounder(b);
+    if (aLeader && !bLeader) return -1;
+    if (!aLeader && bLeader) return 1;
+
+    // 2. Pinned members next
+    const aPinned = pinnedIds.includes(a.id);
+    const bPinned = pinnedIds.includes(b.id);
+    if (aPinned && !bPinned) return -1;
+    if (!aPinned && bPinned) return 1;
+
+    return a.name.localeCompare(b.name);
   });
 
   const handleOpenCertModal = (user: UserType) => {
@@ -262,18 +309,55 @@ export const PeopleDirectoryView: React.FC = () => {
               <div>
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex items-center space-x-3">
-                    <img src={u.avatarUrl} alt={u.name} className="w-12 h-12 rounded-2xl object-cover ring-2 ring-[var(--border-subtle)]" />
+                    <div className="relative">
+                      <img src={u.avatarUrl} alt={u.name} className="w-12 h-12 rounded-2xl object-cover ring-2 ring-[var(--border-subtle)]" />
+                      {isCeoOrFounder(u) && (
+                        <span className="absolute -top-1.5 -right-1.5 p-0.5 rounded-full bg-amber-400 text-slate-950 shadow">
+                          <Crown className="w-3 h-3 fill-current" />
+                        </span>
+                      )}
+                      {!isCeoOrFounder(u) && pinnedIds.includes(u.id) && (
+                        <span className="absolute -top-1.5 -right-1.5 p-0.5 rounded-full bg-[var(--brand-teal)] text-white shadow">
+                          <Pin className="w-3 h-3 fill-current" />
+                        </span>
+                      )}
+                    </div>
                     <div>
-                      <h3 className="font-bold text-sm text-[var(--text-heading)] flex items-center gap-1.5">
-                        {u.name}
+                      <h3 className="font-bold text-sm text-[var(--text-heading)] flex flex-wrap items-center gap-1.5">
+                        <span>{u.name}</span>
+                        {isCeoOrFounder(u) && (
+                          <span className="px-1.5 py-0.2 rounded bg-amber-400/15 text-amber-500 border border-amber-400/30 text-[9px] font-black uppercase tracking-wider flex items-center gap-0.5">
+                            <Crown className="w-2.5 h-2.5" /> Leadership
+                          </span>
+                        )}
+                        {!isCeoOrFounder(u) && pinnedIds.includes(u.id) && (
+                          <span className="px-1.5 py-0.2 rounded bg-[var(--brand-teal-subtle)] text-[var(--brand-teal)] border border-[var(--brand-teal)]/30 text-[9px] font-extrabold uppercase tracking-wider flex items-center gap-0.5">
+                            <Pin className="w-2.5 h-2.5 fill-current" /> Pinned
+                          </span>
+                        )}
                         {isSuspended && <span className="text-[9px] px-1.5 py-0.2 rounded bg-rose-500/20 text-rose-400 font-black uppercase">Suspended</span>}
                       </h3>
                       <p className="text-[11px] font-mono text-[var(--brand-teal)] font-bold">{u.memberId || 'DGH2600000'}</p>
                     </div>
                   </div>
-                  <span className="text-[9px] uppercase font-black px-2 py-0.5 rounded-full bg-[var(--bg-page)] text-[var(--text-heading)] border border-[var(--border-subtle)]">
-                    {u.roleTier || u.role}
-                  </span>
+                  <div className="flex items-center space-x-1.5">
+                    {PERMISSIONS.canManagePeople(currentTier) && !isCeoOrFounder(u) && (
+                      <button
+                        onClick={() => togglePinUser(u.id)}
+                        className={`p-1.5 rounded-xl border transition-all cursor-pointer ${
+                          pinnedIds.includes(u.id)
+                            ? 'bg-[var(--brand-teal)] text-white border-[var(--brand-teal)]'
+                            : 'bg-[var(--bg-page)] border-[var(--border-subtle)] text-[var(--text-muted)] hover:text-[var(--brand-teal)]'
+                        }`}
+                        title={pinnedIds.includes(u.id) ? 'Unpin member' : 'Pin member to top of directory'}
+                      >
+                        {pinnedIds.includes(u.id) ? <PinOff className="w-3.5 h-3.5" /> : <Pin className="w-3.5 h-3.5" />}
+                      </button>
+                    )}
+                    <span className="text-[9px] uppercase font-black px-2 py-0.5 rounded-full bg-[var(--bg-page)] text-[var(--text-heading)] border border-[var(--border-subtle)]">
+                      {u.roleTier || u.role}
+                    </span>
+                  </div>
                 </div>
 
                 <div className="space-y-2 mb-4 text-xs">

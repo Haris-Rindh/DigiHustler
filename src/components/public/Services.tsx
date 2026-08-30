@@ -210,7 +210,6 @@ export const Services: React.FC = () => {
 
   // ── AUTO SLIDER STATE ──
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
-  const [isPaused, setIsPaused] = useState(false);
   const [slideDirection] = useState<1>(1);
   const servicesSectionRef = useRef<HTMLDivElement>(null);
 
@@ -218,15 +217,14 @@ export const Services: React.FC = () => {
     setCurrentSlideIndex((prev) => (prev + 1) % SLIDESHOW_ITEMS.length);
   }, []);
 
-  // Automatic Interval
+  // Automatic Interval (Continuous rotation without pausing on cursor hover)
   useEffect(() => {
-    if (isPaused) return;
     const interval = setInterval(() => {
       nextSlide();
     }, 4000); // changes every 4 seconds
 
     return () => clearInterval(interval);
-  }, [isPaused, nextSlide]);
+  }, [nextSlide]);
 
   const handleSelectServiceFromSlide = (targetId: string) => {
     setExpandedId(targetId);
@@ -238,10 +236,10 @@ export const Services: React.FC = () => {
   const currentSlide = SLIDESHOW_ITEMS[currentSlideIndex];
 
   return (
-    <div className="pt-16">
+    <div className="min-h-screen bg-[var(--bg-page)] text-[var(--text-body)]">
       <SEOHead
         title="Digital Services & Capabilities — DigiHust"
-        description="Explore DigiHust's full suite of capabilities: Full-Stack Web Development, UI/UX Design, AI Automation, Digital Marketing, Cybersecurity, and Business Intelligence."
+        description="Explore DigiHust's full range of services: Web Development, UI/UX Design, AI & Automations, Digital Marketing, Cybersecurity, and Data Intelligence."
       />
 
       {/* ── AUTO IMAGE SLIDER SHOWCASE (AT VERY START) ── */}
@@ -250,8 +248,6 @@ export const Services: React.FC = () => {
           
           <div
             className="relative w-full h-[360px] sm:h-[440px] md:h-[480px] lg:h-[520px] rounded-3xl overflow-hidden shadow-2xl border border-[var(--border-subtle)] bg-black/90 group select-none"
-            onMouseEnter={() => setIsPaused(true)}
-            onMouseLeave={() => setIsPaused(false)}
           >
             {/* Background Slides with Framer Motion */}
             <AnimatePresence initial={false} custom={slideDirection} mode="wait">
@@ -271,9 +267,9 @@ export const Services: React.FC = () => {
                   loading={currentSlideIndex === 0 ? 'eager' : 'lazy'}
                 />
                 
-                {/* Advanced Multi-Stop Scrim Gradients for Crisp Readability */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/50 to-black/25" />
-                <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/40 to-transparent" />
+                {/* Lightened, Luminous Scrim Gradients for Maximum Image Clarity */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-black/10" />
+                <div className="absolute inset-0 bg-gradient-to-r from-black/55 via-black/20 to-transparent" />
               </motion.div>
             </AnimatePresence>
 

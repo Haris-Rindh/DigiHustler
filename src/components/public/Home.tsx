@@ -37,7 +37,7 @@ const SERVICES = [
     summary: 'Websites · Web Apps · APIs · Full Stack',
     description: 'Fast, scalable, and responsive digital products built with React, Next.js, Node.js, and modern cloud architecture.',
     tags: ['React', 'Next.js', 'Node.js', 'PostgreSQL'],
-    color: '#1F7A8C',
+    color: '#1F7A8C', // Brand Teal
   },
   {
     icon: <Palette className="w-6 h-6" />,
@@ -45,7 +45,7 @@ const SERVICES = [
     summary: 'Brand Identity · UI/UX · Figma · Motion',
     description: 'Visual identities and user-friendly interfaces designed to elevate brand authority and convert visitors into customers.',
     tags: ['Brand Identity', 'UI/UX Design', 'Figma', 'Motion'],
-    color: '#1F7A8C',
+    color: '#8B5CF6', // Creative Purple
   },
   {
     icon: <Cpu className="w-6 h-6" />,
@@ -53,7 +53,7 @@ const SERVICES = [
     summary: 'LLM Solutions · Chatbots · n8n · Workflows',
     description: 'Integrating customized AI models, workflow automations, and intelligent bots to eliminate repetitive business overhead.',
     tags: ['OpenAI', 'Python', 'n8n', 'Zapier'],
-    color: '#1F7A8C',
+    color: '#0284C7', // Cyber Cyan Blue
   },
   {
     icon: <TrendingUp className="w-6 h-6" />,
@@ -61,7 +61,7 @@ const SERVICES = [
     summary: 'Search Optimization · Ads · Content Growth',
     description: 'Targeted search engine optimization, performance ad campaigns, and authoritative content strategies that drive revenue.',
     tags: ['Technical SEO', 'Google Ads', 'Meta Ads', 'Copywriting'],
-    color: '#B08D57',
+    color: '#D97706', // Growth Amber
   },
   {
     icon: <Shield className="w-6 h-6" />,
@@ -69,7 +69,7 @@ const SERVICES = [
     summary: 'Security Audits · Pen Testing · Hardening',
     description: 'Comprehensive vulnerability assessments, penetration testing, and security hardening for web applications and cloud servers.',
     tags: ['Pen Testing', 'OWASP Audit', 'Cloud Security'],
-    color: '#A85C4A',
+    color: '#E11D48', // Security Crimson Red
   },
   {
     icon: <Database className="w-6 h-6" />,
@@ -77,7 +77,7 @@ const SERVICES = [
     summary: 'PowerBI · ETL · Analytics · Automation',
     description: 'Converting siloed data into actionable executive dashboards, automated reporting, and structured business insights.',
     tags: ['PowerBI', 'Data Pipelines', 'SQL', 'Analytics'],
-    color: '#1F7A8C',
+    color: '#059669', // Data Emerald Green
   },
 ];
 
@@ -161,6 +161,7 @@ export const Home: React.FC = () => {
   const caseStudies = siteContent?.caseStudies || [];
   const testimonials = siteContent?.testimonials || [];
   const valueProps = siteContent?.valueProps || [];
+  const SERVICE_PALETTE = ['#1F7A8C', '#8B5CF6', '#0284C7', '#D97706', '#E11D48', '#059669'];
   const servicesList = (siteContent?.services && siteContent.services.length > 0)
     ? siteContent.services.map((s, idx) => ({
         icon: SERVICES[idx]?.icon || <Code className="w-6 h-6" />,
@@ -168,7 +169,7 @@ export const Home: React.FC = () => {
         summary: s.tagline || 'Specialized Domain Squad',
         description: s.description,
         tags: s.features || ['Specialized Delivery'],
-        color: s.color || '#1F7A8C'
+        color: (s.color && s.color !== '#1F7A8C') ? s.color : SERVICE_PALETTE[idx % SERVICE_PALETTE.length]
       }))
     : SERVICES;
 
@@ -380,37 +381,41 @@ export const Home: React.FC = () => {
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                whileHover={{ y: -4 }}
-                transition={{ duration: 0.3 }}
-                className="group border border-[var(--border-subtle)] rounded-2xl p-7 hover:border-[var(--brand-teal)] hover:shadow-xl transition-all bg-[var(--bg-surface)] flex flex-col justify-between"
+                whileHover={{ y: -6, scale: 1.01 }}
+                transition={{ duration: 0.18, ease: 'easeOut' }}
+                className="h-full"
               >
-                <div>
-                  <div
-                    className="w-12 h-12 rounded-xl flex items-center justify-center mb-5 text-white shadow-md"
-                    style={{ backgroundColor: svc.color }}
-                  >
-                    {svc.icon}
+                <Link
+                  to="/services"
+                  className="group border border-[var(--border-subtle)] rounded-2xl p-7 hover:border-[var(--brand-teal)] hover:shadow-xl transition-all duration-200 ease-out bg-[var(--bg-surface)] flex flex-col justify-between h-full cursor-pointer select-none block"
+                >
+                  <div>
+                    <div
+                      className="w-12 h-12 rounded-xl flex items-center justify-center mb-5 text-white shadow-md group-hover:scale-105 transition-transform duration-200 ease-out"
+                      style={{ backgroundColor: svc.color }}
+                    >
+                      {svc.icon}
+                    </div>
+                    <h3 className="font-display font-extrabold text-xl text-[var(--text-heading)] mb-1 group-hover:text-[var(--brand-teal)] transition-colors duration-150">
+                      {svc.title}
+                    </h3>
+                    <p className="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wide mb-3">{svc.summary}</p>
+                    <p className="text-sm text-[var(--text-body)] leading-relaxed mb-5">{svc.description}</p>
                   </div>
-                  <h3 className="font-display font-extrabold text-xl text-[var(--text-heading)] mb-1">{svc.title}</h3>
-                  <p className="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wide mb-3">{svc.summary}</p>
-                  <p className="text-sm text-[var(--text-body)] leading-relaxed mb-5">{svc.description}</p>
-                </div>
-                <div>
-                  <div className="flex flex-wrap gap-1.5 mb-5">
-                    {svc.tags.map((tTag) => (
-                      <span key={tTag} className="text-[11px] px-2.5 py-1 rounded-lg bg-[var(--bg-subtle)] text-[var(--text-body)] border border-[var(--border-subtle)] font-medium">
-                        {tTag}
-                      </span>
-                    ))}
+                  <div>
+                    <div className="flex flex-wrap gap-1.5 mb-5">
+                      {svc.tags.map((tTag) => (
+                        <span key={tTag} className="text-[11px] px-2.5 py-1 rounded-lg bg-[var(--bg-subtle)] text-[var(--text-body)] border border-[var(--border-subtle)] font-medium">
+                          {tTag}
+                        </span>
+                      ))}
+                    </div>
+                    <div className="inline-flex items-center space-x-1 text-sm font-bold text-[var(--brand-teal)] group-hover:translate-x-1 transition-transform duration-150">
+                      <span>{t('services_explore')}</span>
+                      <ChevronRight className="w-4 h-4" />
+                    </div>
                   </div>
-                  <Link
-                    to="/services"
-                    className="inline-flex items-center space-x-1 text-sm font-bold text-[var(--brand-teal)] group-hover:translate-x-1 transition-transform"
-                  >
-                    <span>{t('services_explore')}</span>
-                    <ChevronRight className="w-4 h-4" />
-                  </Link>
-                </div>
+                </Link>
               </motion.div>
             ))}
           </div>
@@ -532,50 +537,52 @@ export const Home: React.FC = () => {
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  whileHover={{ y: -4 }}
-                  transition={{ duration: 0.3 }}
+                  whileHover={{ y: -6, scale: 1.01 }}
+                  transition={{ duration: 0.18, ease: 'easeOut' }}
                   data-cursor="view"
-                  className="group border border-[var(--border-subtle)] rounded-2xl overflow-hidden bg-[var(--bg-surface)] hover:border-[var(--brand-teal)] hover:shadow-xl transition-all cursor-pointer flex flex-col justify-between"
+                  className="h-full"
                 >
-                  <div>
-                    <div className="aspect-video overflow-hidden relative bg-[var(--bg-subtle)]">
-                      <img
-                        src={project.imageUrl || 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=800&q=80'}
-                        alt={project.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                      />
-                      <div className="absolute top-3 right-3 px-2.5 py-1 rounded-md bg-[var(--bg-page)]/90 backdrop-blur-sm border border-[var(--border-subtle)] text-[10px] font-bold text-[var(--brand-teal)]">
-                        {project.impactMetric} {project.impactLabel}
+                  <Link
+                    to={`/work/${project.slug}`}
+                    className="group border border-[var(--border-subtle)] rounded-2xl overflow-hidden bg-[var(--bg-surface)] hover:border-[var(--brand-teal)] hover:shadow-xl transition-all duration-200 ease-out cursor-pointer flex flex-col justify-between h-full block"
+                  >
+                    <div>
+                      <div className="aspect-video overflow-hidden relative bg-[var(--bg-subtle)]">
+                        <img
+                          src={project.imageUrl || 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=800&q=80'}
+                          alt={project.title}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200 ease-out"
+                        />
+                        <div className="absolute top-3 right-3 px-2.5 py-1 rounded-md bg-[var(--bg-page)]/90 backdrop-blur-sm border border-[var(--border-subtle)] text-[10px] font-bold text-[var(--brand-teal)]">
+                          {project.impactMetric} {project.impactLabel}
+                        </div>
+                      </div>
+                      <div className="p-6">
+                        <p className="text-[11px] font-bold text-[var(--brand-teal)] uppercase tracking-wider mb-1">
+                          {project.category}
+                        </p>
+                        <h3 className="font-display font-bold text-lg text-[var(--text-heading)] mb-3 group-hover:text-[var(--brand-teal)] transition-colors duration-150">
+                          {project.title}
+                        </h3>
+                        <div className="flex flex-wrap gap-1.5 mb-4">
+                          {project.tags?.map((tTag) => (
+                            <span
+                              key={tTag}
+                              className="text-[10px] px-2 py-0.5 rounded bg-[var(--bg-subtle)] text-[var(--text-body)] border border-[var(--border-subtle)] font-medium"
+                            >
+                              {tTag}
+                            </span>
+                          ))}
+                        </div>
                       </div>
                     </div>
-                    <div className="p-6">
-                      <p className="text-[11px] font-bold text-[var(--brand-teal)] uppercase tracking-wider mb-1">
-                        {project.category}
-                      </p>
-                      <h3 className="font-display font-bold text-lg text-[var(--text-heading)] mb-3 group-hover:text-[var(--brand-teal)] transition-colors">
-                        {project.title}
-                      </h3>
-                      <div className="flex flex-wrap gap-1.5 mb-4">
-                        {project.tags?.map((tTag) => (
-                          <span
-                            key={tTag}
-                            className="text-[10px] px-2 py-0.5 rounded bg-[var(--bg-subtle)] text-[var(--text-body)] border border-[var(--border-subtle)] font-medium"
-                          >
-                            {tTag}
-                          </span>
-                        ))}
+                    <div className="px-6 pb-6">
+                      <div className="inline-flex items-center space-x-1 text-xs font-bold text-[var(--brand-teal)] group-hover:translate-x-1 transition-transform duration-150">
+                        <span>{t('work_read_case')}</span>
+                        <ArrowRight className="w-3.5 h-3.5" />
                       </div>
                     </div>
-                  </div>
-                  <div className="px-6 pb-6">
-                    <Link
-                      to={`/work/${project.slug}`}
-                      className="inline-flex items-center space-x-1 text-xs font-bold text-[var(--brand-teal)] group-hover:translate-x-1 transition-transform"
-                    >
-                      <span>{t('work_read_case')}</span>
-                      <ArrowRight className="w-3.5 h-3.5" />
-                    </Link>
-                  </div>
+                  </Link>
                 </motion.div>
               ))}
             </div>

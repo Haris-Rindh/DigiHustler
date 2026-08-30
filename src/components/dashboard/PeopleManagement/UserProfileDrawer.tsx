@@ -32,6 +32,7 @@ import { Link } from 'react-router-dom';
 import { useApp } from '../../../context/AppContext';
 import { User, UserRole, UserStatus, GroupId, SplitOverride } from '../../../types';
 import { PRESET_AVATARS } from '../../portal/PortalNavbar';
+import { compressAvatarFile } from '../../../lib/utils';
 
 interface UserProfileDrawerProps {
   user: User | null;
@@ -324,21 +325,18 @@ export const UserProfileDrawer: React.FC<UserProfileDrawerProps> = ({ user, onCl
                               ref={drawerFileInputRef}
                               accept="image/*"
                               className="hidden"
-                              onChange={(e) => {
+                              onChange={async (e) => {
                                 const file = e.target.files?.[0];
                                 if (!file) return;
-                                if (file.size > 3 * 1024 * 1024) {
-                                  showToast('Please upload an image smaller than 3MB.', 'warning');
-                                  return;
+                                try {
+                                  showToast('Optimizing and loading photo...', 'info');
+                                  const optimizedUrl = await compressAvatarFile(file, 320, 0.85);
+                                  setEditAvatarUrl(optimizedUrl);
+                                  showToast('Photo optimized & loaded successfully!', 'success');
+                                } catch (err) {
+                                  console.error('Photo optimization error:', err);
+                                  showToast('Failed to load image. Please try another.', 'error');
                                 }
-                                const reader = new FileReader();
-                                reader.onload = (event) => {
-                                  if (event.target?.result) {
-                                    setEditAvatarUrl(event.target.result as string);
-                                    showToast('Photo loaded from device.', 'info');
-                                  }
-                                };
-                                reader.readAsDataURL(file);
                               }}
                             />
                             <button

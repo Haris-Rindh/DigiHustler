@@ -11,6 +11,7 @@ import { LanguageSelector } from '../ui/LanguageSelector';
 import { ThemeToggle } from '../ui/ThemeToggle';
 import { UserRoleTier } from '../../types';
 import { PERMISSIONS } from '../../lib/permissions';
+import { compressAvatarFile } from '../../lib/utils';
 import logoImg from '../../assets/logo.png';
 
 interface NavItem {
@@ -207,12 +208,10 @@ export const PortalNavbar: React.FC = () => {
         {/* Left Side: Brand Logo + Tier Indicator + Compressed Nav Bar */}
         <div className="flex items-center space-x-2 sm:space-x-4 lg:space-x-5">
           {/* Logo & Tier */}
-          <Link to="/portal/dashboard" className="flex items-center space-x-2.5 shrink-0 group">
-            <img 
-              src={logoImg} 
-              alt="DigiHust Logo" 
-              className="h-7 sm:h-8 w-auto max-w-[36px] object-contain group-hover:scale-105 transition-all drop-shadow-sm dark:drop-shadow-[0_0_8px_rgba(255,255,255,0.75)]" 
-            />
+         <Link to="/portal/dashboard" className="flex items-center space-x-2 shrink-0 group">
+            <div className="w-8 h-8 rounded-xl overflow-hidden flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform bg-white border border-[var(--border-subtle)] p-0.5">
+              <img src={logoImg} alt="DigiHust Logo" className="w-full h-full object-contain" />
+            </div>
             <div className="flex items-center gap-1.5">
               <span className="font-display font-extrabold text-sm sm:text-base text-[var(--text-heading)]">DigiHust</span>
               <span className={`text-[8px] sm:text-[9px] uppercase font-black px-1.5 sm:px-2 py-0.5 rounded-full border ${badge.color}`}>
@@ -313,8 +312,8 @@ export const PortalNavbar: React.FC = () => {
         <div className="flex items-center space-x-1.5 sm:space-x-2.5">
           <div className="hidden sm:flex items-center space-x-1.5">
             <LanguageSelector />
-            <ThemeToggle />
           </div>
+          <ThemeToggle />
 
           {/* User Profile Dropdown */}
           <div className="relative" ref={userDropdownRef}>
@@ -683,21 +682,18 @@ export const PortalNavbar: React.FC = () => {
                         ref={fileInputRef}
                         accept="image/*"
                         className="hidden"
-                        onChange={(e) => {
+                        onChange={async (e) => {
                           const file = e.target.files?.[0];
                           if (!file) return;
-                          if (file.size > 3 * 1024 * 1024) {
-                            showToast('Please upload an image smaller than 3MB.', 'warning');
-                            return;
+                          try {
+                            showToast('Optimizing & loading photo...', 'info');
+                            const optimizedUrl = await compressAvatarFile(file, 320, 0.85);
+                            setProfileAvatarUrl(optimizedUrl);
+                            showToast('Custom photo optimized & loaded!', 'success');
+                          } catch (err) {
+                            console.error('Avatar optimization error:', err);
+                            showToast('Failed to load image. Please try another.', 'error');
                           }
-                          const reader = new FileReader();
-                          reader.onload = (event) => {
-                            if (event.target?.result) {
-                              setProfileAvatarUrl(event.target.result as string);
-                              showToast('Custom photo loaded from device!', 'info');
-                            }
-                          };
-                          reader.readAsDataURL(file);
                         }}
                       />
                       

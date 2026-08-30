@@ -237,6 +237,16 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   }, [dismissToast]);
 
   // ── CLOUD DATABASE INITIALIZATION & REAL-TIME MULTI-DEVICE SYNC ───────────
+  // Helper for safe storage write without crashing on quota exhaustion
+  const safeSetItem = (key: string, value: string) => {
+    try {
+      localStorage.setItem(key, value);
+    } catch (err) {
+      console.warn(`LocalStorage write error for ${key}:`, err);
+    }
+  };
+
+  // ── CLOUD DATABASE INITIALIZATION & REAL-TIME MULTI-DEVICE SYNC ───────────
   useEffect(() => {
     if (!isSupabaseConfigured || !supabase) return;
 
@@ -245,63 +255,114 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         const cloudData = await dbService.fetchInitialData();
         if (!cloudData) return;
 
-        // 1. Users authoritative cloud sync
+        // 1. Users authoritative cloud sync with non-destructive merge
         if (cloudData.users && cloudData.users.length > 0) {
-          setUsers(cloudData.users);
+          setUsers((prev) => {
+            const cloudList = cloudData.users || [];
+            const merged = [...cloudList];
+            // Merge any locally added users that haven't reached cloud yet
+            prev.forEach((localUser) => {
+              const existingIdx = merged.findIndex((u) => u.id === localUser.id);
+              if (existingIdx === -1) {
+                merged.push(localUser);
+                dbService.upsertUser(localUser); // push to cloud
+              } else {
+                // If local user has custom avatar or data, preserve
+                if (localUser.avatarUrl && localUser.avatarUrl !== merged[existingIdx].avatarUrl) {
+                  merged[existingIdx] = { ...merged[existingIdx], ...localUser };
+                  dbService.upsertUser(merged[existingIdx]);
+                }
+              }
+            });
+            return merged;
+          });
         } else if (cloudData.users && cloudData.users.length === 0) {
-          INITIAL_USERS.forEach(u => dbService.upsertUser(u));
-          setUsers(INITIAL_USERS);
+          users.forEach((u) => dbService.upsertUser(u));
         }
 
         // 2. Leads authoritative cloud sync
         if (cloudData.leads && cloudData.leads.length > 0) {
-          setLeads(cloudData.leads);
-        } else if (cloudData.leads && cloudData.leads.length === 0) {
-          INITIAL_LEADS.forEach(l => dbService.insertLead(l));
-          setLeads(INITIAL_LEADS);
+          setLeads((prev) => {
+            const cloudLeads = cloudData.leads || [];
+            const merged = [...cloudLeads];
+            prev.forEach((l) => {
+              if (!merged.some((m) => m.id === l.id)) {
+                merged.push(l);
+                dbService.insertLead(l);
+              }
+            });
+            return merged;
+          });
+        } else if (cloudData.leads && cloudData.leads.length === 0 && leads.length > 0) {
+          leads.forEach((l) => dbService.insertLead(l));
         }
 
         // 3. Projects authoritative cloud sync
         if (cloudData.projects && cloudData.projects.length > 0) {
-          setProjects(cloudData.projects);
-        } else if (cloudData.projects && cloudData.projects.length === 0) {
-          INITIAL_PROJECTS.forEach(p => dbService.upsertProject(p));
-          setProjects(INITIAL_PROJECTS);
+          setProjects((prev) => {
+            const cloudProjects = cloudData.projects || [];
+            const merged = [...cloudProjects];
+            prev.forEach((p) => {
+              if (!merged.some((m) => m.id === p.id)) {
+                merged.push(p);
+                dbService.upsertProject(p);
+              }
+            });
+            return merged;
+          });
+        } else if (cloudData.projects && cloudData.projects.length === 0 && projects.length > 0) {
+          projects.forEach((p) => dbService.upsertProject(p));
         }
 
         // 4. Assignments authoritative cloud sync
         if (cloudData.assignments && cloudData.assignments.length > 0) {
-          setAssignments(cloudData.assignments);
-        } else if (cloudData.assignments && cloudData.assignments.length === 0) {
-          INITIAL_ASSIGNMENTS.forEach(a => dbService.upsertAssignment(a));
-          setAssignments(INITIAL_ASSIGNMENTS);
+          setAssignments((prev) => {
+            const cloudAssignments = cloudData.assignments || [];
+            const merged = [...cloudAssignments];
+            prev.forEach((a) => {
+              if (!merged.some((m) => m.id === m.id)) {
+                merged.push(a);
+                dbService.upsertAssignment(a);
+              }
+            });
+            return merged;
+          });
+        } else if (cloudData.assignments && cloudData.assignments.length === 0 && assignments.length > 0) {
+          assignments.forEach((a) => dbService.upsertAssignment(a));
         }
 
         // 5. Certificates authoritative cloud sync
         if (cloudData.certificates && cloudData.certificates.length > 0) {
-          setCertificates(cloudData.certificates);
-        } else if (cloudData.certificates && cloudData.certificates.length === 0) {
-          INITIAL_CERTIFICATES.forEach(c => dbService.upsertCertificate(c));
-          setCertificates(INITIAL_CERTIFICATES);
+          setCertificates((prev) => {
+            const cloudCerts = cloudData.certificates || [];
+            const merged = [...cloudCerts];
+            prev.forEach((c) => {
+              if (!merged.some((m) => m.id === c.id)) {
+                merged.push(c);
+                dbService.upsertCertificate(c);
+              }
+            });
+            return merged;
+          });
+        } else if (cloudData.certificates && cloudData.certificates.length === 0 && certificates.length > 0) {
+          certificates.forEach((c) => dbService.upsertCertificate(c));
         }
 
         // 6. Announcements authoritative cloud sync
         if (cloudData.announcements && cloudData.announcements.length > 0) {
           setAnnouncements(cloudData.announcements);
-        } else if (cloudData.announcements && cloudData.announcements.length === 0) {
-          INITIAL_ANNOUNCEMENTS.forEach(a => dbService.upsertAnnouncement(a));
-          setAnnouncements(INITIAL_ANNOUNCEMENTS);
+        } else if (cloudData.announcements && cloudData.announcements.length === 0 && announcements.length > 0) {
+          announcements.forEach((a) => dbService.upsertAnnouncement(a));
         }
 
         // 7. Site Content CMS authoritative cloud sync
         if (cloudData.siteContent) {
           setSiteContent({
             ...DEFAULT_SITE_CONTENT,
-            ...cloudData.siteContent
+            ...cloudData.siteContent,
           });
         } else {
-          dbService.saveSiteContent(DEFAULT_SITE_CONTENT);
-          setSiteContent(DEFAULT_SITE_CONTENT);
+          dbService.saveSiteContent(siteContent || DEFAULT_SITE_CONTENT);
         }
 
         // 8. Audit logs cloud sync
@@ -333,57 +394,57 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     };
   }, []);
 
-  // Sync to LocalStorage (Offline Resilience)
+  // Sync to LocalStorage (Offline Resilience with safe try-catch)
   useEffect(() => {
-    localStorage.setItem(`${LOCAL_STORAGE_KEY}_users`, JSON.stringify(users));
+    safeSetItem(`${LOCAL_STORAGE_KEY}_users`, JSON.stringify(users));
   }, [users]);
 
   useEffect(() => {
-    localStorage.setItem(`${LOCAL_STORAGE_KEY}_current_user`, JSON.stringify(currentUser));
+    safeSetItem(`${LOCAL_STORAGE_KEY}_current_user`, JSON.stringify(currentUser));
   }, [currentUser]);
 
   useEffect(() => {
-    localStorage.setItem(`${LOCAL_STORAGE_KEY}_is_authenticated`, JSON.stringify(isAuthenticated));
+    safeSetItem(`${LOCAL_STORAGE_KEY}_is_authenticated`, JSON.stringify(isAuthenticated));
   }, [isAuthenticated]);
 
   useEffect(() => {
-    localStorage.setItem(`${LOCAL_STORAGE_KEY}_leads`, JSON.stringify(leads));
+    safeSetItem(`${LOCAL_STORAGE_KEY}_leads`, JSON.stringify(leads));
   }, [leads]);
 
   useEffect(() => {
-    localStorage.setItem(`${LOCAL_STORAGE_KEY}_projects`, JSON.stringify(projects));
+    safeSetItem(`${LOCAL_STORAGE_KEY}_projects`, JSON.stringify(projects));
   }, [projects]);
 
   useEffect(() => {
-    localStorage.setItem(`${LOCAL_STORAGE_KEY}_assignments`, JSON.stringify(assignments));
+    safeSetItem(`${LOCAL_STORAGE_KEY}_assignments`, JSON.stringify(assignments));
   }, [assignments]);
 
   useEffect(() => {
-    localStorage.setItem(`${LOCAL_STORAGE_KEY}_certificates`, JSON.stringify(certificates));
+    safeSetItem(`${LOCAL_STORAGE_KEY}_certificates`, JSON.stringify(certificates));
   }, [certificates]);
 
   useEffect(() => {
-    localStorage.setItem(`${LOCAL_STORAGE_KEY}_announcements`, JSON.stringify(announcements));
+    safeSetItem(`${LOCAL_STORAGE_KEY}_announcements`, JSON.stringify(announcements));
   }, [announcements]);
 
   useEffect(() => {
-    localStorage.setItem(`${LOCAL_STORAGE_KEY}_payouts`, JSON.stringify(payouts));
+    safeSetItem(`${LOCAL_STORAGE_KEY}_payouts`, JSON.stringify(payouts));
   }, [payouts]);
 
   useEffect(() => {
-    localStorage.setItem(`${LOCAL_STORAGE_KEY}_applicants`, JSON.stringify(applicants));
+    safeSetItem(`${LOCAL_STORAGE_KEY}_applicants`, JSON.stringify(applicants));
   }, [applicants]);
 
   useEffect(() => {
-    localStorage.setItem(`${LOCAL_STORAGE_KEY}_settings`, JSON.stringify(settings));
+    safeSetItem(`${LOCAL_STORAGE_KEY}_settings`, JSON.stringify(settings));
   }, [settings]);
 
   useEffect(() => {
-    localStorage.setItem(`${LOCAL_STORAGE_KEY}_site_content`, JSON.stringify(siteContent));
+    safeSetItem(`${LOCAL_STORAGE_KEY}_site_content`, JSON.stringify(siteContent));
   }, [siteContent]);
 
   useEffect(() => {
-    localStorage.setItem(`${LOCAL_STORAGE_KEY}_audit_logs`, JSON.stringify(auditLogs));
+    safeSetItem(`${LOCAL_STORAGE_KEY}_audit_logs`, JSON.stringify(auditLogs));
   }, [auditLogs]);
 
   // Auth Handlers

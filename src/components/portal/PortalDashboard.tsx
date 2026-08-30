@@ -139,9 +139,12 @@ export const PortalDashboard: React.FC = () => {
         <>
           {/* Executive Metrics */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-            <div className="p-6 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] shadow-md">
+            <div 
+              onClick={() => setMgmtTab('squads')}
+              className="p-6 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] hover:border-[var(--brand-teal)] shadow-md hover:shadow-xl hover:-translate-y-1.5 transition-all duration-200 ease-out cursor-pointer select-none group"
+            >
               <div className="flex items-center justify-between text-[var(--text-muted)] mb-2">
-                <span className="text-xs font-bold uppercase tracking-wider">Specialist Squads</span>
+                <span className="text-xs font-bold uppercase tracking-wider group-hover:text-[var(--brand-teal)] transition-colors duration-150">Specialist Squads</span>
                 <Shield className="w-4 h-4 text-[var(--brand-teal)]" />
               </div>
               <div className="font-display font-black text-2xl sm:text-3xl text-[var(--text-heading)] mb-1">
@@ -150,9 +153,12 @@ export const PortalDashboard: React.FC = () => {
               <p className="text-[11px] text-[var(--text-muted)]">Active technical & creative divisions</p>
             </div>
 
-            <div className="p-6 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] shadow-md">
+            <div 
+              onClick={() => setMgmtTab('sprints')}
+              className="p-6 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] hover:border-[var(--brand-teal)] shadow-md hover:shadow-xl hover:-translate-y-1.5 transition-all duration-200 ease-out cursor-pointer select-none group"
+            >
               <div className="flex items-center justify-between text-[var(--text-muted)] mb-2">
-                <span className="text-xs font-bold uppercase tracking-wider">Active Sprints</span>
+                <span className="text-xs font-bold uppercase tracking-wider group-hover:text-[var(--brand-teal)] transition-colors duration-150">Active Sprints</span>
                 <Briefcase className="w-4 h-4 text-[var(--brand-teal)]" />
               </div>
               <div className="font-display font-black text-2xl sm:text-3xl text-[var(--text-heading)] mb-1">
@@ -161,9 +167,12 @@ export const PortalDashboard: React.FC = () => {
               <p className="text-[11px] text-[var(--text-muted)]">Coordinated squad deliveries</p>
             </div>
 
-            <div className="p-6 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] shadow-md">
+            <div 
+              onClick={() => setMgmtTab('applicants')}
+              className="p-6 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] hover:border-[var(--brand-teal)] shadow-md hover:shadow-xl hover:-translate-y-1.5 transition-all duration-200 ease-out cursor-pointer select-none group"
+            >
               <div className="flex items-center justify-between text-[var(--text-muted)] mb-2">
-                <span className="text-xs font-bold uppercase tracking-wider">Applicant Pipeline</span>
+                <span className="text-xs font-bold uppercase tracking-wider group-hover:text-[var(--brand-teal)] transition-colors duration-150">Applicant Pipeline</span>
                 <Layers className="w-4 h-4 text-[var(--brand-teal)]" />
               </div>
               <div className="font-display font-black text-2xl sm:text-3xl text-[var(--text-heading)] mb-1">
@@ -172,9 +181,12 @@ export const PortalDashboard: React.FC = () => {
               <p className="text-[11px] text-[var(--text-muted)]">Applications pending review</p>
             </div>
 
-            <div className="p-6 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] shadow-md">
+            <div 
+              onClick={() => setMgmtTab('directory')}
+              className="p-6 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] hover:border-[var(--brand-teal)] shadow-md hover:shadow-xl hover:-translate-y-1.5 transition-all duration-200 ease-out cursor-pointer select-none group"
+            >
               <div className="flex items-center justify-between text-[var(--text-muted)] mb-2">
-                <span className="text-xs font-bold uppercase tracking-wider">Verified Staff</span>
+                <span className="text-xs font-bold uppercase tracking-wider group-hover:text-[var(--brand-teal)] transition-colors duration-150">Verified Staff</span>
                 <Award className="w-4 h-4 text-[var(--brand-teal)]" />
               </div>
               <div className="font-display font-black text-2xl sm:text-3xl text-[var(--text-heading)] mb-1">
@@ -353,9 +365,12 @@ export const PortalDashboard: React.FC = () => {
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
             
             {/* Metric 1: My Squad */}
-            <div className="p-6 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] shadow-md">
+            <div 
+              onClick={() => setStaffTab('my_squad')}
+              className="p-6 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] hover:border-[var(--brand-teal)] shadow-md hover:shadow-xl hover:-translate-y-1.5 transition-all duration-200 ease-out cursor-pointer select-none group"
+            >
               <div className="flex items-center justify-between text-[var(--text-muted)] mb-2">
-                <span className="text-xs font-bold uppercase tracking-wider">My Squad</span>
+                <span className="text-xs font-bold uppercase tracking-wider group-hover:text-[var(--brand-teal)] transition-colors duration-150">My Squad</span>
                 <Shield className="w-4 h-4 text-[var(--brand-teal)]" />
               </div>
               <div className="font-display font-black text-xl sm:text-2xl text-[var(--text-heading)] truncate mb-1" title={mySquad?.name}>
@@ -367,9 +382,12 @@ export const PortalDashboard: React.FC = () => {
             </div>
 
             {/* Metric 2: Active Sprints */}
-            <div className="p-6 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] shadow-md">
+            <div 
+              onClick={() => setStaffTab('my_projects')}
+              className="p-6 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] hover:border-[var(--brand-teal)] shadow-md hover:shadow-xl hover:-translate-y-1.5 transition-all duration-200 ease-out cursor-pointer select-none group"
+            >
               <div className="flex items-center justify-between text-[var(--text-muted)] mb-2">
-                <span className="text-xs font-bold uppercase tracking-wider">My Projects</span>
+                <span className="text-xs font-bold uppercase tracking-wider group-hover:text-[var(--brand-teal)] transition-colors duration-150">My Projects</span>
                 <Briefcase className="w-4 h-4 text-[var(--brand-teal)]" />
               </div>
               <div className="font-display font-black text-2xl sm:text-3xl text-[var(--text-heading)] mb-1">
@@ -379,9 +397,12 @@ export const PortalDashboard: React.FC = () => {
             </div>
 
             {/* Metric 3: My Sub-Tasks */}
-            <div className="p-6 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] shadow-md">
+            <div 
+              onClick={() => setStaffTab('my_tasks')}
+              className="p-6 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] hover:border-[var(--brand-teal)] shadow-md hover:shadow-xl hover:-translate-y-1.5 transition-all duration-200 ease-out cursor-pointer select-none group"
+            >
               <div className="flex items-center justify-between text-[var(--text-muted)] mb-2">
-                <span className="text-xs font-bold uppercase tracking-wider">Deliverables</span>
+                <span className="text-xs font-bold uppercase tracking-wider group-hover:text-[var(--brand-teal)] transition-colors duration-150">Deliverables</span>
                 <CheckSquare className="w-4 h-4 text-[var(--brand-teal)]" />
               </div>
               <div className="font-display font-black text-2xl sm:text-3xl text-[var(--text-heading)] mb-1">
@@ -395,17 +416,17 @@ export const PortalDashboard: React.FC = () => {
             {/* Metric 4: Verified Documents (Clickable to jump to download tab) */}
             <div 
               onClick={() => setStaffTab('my_documents')}
-              className="p-6 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] hover:border-[var(--brand-teal)]/50 shadow-md cursor-pointer transition-all group"
+              className="p-6 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] hover:border-[var(--brand-teal)] shadow-md hover:shadow-xl hover:-translate-y-1.5 transition-all duration-200 ease-out cursor-pointer select-none group"
             >
               <div className="flex items-center justify-between text-[var(--text-muted)] mb-2">
-                <span className="text-xs font-bold uppercase tracking-wider group-hover:text-[var(--brand-teal)] transition-colors">
+                <span className="text-xs font-bold uppercase tracking-wider group-hover:text-[var(--brand-teal)] transition-colors duration-150">
                   Download Docs
                 </span>
                 <Award className="w-4 h-4 text-[var(--brand-teal)]" />
               </div>
               <div className="font-display font-black text-2xl sm:text-3xl text-[var(--text-heading)] mb-1 flex items-center justify-between">
                 <span>{myReleasedCerts.length}</span>
-                <span className="text-xs text-[var(--brand-teal)] font-bold group-hover:translate-x-0.5 transition-transform">Download →</span>
+                <span className="text-xs text-[var(--brand-teal)] font-bold group-hover:translate-x-0.5 transition-transform duration-150">Download →</span>
               </div>
               <p className="text-[11px] text-[var(--text-muted)]">
                 {myReleasedCerts.length > 0 ? `${myReleasedCerts.length} verified PDF(s) ready` : 'Offer letters & certificates'}

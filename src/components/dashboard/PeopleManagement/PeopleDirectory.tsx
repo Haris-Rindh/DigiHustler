@@ -17,6 +17,9 @@ import {
   AlertCircle,
   Sparkles,
   Trash2,
+  Pin,
+  PinOff,
+  Crown,
 } from 'lucide-react';
 import { useApp } from '../../../context/AppContext';
 import { User, GroupId, UserRole, UserStatus } from '../../../types';
@@ -30,7 +33,7 @@ export const PeopleDirectory: React.FC<PeopleDirectoryProps> = ({
   onSelectUser,
   onOpenQuickInvite,
 }) => {
-  const { users, groups, currentUser, currentTier, bulkUpdateStatus, bulkReassignSquad, deleteUserAccount, showToast } = useApp();
+  const { users, groups, currentUser, currentTier, deleteUserAccount, showToast } = useApp();
 
   const isManagement = currentTier === 'ceo' || currentTier === 'manager' || currentUser.role === 'management';
   const isLeader = currentTier === 'group_leader' || currentUser.role === 'group_leader';
@@ -43,6 +46,39 @@ export const PeopleDirectory: React.FC<PeopleDirectoryProps> = ({
   const [sortField, setSortField] = useState<'name' | 'earnings' | 'projects' | 'rating' | 'joined'>('name');
   const [sortAsc, setSortAsc] = useState(true);
 
+  // Pinned Member IDs (Saved in Local Storage)
+  const [pinnedIds, setPinnedIds] = useState<string[]>(() => {
+    try {
+      const saved = localStorage.getItem('digihust_pinned_members');
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  const togglePinUser = (userId: string, e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    setPinnedIds((prev) => {
+      const isPinned = prev.includes(userId);
+      const updated = isPinned ? prev.filter((id) => id !== userId) : [...prev, userId];
+      try {
+        localStorage.setItem('digihust_pinned_members', JSON.stringify(updated));
+      } catch (err) {
+        console.warn('Could not save pinned members:', err);
+      }
+      showToast(isPinned ? 'Member unpinned.' : 'Member pinned to top.', 'info');
+      return updated;
+    });
+  };
+
+  // Helper to check CEO & Co-founders (Permanent Top Tier)
+  const isCeoOrFounder = (u: User) => {
+    if (u.isCeoMaster || u.roleTier === 'ceo') return true;
+    const t = (u.title || '').toLowerCase();
+    const r = (u.role || '').toLowerCase();
+    return t.includes('ceo') || t.includes('founder') || t.includes('co-founder') || r.includes('ceo');
+  };
+
   // Selected row IDs for bulk actions
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [bulkStatusModal, setBulkStatusModal] = useState(false);
@@ -51,7 +87,7 @@ export const PeopleDirectory: React.FC<PeopleDirectoryProps> = ({
   const [bulkSquadModal, setBulkSquadModal] = useState(false);
   const [bulkSquad, setBulkSquad] = useState<GroupId>('tech');
 
-  // Filtered and Sorted Users
+  // Filtered and Sorted Users (CEO & Co-Founders first, then Pinned, then sorted)
   const filteredUsers = useMemo(() => {
     return users.filter((u) => {
       // Permission scoping: Leader can only view own squad
@@ -81,6 +117,19 @@ export const PeopleDirectory: React.FC<PeopleDirectoryProps> = ({
 
       return true;
     }).sort((a, b) => {
+      // 1. Leadership always top priority
+      const aLeader = isCeoOrFounder(a);
+      const bLeader = isCeoOrFounder(b);
+      if (aLeader && !bLeader) return -1;
+      if (!aLeader && bLeader) return 1;
+
+      // 2. Pinned members next
+      const aPinned = pinnedIds.includes(a.id);
+      const bPinned = pinnedIds.includes(b.id);
+      if (aPinned && !bPinned) return -1;
+      if (!aPinned && bPinned) return 1;
+
+      // 3. Chosen field sorting
       let valA: any = a.name.toLowerCase();
       let valB: any = b.name.toLowerCase();
 
@@ -102,7 +151,7 @@ export const PeopleDirectory: React.FC<PeopleDirectoryProps> = ({
       if (valA > valB) return sortAsc ? 1 : -1;
       return 0;
     });
-  }, [users, searchTerm, roleFilter, squadFilter, statusFilter, sortField, sortAsc, isLeader, currentUser]);
+  }, [users, searchTerm, roleFilter, squadFilter, statusFilter, sortField, sortAsc, isLeader, currentUser, pinnedIds]);
 
   // Bulk Actions
   const toggleSelectAll = () => {
@@ -401,14 +450,36 @@ export const PeopleDirectory: React.FC<PeopleDirectoryProps> = ({
                       {/* Name & Avatar */}
                       <td className="p-4">
                         <div className="flex items-center space-x-3">
-                          <img
-                            src={person.avatarUrl}
-                            alt={person.name}
-                            className="w-9 h-9 rounded-xl object-cover ring-1 ring-[#1e4a5d]"
-                          />
+                          <div className="relative">
+                            <img
+                              src={person.avatarUrl}
+                              alt={person.name}
+                              className="w-9 h-9 rounded-xl object-cover ring-1 ring-[var(--border-subtle)]"
+                            />
+                            {isCeoOrFounder(person) && (
+                              <span className="absolute -top-1.5 -right-1.5 p-0.5 rounded-full bg-amber-400 text-slate-950 shadow">
+                                <Crown className="w-2.5 h-2.5 fill-current" />
+                              </span>
+                            )}
+                            {!isCeoOrFounder(person) && pinnedIds.includes(person.id) && (
+                              <span className="absolute -top-1.5 -right-1.5 p-0.5 rounded-full bg-[var(--brand-teal)] text-white shadow">
+                                <Pin className="w-2.5 h-2.5 fill-current" />
+                              </span>
+                            )}
+                          </div>
                           <div>
-                            <div className="flex items-center gap-2">
+                            <div className="flex flex-wrap items-center gap-1.5">
                               <p className="font-bold text-[var(--text-heading)] text-sm">{person.name}</p>
+                              {isCeoOrFounder(person) && (
+                                <span className="px-1.5 py-0.2 rounded bg-amber-400/15 text-amber-500 border border-amber-400/30 text-[9px] font-black uppercase tracking-wider flex items-center gap-0.5">
+                                  <Crown className="w-2.5 h-2.5" /> Leadership
+                                </span>
+                              )}
+                              {!isCeoOrFounder(person) && pinnedIds.includes(person.id) && (
+                                <span className="px-1.5 py-0.2 rounded bg-[var(--brand-teal-subtle)] text-[var(--brand-teal)] border border-[var(--brand-teal)]/30 text-[9px] font-extrabold uppercase tracking-wider flex items-center gap-0.5">
+                                  <Pin className="w-2.5 h-2.5 fill-current" /> Pinned
+                                </span>
+                              )}
                               {person.memberId && (
                                 <span className="font-mono text-[10px] font-bold px-1.5 py-0.5 rounded bg-[var(--brand-teal-subtle)] text-[var(--brand-teal)] border border-[var(--border-subtle)]">
                                   {person.memberId}
@@ -476,6 +547,24 @@ export const PeopleDirectory: React.FC<PeopleDirectoryProps> = ({
                       {/* Action */}
                       <td className="p-4 text-center" onClick={(e) => e.stopPropagation()}>
                         <div className="flex items-center justify-center gap-1.5">
+                          {/* Pin/Unpin Button for Management (Non-leadership members) */}
+                          {isManagement && !isCeoOrFounder(person) && (
+                            <button
+                              onClick={(e) => togglePinUser(person.id, e)}
+                              className={`p-1.5 rounded-lg border transition-colors cursor-pointer ${
+                                pinnedIds.includes(person.id)
+                                  ? 'bg-[var(--brand-teal)] text-white border-[var(--brand-teal)]'
+                                  : 'bg-[var(--bg-subtle)] hover:bg-[var(--bg-page)] border-[var(--border-subtle)] text-[var(--text-muted)] hover:text-[var(--text-heading)]'
+                              }`}
+                              title={pinnedIds.includes(person.id) ? 'Unpin member' : 'Pin member to top of directory'}
+                            >
+                              {pinnedIds.includes(person.id) ? (
+                                <PinOff className="w-3.5 h-3.5" />
+                              ) : (
+                                <Pin className="w-3.5 h-3.5" />
+                              )}
+                            </button>
+                          )}
                           <button
                             onClick={() => onSelectUser(person)}
                             className="px-2.5 py-1 rounded-lg bg-[var(--bg-subtle)] hover:bg-[var(--bg-page)] border border-[var(--border-subtle)] text-[11px] font-bold text-[var(--text-body)] hover:text-[var(--text-heading)] transition-colors cursor-pointer"

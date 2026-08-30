@@ -138,7 +138,7 @@ export const Team: React.FC = () => {
                 }}
                 role="button"
                 tabIndex={0}
-                className="group border border-[var(--border-subtle)] rounded-2xl p-6 bg-[var(--bg-surface)] hover:shadow-xl hover:border-[var(--brand-teal)]/50 transition-all duration-300 flex flex-col justify-between cursor-pointer focus:outline-none focus:ring-2 focus:ring-[var(--brand-teal)]/40 hover:-translate-y-1 select-none"
+                className="group border border-[var(--border-subtle)] rounded-2xl p-6 bg-[var(--bg-surface)] hover:shadow-xl hover:border-[var(--brand-teal)] transition-all duration-200 ease-out flex flex-col justify-between cursor-pointer focus:outline-none focus:ring-2 focus:ring-[var(--brand-teal)]/40 hover:-translate-y-1.5 select-none"
               >
                 <div>
                   {/* Top Profile Header */}

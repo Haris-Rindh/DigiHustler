@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowUpRight, ShieldCheck, Heart } from 'lucide-react';
+import { ShieldCheck, Linkedin, Github, Facebook, Instagram, Mail } from 'lucide-react';
 import logoImg from '../../assets/logo.png';
 
 export const Footer: React.FC = () => {
@@ -12,10 +12,10 @@ export const Footer: React.FC = () => {
 
       <div className="max-w-7xl mx-auto">
 
-        {/* Top Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-5 gap-10 pb-12 border-b border-[var(--border-subtle)]">
+        {/* Top Grid (Balanced 4-column layout without System & Portals) */}
+        <div className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-4 gap-10 pb-12 border-b border-[var(--border-subtle)]">
 
-          {/* Brand Column */}
+          {/* Brand Column (Spans 2 columns) */}
           <div className="md:col-span-2 space-y-4">
             <Link to="/" className="flex items-center space-x-2.5 group">
               <img 
@@ -34,12 +34,13 @@ export const Footer: React.FC = () => {
               One company. Specialized digital talent. Providing end-to-end web engineering, brand identity, AI workflows, and cybersecurity.
             </p>
             
-            {/* Social Icons */}
+            {/* Social Vector Icons */}
             <div className="flex items-center space-x-2.5 pt-2">
               {[
-                { label: 'LinkedIn', icon: 'In', href: 'https://www.linkedin.com/company/digihust/' },
-                { label: 'GitHub', icon: 'Gh', href: 'https://github.com/digihust' },
-                { label: 'Facebook', icon: 'Fb', href: 'https://www.facebook.com/share/p/1EubKwa3Ce/' },
+                { label: 'LinkedIn', icon: <Linkedin className="w-4 h-4 text-[#0A66C2] group-hover:scale-110 transition-transform duration-150" />, href: 'https://www.linkedin.com/company/digihust/' },
+                { label: 'GitHub', icon: <Github className="w-4 h-4 text-[var(--text-heading)] group-hover:scale-110 transition-transform duration-150" />, href: 'https://github.com/digihust' },
+                { label: 'Facebook', icon: <Facebook className="w-4 h-4 text-[#1877F2] group-hover:scale-110 transition-transform duration-150" />, href: 'https://www.facebook.com/share/p/1EubKwa3Ce/' },
+                { label: 'Email Inquiries', icon: <Mail className="w-4 h-4 text-[var(--brand-teal)] group-hover:scale-110 transition-transform duration-150" />, href: 'mailto:contact@digihust.com' },
               ].map((s) => (
                 <motion.a
                   key={s.label}
@@ -50,7 +51,7 @@ export const Footer: React.FC = () => {
                   whileTap={{ scale: 0.95 }}
                   title={s.label}
                   aria-label={s.label}
-                  className="w-9 h-9 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] hover:border-[var(--brand-teal)] hover:bg-[var(--brand-teal)]/20 flex items-center justify-center text-xs font-bold text-[var(--text-body)] hover:text-[var(--text-heading)] transition-colors shadow-sm"
+                  className="w-10 h-10 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] hover:border-[var(--brand-teal)] hover:bg-[var(--brand-teal-subtle)] flex items-center justify-center transition-all duration-150 shadow-sm group"
                 >
                   {s.icon}
                 </motion.a>
@@ -58,7 +59,7 @@ export const Footer: React.FC = () => {
             </div>
           </div>
 
-          {/* Services */}
+          {/* Capabilities */}
           <div className="space-y-4">
             <h4 className="text-xs font-extrabold text-[var(--text-heading)] uppercase tracking-widest">Capabilities</h4>
             <ul className="space-y-2.5 text-sm text-[var(--text-muted)]">
@@ -97,40 +98,6 @@ export const Footer: React.FC = () => {
                   </Link>
                 </li>
               ))}
-            </ul>
-          </div>
-
-            {/* Utility & Portal */}
-          <div className="space-y-4">
-            <h4 className="text-xs font-extrabold text-[var(--text-heading)] uppercase tracking-widest">System & Portals</h4>
-            <ul className="space-y-2.5 text-sm text-[var(--text-muted)]">
-              <li>
-                <Link to="/portal/login" className="text-[var(--text-muted)] hover:text-[var(--text-heading)] transition-colors inline-flex items-center space-x-1">
-                  <span>Staff Login</span>
-                  <ArrowUpRight className="w-3.5 h-3.5 text-[var(--text-muted)]" />
-                </Link>
-              </li>
-              <li>
-                <Link to="/maintenance" className="hover:text-[var(--text-body)] transition-colors">System Status</Link>
-              </li>
-              <li>
-                <Link to="/404" className="hover:text-[var(--text-body)] transition-colors">404 Diagnostic</Link>
-              </li>
-              <li>
-                <Link to="/offline" className="hover:text-[var(--text-body)] transition-colors">Offline State</Link>
-              </li>
-              <li>
-                <a href="/sitemap.xml" target="_blank" rel="noopener noreferrer" className="hover:text-[var(--text-body)] transition-colors inline-flex items-center space-x-1">
-                  <span>Sitemap XML</span>
-                  <ArrowUpRight className="w-3 h-3 text-[var(--text-dim)]" />
-                </a>
-              </li>
-              <li>
-                <a href="/llms.txt" target="_blank" rel="noopener noreferrer" className="hover:text-[var(--text-body)] transition-colors inline-flex items-center space-x-1">
-                  <span>llms.txt (AI Info)</span>
-                  <ArrowUpRight className="w-3 h-3 text-[var(--text-dim)]" />
-                </a>
-              </li>
             </ul>
           </div>
 

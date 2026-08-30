@@ -165,20 +165,21 @@ export const SaasDevelopmentLanding: React.FC = () => {
                 ]
               }
             ].map((pkg, idx) => (
-              <div 
+              <Link 
                 key={idx} 
-                className={`p-8 rounded-3xl bg-[var(--bg-surface)] border ${
+                to="/contact"
+                className={`group p-8 rounded-3xl bg-[var(--bg-surface)] border ${
                   pkg.popular ? 'border-[var(--brand-teal)] ring-2 ring-[var(--brand-teal)]/30' : 'border-[var(--border-subtle)]'
-                } space-y-6 flex flex-col justify-between shadow-lg relative`}
+                } space-y-6 flex flex-col justify-between shadow-lg hover:shadow-2xl hover:border-[var(--brand-teal)] hover:-translate-y-2 transition-all duration-200 ease-out relative cursor-pointer block select-none`}
               >
                 {pkg.popular && (
-                  <span className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-[var(--brand-teal)] text-white text-[10px] font-black uppercase tracking-widest">
+                  <span className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-[var(--brand-teal)] text-white text-[10px] font-black uppercase tracking-widest shadow-md">
                     Most Popular
                   </span>
                 )}
                 <div className="space-y-4">
                   <div>
-                    <h3 className="font-display font-extrabold text-2xl text-[var(--text-heading)]">{pkg.title}</h3>
+                    <h3 className="font-display font-extrabold text-2xl text-[var(--text-heading)] group-hover:text-[var(--brand-teal)] transition-colors duration-150">{pkg.title}</h3>
                     <p className="text-xs font-mono text-[var(--brand-teal)] font-bold mt-1">{pkg.timeline}</p>
                   </div>
                   <p className="text-xs text-[var(--text-body)] leading-relaxed">{pkg.desc}</p>
@@ -191,17 +192,16 @@ export const SaasDevelopmentLanding: React.FC = () => {
                     ))}
                   </ul>
                 </div>
-                <Link
-                  to="/contact"
-                  className={`w-full py-3 rounded-xl text-center font-bold text-xs shadow transition-all ${
+                <div
+                  className={`w-full py-3 rounded-xl text-center font-bold text-xs shadow transition-all duration-150 ${
                     pkg.popular
-                      ? 'bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-white'
-                      : 'bg-[var(--bg-subtle)] hover:bg-[var(--brand-teal)] hover:text-white text-[var(--text-heading)] border border-[var(--border-subtle)]'
+                      ? 'bg-[var(--brand-teal)] text-white group-hover:bg-[var(--brand-teal-hover)]'
+                      : 'bg-[var(--bg-subtle)] text-[var(--text-heading)] group-hover:bg-[var(--brand-teal)] group-hover:text-white border border-[var(--border-subtle)]'
                   }`}
                 >
                   Request Proposal for Scope
-                </Link>
-              </div>
+                </div>
+              </Link>
             ))}
           </div>
         </div>

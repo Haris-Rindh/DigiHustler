@@ -221,17 +221,17 @@ export const Work: React.FC = () => {
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.95 }}
-                    transition={{ duration: 0.3 }}
-                    whileHover={{ y: -4 }}
+                    transition={{ duration: 0.2 }}
+                    whileHover={{ y: -6, scale: 1.01 }}
                     onClick={() => setSelectedProject(project)}
-                    className="group border border-[var(--border-subtle)] rounded-2xl overflow-hidden hover:shadow-xl hover:border-[var(--brand-teal)]/40 transition-all cursor-pointer bg-[var(--bg-surface)] flex flex-col justify-between"
+                    className="group border border-[var(--border-subtle)] rounded-2xl overflow-hidden hover:shadow-xl hover:border-[var(--brand-teal)] transition-all duration-200 ease-out cursor-pointer bg-[var(--bg-surface)] flex flex-col justify-between"
                   >
                     <div>
                       <div className="aspect-video overflow-hidden bg-[var(--bg-subtle)] relative">
                         <img
                           src={project.img}
                           alt={project.title}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200 ease-out"
                         />
                         <div className="absolute top-3 left-3 px-2.5 py-1 rounded-md bg-[var(--bg-page)]/85 backdrop-blur-sm text-[10px] font-bold text-[var(--text-heading)] border border-[var(--border-subtle)]">
                           {project.client}

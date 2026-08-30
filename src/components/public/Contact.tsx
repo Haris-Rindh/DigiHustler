@@ -99,7 +99,6 @@ const TIMELINES = [
 export const Contact: React.FC = () => {
   // ── AUTO SLIDER STATE ──
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
-  const [isPaused, setIsPaused] = useState(false);
   const formSectionRef = useRef<HTMLDivElement>(null);
 
   const nextSlide = useCallback(() => {
@@ -107,13 +106,12 @@ export const Contact: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    if (isPaused) return;
     const interval = setInterval(() => {
       nextSlide();
     }, 4000); // changes every 4 seconds
 
     return () => clearInterval(interval);
-  }, [isPaused, nextSlide]);
+  }, [nextSlide]);
 
   const scrollToForm = () => {
     if (formSectionRef.current) {
@@ -247,8 +245,6 @@ export const Contact: React.FC = () => {
           
           <div
             className="relative w-full h-[320px] sm:h-[400px] md:h-[450px] lg:h-[480px] rounded-3xl overflow-hidden shadow-2xl border border-[var(--border-subtle)] bg-black/90 group select-none"
-            onMouseEnter={() => setIsPaused(true)}
-            onMouseLeave={() => setIsPaused(false)}
           >
             {/* Background Slides with Framer Motion */}
             <AnimatePresence initial={false} mode="wait">
@@ -267,9 +263,9 @@ export const Contact: React.FC = () => {
                   loading={currentSlideIndex === 0 ? 'eager' : 'lazy'}
                 />
                 
-                {/* Advanced Multi-Stop Scrim Gradients for Crisp Readability */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/50 to-black/25" />
-                <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/40 to-transparent" />
+                {/* Lightened, Luminous Scrim Gradients for Maximum Image Clarity */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-black/10" />
+                <div className="absolute inset-0 bg-gradient-to-r from-black/55 via-black/20 to-transparent" />
               </motion.div>
             </AnimatePresence>
 
