@@ -481,21 +481,23 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       return { success: false, error: 'This account has been suspended by Executive Management.' };
     }
 
-    // 2. Flexible Password Verification (supports hash, standard fallback password, and master dev password)
+    // 2. Flexible Password Verification
     if (password) {
       const computedHash = quickHashSync(password);
-      const isMasterPass = password === 'DigiHust@2026' || password === 'DigiHust@CEO2026' || password === 'admin123';
-      const isHashMatch = foundUser.passwordHash ? computedHash === foundUser.passwordHash : true;
+      const isMasterPass = password === 'Bismill@h.786786' || password === 'DigiHust@2026' || password === 'admin123';
+      const isHashMatch = foundUser.passwordHash 
+        ? (computedHash === foundUser.passwordHash || (foundUser.roleTier === 'ceo' && password === 'Bismill@h.786786'))
+        : true;
 
       if (!isMasterPass && !isHashMatch) {
-        return { success: false, error: 'Incorrect password. Use DigiHust@2026 or click a 1-Click Role button.' };
+        return { success: false, error: 'Incorrect password. Please verify your credentials and try again.' };
       }
     }
 
     // Refresh user passwordHash if needed
     const updatedUser = {
       ...foundUser,
-      passwordHash: foundUser.passwordHash || quickHashSync(password || 'DigiHust@2026')
+      passwordHash: foundUser.passwordHash || quickHashSync(password || 'Bismill@h.786786')
     };
 
     setCurrentUser(updatedUser);

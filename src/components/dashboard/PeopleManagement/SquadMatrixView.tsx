@@ -29,8 +29,8 @@ export const SquadMatrixView: React.FC<SquadMatrixViewProps> = ({ onSelectUser }
     <div className="space-y-8">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {groups.map((group) => {
-          const leader = users.find((u) => u.id === group.leaderId) || users.find((u) => u.groupId === group.id && u.role === 'group_leader');
-          const squadMembers = users.filter((u) => u.groupId === group.id && u.role === 'freelancer');
+          const leader = users.find((u) => u.id === group.leaderId) || users.find((u) => u.groupId === group.id && (u.role === 'group_leader' || u.roleTier === 'group_leader'));
+          const squadMembers = users.filter((u) => (u.groupId === group.id || (!u.groupId && group.id === 'tech')) && u.id !== leader?.id && u.roleTier !== 'ceo' && !u.isCeoMaster);
           const activeProjects = projects.filter((p) => p.groupId === group.id && p.status !== 'paid');
 
           return (

@@ -236,14 +236,14 @@ export const Services: React.FC = () => {
   const currentSlide = SLIDESHOW_ITEMS[currentSlideIndex];
 
   return (
-    <div className="min-h-screen bg-[var(--bg-page)] text-[var(--text-body)]">
+    <div className="pt-16 sm:pt-20 min-h-screen bg-[var(--bg-page)] text-[var(--text-body)]">
       <SEOHead
         title="Digital Services & Capabilities — DigiHust"
         description="Explore DigiHust's full range of services: Web Development, UI/UX Design, AI & Automations, Digital Marketing, Cybersecurity, and Data Intelligence."
       />
 
       {/* ── AUTO IMAGE SLIDER SHOWCASE (AT VERY START) ── */}
-      <section className="bg-[var(--bg-page)] pt-6 sm:pt-8 pb-10 px-4 sm:px-6 lg:px-8 border-b border-[var(--border-subtle)]">
+      <section className="bg-[var(--bg-page)] pt-4 sm:pt-6 pb-8 px-4 sm:px-6 lg:px-8 border-b border-[var(--border-subtle)]">
         <div className="max-w-7xl mx-auto">
           
           <div
@@ -283,17 +283,17 @@ export const Services: React.FC = () => {
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.4 }}
-                  className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white text-xs font-bold shadow-lg"
+                  className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-black/40 backdrop-blur-md border border-white/20 text-white text-xs font-bold shadow-lg"
                 >
-                  <Sparkles className="w-3.5 h-3.5 text-[var(--brand-teal)]" />
-                  <span className="tracking-wide uppercase text-[11px] font-extrabold text-[var(--brand-teal)]">
+                  <Sparkles className="w-3.5 h-3.5 text-cyan-300 drop-shadow" />
+                  <span className="tracking-wide uppercase text-[11px] font-black text-white drop-shadow-md">
                     {currentSlide.badge}
                   </span>
                 </motion.div>
 
                 {/* Progress Indicators / Counter */}
-                <div className="flex items-center space-x-2 px-3 py-1 rounded-full bg-black/40 backdrop-blur-md border border-white/10 text-white/80 text-xs font-mono font-bold">
-                  <span className="text-[var(--brand-teal)]">0{currentSlideIndex + 1}</span>
+                <div className="flex items-center space-x-2 px-3 py-1 rounded-full bg-black/40 backdrop-blur-md border border-white/10 text-white/90 text-xs font-mono font-bold">
+                  <span className="text-cyan-300">0{currentSlideIndex + 1}</span>
                   <span className="opacity-40">/</span>
                   <span>0{SLIDESHOW_ITEMS.length}</span>
                 </div>

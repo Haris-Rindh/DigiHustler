@@ -46,10 +46,43 @@ export const Team: React.FC = () => {
     };
   }, [selectedMember]);
 
-  // Live member roster directly driven by portal database
-  const activeUsers = (users || []).filter(u => u.status === 'active');
+  // Helper to check CEO & Co-founders (Permanent Top Tier)
+  const isCeoOrFounder = (u: any) => {
+    if (u.isCeoMaster || u.roleTier === 'ceo') return true;
+    const t = (u.title || '').toLowerCase();
+    const r = (u.role || '').toLowerCase();
+    return t.includes('ceo') || t.includes('founder') || t.includes('co-founder') || r.includes('ceo');
+  };
 
-  const teamList: TeamMember[] = activeUsers.map(u => ({
+  // Pinned Member IDs (Preserves exact pinning sequence)
+  const pinnedIds: string[] = (() => {
+    try {
+      const saved = localStorage.getItem('digihust_pinned_members');
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  })();
+
+  // Live member roster directly driven by portal database and sorted (CEO -> Co-founders -> Pinned in order -> Others)
+  const sortedActiveUsers = [...(users || []).filter((u) => u && u.status === 'active')].sort((a, b) => {
+    // 1. CEO & Co-founders on top
+    const aLeader = isCeoOrFounder(a);
+    const bLeader = isCeoOrFounder(b);
+    if (aLeader && !bLeader) return -1;
+    if (!aLeader && bLeader) return 1;
+
+    // 2. Pinned members in the exact chronological order they were pinned
+    const aPinnedIdx = pinnedIds.indexOf(a.id);
+    const bPinnedIdx = pinnedIds.indexOf(b.id);
+    if (aPinnedIdx !== -1 && bPinnedIdx === -1) return -1;
+    if (aPinnedIdx === -1 && bPinnedIdx !== -1) return 1;
+    if (aPinnedIdx !== -1 && bPinnedIdx !== -1) return aPinnedIdx - bPinnedIdx;
+
+    return (a.name || '').localeCompare(b.name || '');
+  });
+
+  const teamList: TeamMember[] = sortedActiveUsers.map((u) => ({
     name: u.name,
     role: u.title || (u.roleTier === 'ceo' ? 'Founder & CEO' : u.roleTier === 'manager' ? 'Operations Director' : u.roleTier === 'group_leader' ? 'Squad Leader' : 'Domain Specialist'),
     category: (u.groupId === 'creative' || u.title?.toLowerCase().includes('design') || u.title?.toLowerCase().includes('brand')

@@ -174,41 +174,6 @@ export const PortalLogin: React.FC = () => {
                 <ArrowRight className="w-4 h-4" />
               </button>
             </form>
-
-            {/* 1-Click Role Quick Login */}
-            <div className="mt-6 pt-5 border-t border-[var(--border-subtle)] space-y-3">
-              <div className="flex items-center justify-between text-xs">
-                <span className="font-bold text-[var(--text-heading)] flex items-center gap-1.5">
-                  <Sparkles className="w-3.5 h-3.5 text-[var(--brand-teal)]" />
-                  <span>Executive Root Master Login:</span>
-                </span>
-                <span className="text-[10px] text-emerald-500 font-bold">● Clean Slate</span>
-              </div>
-
-              <button
-                type="button"
-                onClick={() => {
-                  setMemberId('DGH2400001');
-                  setPassword('DigiHust@2026');
-                  const res = loginWithMemberId('DGH2400001', 'DigiHust@2026');
-                  if (res.success) navigate(from, { replace: true });
-                }}
-                className="w-full p-3 rounded-xl bg-[var(--bg-page)] border border-purple-500/40 hover:border-purple-500 text-left transition-all cursor-pointer group flex items-center justify-between shadow-sm"
-              >
-                <div>
-                  <div className="font-bold text-purple-400 group-hover:text-purple-300 text-xs">👑 CEO Master Account (Mahad Abbas)</div>
-                  <div className="text-[10px] text-[var(--text-muted)] font-mono">ID: DGH2400001 · digihust@gmail.com</div>
-                </div>
-                <span className="text-[11px] font-bold text-purple-400 group-hover:translate-x-0.5 transition-transform">
-                  1-Click Login →
-                </span>
-              </button>
-            </div>
-
-            <div className="mt-4 pt-3 border-t border-[var(--border-subtle)] text-[11px] text-[var(--text-muted)] flex items-center justify-between">
-              <span>Fresh Clean Database</span>
-              <span>Master Password: <strong className="font-mono text-[var(--brand-teal)]">DigiHust@2026</strong></span>
-            </div>
           </motion.div>
 
           {/* Right Column: Pre-Login Global Announcements Feed */}

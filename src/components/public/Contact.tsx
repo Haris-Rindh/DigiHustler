@@ -80,11 +80,12 @@ const SERVICES = [
 ];
 
 const BUDGETS = [
-  'Under $1,000',
+  'Under $100',
+  '$100 – $500',
+  '$500 – $1,000',
   '$1,000 – $3,000',
   '$3,000 – $7,500',
-  '$7,500 – $15,000',
-  '$15,000+',
+  '$7,500+',
   'Flexible / Not Sure',
 ];
 
@@ -126,7 +127,7 @@ export const Contact: React.FC = () => {
     company: '',
     services: ['Website / Full-Stack App'],
     description: '',
-    budget: '$1,000 – $3,000',
+    budget: 'Minimum under $100',
     timeline: '1 Month',
     file: null as File | null,
     honeypot: '', // anti-spam field
@@ -175,12 +176,13 @@ export const Contact: React.FC = () => {
 
     try {
       const budgetMap: Record<string, number> = {
-        'Under $1,000': 800,
-        '$1,000 – $3,000': 2000,
-        '$3,000 – $7,500': 5000,
-        '$7,500 – $15,000': 10000,
-        '$15,000+': 20000,
-        'Flexible / Not Sure': 3000,
+        'Minimum under $100': 100,
+        '$100 – $500': 500,
+        '$500 – $1,000': 1000,
+        '$1,000 – $3,000': 3000,
+        '$3,000 – $7,500': 7500,
+        '$7,500+': 10000,
+        'Flexible / Not Sure': 5000,
       };
       const groupMap: Record<string, GroupId> = {
         'Website / Full-Stack App': 'tech',
@@ -193,7 +195,7 @@ export const Contact: React.FC = () => {
       };
 
       const targetGroupId: GroupId = groupMap[form.services[0]] || 'tech';
-      const rawBudget = budgetMap[form.budget] || 3000;
+      const rawBudget = budgetMap[form.budget] || 100;
 
       const newLeadData = {
         title: `${form.company || form.name} — ${form.services[0]}`,
@@ -202,29 +204,30 @@ export const Contact: React.FC = () => {
         clientEmail: form.email,
         brief: `${form.description}\n\nServices: ${form.services.join(', ')}\nTimeline: ${form.timeline}\nBudget: ${form.budget}`,
         budgetEstimate: rawBudget,
-        suggestedGroupId: targetGroupId,
+        status: 'new' as const,
+        groupId: targetGroupId,
+        assignedSpecialistIds: [],
+        rating: 5.0,
       };
 
-      submitLead(newLeadData);
+      await submitLead(newLeadData);
 
-      // Automated direct email dispatch to digihust@gmail.com via EmailJS
-      await notificationService.dispatchLeadEmail(form);
-
-      // Generate direct WhatsApp click-to-chat URL for management
-      const cleanPhone = (siteContent?.contact?.whatsapp || '+923206806396').replace(/[^0-9]/g, '');
-      const waMsg = `*🚨 New DigiHust Project Proposal*\n\n` +
+      // WhatsApp deep-link
+      const phone = siteContent?.contactPhone || '923001234567';
+      const cleanPhone = phone.replace(/[^0-9]/g, '');
+      const msg = encodeURIComponent(
+        `*New DigiHust Project Request*\n\n` +
         `*Name:* ${form.name}\n` +
         `*Email:* ${form.email}\n` +
-        (form.company ? `*Company:* ${form.company}\n` : '') +
+        `*Company:* ${form.company || 'Not Specified'}\n` +
         `*Services:* ${form.services.join(', ')}\n` +
         `*Budget:* ${form.budget}\n` +
         `*Timeline:* ${form.timeline}\n\n` +
-        `*Project Scope:* ${form.description}`;
-      const waUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(waMsg)}`;
-      setWhatsappLink(waUrl);
-
+        `*Project Brief:* ${form.description}`
+      );
+      setWhatsappLink(`https://wa.me/${cleanPhone}?text=${msg}`);
     } catch (err) {
-      console.error('Contact form submission error:', err);
+      console.warn('Lead submission warning:', err);
     }
 
     setIsSubmitting(false);
@@ -279,17 +282,17 @@ export const Contact: React.FC = () => {
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.4 }}
-                  className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white text-xs font-bold shadow-lg"
+                  className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-black/40 backdrop-blur-md border border-white/20 text-white text-xs font-bold shadow-lg"
                 >
-                  <Sparkles className="w-3.5 h-3.5 text-[var(--brand-teal)]" />
-                  <span className="tracking-wide uppercase text-[11px] font-extrabold text-[var(--brand-teal)]">
+                  <Sparkles className="w-3.5 h-3.5 text-cyan-300 drop-shadow" />
+                  <span className="tracking-wide uppercase text-[11px] font-black text-white drop-shadow-md">
                     {currentSlide.badge}
                   </span>
                 </motion.div>
 
                 {/* Progress Indicators / Counter */}
-                <div className="flex items-center space-x-2 px-3 py-1 rounded-full bg-black/40 backdrop-blur-md border border-white/10 text-white/80 text-xs font-mono font-bold">
-                  <span className="text-[var(--brand-teal)]">0{currentSlideIndex + 1}</span>
+                <div className="flex items-center space-x-2 px-3 py-1 rounded-full bg-black/40 backdrop-blur-md border border-white/10 text-white/90 text-xs font-mono font-bold">
+                  <span className="text-cyan-300">0{currentSlideIndex + 1}</span>
                   <span className="opacity-40">/</span>
                   <span>0{CONTACT_SLIDESHOW.length}</span>
                 </div>
