@@ -5,7 +5,7 @@ import {
   Users, Briefcase, Award, Bell, CheckCircle2, 
   ArrowRight, Shield, Layers, TrendingUp, Clock, PlusCircle, 
   CheckSquare, FileText, Lock, Key, AlertCircle, Sparkles, UserCheck, UserPlus,
-  Mail, MessageSquare, ExternalLink, Calendar, Check
+  Mail, MessageSquare, ExternalLink, Calendar, Check, Download
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { ForcePasswordReset } from './ForcePasswordReset';
@@ -74,7 +74,7 @@ export const PortalDashboard: React.FC = () => {
   const myLeader = users.find(u => (u.groupId === currentUser.groupId && u.role === 'group_leader') || u.id === mySquad?.leaderId);
   const myAllCerts = (certificates || []).filter(c => c.memberId === currentUser.id);
   const myReleasedCerts = myAllCerts.filter(c => !c.isLocked);
-  const myLockedCerts = myAllCerts.filter(c => c.isLocked);
+  const myLockedCerts = myAllCerts.filter(c => c.isLocked && !c.isHidden);
 
   return (
     <div className="max-w-7xl mx-auto px-4 lg:px-8 py-8 space-y-8 animate-in fade-in duration-300">
@@ -684,10 +684,12 @@ export const PortalDashboard: React.FC = () => {
                                 href={cert.driveUrl}
                                 target="_blank"
                                 rel="noopener noreferrer"
+                                download={cert.documentTitle ? `${cert.documentTitle.replace(/\s+/g, '_')}.pdf` : 'DigiHust_Credential.pdf'}
                                 className="w-full flex items-center justify-center space-x-2 px-4 py-2.5 rounded-xl bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-white text-xs font-bold shadow-md transition-all cursor-pointer"
                               >
-                                <ExternalLink className="w-4 h-4" />
-                                <span>Download / Open PDF (Google Drive)</span>
+                                <Download className="w-4 h-4" />
+                                <span>Download / Open PDF</span>
+                                <ExternalLink className="w-3.5 h-3.5 opacity-70" />
                               </a>
                             ) : (
                               <Link

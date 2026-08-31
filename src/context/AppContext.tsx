@@ -11,7 +11,7 @@ import {
   INITIAL_APPLICANTS, INITIAL_SETTINGS, INITIAL_ASSIGNMENTS, INITIAL_CERTIFICATES, 
   INITIAL_ANNOUNCEMENTS, DEFAULT_SITE_CONTENT, INITIAL_AUDIT_LOGS 
 } from '../services/mockData';
-import { getNextMemberId } from '../lib/memberIdGenerator';
+import { getNextMemberId, getNextMemberIdAsync } from '../lib/memberIdGenerator';
 import { getUserRoleTier, PERMISSIONS } from '../lib/permissions';
 import { quickHashSync } from '../lib/crypto';
 import { dbService } from '../lib/dbService';
@@ -92,9 +92,10 @@ interface AppContextType {
   certificateTemplates: CertificateTemplate[];
   issueCertificate: (certData: Omit<Certificate, 'id' | 'issuedDate' | 'status' | 'qrCodeUrl'>) => Certificate;
   generateMemberCertificate: (memberId: string, templateId: string, overrides?: Partial<Certificate>) => Certificate;
-  attachMemberDriveDocument: (memberUserId: string, data: { type: CertificateType; documentTitle: string; driveUrl: string; isLocked?: boolean; durationText?: string; notes?: string }) => Certificate;
+  attachMemberDriveDocument: (memberUserId: string, data: { type: CertificateType; documentTitle: string; driveUrl: string; isLocked?: boolean; isHidden?: boolean; durationText?: string; notes?: string }) => Certificate;
   toggleCertificateLock: (certId: string, isLocked: boolean) => void;
-  updateCertificateDriveUrl: (certId: string, driveUrl: string, documentTitle?: string) => void;
+  toggleCertificateHidden: (certId: string, isHidden: boolean) => void;
+  updateCertificateDriveUrl: (certId: string, driveUrl: string, documentTitle?: string, isLocked?: boolean, isHidden?: boolean) => void;
   createCertificateTemplate: (templateData: Omit<CertificateTemplate, 'id' | 'createdAt'>) => CertificateTemplate;
   updateCertificateTemplate: (templateId: string, updates: Partial<CertificateTemplate>) => void;
   deleteCertificateTemplate: (templateId: string) => void;
@@ -364,6 +365,31 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         // 8. AUDIT LOGS — Cloud authoritative
         if (cloudData.auditLogs && cloudData.auditLogs.length > 0) {
           setAuditLogs(cloudData.auditLogs);
+        }
+
+        // 9. PAYOUTS — Cloud authoritative
+        if (cloudData.payouts !== null && cloudData.payouts !== undefined) {
+          if (cloudData.payouts.length > 0) {
+            setPayouts(cloudData.payouts);
+          } else if (payouts.length > 0) {
+            payouts.forEach((p) => dbService.upsertPayout(p));
+          }
+        }
+
+        // 10. APPLICANTS — Cloud authoritative
+        if (cloudData.applicants !== null && cloudData.applicants !== undefined) {
+          if (cloudData.applicants.length > 0) {
+            setApplicants(cloudData.applicants);
+          } else if (applicants.length > 0) {
+            applicants.forEach((a) => dbService.upsertApplicant(a));
+          }
+        }
+
+        // 11. GLOBAL SETTINGS — Cloud authoritative
+        if (cloudData.settings) {
+          setSettings(cloudData.settings);
+        } else {
+          dbService.saveSettings(settings);
         }
       } catch (err) {
         console.warn('Cloud sync failed, using local cache fallback:', err);
@@ -953,6 +979,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     });
 
     setPayouts(prev => [...newPayouts, ...prev]);
+    // Persist every payout to Supabase cloud
+    newPayouts.forEach(p => dbService.upsertPayout(p));
     updateProjectStatus(projectId, 'paid');
   };
 
@@ -1313,6 +1341,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       documentTitle: string;
       driveUrl: string;
       isLocked?: boolean;
+      isHidden?: boolean;
       durationText?: string;
       notes?: string;
     }
@@ -1331,6 +1360,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       issuedDate: new Date().toISOString().split('T')[0],
       status: 'valid',
       isLocked: data.isLocked ?? true, // Locked by default until Management releases it
+      isHidden: Boolean(data.isHidden), // Completely hidden or visible as pending
       releasedAt: data.isLocked === false ? new Date().toISOString() : undefined,
       driveUrl: data.driveUrl,
       durationText: data.durationText || '45 Days (Remote)',
@@ -1353,7 +1383,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       action: 'CERTIFICATE_ISSUED',
       targetId: newDoc.memberId,
       targetName: newDoc.memberName,
-      details: `Attached ${newDoc.documentTitle} (${newDoc.isLocked ? 'Locked' : 'Released'}) for ${newDoc.memberName} with Drive Link.`
+      details: `Attached ${newDoc.documentTitle} (${newDoc.isLocked ? (newDoc.isHidden ? 'Locked & Hidden' : 'Locked & Visible') : 'Released'}) for ${newDoc.memberName}.`
     };
     setAuditLogs(prev => [auditEntry, ...prev]);
     dbService.insertAuditLog(auditEntry);
@@ -1395,20 +1425,51 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     }
   };
 
-  const updateCertificateDriveUrl = (certId: string, driveUrl: string, documentTitle?: string) => {
+  const toggleCertificateHidden = (certId: string, isHidden: boolean) => {
+    setCertificates(prev => prev.map(c => {
+      if (c.id === certId) {
+        const updated = { ...c, isHidden };
+        dbService.upsertCertificate(updated);
+        return updated;
+      }
+      return c;
+    }));
+
+    const cert = certificates.find(c => c.id === certId);
+    if (cert) {
+      const auditEntry: SecurityAuditLog = {
+        id: `audit-${Date.now()}`,
+        timestamp: new Date().toISOString(),
+        actorId: currentUser.id,
+        actorName: currentUser.name,
+        actorRole: currentTier,
+        action: 'CMS_UPDATED',
+        targetId: cert.memberId,
+        targetName: cert.memberName,
+        details: `Visibility set to ${isHidden ? 'Completely Hidden' : 'Visible in Portal'} for ${cert.documentTitle || cert.type}.`
+      };
+      setAuditLogs(prev => [auditEntry, ...prev]);
+      dbService.insertAuditLog(auditEntry);
+      showToast(`${cert.documentTitle || 'Document'} is now ${isHidden ? 'Completely Hidden from Member' : 'Visible in Member Portal'}.`, 'info');
+    }
+  };
+
+  const updateCertificateDriveUrl = (certId: string, driveUrl: string, documentTitle?: string, isLocked?: boolean, isHidden?: boolean) => {
     setCertificates(prev => prev.map(c => {
       if (c.id === certId) {
         const updated = { 
           ...c, 
           driveUrl, 
-          documentTitle: documentTitle || c.documentTitle 
+          documentTitle: documentTitle || c.documentTitle,
+          isLocked: isLocked !== undefined ? isLocked : c.isLocked,
+          isHidden: isHidden !== undefined ? isHidden : c.isHidden
         };
         dbService.upsertCertificate(updated);
         return updated;
       }
       return c;
     }));
-    showToast('Drive URL updated successfully.', 'success');
+    showToast('Document updated and synced to cloud.', 'success');
   };
 
   const deleteCertificate = (certId: string) => {
@@ -1617,10 +1678,15 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   const quickInviteUser = (userData: Omit<User, 'id' | 'completedProjectsCount' | 'totalEarnings' | 'rating' | 'statusHistory' | 'notes' | 'documents'>): User => {
     const { memberId } = getNextMemberId(userData.joinYear);
+    const roleTier: UserRoleTier = userData.roleTier || (userData.role === 'management' ? 'manager' : (userData.role === 'group_leader' ? 'group_leader' : (userData.role === 'intern' ? 'intern' : 'member')));
+    const finalStatus: UserStatus = userData.status || 'active';
+
     const newUser: User = {
       ...userData,
       id: `usr-${Date.now()}`,
       memberId,
+      roleTier,
+      status: finalStatus,
       passwordHash: quickHashSync('DigiHust@2026'),
       completedProjectsCount: 0,
       totalEarnings: 0,
@@ -1631,20 +1697,38 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         {
           timestamp: new Date().toISOString(),
           from: 'pending_onboarding',
-          to: userData.status,
+          to: finalStatus,
           reason: 'Direct Invitation Added',
-          changedBy: currentUser.name
+          changedBy: currentUser?.name || 'Management'
         }
       ],
       notes: [],
       documents: []
     };
+
     setUsers(prev => {
       const next = [newUser, ...prev];
       realtimeSync.broadcast('USERS_UPDATED', next);
       return next;
     });
     dbService.upsertUser(newUser);
+
+    // Record Security Audit Log
+    const auditEntry: SecurityAuditLog = {
+      id: `audit-${Date.now()}`,
+      timestamp: new Date().toISOString(),
+      actorId: currentUser?.id || 'usr-ceo-1',
+      actorName: currentUser?.name || 'Management',
+      actorRole: currentTier,
+      action: 'ACCOUNT_CREATED',
+      targetId: newUser.id,
+      targetName: newUser.name,
+      details: `Invited new ${newUser.roleTier} ${newUser.name} with Member ID ${newUser.memberId}.`
+    };
+    setAuditLogs(prev => [auditEntry, ...prev]);
+    dbService.insertAuditLog(auditEntry);
+
+    showToast(`Talent account for ${newUser.name} (${newUser.memberId}) created & synced to cloud.`, 'success', 'Member Added');
     return newUser;
   };
 
@@ -1828,6 +1912,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       status: 'pending'
     };
     setApplicants(prev => [newApplicant, ...prev]);
+    dbService.upsertApplicant(newApplicant); // persist to cloud
   };
 
   const approveApplicant = (applicantId: string, role: UserRole = 'freelancer', targetGroupId?: GroupId) => {
@@ -1863,19 +1948,24 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
     setUsers(prev => [newUser, ...prev]);
     dbService.upsertUser(newUser);
-    setApplicants(prev => prev.map(a => a.id === applicantId ? { ...a, status: 'approved' } : a));
+    const updated = { ...applicant, status: 'approved' as const };
+    setApplicants(prev => prev.map(a => a.id === applicantId ? updated : a));
+    dbService.updateApplicantStatus(applicantId, 'approved'); // persist to cloud
   };
 
   const rejectApplicant = (applicantId: string, reason?: string) => {
     setApplicants(prev => prev.map(a => a.id === applicantId ? { ...a, status: 'rejected', rejectionReason: reason } : a));
+    dbService.updateApplicantStatus(applicantId, 'rejected', { rejectionReason: reason }); // persist to cloud
   };
 
   const requestMoreInfoApplicant = (applicantId: string, followUpNotes?: string) => {
     setApplicants(prev => prev.map(a => a.id === applicantId ? { ...a, status: 'more_info_requested', followUpNotes } : a));
+    dbService.updateApplicantStatus(applicantId, 'more_info_requested', { followUpNotes }); // persist to cloud
   };
 
   const updateGlobalSettings = (newSettings: GlobalAdminSettings) => {
     setSettings(newSettings);
+    dbService.saveSettings(newSettings); // persist to cloud
   };
 
   const resetToDefaultData = () => {
@@ -1956,6 +2046,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         generateMemberCertificate,
         attachMemberDriveDocument,
         toggleCertificateLock,
+        toggleCertificateHidden,
         updateCertificateDriveUrl,
         createCertificateTemplate,
         updateCertificateTemplate,

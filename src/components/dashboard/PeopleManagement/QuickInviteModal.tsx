@@ -20,7 +20,7 @@ export const QuickInviteModal: React.FC<QuickInviteModalProps> = ({ isOpen, onCl
   const [groupId, setGroupId] = useState<GroupId>('tech');
   const [specialtiesStr, setSpecialtiesStr] = useState('');
   const [hourlyRate, setHourlyRate] = useState<number>(30);
-  const [status, setStatus] = useState<UserStatus>('pending_onboarding');
+  const [status, setStatus] = useState<UserStatus>('active');
   const [hasSplitOverride, setHasSplitOverride] = useState(false);
   const [mgmtSplit, setMgmtSplit] = useState(15);
   const [ldrSplit, setLdrSplit] = useState(25);
@@ -38,17 +38,20 @@ export const QuickInviteModal: React.FC<QuickInviteModalProps> = ({ isOpen, onCl
       .map((s) => s.trim())
       .filter(Boolean);
 
+    const mappedTier = (role === 'management' ? 'manager' : (role === 'group_leader' ? 'group_leader' : (role === 'intern' ? 'intern' : 'member')));
+
     quickInviteUser({
       name,
       email,
       phone,
       title,
       role,
+      roleTier: mappedTier,
       groupId,
       specialties: specialties.length > 0 ? specialties : ['Full-Stack Engineering'],
       hourlyRate,
       status,
-      avatarUrl: `https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=250`,
+      avatarUrl: `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=1F7A8C&color=fff`,
       splitOverride: hasSplitOverride
         ? { managementPct: mgmtSplit, leaderPct: ldrSplit, freelancerPct: flSplit }
         : undefined,

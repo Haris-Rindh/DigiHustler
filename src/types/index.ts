@@ -320,6 +320,7 @@ export interface Certificate {
   issuedDate: string;
   status: CertificateStatus;
   isLocked?: boolean; // true = locked by Management, false = released to member portal
+  isHidden?: boolean; // true = completely hidden from member portal; false = visible as "Pending Release"
   releasedAt?: string;
   driveUrl?: string; // Google Drive PDF or download link
   clientName?: string; // Real client name / DigiHust authority

@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { 
   Award, Plus, CheckCircle2, AlertTriangle, ExternalLink, 
-  FileText, Search, Check, X, Eye, 
-  Trash2, Edit3, Lock, Unlock, Download, Link2, Sparkles, Filter
+  FileText, Search, Check, X, Eye, EyeOff,
+  Trash2, Edit3, Lock, Unlock, Download, Link2, Sparkles, Filter,
+  UploadCloud, FileCheck, Loader2
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
+import { dbService } from '../../lib/dbService';
 import { Certificate, CertificateType, User as UserType, GroupId } from '../../types';
 
 interface DocumentUploadEntry {
@@ -12,17 +14,21 @@ interface DocumentUploadEntry {
   type: CertificateType;
   customType: string;
   title: string;
+  sourceType: 'file' | 'url';
+  file?: File | null;
+  fileName?: string;
+  fileSize?: string;
   driveUrl: string;
   durationText: string;
-  isLocked: boolean;
+  visibility: 'released' | 'locked_visible' | 'locked_hidden';
   notes: string;
 }
 
 export const CertificateManager: React.FC = () => {
   const { 
     certificates, users, currentTier, currentUser, groups,
-    attachMemberDriveDocument, toggleCertificateLock, updateCertificateDriveUrl,
-    deleteCertificate, showToast 
+    attachMemberDriveDocument, toggleCertificateLock, toggleCertificateHidden,
+    updateCertificateDriveUrl, deleteCertificate, showToast 
   } = useApp();
 
   const [searchQuery, setSearchQuery] = useState('');
@@ -33,13 +39,18 @@ export const CertificateManager: React.FC = () => {
   const [attachModalOpen, setAttachModalOpen] = useState(false);
   const [editModalCert, setEditModalCert] = useState<Certificate | null>(null);
   const [selectedMemberForAttach, setSelectedMemberForAttach] = useState<UserType | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Multi-Document entries for Attach Modal
   const [docEntries, setDocEntries] = useState<DocumentUploadEntry[]>([]);
 
   // Form states for Edit Modal
   const [editTitle, setEditTitle] = useState('');
+  const [editDuration, setEditDuration] = useState('');
   const [editDriveUrl, setEditDriveUrl] = useState('');
+  const [editVisibility, setEditVisibility] = useState<'released' | 'locked_visible' | 'locked_hidden'>('locked_visible');
+  const [editSourceType, setEditSourceType] = useState<'file' | 'url'>('url');
+  const [editFile, setEditFile] = useState<File | null>(null);
 
   if (!currentUser) {
     return (
@@ -74,9 +85,13 @@ export const CertificateManager: React.FC = () => {
         type: defaultType,
         customType: defaultType === 'other' ? 'Recommendation Letter' : '',
         title: defaultTitle,
+        sourceType: 'file',
+        file: null,
+        fileName: '',
+        fileSize: '',
         driveUrl: '',
         durationText: '45 Days (Remote)',
-        isLocked: true,
+        visibility: 'locked_visible',
         notes: ''
       }
     ]);
@@ -91,9 +106,13 @@ export const CertificateManager: React.FC = () => {
         type: 'experience_certificate',
         customType: '',
         title: 'Official Certificate of Experience',
+        sourceType: 'file',
+        file: null,
+        fileName: '',
+        fileSize: '',
         driveUrl: '',
         durationText: '6 Months',
-        isLocked: true,
+        visibility: 'locked_visible',
         notes: ''
       }
     ]);
@@ -108,55 +127,121 @@ export const CertificateManager: React.FC = () => {
     setDocEntries(prev => prev.map(e => e.id === id ? { ...e, ...updates } : e));
   };
 
-  const handleAttachSubmit = (e: React.FormEvent) => {
+  const handleAttachSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedMemberForAttach) {
       showToast('Please select a member.', 'error');
       return;
     }
 
-    const invalid = docEntries.find(entry => !entry.driveUrl.trim());
-    if (invalid) {
-      showToast(`Please provide a valid Google Drive link for "${invalid.title || 'all documents'}".`, 'error');
-      return;
+    // Validate entries
+    for (const entry of docEntries) {
+      if (entry.sourceType === 'url' && !entry.driveUrl.trim()) {
+        showToast(`Please provide a valid Google Drive or web URL for "${entry.title || 'document'}".`, 'error');
+        return;
+      }
+      if (entry.sourceType === 'file' && !entry.file && !entry.driveUrl.trim()) {
+        showToast(`Please select a file to upload for "${entry.title || 'document'}".`, 'error');
+        return;
+      }
     }
 
+    setIsSubmitting(true);
     let createdCount = 0;
-    docEntries.forEach(entry => {
-      const finalTitle = entry.type === 'other' && entry.customType.trim() 
-        ? (entry.title.trim() || entry.customType.trim())
-        : (entry.title.trim() || 'Official Credential');
 
-      attachMemberDriveDocument(selectedMemberForAttach.id, {
-        type: entry.type === 'other' && entry.customType.trim() ? entry.customType.trim() : entry.type,
-        documentTitle: finalTitle,
-        driveUrl: entry.driveUrl.trim(),
-        isLocked: entry.isLocked,
-        durationText: entry.durationText.trim() || undefined,
-        notes: entry.notes.trim() || undefined
-      });
-      createdCount++;
-    });
+    try {
+      for (const entry of docEntries) {
+        let finalUrl = entry.driveUrl.trim();
 
-    setAttachModalOpen(false);
+        // If file uploaded, upload to Supabase storage
+        if (entry.sourceType === 'file' && entry.file) {
+          const docId = `doc-${entry.type === 'offer_letter' ? 'off' : 'cert'}-${Math.random().toString(36).substring(2, 9)}`;
+          const uploadedUrl = await dbService.uploadDocument(selectedMemberForAttach.id, docId, entry.file);
+          if (uploadedUrl) {
+            finalUrl = uploadedUrl;
+          }
+        }
+
+        const finalTitle = entry.type === 'other' && entry.customType.trim() 
+          ? (entry.title.trim() || entry.customType.trim())
+          : (entry.title.trim() || 'Official Credential');
+
+        const isLocked = entry.visibility !== 'released';
+        const isHidden = entry.visibility === 'locked_hidden';
+
+        attachMemberDriveDocument(selectedMemberForAttach.id, {
+          type: entry.type === 'other' && entry.customType.trim() ? entry.customType.trim() : entry.type,
+          documentTitle: finalTitle,
+          driveUrl: finalUrl,
+          isLocked,
+          isHidden,
+          durationText: entry.durationText.trim() || undefined,
+          notes: entry.notes.trim() || undefined
+        });
+        createdCount++;
+      }
+
+      showToast(`Successfully saved and synced ${createdCount} document(s) to cloud.`, 'success');
+      setAttachModalOpen(false);
+    } catch (err) {
+      console.error('Failed to attach document:', err);
+      showToast('Error uploading document. Please try again.', 'error');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleOpenEditModal = (cert: Certificate) => {
     setEditModalCert(cert);
     setEditTitle(cert.documentTitle || cert.type);
+    setEditDuration(cert.durationText || '');
     setEditDriveUrl(cert.driveUrl || '');
+    setEditSourceType(cert.driveUrl?.startsWith('data:') || cert.driveUrl?.includes('storage/v1/object/public') ? 'file' : 'url');
+    setEditFile(null);
+
+    let vis: 'released' | 'locked_visible' | 'locked_hidden' = 'locked_visible';
+    if (!cert.isLocked) {
+      vis = 'released';
+    } else if (cert.isHidden) {
+      vis = 'locked_hidden';
+    } else {
+      vis = 'locked_visible';
+    }
+    setEditVisibility(vis);
   };
 
-  const handleEditSubmit = (e: React.FormEvent) => {
+  const handleEditSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editModalCert) return;
-    if (!editDriveUrl.trim()) {
-      showToast('Please provide a valid Google Drive link.', 'error');
-      return;
-    }
 
-    updateCertificateDriveUrl(editModalCert.id, editDriveUrl.trim(), editTitle.trim());
-    setEditModalCert(null);
+    setIsSubmitting(true);
+    try {
+      let finalUrl = editDriveUrl.trim();
+      if (editSourceType === 'file' && editFile) {
+        const uploadedUrl = await dbService.uploadDocument(editModalCert.memberId, editModalCert.id, editFile);
+        if (uploadedUrl) {
+          finalUrl = uploadedUrl;
+        }
+      }
+
+      const isLocked = editVisibility !== 'released';
+      const isHidden = editVisibility === 'locked_hidden';
+
+      updateCertificateDriveUrl(
+        editModalCert.id, 
+        finalUrl, 
+        editTitle.trim(), 
+        isLocked, 
+        isHidden
+      );
+
+      setEditModalCert(null);
+    } catch (err) {
+      console.error('Failed to update document:', err);
+      showToast('Error updating document.', 'error');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   // Filtered members for Management table
@@ -172,15 +257,16 @@ export const CertificateManager: React.FC = () => {
     return matchesSearch && matchesSquad && matchesRole;
   });
 
-  // Released vs Locked stats
+  // Released vs Locked vs Hidden stats
   const totalCertsCount = (certificates || []).length;
   const releasedCertsCount = (certificates || []).filter(c => !c.isLocked).length;
-  const lockedCertsCount = (certificates || []).filter(c => c.isLocked).length;
+  const lockedVisibleCount = (certificates || []).filter(c => c.isLocked && !c.isHidden).length;
+  const lockedHiddenCount = (certificates || []).filter(c => c.isLocked && c.isHidden).length;
 
   // Member's own documents (for member/intern view)
   const myCertificates = (certificates || []).filter(c => c.memberId === currentUser.id);
   const myReleasedCerts = myCertificates.filter(c => !c.isLocked);
-  const myLockedCerts = myCertificates.filter(c => c.isLocked);
+  const myLockedVisibleCerts = myCertificates.filter(c => c.isLocked && !c.isHidden);
 
   return (
     <div className="max-w-7xl mx-auto space-y-8 animate-in fade-in duration-300">
@@ -203,7 +289,7 @@ export const CertificateManager: React.FC = () => {
           </h1>
           <p className="text-xs sm:text-sm text-[var(--text-body)] max-w-2xl leading-relaxed">
             {isManagement
-              ? 'Upload, attach, and govern official Google Drive offer letters, internship certificates, and credentials. Documents remain securely locked until released to member portals.'
+              ? 'Upload PDF certificates, attach Google Drive offer letters, and govern member credentials. Control whether documents are Released, Locked (visible as Pending), or Completely Hidden.'
               : 'Access, view, and download your official DigiHust verified offer letters, experience certificates, and credentials.'}
           </p>
         </div>
@@ -214,8 +300,8 @@ export const CertificateManager: React.FC = () => {
               onClick={() => handleOpenAttachModal(users[0] || currentUser, 'offer_letter')}
               className="flex items-center space-x-2 px-5 py-3 rounded-2xl bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-white text-xs font-bold shadow-lg hover:shadow-xl transition-all cursor-pointer"
             >
-              <Plus className="w-4 h-4" />
-              <span>Attach Google Drive Doc</span>
+              <UploadCloud className="w-4 h-4" />
+              <span>Upload / Attach Document</span>
             </button>
           </div>
         )}
@@ -230,19 +316,21 @@ export const CertificateManager: React.FC = () => {
             <div className="text-[10px] text-[var(--text-muted)]">Verified member identities</div>
           </div>
           <div className="p-5 rounded-2xl bg-[var(--bg-surface)] border border-[var(--border-subtle)]">
-            <div className="text-[11px] font-bold uppercase text-[var(--text-muted)] mb-1">Linked Documents</div>
+            <div className="text-[11px] font-bold uppercase text-[var(--text-muted)] mb-1">Total Uploaded Docs</div>
             <div className="font-display font-black text-2xl text-[var(--text-heading)]">{totalCertsCount}</div>
-            <div className="text-[10px] text-[var(--text-muted)]">Google Drive credentials</div>
+            <div className="text-[10px] text-[var(--text-muted)]">Verified files & Drive links</div>
           </div>
           <div className="p-5 rounded-2xl bg-[var(--bg-surface)] border border-[var(--border-subtle)]">
-            <div className="text-[11px] font-bold uppercase text-emerald-400 mb-1">Released to Portal</div>
+            <div className="text-[11px] font-bold uppercase text-emerald-400 mb-1">Released to Portal (🔓)</div>
             <div className="font-display font-black text-2xl text-emerald-400">{releasedCertsCount}</div>
             <div className="text-[10px] text-[var(--text-muted)]">Unlocked & downloadable</div>
           </div>
           <div className="p-5 rounded-2xl bg-[var(--bg-surface)] border border-[var(--border-subtle)]">
-            <div className="text-[11px] font-bold uppercase text-amber-400 mb-1">Locked / Under Review</div>
-            <div className="font-display font-black text-2xl text-amber-400">{lockedCertsCount}</div>
-            <div className="text-[10px] text-[var(--text-muted)]">Held by Management</div>
+            <div className="text-[11px] font-bold uppercase text-amber-400 mb-1">Locked / Held (🔒)</div>
+            <div className="font-display font-black text-2xl text-amber-400">
+              {lockedVisibleCount} <span className="text-xs font-normal text-purple-400">({lockedHiddenCount} hidden)</span>
+            </div>
+            <div className="text-[10px] text-[var(--text-muted)]">Pending Executive release</div>
           </div>
         </div>
       )}
@@ -265,12 +353,12 @@ export const CertificateManager: React.FC = () => {
               </span>
             </div>
 
-            {myReleasedCerts.length === 0 && myLockedCerts.length === 0 ? (
+            {myReleasedCerts.length === 0 && myLockedVisibleCerts.length === 0 ? (
               <div className="p-12 text-center rounded-2xl bg-[var(--bg-page)] border border-[var(--border-subtle)] space-y-3">
                 <Award className="w-12 h-12 text-[var(--text-muted)] mx-auto opacity-40" />
                 <h3 className="font-bold text-sm text-[var(--text-heading)]">No Credentials Issued Yet</h3>
-                <p className="text-xs text-[var(--text-muted)] max-w-md mx-auto">
-                  Once DigiHust Management releases your official Internship Offer Letter, Completion Certificate, or Experience Document, it will appear here with instant Google Drive PDF download.
+                <p className="text-xs text-[var(--text-muted)] max-w-md mx-auto leading-relaxed">
+                  Once DigiHust Management uploads and releases your official Internship Offer Letter, Completion Certificate, or Experience Document, it will appear here with an instant download button.
                 </p>
               </div>
             ) : (
@@ -279,75 +367,82 @@ export const CertificateManager: React.FC = () => {
                 {myReleasedCerts.map((cert) => (
                   <div
                     key={cert.id}
-                    className="p-6 rounded-2xl bg-[var(--bg-page)] border-2 border-emerald-500/30 hover:border-emerald-500/60 shadow-lg space-y-4 transition-all"
+                    className="p-6 rounded-2xl bg-[var(--bg-page)] border-2 border-emerald-500/30 hover:border-emerald-500/60 shadow-lg space-y-4 transition-all flex flex-col justify-between"
                   >
-                    <div className="flex items-center justify-between">
-                      <span className="px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 flex items-center gap-1.5">
-                        <CheckCircle2 className="w-3.5 h-3.5" />
-                        <span>RELEASED & VERIFIED</span>
-                      </span>
-                      <span className="text-[10px] font-mono text-[var(--text-muted)]">
-                        Issued: {cert.issuedDate}
-                      </span>
-                    </div>
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <span className="px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 flex items-center gap-1.5">
+                          <CheckCircle2 className="w-3.5 h-3.5" />
+                          <span>VERIFIED & RELEASED (🔓)</span>
+                        </span>
+                        <span className="text-[10px] font-mono text-[var(--text-muted)]">
+                          Issued: {cert.issuedDate}
+                        </span>
+                      </div>
 
-                    <div>
-                      <h4 className="font-display font-black text-base text-[var(--text-heading)] mb-1">
-                        {cert.documentTitle || cert.type.replace('_', ' ').toUpperCase()}
-                      </h4>
-                      <p className="text-xs text-[var(--text-body)]">
-                        {cert.roleTitle} · {cert.durationText || 'Verified Period'}
-                      </p>
+                      <div>
+                        <h4 className="font-display font-black text-base text-[var(--text-heading)] mb-1">
+                          {cert.documentTitle || cert.type.replace('_', ' ').toUpperCase()}
+                        </h4>
+                        <p className="text-xs text-[var(--text-body)]">
+                          Role: <strong className="text-[var(--text-heading)]">{cert.roleTitle}</strong> · {cert.durationText || 'Verified Track'}
+                        </p>
+                      </div>
                     </div>
 
                     <div className="pt-3 border-t border-[var(--border-subtle)] flex flex-wrap items-center justify-between gap-2">
                       <span className="text-[10px] text-[var(--text-muted)] font-mono">
                         ID: {cert.id}
                       </span>
-                      {cert.driveUrl && (
+                      {cert.driveUrl ? (
                         <a
                           href={cert.driveUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="flex items-center space-x-1.5 px-4 py-2 rounded-xl bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-white text-xs font-bold shadow-md transition-all cursor-pointer"
+                          download={cert.documentTitle ? `${cert.documentTitle.replace(/\s+/g, '_')}.pdf` : 'DigiHust_Credential.pdf'}
+                          className="flex items-center space-x-2 px-4 py-2.5 rounded-xl bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-white text-xs font-bold shadow-md transition-all cursor-pointer"
                         >
-                          <Download className="w-3.5 h-3.5" />
-                          <span>Download / Open PDF</span>
-                          <ExternalLink className="w-3 h-3 ml-0.5" />
+                          <Download className="w-4 h-4" />
+                          <span>Download PDF</span>
+                          <ExternalLink className="w-3.5 h-3.5 opacity-70" />
                         </a>
+                      ) : (
+                        <span className="text-xs text-[var(--text-muted)] font-medium">Ready for download</span>
                       )}
                     </div>
                   </div>
                 ))}
 
-                {/* Locked / Under Review Documents */}
-                {myLockedCerts.map((cert) => (
+                {/* Locked / Visible Documents */}
+                {myLockedVisibleCerts.map((cert) => (
                   <div
                     key={cert.id}
-                    className="p-6 rounded-2xl bg-[var(--bg-page)] border-2 border-amber-500/30 opacity-80 space-y-4"
+                    className="p-6 rounded-2xl bg-[var(--bg-page)] border-2 border-amber-500/30 opacity-85 space-y-4 flex flex-col justify-between"
                   >
-                    <div className="flex items-center justify-between">
-                      <span className="px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-amber-500/15 text-amber-400 border border-amber-500/30 flex items-center gap-1.5">
-                        <Lock className="w-3.5 h-3.5" />
-                        <span>LOCKED / UNDER REVIEW</span>
-                      </span>
-                      <span className="text-[10px] font-mono text-[var(--text-muted)]">
-                        Pending Release
-                      </span>
-                    </div>
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <span className="px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-amber-500/15 text-amber-400 border border-amber-500/30 flex items-center gap-1.5">
+                          <Lock className="w-3.5 h-3.5" />
+                          <span>LOCKED / UNDER MANAGEMENT REVIEW</span>
+                        </span>
+                        <span className="text-[10px] font-mono text-[var(--text-muted)]">
+                          Pending Release
+                        </span>
+                      </div>
 
-                    <div>
-                      <h4 className="font-display font-bold text-base text-[var(--text-heading)] mb-1">
-                        {cert.documentTitle || 'Credential Document'}
-                      </h4>
-                      <p className="text-xs text-[var(--text-muted)]">
-                        This document has been prepared by Management and will unlock once final evaluation is complete.
-                      </p>
+                      <div>
+                        <h4 className="font-display font-bold text-base text-[var(--text-heading)] mb-1">
+                          {cert.documentTitle || 'Credential Document'}
+                        </h4>
+                        <p className="text-xs text-[var(--text-muted)] leading-relaxed">
+                          This official document has been prepared by DigiHust Management and will unlock for download once executive review is complete.
+                        </p>
+                      </div>
                     </div>
 
                     <div className="pt-3 border-t border-[var(--border-subtle)] text-[11px] text-amber-400 font-semibold flex items-center gap-1.5">
                       <Lock className="w-3.5 h-3.5" />
-                      <span>Download link will become active upon release.</span>
+                      <span>Download link will activate upon release by CEO.</span>
                     </div>
                   </div>
                 ))}
@@ -418,6 +513,7 @@ export const CertificateManager: React.FC = () => {
                     const memberCerts = (certificates || []).filter(c => c.memberId === member.id);
                     const offerLetter = memberCerts.find(c => c.type === 'offer_letter');
                     const expCert = memberCerts.find(c => c.type === 'internship_certificate' || c.type === 'experience_certificate' || c.type === 'completion_certificate');
+                    const otherCerts = memberCerts.filter(c => c.id !== offerLetter?.id && c.id !== expCert?.id);
                     const squadObj = groups.find(g => g.id === member.groupId);
 
                     return (
@@ -460,7 +556,8 @@ export const CertificateManager: React.FC = () => {
                         <td className="py-4 px-4">
                           {offerLetter ? (
                             <div className="space-y-1.5">
-                              <div className="flex items-center gap-2">
+                              <div className="flex items-center gap-1.5">
+                                {/* Lock Toggle */}
                                 <button
                                   onClick={() => toggleCertificateLock(offerLetter.id, !offerLetter.isLocked)}
                                   className={`px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider flex items-center gap-1 cursor-pointer transition-all ${
@@ -474,22 +571,39 @@ export const CertificateManager: React.FC = () => {
                                   <span>{offerLetter.isLocked ? 'LOCKED' : 'RELEASED'}</span>
                                 </button>
 
+                                {/* Visibility Toggle (if locked) */}
+                                {offerLetter.isLocked && (
+                                  <button
+                                    onClick={() => toggleCertificateHidden(offerLetter.id, !offerLetter.isHidden)}
+                                    className={`p-1 rounded-lg transition-all cursor-pointer ${
+                                      offerLetter.isHidden 
+                                        ? 'bg-purple-500/15 text-purple-400 border border-purple-500/30' 
+                                        : 'hover:bg-[var(--bg-subtle)] text-[var(--text-muted)]'
+                                    }`}
+                                    title={offerLetter.isHidden ? 'Currently Completely Hidden (Click to make visible as Pending)' : 'Visible to member as Pending (Click to Hide)'}
+                                  >
+                                    {offerLetter.isHidden ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                                  </button>
+                                )}
+
+                                {/* Download / Open File */}
                                 {offerLetter.driveUrl && (
                                   <a
                                     href={offerLetter.driveUrl}
                                     target="_blank"
                                     rel="noopener noreferrer"
+                                    download={`${offerLetter.documentTitle || 'Offer_Letter'}.pdf`}
                                     className="p-1 rounded-lg hover:bg-[var(--bg-subtle)] text-[var(--brand-teal)]"
-                                    title="Open Google Drive File"
+                                    title="Open / Download Document"
                                   >
-                                    <ExternalLink className="w-3.5 h-3.5" />
+                                    <Download className="w-3.5 h-3.5" />
                                   </a>
                                 )}
 
                                 <button
                                   onClick={() => handleOpenEditModal(offerLetter)}
                                   className="p-1 rounded-lg hover:bg-[var(--bg-subtle)] text-[var(--text-muted)] hover:text-[var(--text-heading)]"
-                                  title="Edit Drive Link"
+                                  title="Edit Document / Replace File"
                                 >
                                   <Edit3 className="w-3.5 h-3.5" />
                                 </button>
@@ -504,7 +618,7 @@ export const CertificateManager: React.FC = () => {
                               className="px-2.5 py-1.5 rounded-xl border border-dashed border-[var(--border-subtle)] hover:border-[var(--brand-teal)] text-[var(--text-muted)] hover:text-[var(--brand-teal)] text-[11px] font-semibold flex items-center gap-1 transition-colors cursor-pointer"
                             >
                               <Plus className="w-3 h-3" />
-                              <span>Attach Offer</span>
+                              <span>Upload Offer</span>
                             </button>
                           )}
                         </td>
@@ -513,7 +627,8 @@ export const CertificateManager: React.FC = () => {
                         <td className="py-4 px-4">
                           {expCert ? (
                             <div className="space-y-1.5">
-                              <div className="flex items-center gap-2">
+                              <div className="flex items-center gap-1.5">
+                                {/* Lock Toggle */}
                                 <button
                                   onClick={() => toggleCertificateLock(expCert.id, !expCert.isLocked)}
                                   className={`px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider flex items-center gap-1 cursor-pointer transition-all ${
@@ -527,22 +642,39 @@ export const CertificateManager: React.FC = () => {
                                   <span>{expCert.isLocked ? 'LOCKED' : 'RELEASED'}</span>
                                 </button>
 
+                                {/* Visibility Toggle (if locked) */}
+                                {expCert.isLocked && (
+                                  <button
+                                    onClick={() => toggleCertificateHidden(expCert.id, !expCert.isHidden)}
+                                    className={`p-1 rounded-lg transition-all cursor-pointer ${
+                                      expCert.isHidden 
+                                        ? 'bg-purple-500/15 text-purple-400 border border-purple-500/30' 
+                                        : 'hover:bg-[var(--bg-subtle)] text-[var(--text-muted)]'
+                                    }`}
+                                    title={expCert.isHidden ? 'Currently Completely Hidden (Click to make visible as Pending)' : 'Visible to member as Pending (Click to Hide)'}
+                                  >
+                                    {expCert.isHidden ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                                  </button>
+                                )}
+
+                                {/* Download / Open File */}
                                 {expCert.driveUrl && (
                                   <a
                                     href={expCert.driveUrl}
                                     target="_blank"
                                     rel="noopener noreferrer"
+                                    download={`${expCert.documentTitle || 'Certificate'}.pdf`}
                                     className="p-1 rounded-lg hover:bg-[var(--bg-subtle)] text-[var(--brand-teal)]"
-                                    title="Open Google Drive File"
+                                    title="Open / Download Document"
                                   >
-                                    <ExternalLink className="w-3.5 h-3.5" />
+                                    <Download className="w-3.5 h-3.5" />
                                   </a>
                                 )}
 
                                 <button
                                   onClick={() => handleOpenEditModal(expCert)}
                                   className="p-1 rounded-lg hover:bg-[var(--bg-subtle)] text-[var(--text-muted)] hover:text-[var(--text-heading)]"
-                                  title="Edit Drive Link"
+                                  title="Edit Document / Replace File"
                                 >
                                   <Edit3 className="w-3.5 h-3.5" />
                                 </button>
@@ -557,19 +689,26 @@ export const CertificateManager: React.FC = () => {
                               className="px-2.5 py-1.5 rounded-xl border border-dashed border-[var(--border-subtle)] hover:border-[var(--brand-teal)] text-[var(--text-muted)] hover:text-[var(--brand-teal)] text-[11px] font-semibold flex items-center gap-1 transition-colors cursor-pointer"
                             >
                               <Plus className="w-3 h-3" />
-                              <span>Attach Certificate</span>
+                              <span>Upload Certificate</span>
                             </button>
                           )}
                         </td>
 
-                        {/* Actions */}
+                        {/* Actions & Other Attached Documents */}
                         <td className="py-4 px-4 sm:px-6 text-right">
-                          <button
-                            onClick={() => handleOpenAttachModal(member, 'other')}
-                            className="px-3 py-1.5 rounded-xl bg-[var(--bg-page)] hover:bg-[var(--brand-teal)] text-[var(--text-heading)] hover:text-white border border-[var(--border-subtle)] text-[11px] font-bold transition-all cursor-pointer"
-                          >
-                            + Attach Other
-                          </button>
+                          <div className="flex items-center justify-end gap-2">
+                            {otherCerts.length > 0 && (
+                              <span className="text-[10px] font-bold text-[var(--brand-teal)] bg-[var(--brand-teal-subtle)] px-2 py-0.5 rounded-full border border-[var(--border-subtle)]">
+                                +{otherCerts.length} more
+                              </span>
+                            )}
+                            <button
+                              onClick={() => handleOpenAttachModal(member, 'other')}
+                              className="px-3 py-1.5 rounded-xl bg-[var(--bg-page)] hover:bg-[var(--brand-teal)] text-[var(--text-heading)] hover:text-white border border-[var(--border-subtle)] text-[11px] font-bold transition-all cursor-pointer"
+                            >
+                              + Upload More
+                            </button>
+                          </div>
                         </td>
 
                       </tr>
@@ -582,7 +721,7 @@ export const CertificateManager: React.FC = () => {
         </div>
       )}
 
-      {/* ── MODAL: ATTACH GOOGLE DRIVE DOCUMENTS (MULTI-DOCUMENT & RESPONSIVE) ── */}
+      {/* ── MODAL: UPLOAD & ATTACH DOCUMENTS (MULTI-DOCUMENT, DIRECT FILE & DRIVE LINK) ── */}
       {attachModalOpen && selectedMemberForAttach && (
         <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
           <div className="bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-3xl p-5 sm:p-7 max-w-3xl w-full shadow-2xl animate-in fade-in zoom-in-95 my-auto max-h-[92vh] flex flex-col justify-between space-y-4">
@@ -591,14 +730,14 @@ export const CertificateManager: React.FC = () => {
             <div className="flex items-center justify-between pb-3 border-b border-[var(--border-subtle)] flex-shrink-0">
               <div className="flex items-center space-x-2.5">
                 <div className="p-2 rounded-xl bg-[var(--brand-teal-subtle)] text-[var(--brand-teal)] border border-[var(--border-subtle)]">
-                  <Award className="w-5 h-5" />
+                  <UploadCloud className="w-5 h-5" />
                 </div>
                 <div>
                   <h3 className="font-display font-black text-base sm:text-lg text-[var(--text-heading)]">
-                    Attach Google Drive Credentials & Letters
+                    Upload & Attach Member Documents
                   </h3>
                   <p className="text-[11px] text-[var(--text-muted)]">
-                    Upload multiple verified Google Drive documents for this specialist.
+                    Upload PDF files directly or paste Google Drive links. Set release & visibility status.
                   </p>
                 </div>
               </div>
@@ -631,7 +770,7 @@ export const CertificateManager: React.FC = () => {
                 </div>
               </div>
               <span className="text-[11px] font-bold text-[var(--text-muted)] hidden sm:inline">
-                {docEntries.length} {docEntries.length === 1 ? 'document' : 'documents'} queue
+                {docEntries.length} {docEntries.length === 1 ? 'document' : 'documents'} in queue
               </span>
             </div>
 
@@ -724,7 +863,7 @@ export const CertificateManager: React.FC = () => {
                                 title: val ? `${val} — DigiHust` : entry.title 
                               });
                             }}
-                            placeholder="e.g. Recommendation Letter, Course Diploma, Award..."
+                            placeholder="e.g. Recommendation Letter, Diploma..."
                             className="w-full bg-[var(--bg-surface)] border-2 border-purple-500/40 rounded-xl px-3 py-2 text-xs text-[var(--text-heading)] focus:border-purple-500 focus:outline-none"
                           />
                         </div>
@@ -744,82 +883,109 @@ export const CertificateManager: React.FC = () => {
                       )}
                     </div>
 
-                    {/* Document Title & Optional Custom Category Duration */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      <div>
-                        <label className="block text-[11px] font-bold uppercase tracking-wider text-[var(--text-muted)] mb-1">
-                          Document Title *
+                    {/* Document Title */}
+                    <div>
+                      <label className="block text-[11px] font-bold uppercase tracking-wider text-[var(--text-muted)] mb-1">
+                        Document Title *
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        value={entry.title}
+                        onChange={(e) => handleUpdateEntry(entry.id, { title: e.target.value })}
+                        placeholder="e.g. DigiHust Internship Offer Letter"
+                        className="w-full bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs text-[var(--text-heading)]"
+                      />
+                    </div>
+
+                    {/* Input Method Toggle (Option C: File Upload vs Google Drive URL) */}
+                    <div>
+                      <div className="flex items-center justify-between mb-1.5">
+                        <label className="block text-[11px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
+                          Document Source *
                         </label>
-                        <input
-                          type="text"
-                          required
-                          value={entry.title}
-                          onChange={(e) => handleUpdateEntry(entry.id, { title: e.target.value })}
-                          placeholder="e.g. DigiHust Internship Offer Letter"
-                          className="w-full bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs text-[var(--text-heading)]"
-                        />
+                        <div className="flex items-center space-x-1 bg-[var(--bg-surface)] p-0.5 rounded-lg border border-[var(--border-subtle)]">
+                          <button
+                            type="button"
+                            onClick={() => handleUpdateEntry(entry.id, { sourceType: 'file' })}
+                            className={`px-2.5 py-1 rounded-md text-[10px] font-bold transition-all ${
+                              entry.sourceType === 'file' 
+                                ? 'bg-[var(--brand-teal)] text-white shadow-sm' 
+                                : 'text-[var(--text-muted)] hover:text-[var(--text-heading)]'
+                            }`}
+                          >
+                            Upload File (PDF)
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleUpdateEntry(entry.id, { sourceType: 'url' })}
+                            className={`px-2.5 py-1 rounded-md text-[10px] font-bold transition-all ${
+                              entry.sourceType === 'url' 
+                                ? 'bg-[var(--brand-teal)] text-white shadow-sm' 
+                                : 'text-[var(--text-muted)] hover:text-[var(--text-heading)]'
+                            }`}
+                          >
+                            Google Drive / Web URL
+                          </button>
+                        </div>
                       </div>
 
-                      {entry.type === 'other' && (
-                        <div>
-                          <label className="block text-[11px] font-bold uppercase tracking-wider text-[var(--text-muted)] mb-1">
-                            Duration / Track Period
+                      {entry.sourceType === 'file' ? (
+                        <div className="p-3 rounded-xl border-2 border-dashed border-[var(--border-subtle)] hover:border-[var(--brand-teal)] bg-[var(--bg-surface)] transition-all">
+                          <label className="flex flex-col items-center justify-center cursor-pointer space-y-1">
+                            <UploadCloud className="w-6 h-6 text-[var(--brand-teal)]" />
+                            <span className="text-xs font-bold text-[var(--text-heading)]">
+                              {entry.fileName ? entry.fileName : 'Click to select PDF or image file'}
+                            </span>
+                            <span className="text-[10px] text-[var(--text-muted)]">
+                              {entry.fileSize ? `Size: ${entry.fileSize}` : 'Supported: PDF, JPG, PNG (Max 25MB)'}
+                            </span>
+                            <input
+                              type="file"
+                              accept=".pdf,.png,.jpg,.jpeg,.doc,.docx"
+                              onChange={(e) => {
+                                const file = e.target.files?.[0];
+                                if (file) {
+                                  const sizeKb = (file.size / 1024).toFixed(1);
+                                  const sizeMb = (file.size / (1024 * 1024)).toFixed(2);
+                                  handleUpdateEntry(entry.id, {
+                                    file,
+                                    fileName: file.name,
+                                    fileSize: file.size > 1024 * 1024 ? `${sizeMb} MB` : `${sizeKb} KB`
+                                  });
+                                }
+                              }}
+                              className="hidden"
+                            />
                           </label>
-                          <input
-                            type="text"
-                            value={entry.durationText}
-                            onChange={(e) => handleUpdateEntry(entry.id, { durationText: e.target.value })}
-                            placeholder="e.g. 45 Days (Remote), 6 Months"
-                            className="w-full bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs text-[var(--text-heading)]"
-                          />
                         </div>
-                      )}
-
-                      {/* Google Drive Link */}
-                      <div className={entry.type === 'other' ? 'sm:col-span-2' : ''}>
-                        <label className="block text-[11px] font-bold uppercase tracking-wider text-[var(--text-muted)] mb-1">
-                          Google Drive URL *
-                        </label>
+                      ) : (
                         <div className="relative">
                           <Link2 className="w-4 h-4 text-[var(--text-muted)] absolute left-3 top-2.5" />
                           <input
                             type="url"
-                            required
+                            required={entry.sourceType === 'url'}
                             value={entry.driveUrl}
                             onChange={(e) => handleUpdateEntry(entry.id, { driveUrl: e.target.value })}
                             placeholder="https://drive.google.com/file/d/.../view"
                             className="w-full pl-9 pr-3 py-2 bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl text-xs text-[var(--text-heading)] focus:border-[var(--brand-teal)] focus:outline-none"
                           />
                         </div>
-                      </div>
+                      )}
                     </div>
 
-                    {/* Portal Release Status Selector */}
+                    {/* Visibility & Lock Status Selector (Option C: 3 States) */}
                     <div>
-                      <label className="block text-[11px] font-bold uppercase tracking-wider text-[var(--text-muted)] mb-1">
-                        Portal Release Status
+                      <label className="block text-[11px] font-bold uppercase tracking-wider text-[var(--text-muted)] mb-1.5">
+                        Document Release & Visibility Status (CEO Control)
                       </label>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                        {/* 1. Released */}
                         <div
-                          onClick={() => handleUpdateEntry(entry.id, { isLocked: true })}
-                          className={`p-2.5 rounded-xl border transition-all cursor-pointer ${
-                            entry.isLocked
-                              ? 'bg-amber-500/10 border-amber-500/40 text-amber-400 shadow-sm ring-1 ring-amber-500/30'
-                              : 'bg-[var(--bg-surface)] border-[var(--border-subtle)] text-[var(--text-muted)] hover:border-[var(--border-subtle)]'
-                          }`}
-                        >
-                          <div className="flex items-center space-x-1.5 font-bold text-xs mb-0.5">
-                            <Lock className="w-3.5 h-3.5" />
-                            <span>Hold as Locked</span>
-                          </div>
-                          <p className="text-[10px] leading-tight">Held privately by Management until released.</p>
-                        </div>
-
-                        <div
-                          onClick={() => handleUpdateEntry(entry.id, { isLocked: false })}
-                          className={`p-2.5 rounded-xl border transition-all cursor-pointer ${
-                            !entry.isLocked
-                              ? 'bg-emerald-500/10 border-emerald-500/40 text-emerald-400 shadow-sm ring-1 ring-emerald-500/30'
+                          onClick={() => handleUpdateEntry(entry.id, { visibility: 'released' })}
+                          className={`p-3 rounded-xl border transition-all cursor-pointer ${
+                            entry.visibility === 'released'
+                              ? 'bg-emerald-500/10 border-emerald-500/50 text-emerald-400 shadow-sm ring-1 ring-emerald-500/40'
                               : 'bg-[var(--bg-surface)] border-[var(--border-subtle)] text-[var(--text-muted)] hover:border-[var(--border-subtle)]'
                           }`}
                         >
@@ -827,7 +993,39 @@ export const CertificateManager: React.FC = () => {
                             <Unlock className="w-3.5 h-3.5" />
                             <span>Release to Portal</span>
                           </div>
-                          <p className="text-[10px] leading-tight">Immediately downloadable on the member's portal.</p>
+                          <p className="text-[10px] leading-tight">Unlocked & immediately downloadable on member portal.</p>
+                        </div>
+
+                        {/* 2. Locked & Visible */}
+                        <div
+                          onClick={() => handleUpdateEntry(entry.id, { visibility: 'locked_visible' })}
+                          className={`p-3 rounded-xl border transition-all cursor-pointer ${
+                            entry.visibility === 'locked_visible'
+                              ? 'bg-amber-500/10 border-amber-500/50 text-amber-400 shadow-sm ring-1 ring-amber-500/40'
+                              : 'bg-[var(--bg-surface)] border-[var(--border-subtle)] text-[var(--text-muted)] hover:border-[var(--border-subtle)]'
+                          }`}
+                        >
+                          <div className="flex items-center space-x-1.5 font-bold text-xs mb-0.5">
+                            <Lock className="w-3.5 h-3.5" />
+                            <span>Hold as Locked</span>
+                          </div>
+                          <p className="text-[10px] leading-tight">Member sees "Pending Executive Review" badge (cannot download).</p>
+                        </div>
+
+                        {/* 3. Completely Hidden */}
+                        <div
+                          onClick={() => handleUpdateEntry(entry.id, { visibility: 'locked_hidden' })}
+                          className={`p-3 rounded-xl border transition-all cursor-pointer ${
+                            entry.visibility === 'locked_hidden'
+                              ? 'bg-purple-500/10 border-purple-500/50 text-purple-400 shadow-sm ring-1 ring-purple-500/40'
+                              : 'bg-[var(--bg-surface)] border-[var(--border-subtle)] text-[var(--text-muted)] hover:border-[var(--border-subtle)]'
+                          }`}
+                        >
+                          <div className="flex items-center space-x-1.5 font-bold text-xs mb-0.5">
+                            <EyeOff className="w-3.5 h-3.5" />
+                            <span>Completely Hidden</span>
+                          </div>
+                          <p className="text-[10px] leading-tight">100% invisible to member until CEO chooses to release.</p>
                         </div>
                       </div>
                     </div>
@@ -855,6 +1053,7 @@ export const CertificateManager: React.FC = () => {
                 <div className="flex items-center space-x-2">
                   <button
                     type="button"
+                    disabled={isSubmitting}
                     onClick={() => setAttachModalOpen(false)}
                     className="px-4 py-2.5 rounded-xl text-xs font-semibold text-[var(--text-muted)] hover:text-[var(--text-heading)] hover:bg-[var(--bg-subtle)] transition-colors cursor-pointer"
                   >
@@ -862,9 +1061,20 @@ export const CertificateManager: React.FC = () => {
                   </button>
                   <button
                     type="submit"
-                    className="px-5 py-2.5 rounded-xl bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-white text-xs font-bold shadow-md hover:shadow-lg transition-all cursor-pointer"
+                    disabled={isSubmitting}
+                    className="px-5 py-2.5 rounded-xl bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-white text-xs font-bold shadow-md hover:shadow-lg transition-all cursor-pointer flex items-center space-x-2 disabled:opacity-50"
                   >
-                    Attach & Save {docEntries.length} Document(s)
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        <span>Uploading & Syncing...</span>
+                      </>
+                    ) : (
+                      <>
+                        <UploadCloud className="w-4 h-4" />
+                        <span>Attach & Save {docEntries.length} Document(s)</span>
+                      </>
+                    )}
                   </button>
                 </div>
               </div>
@@ -874,13 +1084,14 @@ export const CertificateManager: React.FC = () => {
         </div>
       )}
 
-      {/* ── MODAL: EDIT DRIVE LINK ── */}
+      {/* ── MODAL: EDIT DOCUMENT (TITLE, FILE REPLACEMENT, VISIBILITY) ── */}
       {editModalCert && (
         <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl animate-in fade-in zoom-in-95 space-y-4">
             <div className="flex items-center justify-between pb-3 border-b border-[var(--border-subtle)]">
-              <h3 className="font-bold text-base text-[var(--text-heading)]">
-                Edit Google Drive Link
+              <h3 className="font-bold text-base text-[var(--text-heading)] flex items-center gap-2">
+                <Edit3 className="w-4 h-4 text-[var(--brand-teal)]" />
+                <span>Edit Document / Status</span>
               </h3>
               <button
                 onClick={() => setEditModalCert(null)}
@@ -913,18 +1124,74 @@ export const CertificateManager: React.FC = () => {
                 />
               </div>
 
+              {/* Source Type Selector */}
+              <div>
+                <div className="flex items-center justify-between mb-1">
+                  <label className="block font-bold uppercase tracking-wider text-[var(--text-muted)]">
+                    Document Source
+                  </label>
+                  <div className="flex items-center space-x-1 bg-[var(--bg-page)] p-0.5 rounded-lg border border-[var(--border-subtle)]">
+                    <button
+                      type="button"
+                      onClick={() => setEditSourceType('file')}
+                      className={`px-2 py-0.5 rounded-md text-[10px] font-bold ${
+                        editSourceType === 'file' ? 'bg-[var(--brand-teal)] text-white' : 'text-[var(--text-muted)]'
+                      }`}
+                    >
+                      Upload File
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setEditSourceType('url')}
+                      className={`px-2 py-0.5 rounded-md text-[10px] font-bold ${
+                        editSourceType === 'url' ? 'bg-[var(--brand-teal)] text-white' : 'text-[var(--text-muted)]'
+                      }`}
+                    >
+                      Web / Drive URL
+                    </button>
+                  </div>
+                </div>
+
+                {editSourceType === 'file' ? (
+                  <div className="p-3 rounded-xl border-2 border-dashed border-[var(--border-subtle)] bg-[var(--bg-page)] text-center">
+                    <label className="cursor-pointer space-y-1 block">
+                      <UploadCloud className="w-5 h-5 text-[var(--brand-teal)] mx-auto" />
+                      <span className="text-[11px] font-bold text-[var(--text-heading)] block">
+                        {editFile ? editFile.name : 'Click to replace document file'}
+                      </span>
+                      <input
+                        type="file"
+                        accept=".pdf,.png,.jpg,.jpeg,.doc,.docx"
+                        onChange={(e) => e.target.files?.[0] && setEditFile(e.target.files[0])}
+                        className="hidden"
+                      />
+                    </label>
+                  </div>
+                ) : (
+                  <input
+                    type="url"
+                    value={editDriveUrl}
+                    onChange={(e) => setEditDriveUrl(e.target.value)}
+                    placeholder="https://drive.google.com/file/d/.../view"
+                    className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3.5 py-2 text-[var(--text-heading)]"
+                  />
+                )}
+              </div>
+
+              {/* Status Selector */}
               <div>
                 <label className="block font-bold uppercase tracking-wider text-[var(--text-muted)] mb-1">
-                  Google Drive URL
+                  Status & Member Visibility
                 </label>
-                <input
-                  type="url"
-                  required
-                  value={editDriveUrl}
-                  onChange={(e) => setEditDriveUrl(e.target.value)}
-                  placeholder="https://drive.google.com/file/d/.../view"
-                  className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3.5 py-2 text-[var(--text-heading)]"
-                />
+                <select
+                  value={editVisibility}
+                  onChange={(e) => setEditVisibility(e.target.value as any)}
+                  className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3.5 py-2 text-[var(--text-heading)] font-semibold"
+                >
+                  <option value="released">🔓 Released (Downloadable by Member)</option>
+                  <option value="locked_visible">🔒 Locked (Visible as Pending Review)</option>
+                  <option value="locked_hidden">👁️‍🗨️ Completely Hidden from Member</option>
+                </select>
               </div>
 
               <div className="flex items-center justify-between pt-3 border-t border-[var(--border-subtle)]">
@@ -943,6 +1210,7 @@ export const CertificateManager: React.FC = () => {
                 <div className="flex space-x-2">
                   <button
                     type="button"
+                    disabled={isSubmitting}
                     onClick={() => setEditModalCert(null)}
                     className="px-4 py-2 rounded-xl font-semibold text-[var(--text-muted)]"
                   >
@@ -950,9 +1218,11 @@ export const CertificateManager: React.FC = () => {
                   </button>
                   <button
                     type="submit"
-                    className="px-5 py-2 rounded-xl bg-[var(--brand-teal)] text-white font-bold cursor-pointer"
+                    disabled={isSubmitting}
+                    className="px-5 py-2 rounded-xl bg-[var(--brand-teal)] text-white font-bold cursor-pointer flex items-center gap-1.5"
                   >
-                    Update Link
+                    {isSubmitting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : null}
+                    <span>Save Changes</span>
                   </button>
                 </div>
               </div>

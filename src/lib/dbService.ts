@@ -1,5 +1,5 @@
 import { supabase, isSupabaseConfigured } from './supabase';
-import { User, Lead, Project, Assignment, Certificate, Announcement, SiteContent, SecurityAuditLog, GroupId, PipelineStage, UserRole, UserRoleTier } from '../types';
+import { User, Lead, Project, Assignment, Certificate, Announcement, SiteContent, SecurityAuditLog, Payout, Applicant, GlobalAdminSettings, GroupId, PipelineStage, UserRole, UserRoleTier } from '../types';
 
 export const dbService = {
   // ── 1. Fetch All Initial Application State ──
@@ -17,7 +17,10 @@ export const dbService = {
         certsRes,
         announcementsRes,
         cmsRes,
-        auditsRes
+        auditsRes,
+        payoutsRes,
+        applicantsRes,
+        settingsRes
       ] = await Promise.all([
         supabase.from('users').select('*'),
         supabase.from('leads').select('*').order('created_at', { ascending: false }),
@@ -26,7 +29,10 @@ export const dbService = {
         supabase.from('certificates').select('*').order('created_at', { ascending: false }),
         supabase.from('announcements').select('*').order('created_at', { ascending: false }),
         supabase.from('site_content').select('*').eq('id', 'primary_cms').single(),
-        supabase.from('audit_logs').select('*').order('timestamp', { ascending: false }).limit(200)
+        supabase.from('audit_logs').select('*').order('timestamp', { ascending: false }).limit(200),
+        supabase.from('payouts').select('*').order('paid_at', { ascending: false }),
+        supabase.from('applicants').select('*').order('applied_at', { ascending: false }),
+        supabase.from('settings').select('*').eq('id', 'global').single()
       ]);
 
       return {
@@ -38,10 +44,24 @@ export const dbService = {
         announcements: announcementsRes.data ? announcementsRes.data.map(mapAnnouncementFromDb) : null,
         siteContent: cmsRes.data?.data as SiteContent | null,
         auditLogs: auditsRes.data ? (auditsRes.data as SecurityAuditLog[]) : null,
+        payouts: payoutsRes.data ? payoutsRes.data.map(mapPayoutFromDb) : null,
+        applicants: applicantsRes.data ? applicantsRes.data.map(mapApplicantFromDb) : null,
+        settings: settingsRes.data ? mapSettingsFromDb(settingsRes.data) : null,
       };
     } catch (err) {
       console.warn('Supabase fetch failed, falling back to local store:', err);
       return null;
+    }
+  },
+
+  // ── Get cloud user count for safe Member ID generation ──
+  async getCloudUserCount(): Promise<number> {
+    if (!isSupabaseConfigured || !supabase) return 0;
+    try {
+      const { count } = await supabase.from('users').select('id', { count: 'exact', head: true });
+      return count || 0;
+    } catch {
+      return 0;
     }
   },
 
@@ -57,12 +77,12 @@ export const dbService = {
         name: user.name,
         email: user.email,
         role: user.role,
-        role_tier: user.roleTier || user.role,
-        group_id: user.groupId,
-        title: user.title,
-        avatar_url: user.avatarUrl,
+        role_tier: user.roleTier || (user.role === 'management' ? 'manager' : (user.role === 'group_leader' ? 'group_leader' : (user.role === 'intern' ? 'intern' : 'member'))),
+        group_id: user.groupId || null,
+        title: user.title || 'Specialist',
+        avatar_url: user.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || 'User')}&background=1F7A8C&color=fff`,
         specialties: user.specialties || [],
-        status: user.status,
+        status: user.status || 'active',
         join_year: user.joinYear || 2026,
         bio: user.bio || '',
         phone: user.phone || '',
@@ -127,6 +147,37 @@ export const dbService = {
       console.error('Base64 migration failed:', err);
       return null;
     }
+  },
+
+  // ── Upload Certificate / Offer Letter PDF to Supabase Storage ──
+  // Returns the permanent public URL, or Base64 data URL on fallback.
+  async uploadDocument(memberId: string, certId: string, file: File): Promise<string | null> {
+    if (isSupabaseConfigured && supabase) {
+      try {
+        const ext = file.name.split('.').pop()?.toLowerCase() || 'pdf';
+        const cleanMemberId = (memberId || 'general').replace(/[^a-zA-Z0-9_-]/g, '_');
+        const cleanCertId = (certId || `doc-${Date.now()}`).replace(/[^a-zA-Z0-9_-]/g, '_');
+        const path = `${cleanMemberId}/${cleanCertId}.${ext}`;
+        const { error } = await supabase.storage
+          .from('documents')
+          .upload(path, file, { upsert: true, contentType: file.type || 'application/pdf' });
+        if (!error) {
+          const { data } = supabase.storage.from('documents').getPublicUrl(path);
+          return `${data.publicUrl}?t=${Date.now()}`;
+        }
+        console.warn('Storage upload note (falling back to embedded file URL):', error.message);
+      } catch (err) {
+        console.warn('Storage upload error, falling back to embedded file URL:', err);
+      }
+    }
+
+    // Fallback to Data URL
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = () => resolve(null);
+      reader.readAsDataURL(file);
+    });
   },
 
   // ── 3. Leads CRUD ──
@@ -268,7 +319,16 @@ export const dbService = {
   async upsertCertificate(cert: Certificate) {
     if (!isSupabaseConfigured || !supabase) return;
     try {
-      await supabase.from('certificates').upsert({
+      const mergedPdfConfig = {
+        ...(cert.pdfConfig || {}),
+        driveUrl: cert.driveUrl,
+        isLocked: cert.isLocked !== undefined ? cert.isLocked : true,
+        isHidden: Boolean(cert.isHidden),
+        releasedAt: cert.releasedAt,
+        notes: cert.notes
+      };
+
+      const { error } = await supabase.from('certificates').upsert({
         id: cert.id,
         template_id: cert.templateId,
         member_id: cert.memberId,
@@ -296,9 +356,10 @@ export const dbService = {
         contact_email: cert.contactEmail || 'contact@digihust.com',
         contact_phone: cert.contactPhone || '+92 300 1234567',
         contact_address: cert.contactAddress || 'Islamabad / Global Remote Operations',
-        pdf_config: cert.pdfConfig,
+        pdf_config: mergedPdfConfig,
         created_at: cert.issuedDate ? new Date(cert.issuedDate).toISOString() : new Date().toISOString()
       });
+      if (error) console.error('Failed to upsert certificate in Supabase:', error.message);
     } catch (err) {
       console.error('Failed to upsert certificate in Supabase:', err);
     }
@@ -375,6 +436,109 @@ export const dbService = {
       });
     } catch (err) {
       console.error('Failed to insert audit log in Supabase:', err);
+    }
+  },
+
+  // ── 10. Payouts CRUD ──
+  async upsertPayout(payout: Payout) {
+    if (!isSupabaseConfigured || !supabase) return;
+    try {
+      const { error } = await supabase.from('payouts').upsert({
+        id: payout.id,
+        project_id: payout.projectId || '',
+        project_title: payout.projectTitle || '',
+        user_id: payout.userId || '',
+        user_name: payout.userName || '',
+        user_role: payout.userRole || 'freelancer',
+        group_name: payout.groupName || '',
+        role_description: payout.roleDescription || '',
+        amount: payout.amount || 0,
+        share_pct: payout.sharePct || 0,
+        paid_at: payout.paidAt || new Date().toISOString()
+      });
+      if (error) console.error('Failed to upsert payout:', error.message);
+    } catch (err) {
+      console.error('Failed to upsert payout in Supabase:', err);
+    }
+  },
+
+  async deletePayout(payoutId: string) {
+    if (!isSupabaseConfigured || !supabase) return;
+    try {
+      await supabase.from('payouts').delete().eq('id', payoutId);
+    } catch (err) {
+      console.error('Failed to delete payout in Supabase:', err);
+    }
+  },
+
+  // ── 11. Applicants CRUD ──
+  async upsertApplicant(applicant: Applicant) {
+    if (!isSupabaseConfigured || !supabase) return;
+    try {
+      const { error } = await supabase.from('applicants').upsert({
+        id: applicant.id,
+        name: applicant.name || '',
+        email: applicant.email || '',
+        phone: applicant.phone || '',
+        preferred_group_id: applicant.preferredGroupId || 'tech',
+        specialties: applicant.specialties || [],
+        portfolio_url: applicant.portfolioUrl || null,
+        digiskill_id: applicant.digiskillId || null,
+        years_of_experience: applicant.yearsOfExperience || 0,
+        bio: applicant.bio || '',
+        applied_at: applicant.appliedAt || new Date().toISOString(),
+        status: applicant.status || 'pending',
+        rejection_reason: applicant.rejectionReason || null,
+        follow_up_notes: applicant.followUpNotes || null
+      });
+      if (error) console.error('Failed to upsert applicant:', error.message);
+    } catch (err) {
+      console.error('Failed to upsert applicant in Supabase:', err);
+    }
+  },
+
+  async updateApplicantStatus(applicantId: string, status: Applicant['status'], extra?: { rejectionReason?: string; followUpNotes?: string }) {
+    if (!isSupabaseConfigured || !supabase) return;
+    try {
+      await supabase.from('applicants').update({
+        status,
+        rejection_reason: extra?.rejectionReason || null,
+        follow_up_notes: extra?.followUpNotes || null
+      }).eq('id', applicantId);
+    } catch (err) {
+      console.error('Failed to update applicant status in Supabase:', err);
+    }
+  },
+
+  async deleteApplicant(applicantId: string) {
+    if (!isSupabaseConfigured || !supabase) return;
+    try {
+      await supabase.from('applicants').delete().eq('id', applicantId);
+    } catch (err) {
+      console.error('Failed to delete applicant in Supabase:', err);
+    }
+  },
+
+  // ── 12. Global Settings ──
+  async saveSettings(settings: GlobalAdminSettings) {
+    if (!isSupabaseConfigured || !supabase) return;
+    try {
+      const { error } = await supabase.from('settings').upsert({
+        id: 'global',
+        default_management_split_pct: settings.defaultManagementSplitPct,
+        default_leader_split_pct: settings.defaultLeaderSplitPct,
+        default_freelancer_split_pct: settings.defaultFreelancerSplitPct,
+        auto_approve_leads: settings.autoApproveLeads,
+        payout_hold_days: settings.payoutHoldDays,
+        allow_independent_lead_gen: settings.allowIndependentLeadGen,
+        default_lead_gen_pct: settings.defaultLeadGenPct,
+        min_freelancers_per_project: settings.minFreelancersPerProject,
+        max_active_projects_per_freelancer: settings.maxActiveProjectsPerFreelancer,
+        updated_at: new Date().toISOString()
+      });
+      if (error) console.error('Failed to save settings:', error.message);
+    } catch (err) {
+      console.error('Failed to save settings in Supabase:', err);
     }
   }
 };
@@ -496,6 +660,7 @@ function mapAssignmentFromDb(row: any): Assignment {
 }
 
 function mapCertFromDb(row: any): Certificate {
+  const pdfConf = (row.pdf_config && typeof row.pdf_config === 'object') ? row.pdf_config : {};
   return {
     id: row.id,
     templateId: row.template_id,
@@ -524,7 +689,13 @@ function mapCertFromDb(row: any): Certificate {
     contactEmail: row.contact_email,
     contactPhone: row.contact_phone,
     contactAddress: row.contact_address,
-    pdfConfig: row.pdf_config
+    pdfConfig: row.pdf_config,
+    // Custom cloud properties stored in pdf_config
+    driveUrl: pdfConf.driveUrl || row.drive_url || undefined,
+    isLocked: pdfConf.isLocked !== undefined ? Boolean(pdfConf.isLocked) : true,
+    isHidden: Boolean(pdfConf.isHidden),
+    releasedAt: pdfConf.releasedAt || undefined,
+    notes: pdfConf.notes || undefined
   };
 }
 
@@ -544,3 +715,51 @@ function mapAnnouncementFromDb(row: any): Announcement {
   };
 }
 
+function mapPayoutFromDb(row: any): Payout {
+  return {
+    id: row.id,
+    projectId: row.project_id || '',
+    projectTitle: row.project_title || '',
+    userId: row.user_id || '',
+    userName: row.user_name || '',
+    userRole: (row.user_role as UserRole) || 'freelancer',
+    groupName: row.group_name || '',
+    roleDescription: row.role_description || '',
+    amount: Number(row.amount || 0),
+    sharePct: Number(row.share_pct || 0),
+    paidAt: row.paid_at || new Date().toISOString()
+  };
+}
+
+function mapApplicantFromDb(row: any): Applicant {
+  return {
+    id: row.id,
+    name: row.name || '',
+    email: row.email || '',
+    phone: row.phone || '',
+    preferredGroupId: (row.preferred_group_id as GroupId) || 'tech',
+    specialties: Array.isArray(row.specialties) ? row.specialties : [],
+    portfolioUrl: row.portfolio_url || undefined,
+    digiskillId: row.digiskill_id || undefined,
+    yearsOfExperience: Number(row.years_of_experience || 0),
+    bio: row.bio || '',
+    appliedAt: row.applied_at || new Date().toISOString(),
+    status: (row.status as Applicant['status']) || 'pending',
+    rejectionReason: row.rejection_reason || undefined,
+    followUpNotes: row.follow_up_notes || undefined
+  };
+}
+
+function mapSettingsFromDb(row: any): GlobalAdminSettings {
+  return {
+    defaultManagementSplitPct: Number(row.default_management_split_pct ?? 20),
+    defaultLeaderSplitPct: Number(row.default_leader_split_pct ?? 20),
+    defaultFreelancerSplitPct: Number(row.default_freelancer_split_pct ?? 60),
+    autoApproveLeads: Boolean(row.auto_approve_leads ?? false),
+    payoutHoldDays: Number(row.payout_hold_days ?? 7),
+    allowIndependentLeadGen: Boolean(row.allow_independent_lead_gen ?? true),
+    defaultLeadGenPct: Number(row.default_lead_gen_pct ?? 15),
+    minFreelancersPerProject: Number(row.min_freelancers_per_project ?? 1),
+    maxActiveProjectsPerFreelancer: Number(row.max_active_projects_per_freelancer ?? 5)
+  };
+}
