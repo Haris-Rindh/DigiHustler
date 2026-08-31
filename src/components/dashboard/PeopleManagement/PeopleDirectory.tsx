@@ -34,7 +34,7 @@ export const PeopleDirectory: React.FC<PeopleDirectoryProps> = ({
   onSelectUser,
   onOpenQuickInvite,
 }) => {
-  const { users, groups, currentUser, currentTier, deleteUserAccount, showToast } = useApp();
+  const { users, groups, currentUser, currentTier, deleteUserAccount, showToast, siteContent, updatePinnedMembers } = useApp();
 
   const isManagement = currentTier === 'ceo' || currentTier === 'manager' || currentUser.role === 'management';
   const isLeader = currentTier === 'group_leader' || currentUser.role === 'group_leader';
@@ -47,20 +47,13 @@ export const PeopleDirectory: React.FC<PeopleDirectoryProps> = ({
   const [sortField, setSortField] = useState<'name' | 'earnings' | 'projects' | 'rating' | 'joined'>('name');
   const [sortAsc, setSortAsc] = useState(true);
 
-  // Pinned Member IDs (Saved in Local Storage & Live Synced)
-  const [pinnedIds, setPinnedIds] = useState<string[]>(() => {
-    try {
-      const saved = localStorage.getItem('digihust_pinned_members');
-      return saved ? JSON.parse(saved) : [];
-    } catch {
-      return [];
-    }
-  });
+  // Pinned Member IDs — read from SiteContent (Supabase-backed, cross-device)
+  const pinnedIds: string[] = siteContent?.pinnedMemberIds || [];
 
   useEffect(() => {
     const unsub = realtimeSync.subscribe((payload) => {
       if (payload.type === 'PINNED_UPDATED' && Array.isArray(payload.data)) {
-        setPinnedIds(payload.data);
+        updatePinnedMembers(payload.data);
       }
     });
     return unsub;
@@ -68,18 +61,11 @@ export const PeopleDirectory: React.FC<PeopleDirectoryProps> = ({
 
   const togglePinUser = (userId: string, e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
-    setPinnedIds((prev) => {
-      const isPinned = prev.includes(userId);
-      const updated = isPinned ? prev.filter((id) => id !== userId) : [...prev, userId];
-      try {
-        localStorage.setItem('digihust_pinned_members', JSON.stringify(updated));
-      } catch (err) {
-        console.warn('Could not save pinned members:', err);
-      }
-      realtimeSync.broadcast('PINNED_UPDATED', updated);
-      showToast(isPinned ? 'Member unpinned.' : 'Member pinned to top.', 'info');
-      return updated;
-    });
+    const isPinned = pinnedIds.includes(userId);
+    const updated = isPinned ? pinnedIds.filter((id) => id !== userId) : [...pinnedIds, userId];
+    updatePinnedMembers(updated);
+    realtimeSync.broadcast('PINNED_UPDATED', updated);
+    showToast(isPinned ? 'Member unpinned.' : 'Member pinned to top.', 'info');
   };
 
   // Helper to check CEO & Co-founders (Permanent Top Tier)

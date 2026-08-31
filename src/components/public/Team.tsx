@@ -31,21 +31,12 @@ export const Team: React.FC = () => {
   const [filter, setFilter] = useState<string>('All');
   const [selectedMember, setSelectedMember] = useState<TeamMember | null>(null);
 
-  // Live Pinned Member IDs (Preserves exact pinning sequence in real time)
-  const [pinnedIds, setPinnedIds] = useState<string[]>(() => {
-    try {
-      const saved = localStorage.getItem('digihust_pinned_members');
-      return saved ? JSON.parse(saved) : [];
-    } catch {
-      return [];
-    }
-  });
+  // Pinned Member IDs — from SiteContent (Supabase-backed, cross-device)
+  const pinnedIds: string[] = siteContent?.pinnedMemberIds || [];
 
   useEffect(() => {
-    const unsub = realtimeSync.subscribe((payload) => {
-      if (payload.type === 'PINNED_UPDATED' && Array.isArray(payload.data)) {
-        setPinnedIds(payload.data);
-      }
+    const unsub = realtimeSync.subscribe((_payload) => {
+      // CMS_UPDATED triggers re-render via siteContent context — nothing extra needed
     });
     return unsub;
   }, []);

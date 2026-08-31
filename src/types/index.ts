@@ -503,6 +503,8 @@ export interface SiteContent {
   customImages: Record<string, string>;
   certificateTemplates?: CertificateTemplate[];
   blogPosts?: SiteBlogPost[];
+  // Pinned member IDs in exact order — stored in cloud for cross-device sync
+  pinnedMemberIds?: string[];
 }
 
 // ── SECURITY & PERMISSION AUDIT LOG TYPES ────────────────────────────────────

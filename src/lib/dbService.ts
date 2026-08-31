@@ -49,7 +49,10 @@ export const dbService = {
   async upsertUser(user: User) {
     if (!isSupabaseConfigured || !supabase) return;
     try {
-      await supabase.from('users').upsert({
+      // Encode isCeoMaster flag inside custom_permissions so it persists cross-device
+      const basePerms = (user.delegatedPermissions || []).filter((p: string) => p !== 'ceo_master');
+      const permsWithFlags = user.isCeoMaster ? ['ceo_master', ...basePerms] : basePerms;
+      const { error } = await supabase.from('users').upsert({
         id: user.id,
         name: user.name,
         email: user.email,
@@ -63,12 +66,13 @@ export const dbService = {
         join_year: user.joinYear || 2026,
         bio: user.bio || '',
         phone: user.phone || '',
-        member_id: user.memberId || '',
+        member_id: user.memberId || 'DGH2600001',
         password_hash: user.passwordHash || '',
         is_first_login: user.forcePasswordChange || false,
-        custom_permissions: user.delegatedPermissions || [],
+        custom_permissions: permsWithFlags,
         updated_at: new Date().toISOString()
       });
+      if (error) console.error('Failed to sync user to Supabase:', error.message);
     } catch (err) {
       console.error('Failed to sync user to Supabase:', err);
     }
@@ -378,6 +382,9 @@ export const dbService = {
 // ── Helpers to map database column names to frontend camelCase types ──
 
 function mapUserFromDb(row: any): User {
+  const rawPerms = Array.isArray(row.custom_permissions) ? row.custom_permissions : [];
+  const isCeoMaster = rawPerms.includes('ceo_master');
+  const delegatedPermissions = rawPerms.filter((p: string) => p !== 'ceo_master');
   return {
     id: row.id,
     name: row.name,
@@ -395,10 +402,11 @@ function mapUserFromDb(row: any): User {
     memberId: row.member_id || 'DGH2600001',
     passwordHash: row.password_hash || '',
     forcePasswordChange: row.is_first_login || false,
+    isCeoMaster,
     completedProjectsCount: 0,
     totalEarnings: 0,
     rating: 5.0,
-    delegatedPermissions: Array.isArray(row.custom_permissions) ? row.custom_permissions : []
+    delegatedPermissions
   };
 }
 

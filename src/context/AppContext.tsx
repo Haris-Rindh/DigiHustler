@@ -135,6 +135,9 @@ interface AppContextType {
   updateGlobalSettings: (newSettings: GlobalAdminSettings) => void;
   resetToDefaultData: () => void;
 
+  // Pin Member Management (Persisted to Supabase for cross-device sync)
+  updatePinnedMembers: (pinnedIds: string[]) => void;
+
   // Global Custom Notification Toast Box
   showToast: (message: string, type?: 'success' | 'error' | 'warning' | 'info', title?: string, duration?: number) => void;
 }
@@ -1806,6 +1809,16 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     realtimeSync.broadcast('CMS_UPDATED', DEFAULT_SITE_CONTENT);
   };
 
+  // ── PINNED MEMBERS — Persisted to Supabase for cross-device sync ─────────
+  const updatePinnedMembers = (pinnedIds: string[]) => {
+    const newContent = { ...siteContent, pinnedMemberIds: pinnedIds };
+    setSiteContent(newContent);
+    dbService.saveSiteContent(newContent);
+    realtimeSync.broadcast('CMS_UPDATED', newContent);
+    // Also sync to localStorage as fast local cache
+    try { localStorage.setItem('digihust_pinned_members', JSON.stringify(pinnedIds)); } catch {}
+  };
+
   // Applicant Actions
   const submitApplication = (applicantData: Omit<Applicant, 'id' | 'appliedAt' | 'status'>) => {
     const newApplicant: Applicant = {
@@ -1983,6 +1996,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         // Settings
         updateGlobalSettings,
         resetToDefaultData,
+        updatePinnedMembers,
 
         // Global Custom Toast Box Notification
         showToast
