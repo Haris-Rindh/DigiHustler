@@ -11,7 +11,7 @@ import {
   INITIAL_APPLICANTS, INITIAL_SETTINGS, INITIAL_ASSIGNMENTS, INITIAL_CERTIFICATES, 
   INITIAL_ANNOUNCEMENTS, DEFAULT_SITE_CONTENT, INITIAL_AUDIT_LOGS 
 } from '../services/mockData';
-import { getNextMemberId, getNextMemberIdAsync } from '../lib/memberIdGenerator';
+import { getNextMemberId, syncIdCounter } from '../lib/memberIdGenerator';
 import { getUserRoleTier, PERMISSIONS } from '../lib/permissions';
 import { quickHashSync } from '../lib/crypto';
 import { dbService } from '../lib/dbService';
@@ -292,6 +292,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
           if (cloudData.users && cloudData.users.length > 0) {
             // Cloud has data → use cloud as the truth, migrate any Base64 avatars
             setUsers(cloudData.users);
+            syncIdCounter(cloudData.users);
             // Migrate any Base64 avatars to Supabase Storage in background
             cloudData.users.forEach((cloudUser) => {
               if (cloudUser?.avatarUrl?.startsWith('data:image/')) {
@@ -570,7 +571,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       return { success: false, error: 'Access Denied: Only CEO Master or Management authority can create user accounts.' };
     }
 
-    const { memberId } = getNextMemberId(userData.joinYear);
+    const { memberId } = getNextMemberId(userData.joinYear, users);
     const plainPwd = initialPlainPassword || `DigiHust@${Math.random().toString(36).substring(2, 7)}`;
     const passwordHash = quickHashSync(plainPwd);
 
@@ -1677,7 +1678,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   };
 
   const quickInviteUser = (userData: Omit<User, 'id' | 'completedProjectsCount' | 'totalEarnings' | 'rating' | 'statusHistory' | 'notes' | 'documents'>): User => {
-    const { memberId } = getNextMemberId(userData.joinYear);
+    const { memberId } = getNextMemberId(userData.joinYear, users);
     const roleTier: UserRoleTier = userData.roleTier || (userData.role === 'management' ? 'manager' : (userData.role === 'group_leader' ? 'group_leader' : (userData.role === 'intern' ? 'intern' : 'member')));
     const finalStatus: UserStatus = userData.status || 'active';
 
@@ -1736,7 +1737,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     const createdUsers: User[] = [];
 
     importedRows.forEach((row) => {
-      const { memberId } = getNextMemberId(row.joinYear);
+      const { memberId } = getNextMemberId(row.joinYear, [...users, ...createdUsers]);
       const roleTier: UserRoleTier = row.roleTier || (row.role === 'management' ? 'manager' : row.role === 'group_leader' ? 'group_leader' : 'member');
       const newUser: User = {
         id: `usr-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,

@@ -66,13 +66,14 @@ export const dbService = {
   },
 
   // ── 2. Users CRUD ──
-  async upsertUser(user: User) {
-    if (!isSupabaseConfigured || !supabase) return;
+  async upsertUser(user: User): Promise<{ success: boolean; error?: string }> {
+    if (!isSupabaseConfigured || !supabase) return { success: false, error: 'Database not connected' };
     try {
       // Encode isCeoMaster flag inside custom_permissions so it persists cross-device
       const basePerms = (user.delegatedPermissions || []).filter((p: string) => p !== 'ceo_master');
       const permsWithFlags = user.isCeoMaster ? ['ceo_master', ...basePerms] : basePerms;
-      const { error } = await supabase.from('users').upsert({
+      
+      const payload: Record<string, any> = {
         id: user.id,
         name: user.name,
         email: user.email,
@@ -86,15 +87,42 @@ export const dbService = {
         join_year: user.joinYear || 2026,
         bio: user.bio || '',
         phone: user.phone || '',
-        member_id: user.memberId || 'DGH2600001',
+        member_id: user.memberId || 'DGH2600167',
         password_hash: user.passwordHash || '',
         is_first_login: user.forcePasswordChange || false,
         custom_permissions: permsWithFlags,
         updated_at: new Date().toISOString()
-      });
-      if (error) console.error('Failed to sync user to Supabase:', error.message);
-    } catch (err) {
+      };
+
+      let { error } = await supabase.from('users').upsert(payload);
+
+      // If duplicate member_id collision, resolve dynamically and retry
+      if (error && (error.code === '23505' || error.message?.includes('users_member_id_key'))) {
+        console.warn('Member ID collision detected, recalculating next available ID...');
+        const { data: latestUsers } = await supabase.from('users').select('member_id');
+        let maxNum = 166;
+        if (latestUsers) {
+          latestUsers.forEach((u: any) => {
+            const digits = (u.member_id || '').replace(/\D/g, '');
+            const num = parseInt(digits.slice(-5), 10);
+            if (!isNaN(num) && num > maxNum) maxNum = num;
+          });
+        }
+        const freshId = `DGH26${String(maxNum + 1).padStart(5, '0')}`;
+        payload.member_id = freshId;
+        user.memberId = freshId;
+        const retry = await supabase.from('users').upsert(payload);
+        error = retry.error;
+      }
+
+      if (error) {
+        console.error('Failed to sync user to Supabase:', error.message);
+        return { success: false, error: error.message };
+      }
+      return { success: true };
+    } catch (err: any) {
       console.error('Failed to sync user to Supabase:', err);
+      return { success: false, error: err?.message || 'Database sync failed' };
     }
   },
 
