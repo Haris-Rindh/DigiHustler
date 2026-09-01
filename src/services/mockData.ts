@@ -72,7 +72,6 @@ export const INITIAL_USERS: User[] = [
     csatScore: 5.0,
     credentialsSentAt: '2024-01-15T10:00:00Z',
     forcePasswordChange: false,
-    passwordHash: quickHashSync('Bismill@h.786786'),
     notes: [
       { id: 'n-1', timestamp: '2024-01-15T10:00:00Z', authorId: 'usr-ceo-1', authorName: 'System', text: 'CEO root master account with company-wide administrative control.' }
     ],

@@ -479,28 +479,14 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   // Auth Handlers
   const currentTier = getUserRoleTier(currentUser);
 
-  const loginWithMemberId = (memberIdOrEmail: string, password?: string): { success: boolean; error?: string } => {
-    const cleanId = memberIdOrEmail.trim().toLowerCase();
+  const loginWithMemberId = (identifier: string, password?: string): { success: boolean; error?: string } => {
+    const cleanId = identifier.trim().toLowerCase();
 
-    // 1. Find user by exact member ID, email, or shorthand alias
-    let foundUser = users.find(u => 
-      u.memberId?.toLowerCase() === cleanId || 
-      u.email.toLowerCase() === cleanId ||
-      u.memberId?.toLowerCase().replace(/[^a-z0-9]/g, '') === cleanId.replace(/[^a-z0-9]/g, '')
+    // 1. Strict search: Match ONLY current database memberId or email (no legacy aliases or backdoors)
+    const foundUser = users.find(u => 
+      u.memberId?.trim().toLowerCase() === cleanId || 
+      u.email?.trim().toLowerCase() === cleanId
     );
-
-    // Shorthand role aliases for quick access
-    if (!foundUser) {
-      if (cleanId === 'ceo' || cleanId === 'admin' || cleanId === 'ceoofdgh01' || cleanId === 'dgh2600001' || cleanId === 'dgh2400001') {
-        foundUser = users.find(u => u.roleTier === 'ceo' || u.isCeoMaster) || users[0];
-      } else if (cleanId === 'manager' || cleanId === 'ops' || cleanId === 'dgh2500002' || cleanId === 'dgh2600002') {
-        foundUser = users.find(u => u.roleTier === 'manager') || users[1];
-      } else if (cleanId === 'leader' || cleanId === 'lead' || cleanId === 'tech' || cleanId === 'dgh2500003' || cleanId === 'dgh2600003') {
-        foundUser = users.find(u => u.roleTier === 'group_leader') || users[2];
-      } else if (cleanId === 'specialist' || cleanId === 'member' || cleanId === 'dev' || cleanId === 'dgh2600101' || cleanId === 'dgh2600004') {
-        foundUser = users.find(u => u.roleTier === 'member') || users[3];
-      }
-    }
 
     if (!foundUser) {
       return { success: false, error: 'No registered DigiHust account found with this Member ID or Email.' };
