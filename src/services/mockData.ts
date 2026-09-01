@@ -51,7 +51,7 @@ export const INITIAL_USERS: User[] = [
   // ── 1. CEO / ROOT MASTER CONTROLLER (Sole Administrator) ──
   {
     id: 'usr-ceo-1',
-    memberId: 'DGH2400001',
+    memberId: 'CEOOFDGH01',
     name: 'Mahad Abbas',
     email: 'digihust@gmail.com',
     phone: '+92 320 6806396',

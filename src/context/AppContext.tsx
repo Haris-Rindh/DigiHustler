@@ -491,7 +491,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
     // Shorthand role aliases for quick access
     if (!foundUser) {
-      if (cleanId === 'ceo' || cleanId === 'admin' || cleanId === 'dgh2600001' || cleanId === 'dgh2400001') {
+      if (cleanId === 'ceo' || cleanId === 'admin' || cleanId === 'ceoofdgh01' || cleanId === 'dgh2600001' || cleanId === 'dgh2400001') {
         foundUser = users.find(u => u.roleTier === 'ceo' || u.isCeoMaster) || users[0];
       } else if (cleanId === 'manager' || cleanId === 'ops' || cleanId === 'dgh2500002' || cleanId === 'dgh2600002') {
         foundUser = users.find(u => u.roleTier === 'manager') || users[1];
@@ -510,15 +510,14 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       return { success: false, error: 'This account has been suspended by Executive Management.' };
     }
 
-    // 2. Flexible Password Verification
+    // 2. Strict Password Verification (Individual user password only - no backdoors)
     if (password) {
       const computedHash = quickHashSync(password);
-      const isMasterPass = password === 'Bismill@h.786786' || password === 'DigiHust@2026' || password === 'admin123';
       const isHashMatch = foundUser.passwordHash 
-        ? (computedHash === foundUser.passwordHash || (foundUser.roleTier === 'ceo' && password === 'Bismill@h.786786'))
+        ? computedHash === foundUser.passwordHash
         : true;
 
-      if (!isMasterPass && !isHashMatch) {
+      if (!isHashMatch) {
         return { success: false, error: 'Incorrect password. Please verify your credentials and try again.' };
       }
     }
@@ -526,7 +525,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     // Refresh user passwordHash if needed
     const updatedUser = {
       ...foundUser,
-      passwordHash: foundUser.passwordHash || quickHashSync(password || 'Bismill@h.786786')
+      passwordHash: foundUser.passwordHash || (password ? quickHashSync(password) : '')
     };
 
     setCurrentUser(updatedUser);

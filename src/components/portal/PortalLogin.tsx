@@ -123,7 +123,7 @@ export const PortalLogin: React.FC = () => {
                     required
                     value={memberId}
                     onChange={(e) => setMemberId(e.target.value)}
-                    placeholder="e.g. DGH2400001 or email"
+                    placeholder="e.g. DGH1234567 or email"
                     className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl pl-10 pr-4 py-2.5 text-sm text-[var(--text-heading)] focus:border-[var(--brand-teal)] focus:outline-none transition-all"
                   />
                 </div>
