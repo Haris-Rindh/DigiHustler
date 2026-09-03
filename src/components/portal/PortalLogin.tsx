@@ -17,6 +17,9 @@ export const PortalLogin: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
+  // Filter Global announcements visible before login
+  const globalAnnouncements = (announcements || []).filter(a => a.scope === 'global');
+
   // 2-Step Automated Password Reset State
   const [resetModalOpen, setResetModalOpen] = useState(false);
   const [resetStep, setResetStep] = useState<'request' | 'verify' | 'success'>('request');
@@ -38,6 +41,18 @@ export const PortalLogin: React.FC = () => {
     }, 1000);
     return () => clearInterval(interval);
   }, [resendTimer]);
+
+  // Detect if member arrived via Supabase Password Recovery Email Link
+  React.useEffect(() => {
+    const hash = window.location.hash || window.location.search;
+    if (hash.includes('type=recovery') || hash.includes('access_token')) {
+      setResetModalOpen(true);
+      setResetStep('verify');
+      if (memberId && memberId.includes('@')) {
+        setVerifiedEmail(memberId);
+      }
+    }
+  }, [memberId]);
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();

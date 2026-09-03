@@ -212,6 +212,21 @@ export const Contact: React.FC = () => {
 
       await submitLead(newLeadData);
 
+      // Dispatch automated EmailJS lead notification to digihust@gmail.com
+      try {
+        await notificationService.dispatchLeadEmail({
+          name: form.name,
+          email: form.email,
+          company: form.company,
+          services: form.services,
+          budget: form.budget,
+          timeline: form.timeline,
+          description: form.description
+        });
+      } catch (emailErr) {
+        console.warn('Contact Form EmailJS dispatch warning:', emailErr);
+      }
+
       // WhatsApp deep-link
       const phone = siteContent?.contactPhone || '923001234567';
       const cleanPhone = phone.replace(/[^0-9]/g, '');

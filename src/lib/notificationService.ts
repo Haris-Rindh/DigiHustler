@@ -43,32 +43,35 @@ export const notificationService = {
     email: string;
     company?: string;
     services: string[];
-    budget: string;
-    timeline: string;
+    budget?: string;
+    timeline?: string;
     description: string;
   }): Promise<boolean> {
     const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID || 'service_kk1oyko';
-    const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID || 'template_xcxoq8x';
+    const templateId = import.meta.env.VITE_EMAILJS_CONTACT_TEMPLATE_ID || import.meta.env.VITE_EMAILJS_TEMPLATE_ID || 'template_xcxoq8x';
     const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY || 'hvCezH1wrH-95AZDc';
 
     // 1. Primary: EmailJS SDK (Direct connection to your Gmail)
     if (serviceId && templateId && publicKey) {
       try {
         const emailParams = {
+          to_email: 'digihust@gmail.com',
+          to: 'digihust@gmail.com',
+          email: 'digihust@gmail.com',
+          recipient: 'digihust@gmail.com',
+          reply_to: leadData.email,
+          from_email: leadData.email,
           client_name: leadData.name,
           client_email: leadData.email,
           name: leadData.name,
           from_name: leadData.name,
-          email: leadData.email,
-          from_email: leadData.email,
           company: leadData.company || 'Not Specified',
           services: Array.isArray(leadData.services) ? leadData.services.join(', ') : leadData.services,
           budget: leadData.budget,
           timeline: leadData.timeline,
           project_description: leadData.description,
           message: leadData.description,
-          submitted_at: new Date().toLocaleString(),
-          to_email: 'digihust@gmail.com'
+          submitted_at: new Date().toLocaleString()
         };
 
         const res = await emailjs.send(serviceId, templateId, emailParams, publicKey);

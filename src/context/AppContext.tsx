@@ -554,7 +554,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       };
     }
 
-    // Generate and store OTP in Supabase cloud
+    // 1. Generate and store OTP in Supabase cloud
     const otpRes = await dbService.createPasswordResetOtp(foundUser.email, foundUser.name);
     if (!otpRes.success || !otpRes.otp) {
       return { 
@@ -563,13 +563,25 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       };
     }
 
-    // Dispatch email notification
+    // 2. Dispatch real recovery email via configured Supabase SMTP
+    if (isSupabaseConfigured && supabase) {
+      try {
+        const origin = typeof window !== 'undefined' ? window.location.origin : 'https://digihust.com';
+        await supabase.auth.resetPasswordForEmail(foundUser.email, {
+          redirectTo: `${origin}/portal/login#type=recovery`
+        });
+      } catch (err) {
+        console.warn('[Supabase Auth] SMTP dispatch info:', err);
+      }
+    }
+
+    // 3. Dispatch backup email service
     await emailService.sendPasswordResetEmail(foundUser.email, foundUser.name, otpRes.otp);
 
     return { 
       success: true, 
       email: foundUser.email,
-      message: `A 6-digit verification code has been dispatched to ${foundUser.email}. Enter the code and your new password below.` 
+      message: `A secure password reset email has been dispatched to ${foundUser.email}. Please check your inbox (and spam folder) for the reset link or 6-digit code.` 
     };
   };
 
