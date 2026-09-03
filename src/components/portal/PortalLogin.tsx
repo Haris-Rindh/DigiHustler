@@ -39,6 +39,27 @@ export const PortalLogin: React.FC = () => {
     return () => clearInterval(interval);
   }, [resendTimer]);
 
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    setErrorMessage('');
+
+    if (!memberId.trim()) {
+      setErrorMessage('Please enter your permanent Member ID or registered Email.');
+      return;
+    }
+    if (!password) {
+      setErrorMessage('Please enter your account password.');
+      return;
+    }
+
+    const res = loginWithMemberId(memberId.trim(), password);
+    if (res.success) {
+      navigate(from, { replace: true });
+    } else {
+      setErrorMessage(res.error || 'Authentication failed. Please verify your credentials.');
+    }
+  };
+
   const handleOpenResetModal = () => {
     setResetModalOpen(true);
     setResetStep('request');
