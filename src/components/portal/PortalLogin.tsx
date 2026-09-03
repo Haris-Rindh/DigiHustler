@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Shield, ArrowRight, Lock, User as UserIcon, Bell, Sparkles, AlertCircle, CheckCircle2, Eye, EyeOff } from 'lucide-react';
+import { Shield, ArrowRight, Lock, User as UserIcon, Bell, Sparkles, AlertCircle, CheckCircle2, Eye, EyeOff, Mail, Key, RefreshCw, X } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { SEOHead } from '../seo/SEOHead';
 import logoImg from '../../assets/logo.png';
 
 export const PortalLogin: React.FC = () => {
-  const { loginWithMemberId, announcements, requestPasswordReset } = useApp();
+  const { loginWithMemberId, announcements, requestPasswordReset, completePasswordResetWithOtp } = useApp();
   const navigate = useNavigate();
   const location = useLocation();
   const from = (location.state as any)?.from?.pathname || '/portal/dashboard';
@@ -16,39 +16,116 @@ export const PortalLogin: React.FC = () => {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
-  const [resetEmail, setResetEmail] = useState('');
+
+  // 2-Step Automated Password Reset State
   const [resetModalOpen, setResetModalOpen] = useState(false);
-  const [resetFeedback, setResetFeedback] = useState<{ success?: boolean; message?: string } | null>(null);
+  const [resetStep, setResetStep] = useState<'request' | 'verify' | 'success'>('request');
+  const [resetEmail, setResetEmail] = useState('');
+  const [verifiedEmail, setVerifiedEmail] = useState('');
+  const [resetOtp, setResetOtp] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [resetLoading, setResetLoading] = useState(false);
+  const [resetError, setResetError] = useState('');
+  const [resendTimer, setResendTimer] = useState(0);
 
-  // Filter Global announcements visible before login
-  const globalAnnouncements = announcements.filter(a => a.scope === 'global');
+  // Countdown timer for resending code
+  React.useEffect(() => {
+    if (resendTimer <= 0) return;
+    const interval = setInterval(() => {
+      setResendTimer((prev) => prev - 1);
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [resendTimer]);
 
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault();
-    setErrorMessage('');
-
-    if (!memberId.trim()) {
-      setErrorMessage('Please enter your permanent Member ID or registered Email.');
-      return;
-    }
-    if (!password) {
-      setErrorMessage('Please enter your account password.');
-      return;
-    }
-
-    const res = loginWithMemberId(memberId, password);
-    if (res.success) {
-      navigate(from, { replace: true });
-    } else {
-      setErrorMessage(res.error || 'Authentication failed. Please verify your credentials.');
+  const handleOpenResetModal = () => {
+    setResetModalOpen(true);
+    setResetStep('request');
+    setResetError('');
+    setResetOtp('');
+    setNewPassword('');
+    setConfirmPassword('');
+    if (memberId && (memberId.includes('@') || memberId.startsWith('DGH') || memberId.startsWith('CEO'))) {
+      setResetEmail(memberId);
     }
   };
 
-  const handlePasswordResetSubmit = (e: React.FormEvent) => {
+  const handleSendOtp = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!resetEmail.trim()) return;
-    const res = requestPasswordReset(resetEmail);
-    setResetFeedback(res);
+    setResetError('');
+    if (!resetEmail.trim()) {
+      setResetError('Please enter your registered email address or Member ID.');
+      return;
+    }
+
+    setResetLoading(true);
+    try {
+      const res = await requestPasswordReset(resetEmail.trim());
+      if (res.success && res.email) {
+        setVerifiedEmail(res.email);
+        setResetStep('verify');
+        setResendTimer(60);
+      } else {
+        setResetError(res.message || 'No registered account found with that email or Member ID.');
+      }
+    } catch {
+      setResetError('Failed to dispatch recovery code. Please try again.');
+    } finally {
+      setResetLoading(false);
+    }
+  };
+
+  const handleResendOtp = async () => {
+    if (resendTimer > 0 || !verifiedEmail) return;
+    setResetLoading(true);
+    setResetError('');
+    try {
+      const res = await requestPasswordReset(verifiedEmail);
+      if (res.success) {
+        setResendTimer(60);
+      } else {
+        setResetError(res.message);
+      }
+    } catch {
+      setResetError('Failed to resend code.');
+    } finally {
+      setResetLoading(false);
+    }
+  };
+
+  const handleVerifyAndReset = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setResetError('');
+
+    if (!resetOtp.trim() || resetOtp.trim().length !== 6) {
+      setResetError('Please enter the valid 6-digit verification code.');
+      return;
+    }
+    if (!newPassword || newPassword.length < 6) {
+      setResetError('Password must be at least 6 characters.');
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      setResetError('Passwords do not match. Please re-enter.');
+      return;
+    }
+
+    setResetLoading(true);
+    try {
+      const res = await completePasswordResetWithOtp(verifiedEmail, resetOtp.trim(), newPassword);
+      if (res.success) {
+        setResetStep('success');
+        setPassword('');
+        setMemberId(verifiedEmail);
+      } else {
+        setResetError(res.error || 'Verification failed. The code may be invalid or expired.');
+      }
+    } catch {
+      setResetError('Password reset failed. Please try again.');
+    } finally {
+      setResetLoading(false);
+    }
   };
 
   return (
@@ -136,10 +213,7 @@ export const PortalLogin: React.FC = () => {
                   </label>
                   <button
                     type="button"
-                    onClick={() => {
-                      setResetModalOpen(true);
-                      setResetFeedback(null);
-                    }}
+                    onClick={handleOpenResetModal}
                     className="text-xs text-[var(--brand-teal)] hover:underline font-semibold cursor-pointer"
                   >
                     Forgot Password?
@@ -229,68 +303,219 @@ export const PortalLogin: React.FC = () => {
         </div>
       </div>
 
-      {/* Password Reset Modal */}
+      {/* Automated 2-Step Password Reset Modal */}
       {resetModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl animate-in fade-in zoom-in-95">
-            <h3 className="font-display font-extrabold text-lg text-[var(--text-heading)] mb-1">
-              Account Recovery
-            </h3>
-            <p className="text-xs text-[var(--text-body)] mb-4">
-              Enter your registered DigiHust email address to request a secure password reset from the CEO.
-            </p>
-
-            {resetFeedback ? (
-              <div className="space-y-4">
-                <div className={`p-3.5 rounded-2xl text-xs font-semibold flex items-center gap-2 ${
-                  resetFeedback.success
-                    ? 'bg-emerald-500/10 border border-emerald-500/30 text-emerald-400'
-                    : 'bg-rose-500/10 border border-rose-500/30 text-rose-400'
-                }`}>
-                  {resetFeedback.success ? <CheckCircle2 className="w-4 h-4 flex-shrink-0" /> : <AlertCircle className="w-4 h-4 flex-shrink-0" />}
-                  <span>{resetFeedback.message}</span>
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, y: 10 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            className="bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl relative overflow-hidden"
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between pb-4 mb-4 border-b border-[var(--border-subtle)]">
+              <div className="flex items-center space-x-3">
+                <div className="w-9 h-9 rounded-2xl bg-[var(--brand-teal)]/15 border border-[var(--brand-teal)]/30 flex items-center justify-center text-[var(--brand-teal)]">
+                  <Key className="w-4 h-4" />
                 </div>
-                <button
-                  type="button"
-                  onClick={() => setResetModalOpen(false)}
-                  className="w-full py-2.5 rounded-xl bg-[var(--brand-teal)] text-white text-xs font-bold"
-                >
-                  Close
-                </button>
-              </div>
-            ) : (
-              <form onSubmit={handlePasswordResetSubmit} className="space-y-4">
                 <div>
-                  <label className="block text-xs font-bold uppercase text-[var(--text-muted)] mb-1">
-                    Registered Email
-                  </label>
-                  <input
-                    type="email"
-                    required
-                    value={resetEmail}
-                    onChange={(e) => setResetEmail(e.target.value)}
-                    placeholder="e.g. sarah.ops@digihust.com"
-                    className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3.5 py-2.5 text-xs text-[var(--text-heading)] focus:border-[var(--brand-teal)] focus:outline-none"
-                  />
+                  <h3 className="font-display font-extrabold text-base text-[var(--text-heading)]">
+                    Self-Service Password Reset
+                  </h3>
+                  <p className="text-[11px] text-[var(--text-muted)]">
+                    {resetStep === 'request' && 'Step 1 of 2: Request Security Code'}
+                    {resetStep === 'verify' && 'Step 2 of 2: Verify & Set New Password'}
+                    {resetStep === 'success' && 'Password Reset Complete'}
+                  </p>
                 </div>
-                <div className="flex justify-end space-x-2 pt-2">
+              </div>
+              <button
+                type="button"
+                onClick={() => setResetModalOpen(false)}
+                className="p-1.5 rounded-xl text-[var(--text-muted)] hover:text-[var(--text-heading)] hover:bg-[var(--bg-subtle)] transition-colors"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Error Display */}
+            {resetError && (
+              <div className="mb-4 p-3 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                <span>{resetError}</span>
+              </div>
+            )}
+
+            {/* Step 1: Request 6-Digit Code */}
+            {resetStep === 'request' && (
+              <form onSubmit={handleSendOtp} className="space-y-4">
+                <p className="text-xs text-[var(--text-body)] leading-relaxed">
+                  Enter your registered DigiHust email address or Member ID. We will send a secure 6-digit verification code directly to your email inbox.
+                </p>
+
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] mb-1.5">
+                    Registered Email or Member ID *
+                  </label>
+                  <div className="relative">
+                    <Mail className="w-4 h-4 text-[var(--text-muted)] absolute left-3.5 top-3" />
+                    <input
+                      type="text"
+                      required
+                      value={resetEmail}
+                      onChange={(e) => setResetEmail(e.target.value)}
+                      placeholder="e.g. member@gmail.com or DGH2600150"
+                      className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl pl-10 pr-4 py-2.5 text-xs text-[var(--text-heading)] focus:border-[var(--brand-teal)] focus:outline-none"
+                    />
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-end space-x-2 pt-2">
                   <button
                     type="button"
                     onClick={() => setResetModalOpen(false)}
-                    className="px-4 py-2 rounded-xl text-xs font-semibold text-[var(--text-muted)] hover:bg-[var(--bg-subtle)]"
+                    className="px-4 py-2.5 rounded-xl text-xs font-semibold text-[var(--text-muted)] hover:bg-[var(--bg-subtle)] transition-colors"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
-                    className="px-5 py-2 rounded-xl bg-[var(--brand-teal)] text-white text-xs font-bold shadow-md cursor-pointer"
+                    disabled={resetLoading}
+                    className="px-5 py-2.5 rounded-xl bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-white text-xs font-bold shadow-md flex items-center space-x-2 disabled:opacity-50 transition-all cursor-pointer"
                   >
-                    Submit Reset Request
+                    {resetLoading ? (
+                      <>
+                        <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                        <span>Sending Code...</span>
+                      </>
+                    ) : (
+                      <>
+                        <span>Send 6-Digit Code</span>
+                        <ArrowRight className="w-3.5 h-3.5" />
+                      </>
+                    )}
                   </button>
                 </div>
               </form>
             )}
-          </div>
+
+            {/* Step 2: Verify OTP & Enter New Password */}
+            {resetStep === 'verify' && (
+              <form onSubmit={handleVerifyAndReset} className="space-y-4">
+                <div className="p-3 rounded-2xl bg-[var(--brand-teal)]/10 border border-[var(--brand-teal)]/20 text-[11px] text-[var(--text-body)]">
+                  A 6-digit verification code was sent to <strong className="text-[var(--text-heading)]">{verifiedEmail}</strong>. Code expires in 15 minutes.
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] mb-1.5">
+                    6-Digit Verification Code *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    maxLength={6}
+                    value={resetOtp}
+                    onChange={(e) => setResetOtp(e.target.value.replace(/\D/g, ''))}
+                    placeholder="123456"
+                    className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-4 py-3 text-center font-mono text-lg font-extrabold tracking-widest text-[var(--brand-teal)] focus:border-[var(--brand-teal)] focus:outline-none"
+                  />
+                </div>
+
+                <div>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <label className="block text-xs font-bold uppercase tracking-wider text-[var(--text-muted)]">
+                      New Password *
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() => setShowNewPassword(!showNewPassword)}
+                      className="text-[11px] text-[var(--brand-teal)] hover:underline flex items-center space-x-1"
+                    >
+                      {showNewPassword ? <EyeOff className="w-3 h-3" /> : <Eye className="w-3 h-3" />}
+                      <span>{showNewPassword ? 'Hide' : 'Show'}</span>
+                    </button>
+                  </div>
+                  <input
+                    type={showNewPassword ? 'text' : 'password'}
+                    required
+                    minLength={6}
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    placeholder="At least 6 characters"
+                    className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3.5 py-2.5 text-xs text-[var(--text-heading)] focus:border-[var(--brand-teal)] focus:outline-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] mb-1.5">
+                    Confirm New Password *
+                  </label>
+                  <input
+                    type={showNewPassword ? 'text' : 'password'}
+                    required
+                    minLength={6}
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    placeholder="Re-enter your new password"
+                    className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3.5 py-2.5 text-xs text-[var(--text-heading)] focus:border-[var(--brand-teal)] focus:outline-none"
+                  />
+                </div>
+
+                <div className="flex items-center justify-between pt-2">
+                  <button
+                    type="button"
+                    disabled={resendTimer > 0 || resetLoading}
+                    onClick={handleResendOtp}
+                    className="text-xs text-[var(--brand-teal)] hover:underline font-semibold disabled:text-[var(--text-muted)] disabled:no-underline cursor-pointer"
+                  >
+                    {resendTimer > 0 ? `Resend Code in (${resendTimer}s)` : 'Resend Code'}
+                  </button>
+
+                  <button
+                    type="submit"
+                    disabled={resetLoading}
+                    className="px-5 py-2.5 rounded-xl bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-white text-xs font-bold shadow-md flex items-center space-x-2 disabled:opacity-50 transition-all cursor-pointer"
+                  >
+                    {resetLoading ? (
+                      <>
+                        <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                        <span>Updating...</span>
+                      </>
+                    ) : (
+                      <>
+                        <span>Update Password</span>
+                        <CheckCircle2 className="w-3.5 h-3.5" />
+                      </>
+                    )}
+                  </button>
+                </div>
+              </form>
+            )}
+
+            {/* Step 3: Success Confirmation */}
+            {resetStep === 'success' && (
+              <div className="text-center space-y-4 py-2">
+                <div className="w-14 h-14 rounded-full bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400 mx-auto">
+                  <CheckCircle2 className="w-7 h-7" />
+                </div>
+                <div>
+                  <h4 className="font-display font-extrabold text-base text-[var(--text-heading)]">
+                    Password Reset Successfully!
+                  </h4>
+                  <p className="text-xs text-[var(--text-body)] mt-1">
+                    Your password has been updated in the cloud. You can now log in to your portal using your new password.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setResetModalOpen(false)}
+                  className="w-full py-3 rounded-xl bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-white text-xs font-bold shadow-lg transition-all cursor-pointer"
+                >
+                  Proceed to Login
+                </button>
+              </div>
+            )}
+
+          </motion.div>
         </div>
       )}
 

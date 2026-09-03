@@ -17,6 +17,7 @@ import { quickHashSync } from '../lib/crypto';
 import { dbService } from '../lib/dbService';
 import { isSupabaseConfigured, supabase } from '../lib/supabase';
 import { realtimeSync } from '../lib/realtimeSync';
+import { emailService } from '../lib/emailService';
 import { ToastContainer, ToastMessage } from '../components/common/ToastContainer';
 
 interface AppContextType {
@@ -41,7 +42,8 @@ interface AppContextType {
   loginWithMemberId: (memberIdOrEmail: string, password?: string) => { success: boolean; error?: string };
   logout: () => void;
   changePassword: (newPassword: string) => { success: boolean; error?: string };
-  requestPasswordReset: (email: string) => { success: boolean; message: string };
+  requestPasswordReset: (emailOrMemberId: string) => Promise<{ success: boolean; message: string; email?: string }>;
+  completePasswordResetWithOtp: (email: string, otp: string, newPassword: string) => Promise<{ success: boolean; error?: string }>;
 
   // Master CEO User & Security Governance Actions
   createUserAccount: (
@@ -538,12 +540,63 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     return { success: true };
   };
 
-  const requestPasswordReset = (email: string) => {
-    const found = users.some(u => u.email.toLowerCase() === email.trim().toLowerCase());
-    if (found) {
-      return { success: true, message: `A secure credential reset link has been dispatched to ${email}.` };
+  const requestPasswordReset = async (emailOrMemberId: string): Promise<{ success: boolean; message: string; email?: string }> => {
+    const clean = emailOrMemberId.trim().toLowerCase();
+    const foundUser = users.find(u => 
+      u.email?.trim().toLowerCase() === clean || 
+      u.memberId?.trim().toLowerCase() === clean
+    );
+
+    if (!foundUser || !foundUser.email) {
+      return { 
+        success: false, 
+        message: 'No active DigiHust account found with this email address or Member ID.' 
+      };
     }
-    return { success: false, message: 'No registered account found with that email address.' };
+
+    // Generate and store OTP in Supabase cloud
+    const otpRes = await dbService.createPasswordResetOtp(foundUser.email, foundUser.name);
+    if (!otpRes.success || !otpRes.otp) {
+      return { 
+        success: false, 
+        message: otpRes.error || 'Failed to generate security reset code. Please try again.' 
+      };
+    }
+
+    // Dispatch email notification
+    await emailService.sendPasswordResetEmail(foundUser.email, foundUser.name, otpRes.otp);
+
+    return { 
+      success: true, 
+      email: foundUser.email,
+      message: `A 6-digit verification code has been dispatched to ${foundUser.email}. Enter the code and your new password below.` 
+    };
+  };
+
+  const completePasswordResetWithOtp = async (email: string, otp: string, newPassword: string): Promise<{ success: boolean; error?: string }> => {
+    if (!newPassword || newPassword.length < 6) {
+      return { success: false, error: 'New password must be at least 6 characters.' };
+    }
+
+    const cleanEmail = email.trim().toLowerCase();
+    const newHash = quickHashSync(newPassword);
+
+    const resetRes = await dbService.verifyAndResetPassword(cleanEmail, otp, newHash);
+    if (!resetRes.success) {
+      return { success: false, error: resetRes.error || 'Password reset failed.' };
+    }
+
+    // Update in React state
+    setUsers(prev => prev.map(u => u.email.toLowerCase() === cleanEmail ? { ...u, passwordHash: newHash, forcePasswordChange: false } : u));
+
+    if (currentUser && currentUser.email.toLowerCase() === cleanEmail) {
+      const updatedUser = { ...currentUser, passwordHash: newHash, forcePasswordChange: false };
+      setCurrentUser(updatedUser);
+      safeSetItem(`${LOCAL_STORAGE_KEY}_current_user`, JSON.stringify(updatedUser));
+    }
+
+    showToast(`Password for ${cleanEmail} has been reset successfully!`, 'success', 'Password Updated');
+    return { success: true };
   };
 
   // ── CEO MASTER USER & SECURITY GOVERNANCE ─────────────────────────────────
@@ -1994,6 +2047,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         logout,
         changePassword,
         requestPasswordReset,
+        completePasswordResetWithOtp,
 
         // CEO Master User Governance
         createUserAccount,

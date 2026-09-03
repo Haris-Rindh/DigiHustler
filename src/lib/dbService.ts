@@ -568,6 +568,123 @@ export const dbService = {
     } catch (err) {
       console.error('Failed to save settings in Supabase:', err);
     }
+  },
+
+  // ── 13. Automated Self-Service Password Reset ──
+  async createPasswordResetOtp(email: string, userName?: string): Promise<{ success: boolean; otp?: string; expiresAt?: string; error?: string }> {
+    if (!isSupabaseConfigured || !supabase) return { success: false, error: 'Database not configured' };
+    try {
+      const cleanEmail = email.trim().toLowerCase();
+      const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+      const expiresAt = new Date(Date.now() + 15 * 60 * 1000).toISOString();
+
+      // Store in password_resets table if available
+      try {
+        await supabase.from('password_resets').insert({
+          email: cleanEmail,
+          otp_code: otpCode,
+          expires_at: expiresAt,
+          used: false
+        });
+      } catch {}
+
+      // Store in memory / session fallback for instant zero-latency validation
+      if (typeof window !== 'undefined') {
+        const resetPayload = { email: cleanEmail, otp: otpCode, expiresAt: Date.now() + 15 * 60 * 1000 };
+        sessionStorage.setItem(`dgh_reset_${cleanEmail}`, JSON.stringify(resetPayload));
+      }
+
+      // Record Audit Log for security monitoring
+      await dbService.insertAuditLog({
+        id: `audit-${Date.now()}`,
+        timestamp: new Date().toISOString(),
+        actorId: 'system',
+        actorName: userName || cleanEmail,
+        actorRole: 'member',
+        action: 'PASSWORD_RESET',
+        details: `Password recovery OTP requested for ${cleanEmail}.`
+      });
+
+      return { success: true, otp: otpCode, expiresAt };
+    } catch (err: any) {
+      console.error('Failed to create password reset OTP:', err);
+      return { success: false, error: err?.message || 'Failed to generate reset code' };
+    }
+  },
+
+  async verifyAndResetPassword(email: string, otpInput: string, newPasswordHash: string): Promise<{ success: boolean; error?: string }> {
+    if (!isSupabaseConfigured || !supabase) return { success: false, error: 'Database not configured' };
+    try {
+      const cleanEmail = email.trim().toLowerCase();
+      const cleanOtp = otpInput.trim();
+      let isValid = false;
+
+      // 1. Check Supabase password_resets table
+      try {
+        const { data } = await supabase
+          .from('password_resets')
+          .select('*')
+          .eq('email', cleanEmail)
+          .eq('otp_code', cleanOtp)
+          .eq('used', false)
+          .order('created_at', { ascending: false })
+          .limit(1);
+
+        if (data && data.length > 0) {
+          const resetRow = data[0];
+          if (new Date(resetRow.expires_at).getTime() > Date.now()) {
+            isValid = true;
+            await supabase.from('password_resets').update({ used: true }).eq('id', resetRow.id);
+          }
+        }
+      } catch {}
+
+      // 2. Check session fallback
+      if (!isValid && typeof window !== 'undefined') {
+        const stored = sessionStorage.getItem(`dgh_reset_${cleanEmail}`);
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          if (parsed.otp === cleanOtp && parsed.expiresAt > Date.now()) {
+            isValid = true;
+            sessionStorage.removeItem(`dgh_reset_${cleanEmail}`);
+          }
+        }
+      }
+
+      if (!isValid) {
+        return { success: false, error: 'Invalid or expired 6-digit verification code. Please request a new one.' };
+      }
+
+      // 3. Update password_hash in Supabase users table
+      const { error: updateErr } = await supabase
+        .from('users')
+        .update({
+          password_hash: newPasswordHash,
+          is_first_login: false,
+          updated_at: new Date().toISOString()
+        })
+        .eq('email', cleanEmail);
+
+      if (updateErr) {
+        return { success: false, error: updateErr.message };
+      }
+
+      // 4. Log security audit
+      await dbService.insertAuditLog({
+        id: `audit-${Date.now()}`,
+        timestamp: new Date().toISOString(),
+        actorId: 'system',
+        actorName: cleanEmail,
+        actorRole: 'member',
+        action: 'PASSWORD_RESET',
+        details: `Password was successfully self-reset using verified 6-digit OTP for ${cleanEmail}.`
+      });
+
+      return { success: true };
+    } catch (err: any) {
+      console.error('Failed to verify and reset password:', err);
+      return { success: false, error: err?.message || 'Password update failed' };
+    }
   }
 };
 
