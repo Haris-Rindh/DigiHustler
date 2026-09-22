@@ -1,69 +1,84 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { Shield, ArrowLeft } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { SEOHead } from '../seo/SEOHead';
 
 export const PrivacyPolicy: React.FC = () => {
   return (
-    <div className="pt-16">
+    <div className="pt-20 lg:pt-24 min-h-screen bg-[var(--bg-page)] text-[var(--text-body)]">
       <SEOHead
-        title="Privacy Policy — DigiHust"
-        description="DigiHust's commitment to data protection, client intellectual property confidentiality, and GDPR compliance."
-        canonical="https://digihust.com/privacy"
+        title="Privacy Policy | DigiHust"
+        description="DigiHust's commitment to data protection, client intellectual property confidentiality, and privacy standards."
+        canonical="https://www.digihust.tech/privacy"
       />
 
-      <section className="bg-[var(--bg-page)] py-16 sm:py-20 px-6 lg:px-8 border-b border-[var(--border-subtle)]">
+      <section className="bg-[var(--bg-subtle)] py-16 px-6 lg:px-8 border-b border-[var(--border-subtle)]">
         <div className="max-w-4xl mx-auto">
-          <Link to="/" className="inline-flex items-center space-x-2 text-xs font-bold text-[var(--text-heading)] hover:underline mb-6">
+          <Link to="/" className="inline-flex items-center space-x-2 text-sm font-semibold text-[var(--brand-teal)] mb-8 hover:underline">
             <ArrowLeft className="w-4 h-4" />
-            <span>Return to Homepage</span>
+            <span>Back to Home</span>
           </Link>
-          <span className="text-xs font-extrabold text-[var(--brand-teal)] uppercase tracking-widest block mb-2">
-            Legal & Compliance
-          </span>
-          <h1 className="font-display font-extrabold text-4xl sm:text-5xl text-[var(--text-heading)] mb-4">
-            Privacy Policy
-          </h1>
-          <p className="text-[var(--text-body)] text-sm">Last updated: August 25, 2026</p>
+          <div className="flex items-center space-x-4 mb-6">
+            <div className="w-12 h-12 rounded-xl bg-[var(--brand-teal-subtle)] text-[var(--brand-teal)] flex items-center justify-center">
+              <Shield className="w-6 h-6" />
+            </div>
+            <h1 className="text-4xl font-display font-extrabold text-[var(--text-heading)]">Privacy Policy</h1>
+          </div>
+          <p className="text-[var(--text-muted)] text-lg">Last updated: September 22, 2026</p>
         </div>
       </section>
 
-      <section className="bg-[var(--bg-page)] py-16 px-6 lg:px-8">
-        <div className="max-w-4xl mx-auto space-y-8 text-[var(--text-body)] leading-relaxed text-sm sm:text-base">
-          <div>
-            <h2 className="font-display font-bold text-2xl text-[var(--text-heading)] mb-3">1. Information We Collect</h2>
-            <p>
-              When you submit a project inquiry or contact DigiHust via our quote portal, we collect your full name, work email address, company name, project specifications, target budget, and any uploaded project brief documents.
-            </p>
-          </div>
+      <section className="py-16 px-6 lg:px-8">
+        <div className="max-w-4xl mx-auto prose prose-invert prose-teal">
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="space-y-12"
+          >
+            <div>
+              <h2 className="text-2xl font-bold text-[var(--text-heading)] mb-4">1. Data Collection</h2>
+              <p className="text-[var(--text-muted)] leading-relaxed mb-4">
+                We collect information that you provide directly to us when you request a quote, fill out a form, apply for a job, or communicate with us. The types of personal information we may collect include your name, email address, phone number, company details, and any other information you choose to provide.
+              </p>
+              <p className="text-[var(--text-muted)] leading-relaxed">
+                We also automatically collect certain information about your device and how you interact with our website, including your IP address, browser type, and operating system.
+              </p>
+            </div>
 
-          <div>
-            <h2 className="font-display font-bold text-2xl text-[var(--text-heading)] mb-3">2. How We Use Project Information</h2>
-            <p>
-              The information submitted is used exclusively for evaluating technical project feasibility, assembling appropriate specialized engineering squads, and preparing structured milestone proposals. We do not sell, rent, or monetize client project information to any third parties.
-            </p>
-          </div>
+            <div>
+              <h2 className="text-2xl font-bold text-[var(--text-heading)] mb-4">2. Use of Information</h2>
+              <p className="text-[var(--text-muted)] leading-relaxed">
+                We use the information we collect to:
+              </p>
+              <ul className="list-disc pl-6 mt-4 space-y-2 text-[var(--text-muted)]">
+                <li>Provide, maintain, and improve our services;</li>
+                <li>Process transactions and send related information;</li>
+                <li>Respond to your comments, questions, and requests;</li>
+                <li>Communicate with you about products, services, and events;</li>
+                <li>Monitor and analyze trends, usage, and activities in connection with our website.</li>
+              </ul>
+            </div>
 
-          <div>
-            <h2 className="font-display font-bold text-2xl text-[var(--text-heading)] mb-3">3. Non-Disclosure & Confidentiality (NDA)</h2>
-            <p>
-              All proprietary business logic, design assets, and architectural documents shared with DigiHust are treated with strict confidentiality. Full Non-Disclosure Agreements (NDAs) are executed prior to commencing project sprints.
-            </p>
-          </div>
+            <div>
+              <h2 className="text-2xl font-bold text-[var(--text-heading)] mb-4">3. Cookies & Tracking</h2>
+              <p className="text-[var(--text-muted)] leading-relaxed">
+                We use cookies and similar tracking technologies to track the activity on our website and hold certain information. Cookies are files with a small amount of data which may include an anonymous unique identifier. You can instruct your browser to refuse all cookies or to indicate when a cookie is being sent.
+              </p>
+            </div>
 
-          <div>
-            <h2 className="font-display font-bold text-2xl text-[var(--text-heading)] mb-3">4. Cookies & Analytics</h2>
-            <p>
-              We use minimal essential cookies to analyze website performance, track Core Web Vitals, and maintain user preferences. You can adjust your cookie settings at any time via the cookie consent banner.
-            </p>
-          </div>
-
-          <div>
-            <h2 className="font-display font-bold text-2xl text-[var(--text-heading)] mb-3">5. Contact Us</h2>
-            <p>
-              If you have any questions regarding our privacy practices or data policies, please reach out to our legal team at <a href="mailto:privacy@digihust.com" className="text-[var(--brand-teal)] font-bold underline">privacy@digihust.com</a>.
-            </p>
-          </div>
+            <div>
+              <h2 className="text-2xl font-bold text-[var(--text-heading)] mb-4">4. Contact Information</h2>
+              <p className="text-[var(--text-muted)] leading-relaxed">
+                If you have any questions about this Privacy Policy, please contact us at:
+              </p>
+              <div className="mt-4 p-6 rounded-2xl bg-[var(--bg-subtle)] border border-[var(--border-subtle)]">
+                <a href="mailto:digihust@gmail.com" className="text-[var(--brand-teal)] hover:underline font-bold text-lg">
+                  digihust@gmail.com
+                </a>
+              </div>
+            </div>
+          </motion.div>
         </div>
       </section>
     </div>

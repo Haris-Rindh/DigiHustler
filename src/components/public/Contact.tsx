@@ -255,6 +255,25 @@ export const Contact: React.FC = () => {
       <SEOHead
         title="Get a Quote & Start a Project — DigiHust"
         description="Submit your digital project scope for web development, UI/UX, AI automation, or cybersecurity. Receive a clear structured proposal within 24 hours."
+        schema={{
+          '@context': 'https://schema.org',
+          '@type': 'ContactPage',
+          name: 'Contact DigiHust',
+          description: 'Submit your digital project scope for web development, UI/UX, AI automation, or cybersecurity.',
+          url: 'https://www.digihust.tech/contact',
+          mainEntity: {
+            '@type': 'Organization',
+            name: 'DigiHust',
+            url: 'https://www.digihust.tech',
+            contactPoint: {
+              '@type': 'ContactPoint',
+              telephone: '+92-300-1234567',
+              contactType: 'customer service',
+              email: 'contact@digihust.tech',
+              availableLanguage: ['English', 'Urdu']
+            }
+          }
+        }}
       />
 
       {/* ── AUTO IMAGE SLIDER SHOWCASE (AT VERY START) ── */}

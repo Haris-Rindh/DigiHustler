@@ -51,7 +51,7 @@ const routes = [
     summary: 'Complete typography & vector logo guidelines, comprehensive Figma component token libraries, and 3D motion trailers.',
   },
   {
-    path: '/work',
+    path: '/portfolio',
     title: 'Our Work & Case Studies — DigiHust',
     description: 'Explore DigiHust portfolio of delivered projects across full-stack development, brand identity systems, AI automation, and business intelligence.',
     h1: 'Selected Work & Case Studies.',
@@ -63,6 +63,13 @@ const routes = [
     description: 'Learn about DigiHust structured 4-step process: Intake & Scoping, Specialist Squad Assembly, Sprint Execution, and Production Handover.',
     h1: 'How DigiHust Works.',
     summary: 'A disciplined 4-step delivery methodology with single contract accountability, milestone staging reviews, and verified Digiskill domain specialists.',
+  },
+  {
+    path: '/careers',
+    title: 'Careers at DigiHust | Join our Digital Squad',
+    description: 'Join DigiHust and work on cutting-edge Web Development, AI Automation, and Design Systems. See our open positions.',
+    h1: 'Build the future of digital with DigiHust.',
+    summary: 'We are a collective of engineers, designers, and strategists delivering high-impact solutions for international clients.',
   },
   {
     path: '/about',
@@ -108,42 +115,42 @@ const routes = [
   },
   // Case Studies
   {
-    path: '/work/real-estate-marketplace-portal',
+    path: '/portfolio/real-estate-marketplace-portal',
     title: 'Real-Estate Marketplace Portal & Agent CRM — Case Study | DigiHust',
     description: 'A high-throughput property listing and agent management platform with sub-second geospatial search and +140% conversion growth for Estates Direct UK.',
     h1: 'Real-Estate Marketplace Portal & Agent CRM',
     summary: 'Next.js, Node.js, PostgreSQL with PostGIS for sub-second spatial queries, achieving 780ms average page loads and +140% lead growth.',
   },
   {
-    path: '/work/automotive-brand-identity',
+    path: '/portfolio/automotive-brand-identity',
     title: 'Automotive Brand Identity & 3D Motion Launch — Case Study | DigiHust',
     description: 'Complete brand redesign, comprehensive design system, and 3D motion advertisement teasers generating 2.4M impressions for Veloce Motors.',
     h1: 'Automotive Brand Identity & 3D Motion Launch',
     summary: 'Complete brand guidelines, Cinema 4D/After Effects motion ads, and Figma design system for European EV performance startup.',
   },
   {
-    path: '/work/hospital-bi-dashboard',
+    path: '/portfolio/hospital-bi-dashboard',
     title: 'Hospital Executive BI & Revenue Analytics Suite — Case Study | DigiHust',
     description: 'Centralized disparate clinical and financial SQL databases into an executive PowerBI dashboard saving 12+ hours weekly for Titan Healthcare.',
     h1: 'Hospital Executive BI & Revenue Analytics Suite',
     summary: 'Automated Python ETL pipelines, SQL analytics warehouse, and interactive PowerBI dashboard for 35+ regional hospital department heads.',
   },
   {
-    path: '/work/saas-fintech-trading-console',
+    path: '/portfolio/saas-fintech-trading-console',
     title: 'Enterprise FinTech Trading Console — Case Study | DigiHust',
     description: 'A sub-millisecond market execution dashboard engineered with virtualized tables, WebSocket pipelines, and zero-latency order book rendering.',
     h1: 'Enterprise FinTech High-Throughput Trading Console',
     summary: 'Virtualized React rendering pipeline handling 2,000+ price ticks per second with steady 60 FPS under peak market load.',
   },
   {
-    path: '/work/ai-logistics-customer-bot',
+    path: '/portfolio/ai-logistics-customer-bot',
     title: 'Autonomous Logistics Customer Support AI Agent — Case Study | DigiHust',
     description: 'Custom OpenAI-powered agent communicating over WhatsApp Business API resolving 78% of inquiries autonomously for LogiXpress.',
     h1: 'Autonomous Logistics Customer Support AI Agent',
     summary: 'OpenAI GPT-4o function-calling integrated with WhatsApp Business API and ERP tracking database, dropping response times from 4 hours to < 6s.',
   },
   {
-    path: '/work/ecommerce-luxury-brand',
+    path: '/portfolio/ecommerce-luxury-brand',
     title: 'Luxury Goods Brand System & Mobile E-Commerce Store — Case Study | DigiHust',
     description: 'Complete luxury visual identity, custom high-conversion Shopify storefront, and iOS mobile mockup suite generating $280K in 30 days.',
     h1: 'Luxury Goods Brand System & Mobile E-Commerce Store',
@@ -225,7 +232,7 @@ routes.forEach((route) => {
         <nav aria-label="Main Navigation">
           <a href="/">DigiHust</a>
           <a href="/services">Services</a>
-          <a href="/work">Work</a>
+          <a href="/portfolio">Work</a>
           <a href="/how-it-works">How It Works</a>
           <a href="/about">About</a>
           <a href="/team">Team</a>
@@ -296,3 +303,5 @@ Sitemap: ${sitemapUrl}/sitemap.xml
 `;
 fs.writeFileSync(path.join(distDir, 'robots.txt'), robotsContent, 'utf-8');
 console.log('robots.txt successfully generated!');
+
+

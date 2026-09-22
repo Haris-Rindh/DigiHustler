@@ -23,6 +23,7 @@ import { Blog } from './components/public/Blog';
 import { BlogPost } from './components/public/BlogPost';
 import { Contact } from './components/public/Contact';
 import { Apply } from './components/public/Apply';
+import { Careers } from './components/public/Careers';
 import { PrivacyPolicy } from './components/public/PrivacyPolicy';
 import { TermsOfService } from './components/public/TermsOfService';
 import { CertificateVerification } from './components/public/CertificateVerification';
@@ -94,8 +95,8 @@ export const App: React.FC = () => {
                 {/* ── Public Core Routes ── */}
                 <Route path="/" element={<Home />} />
                 <Route path="/services" element={<Services />} />
-                <Route path="/work" element={<Work />} />
-                <Route path="/work/:slug" element={<CaseStudyDetail />} />
+                <Route path="/portfolio" element={<Work />} />
+                <Route path="/portfolio/:slug" element={<CaseStudyDetail />} />
                 <Route path="/how-it-works" element={<HowItWorks />} />
                 <Route path="/about" element={<About />} />
                 <Route path="/team" element={<Team />} />
@@ -103,6 +104,7 @@ export const App: React.FC = () => {
                 <Route path="/blog/:slug" element={<BlogPost />} />
                 <Route path="/contact" element={<Contact />} />
                 <Route path="/apply" element={<Apply />} />
+                <Route path="/careers" element={<Careers />} />
                 <Route path="/privacy" element={<PrivacyPolicy />} />
                 <Route path="/terms" element={<TermsOfService />} />
 
@@ -162,3 +164,5 @@ export const App: React.FC = () => {
     </AppProvider>
   );
 };
+
+

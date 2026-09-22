@@ -20,7 +20,7 @@ export const SiteContentManager: React.FC = () => {
   } = useApp();
 
   const [activeTab, setActiveTab] = useState<
-    'hero' | 'valueProps' | 'caseStudies' | 'testimonials' | 'services' | 'packages' | 'team' | 'blog' | 'faqs' | 'about' | 'contact' | 'images'
+    'hero' | 'valueProps' | 'caseStudies' | 'testimonials' | 'services' | 'packages' | 'team' | 'blog' | 'faqs' | 'about' | 'contact' | 'images' | 'careers'
   >('hero');
 
   const [savedFeedback, setSavedFeedback] = useState<string | null>(null);
@@ -30,6 +30,7 @@ export const SiteContentManager: React.FC = () => {
   const [heroDraft, setHeroDraft] = useState(safeContent.hero || DEFAULT_SITE_CONTENT.hero);
   const [aboutDraft, setAboutDraft] = useState(safeContent.about || DEFAULT_SITE_CONTENT.about);
   const [contactDraft, setContactDraft] = useState(safeContent.contact || DEFAULT_SITE_CONTENT.contact);
+  const [careersDraft, setCareersDraft] = useState(safeContent.careers || { noPositionsMessage: "We're always looking for exceptional talent, but we don't have any open positions right now. Check back soon!", openPositions: [] });
   const [customImagesDraft, setCustomImagesDraft] = useState(safeContent.customImages || {});
 
   // Keep drafts synchronized with latest cloud state
@@ -402,6 +403,7 @@ export const SiteContentManager: React.FC = () => {
           { id: 'blog' as const,        label: '6. Blog & Insights',  icon: <FileText className="w-3.5 h-3.5" />,   status: 'live',     tip: 'Manage articles and technical guides on /blog and /blog/:slug' },
           { id: 'about' as const,       label: '7. Company Story',    icon: <Info className="w-3.5 h-3.5" />,       status: 'live',     tip: 'Mission, vision, and company story shown on /about page' },
           { id: 'contact' as const,     label: '8. Contact Info',     icon: <PhoneCall className="w-3.5 h-3.5" />,  status: 'live',     tip: 'Email, phone, and address shown on the /contact page sidebar' },
+          { id: 'careers' as const,     label: '9. Careers',          icon: <Briefcase className="w-3.5 h-3.5" />,  status: 'live',     tip: 'Manage open positions and messaging on /careers' },
         ].map((tab) => (
           <button
             key={tab.id}
@@ -1689,7 +1691,95 @@ export const SiteContentManager: React.FC = () => {
         </form>
       )}
 
-      {/* ── TAB 9: IMAGE ASSET STUDIO ── */}
+      
+      {/* ── TAB: CAREERS ── */}
+      {activeTab === 'careers' && (
+        <form onSubmit={handleSaveCareers} className="p-6 sm:p-8 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] space-y-6 shadow-xl">
+          <div className="flex items-center justify-between pb-4 border-b border-[var(--border-subtle)]">
+            <h3 className="font-display font-extrabold text-lg text-[var(--text-heading)]">Careers Page Content</h3>
+            <button type="submit" className="px-5 py-2 rounded-xl bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-white text-xs font-bold shadow-md cursor-pointer">
+              Save Careers Changes
+            </button>
+          </div>
+
+          <div>
+            <label className="block text-xs font-bold uppercase text-[var(--text-muted)] mb-1">No Open Positions Message</label>
+            <textarea
+              value={careersDraft.noPositionsMessage}
+              onChange={(e) => setCareersDraft({ ...careersDraft, noPositionsMessage: e.target.value })}
+              rows={3}
+              className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl p-3 text-xs"
+            />
+          </div>
+
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <label className="block text-xs font-bold uppercase text-[var(--text-muted)]">Open Positions ({(careersDraft.openPositions || []).length})</label>
+              <button
+                type="button"
+                onClick={() => setCareersDraft({ ...careersDraft, openPositions: [...(careersDraft.openPositions || []), { title: '', department: '', location: '' }] })}
+                className="text-xs font-bold text-[var(--brand-teal)] hover:underline"
+              >
+                + Add Position
+              </button>
+            </div>
+            
+            {(careersDraft.openPositions || []).map((pos, idx) => (
+              <div key={idx} className="p-4 rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-page)] relative group">
+                <button
+                  type="button"
+                  onClick={() => {
+                    const newArr = [...careersDraft.openPositions];
+                    newArr.splice(idx, 1);
+                    setCareersDraft({ ...careersDraft, openPositions: newArr });
+                  }}
+                  className="absolute top-4 right-4 text-[var(--text-muted)] hover:text-rose-400"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <input
+                    type="text"
+                    placeholder="Job Title"
+                    value={pos.title}
+                    onChange={(e) => {
+                      const newArr = [...careersDraft.openPositions];
+                      newArr[idx].title = e.target.value;
+                      setCareersDraft({ ...careersDraft, openPositions: newArr });
+                    }}
+                    className="w-full bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-lg px-3 py-2 text-xs"
+                  />
+                  <input
+                    type="text"
+                    placeholder="Department (e.g. Engineering)"
+                    value={pos.department}
+                    onChange={(e) => {
+                      const newArr = [...careersDraft.openPositions];
+                      newArr[idx].department = e.target.value;
+                      setCareersDraft({ ...careersDraft, openPositions: newArr });
+                    }}
+                    className="w-full bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-lg px-3 py-2 text-xs"
+                  />
+                  <input
+                    type="text"
+                    placeholder="Location (e.g. Remote, Lahore)"
+                    value={pos.location}
+                    onChange={(e) => {
+                      const newArr = [...careersDraft.openPositions];
+                      newArr[idx].location = e.target.value;
+                      setCareersDraft({ ...careersDraft, openPositions: newArr });
+                    }}
+                    className="w-full bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-lg px-3 py-2 text-xs"
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+        </form>
+      )}
+
+
+      {/* ── TAB 11: IMAGE ASSET STUDIO ── */}
       {activeTab === 'images' && (
         <div className="space-y-6">
           <form onSubmit={handleAddCustomImage} className="p-6 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] space-y-4">
@@ -1765,3 +1855,5 @@ export const SiteContentManager: React.FC = () => {
     </div>
   );
 };
+
+

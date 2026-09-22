@@ -85,7 +85,7 @@ export const Footer: React.FC = () => {
             <h4 className="text-xs font-extrabold text-[var(--text-heading)] uppercase tracking-widest">Company</h4>
             <ul className="space-y-2.5 text-sm text-[var(--text-muted)]">
               {[
-                { label: 'Selected Work', href: '/work' },
+                { label: 'Selected Work', href: '/portfolio' },
                 { label: 'How We Work', href: '/how-it-works' },
                 { label: 'Our Story', href: '/about' },
                 { label: 'Meet the Team', href: '/team' },
@@ -113,8 +113,6 @@ export const Footer: React.FC = () => {
             <Link to="/privacy" className="hover:text-[var(--text-heading)] transition-colors">Privacy Policy</Link>
             <span>·</span>
             <Link to="/terms" className="hover:text-[var(--text-heading)] transition-colors">Terms of Service</Link>
-            <span>·</span>
-            <Link to="/portal/login" className="hover:text-[var(--text-heading)] transition-colors">Team Login</Link>
           </div>
         </div>
 
@@ -122,3 +120,5 @@ export const Footer: React.FC = () => {
     </footer>
   );
 };
+
+

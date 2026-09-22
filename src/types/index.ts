@@ -490,6 +490,17 @@ export interface SiteBlogPost {
   tags?: string[];
 }
 
+export interface CareerJob {
+  title: string;
+  department: string;
+  location: string;
+}
+
+export interface SiteCareersContent {
+  noPositionsMessage: string;
+  openPositions: CareerJob[];
+}
+
 export interface SiteContent {
   hero: SiteHeroContent;
   valueProps: SiteValueProp[];
@@ -504,6 +515,7 @@ export interface SiteContent {
   customImages: Record<string, string>;
   certificateTemplates?: CertificateTemplate[];
   blogPosts?: SiteBlogPost[];
+  careers?: SiteCareersContent;
   // Pinned member IDs in exact order — stored in cloud for cross-device sync
   pinnedMemberIds?: string[];
 }
@@ -531,3 +543,4 @@ export interface SecurityAuditLog {
   targetName?: string;
   details: string;
 }
+

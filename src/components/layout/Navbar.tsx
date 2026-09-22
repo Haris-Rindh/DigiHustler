@@ -29,7 +29,7 @@ export const Navbar: React.FC = () => {
 
   const navLinks = [
     { label: t('nav_services'), href: '/services' },
-    { label: t('nav_work'), href: '/work' },
+    { label: t('nav_work'), href: '/portfolio' },
     { label: t('nav_how_it_works'), href: '/how-it-works' },
     { label: t('nav_about'), href: '/about' },
     { label: t('nav_team'), href: '/team' },
@@ -175,4 +175,6 @@ export const Navbar: React.FC = () => {
     </header>
   );
 };
+
+
 
