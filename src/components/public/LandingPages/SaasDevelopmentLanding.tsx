@@ -13,6 +13,23 @@ export const SaasDevelopmentLanding: React.FC = () => {
       <SEOHead
         title="Hire Dedicated SaaS & Web App Engineering Squads | DigiHust"
         description="Build and scale production-grade SaaS MVPs and custom web applications. Coordinated full-stack engineering squads delivering React, Next.js, Node.js, and cloud architectures under managed SLAs for US, UK, EU, and Gulf founders."
+        schema={{
+          '@context': 'https://schema.org',
+          '@type': 'Service',
+          serviceType: 'SaaS & Custom Web Application Development',
+          provider: {
+            '@type': 'Organization',
+            name: 'DigiHust',
+            url: 'https://www.digihust.tech'
+          },
+          areaServed: ['US', 'UK', 'EU', 'Global'],
+          description: 'Custom SaaS MVP development, enterprise scalable architecture, and dedicated full-stack engineering squads.',
+          offers: {
+            '@type': 'Offer',
+            availability: 'https://schema.org/InStock',
+            priceCurrency: 'USD'
+          }
+        }}
       />
 
       {/* Hero Section */}

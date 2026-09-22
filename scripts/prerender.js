@@ -188,7 +188,7 @@ routes.forEach((route) => {
   );
 
   // Add Canonical link & OpenGraph tags in head
-  const baseUrl = process.env.VITE_SITE_URL || '';
+  const baseUrl = process.env.VITE_SITE_URL || 'https://www.digihust.tech';
   const canonicalUrl = `${baseUrl}${route.path === '/' ? '/' : route.path}`;
   const headInjection = `
     <link rel="canonical" href="${canonicalUrl}" />
@@ -199,7 +199,21 @@ routes.forEach((route) => {
     <meta property="og:site_name" content="DigiHust" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="${route.title}" />
+    
     <meta name="twitter:description" content="${route.description}" />
+    <script type="application/ld+json">${JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'ProfessionalService',
+      name: 'DigiHust',
+      url: baseUrl,
+      logo: `${baseUrl}/favicon.svg`,
+      image: `${baseUrl}/assets/slideshow 1-BsO_jRxb.avif`,
+      description: route.description,
+      address: {
+        '@type': 'PostalAddress',
+        addressCountry: 'PK'
+      }
+    })}</script>
   `;
 
   html = html.replace('</head>', `${headInjection}\n  </head>`);
@@ -244,3 +258,41 @@ routes.forEach((route) => {
 });
 
 console.log(`Successfully pre-rendered ${routes.length} static HTML pages in dist/!`);
+
+
+// Generate Sitemap
+console.log('Generating sitemap.xml...');
+const sitemapUrl = process.env.VITE_SITE_URL || 'https://www.digihust.tech';
+let sitemapContent = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
+
+routes.forEach((route) => {
+  const isHome = route.path === '/';
+  const priority = isHome ? '1.0' : route.path.startsWith('/services') ? '0.9' : '0.8';
+  const loc = `${sitemapUrl}${isHome ? '' : route.path}`;
+  sitemapContent += `  <url>
+    <loc>${loc}</loc>
+    <lastmod>${new Date().toISOString()}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>${priority}</priority>
+  </url>\n`;
+});
+
+sitemapContent += `</urlset>`;
+fs.writeFileSync(path.join(distDir, 'sitemap.xml'), sitemapContent, 'utf-8');
+console.log('sitemap.xml successfully generated!');
+
+// Generate Robots.txt
+console.log('Generating robots.txt...');
+const robotsContent = `User-agent: *
+Allow: /
+
+# Private Routes
+Disallow: /portal/
+Disallow: /admin/
+Disallow: /dashboard/
+Disallow: /project/track/
+
+Sitemap: ${sitemapUrl}/sitemap.xml
+`;
+fs.writeFileSync(path.join(distDir, 'robots.txt'), robotsContent, 'utf-8');
+console.log('robots.txt successfully generated!');

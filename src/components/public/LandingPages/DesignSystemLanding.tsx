@@ -13,6 +13,23 @@ export const DesignSystemLanding: React.FC = () => {
       <SEOHead
         title="Brand Identity & High-Converting UI/UX Design Systems | DigiHust"
         description="Transform your digital presence with enterprise brand identity systems, Figma design tokens, responsive UI/UX prototypes, and 3D motion graphics created by DigiHust's Creative Squad."
+        schema={{
+          '@context': 'https://schema.org',
+          '@type': 'Service',
+          serviceType: 'Brand Identity & UI/UX Design',
+          provider: {
+            '@type': 'Organization',
+            name: 'DigiHust',
+            url: 'https://www.digihust.tech'
+          },
+          areaServed: 'Global',
+          description: 'High-converting UI/UX design, enterprise Figma design systems, brand guidelines, and custom 3D motion graphics.',
+          offers: {
+            '@type': 'Offer',
+            availability: 'https://schema.org/InStock',
+            priceCurrency: 'USD'
+          }
+        }}
       />
 
       {/* Hero Section */}

@@ -15,6 +15,18 @@ export const About: React.FC = () => {
       <SEOHead
         title="About DigiHust — Our Origin, Mission & Team Model"
         description="Learn how DigiHust was founded inside the Digiskill ecosystem to bridge Pakistani digital talent with international client opportunities under one managed entity."
+        schema={{
+          '@context': 'https://schema.org',
+          '@type': 'AboutPage',
+          name: 'About DigiHust',
+          description: 'Learn how DigiHust was founded inside the Digiskill ecosystem to bridge Pakistani digital talent with international client opportunities under one managed entity.',
+          url: 'https://www.digihust.tech/about',
+          publisher: {
+            '@type': 'Organization',
+            name: 'DigiHust',
+            url: 'https://www.digihust.tech'
+          }
+        }}
       />
 
       {/* Header */}

@@ -13,6 +13,23 @@ export const AiAutomationLanding: React.FC = () => {
       <SEOHead
         title="AI Workflow Automation & Custom LLM Engineering | DigiHust"
         description="Deploy enterprise AI agents, OpenAI integrations, n8n automated workflows, and intelligent data extraction pipelines. Eliminate repetitive operational overhead with DigiHust's AI engineering squad."
+        schema={{
+          '@context': 'https://schema.org',
+          '@type': 'Service',
+          serviceType: 'AI Workflow Automation & LLM Engineering',
+          provider: {
+            '@type': 'Organization',
+            name: 'DigiHust',
+            url: 'https://www.digihust.tech'
+          },
+          areaServed: 'Global',
+          description: 'Custom AI agent deployment, process automation, RAG pipelines, and n8n orchestration for enterprise efficiency.',
+          offers: {
+            '@type': 'Offer',
+            availability: 'https://schema.org/InStock',
+            priceCurrency: 'USD'
+          }
+        }}
       />
 
       {/* Hero Section */}

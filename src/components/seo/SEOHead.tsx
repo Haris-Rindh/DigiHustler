@@ -85,8 +85,8 @@ export const SEOHead: React.FC<SEOProps> = ({
       '@context': 'https://schema.org',
       '@type': 'ProfessionalService',
       name: 'DigiHust',
-      url: currentOrigin || 'https://digihust.com',
-      logo: `${currentOrigin || 'https://digihust.com'}/favicon.svg`,
+      url: currentOrigin || 'https://www.digihust.tech',
+      logo: `${currentOrigin || 'https://www.digihust.tech'}/favicon.svg`,
       image: ogImage,
       description: description,
       address: {
