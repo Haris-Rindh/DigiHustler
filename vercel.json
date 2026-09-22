@@ -10,5 +10,11 @@
       "destination": "/portfolio/:slug*",
       "permanent": true
     }
+  ],
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
   ]
 }
