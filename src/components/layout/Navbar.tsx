@@ -34,6 +34,7 @@ export const Navbar: React.FC = () => {
     { label: t('nav_about'), href: '/about' },
     { label: t('nav_team'), href: '/team' },
     { label: t('nav_blog'), href: '/blog' },
+    { label: 'Careers', href: '/careers' },
     { label: t('nav_contact'), href: '/contact' },
   ];
 
@@ -175,6 +176,7 @@ export const Navbar: React.FC = () => {
     </header>
   );
 };
+
 
 
 
