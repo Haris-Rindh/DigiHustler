@@ -6,6 +6,7 @@ import {
   Calendar, Layers, Paperclip, CheckSquare, Sparkles, Trash2 
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
+import { emailService } from '../../lib/emailService';
 import { Assignment, PipelineStage, GroupId } from '../../types';
 import { PERMISSIONS, sanitizeAssignmentForUser } from '../../lib/permissions';
 
@@ -47,9 +48,9 @@ export const AssignmentWorkspace: React.FC = () => {
   }
 
   // Filter assignments based on 4-Tier Access Matrix:
-  // - CEO & Manager: All assignments
-  // - Leader: Assignments where they are assignedLeaderId or squad matches
-  // - Member: Assignments where they are inside assignedMemberIds
+  // | CEO & Manager: All assignments
+  // | Leader: Assignments where they are assignedLeaderId or squad matches
+  // | Member: Assignments where they are inside assignedMemberIds
   const visibleAssignments = (assignments || []).filter((asgn) => {
     if (!asgn) return false;
     if (currentTier === 'ceo' || currentTier === 'manager') return true;

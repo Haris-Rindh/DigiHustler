@@ -828,7 +828,7 @@ export const CertificateManager: React.FC = () => {
                             } else if (newType === 'appreciation') {
                               autoTitle = 'Letter of Appreciation & Contribution';
                             } else if (newType === 'other') {
-                              autoTitle = entry.customType ? `${entry.customType} — DigiHust` : 'Official Verified Document';
+                              autoTitle = entry.customType ? `${entry.customType} | DigiHust` : 'Official Verified Document';
                             }
                             handleUpdateEntry(entry.id, { 
                               type: newType, 
@@ -860,7 +860,7 @@ export const CertificateManager: React.FC = () => {
                               const val = e.target.value;
                               handleUpdateEntry(entry.id, { 
                                 customType: val,
-                                title: val ? `${val} — DigiHust` : entry.title 
+                                title: val ? `${val} | DigiHust` : entry.title 
                               });
                             }}
                             placeholder="e.g. Recommendation Letter, Diploma..."

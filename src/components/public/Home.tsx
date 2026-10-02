@@ -176,7 +176,7 @@ export const Home: React.FC = () => {
   return (
     <div className="overflow-hidden">
       <SEOHead
-        title="DigiHust — Digital Services Handled by Specialized Talent"
+        title="DigiHust | Digital Services Handled by Specialized Talent"
         description="One company. Coordinated specialized talent. DigiHust delivers web engineering, design systems, AI automations, and cybersecurity under one managed roof."
       />
 
@@ -316,20 +316,6 @@ export const Home: React.FC = () => {
             </span>
           </a>
         </motion.div>
-      </section>
-
-      {/* ── CLIENT LOGO TRUST STRIP ── */}
-      <section className="bg-[var(--bg-subtle)] border-b border-[var(--border-subtle)] py-6 px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[var(--text-muted)]">
-          <span className="font-bold uppercase tracking-wider text-[var(--brand-teal)]">{t('trust_brands')}</span>
-          <div className="flex flex-wrap items-center gap-8 font-display font-extrabold text-sm text-[var(--text-heading)] opacity-85">
-            <span>Estates Direct UK</span>
-            <span>Veloce Motors</span>
-            <span>Titan Healthcare</span>
-            <span>Apex FinTech</span>
-            <span>LogiXpress Global</span>
-          </div>
-        </div>
       </section>
 
       {/* ── METRICS STRIP ── */}

@@ -389,6 +389,7 @@ export interface SiteValueProp {
 }
 
 export interface SiteCaseStudy {
+  projectUrl?: string;
   id: string;
   slug: string;
   category: string;
@@ -502,6 +503,7 @@ export interface SiteCareersContent {
 }
 
 export interface SiteContent {
+  howItWorksVideoUrl?: string;
   hero: SiteHeroContent;
   valueProps: SiteValueProp[];
   caseStudies: SiteCaseStudy[];
@@ -518,6 +520,7 @@ export interface SiteContent {
   careers?: SiteCareersContent;
   // Pinned member IDs in exact order — stored in cloud for cross-device sync
   pinnedMemberIds?: string[];
+  howItWorksVideoUrl?: string;
 }
 
 // ── SECURITY & PERMISSION AUDIT LOG TYPES ────────────────────────────────────

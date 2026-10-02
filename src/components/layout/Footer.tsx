@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ShieldCheck, Linkedin, Github, Facebook, Instagram, Mail } from 'lucide-react';
+import { ShieldCheck, Linkedin, Github, Facebook, Instagram, Twitter, Mail, AtSign } from 'lucide-react';
 import logoImg from '../../assets/logo.png';
 
 export const Footer: React.FC = () => {
@@ -35,12 +35,15 @@ export const Footer: React.FC = () => {
             </p>
             
             {/* Social Vector Icons */}
-            <div className="flex items-center space-x-2.5 pt-2">
+            <div className="flex flex-wrap gap-2.5 pt-2">
               {[
                 { label: 'LinkedIn', icon: <Linkedin className="w-4 h-4 text-[#0A66C2] group-hover:scale-110 transition-transform duration-150" />, href: 'https://www.linkedin.com/company/digihust/' },
-                { label: 'GitHub', icon: <Github className="w-4 h-4 text-[var(--text-heading)] group-hover:scale-110 transition-transform duration-150" />, href: 'https://github.com/digihust' },
-                { label: 'Facebook', icon: <Facebook className="w-4 h-4 text-[#1877F2] group-hover:scale-110 transition-transform duration-150" />, href: 'https://www.facebook.com/share/p/1EubKwa3Ce/' },
-                { label: 'Email Inquiries', icon: <Mail className="w-4 h-4 text-[var(--brand-teal)] group-hover:scale-110 transition-transform duration-150" />, href: 'mailto:contact@digihust.com' },
+                { label: 'GitHub', icon: <Github className="w-4 h-4 text-[var(--text-heading)] group-hover:scale-110 transition-transform duration-150" />, href: 'https://github.com/DigiHust-Official' },
+                { label: 'Facebook', icon: <Facebook className="w-4 h-4 text-[#1877F2] group-hover:scale-110 transition-transform duration-150" />, href: 'https://www.facebook.com/digihust.tech' },
+                { label: 'Instagram', icon: <Instagram className="w-4 h-4 text-[#E1306C] group-hover:scale-110 transition-transform duration-150" />, href: 'https://www.instagram.com/digi_hust/' },
+                { label: 'Twitter/X', icon: <Twitter className="w-4 h-4 text-[#1DA1F2] group-hover:scale-110 transition-transform duration-150" />, href: 'https://x.com/DigiHust' },
+                { label: 'Threads', icon: <AtSign className="w-4 h-4 text-[var(--text-heading)] group-hover:scale-110 transition-transform duration-150" />, href: 'https://www.threads.com/@digi_hust' },
+                { label: 'Email Inquiries', icon: <Mail className="w-4 h-4 text-[var(--brand-teal)] group-hover:scale-110 transition-transform duration-150" />, href: 'mailto:digihust@gmail.com' },
               ].map((s) => (
                 <motion.a
                   key={s.label}

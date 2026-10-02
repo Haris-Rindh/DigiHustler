@@ -36,7 +36,7 @@ export const PeopleDirectoryView: React.FC = () => {
   const [selectedUserForRole, setSelectedUserForRole] = useState<UserType | null>(null);
   const [dispatchResult, setDispatchResult] = useState<{ count: number; memberNames: string[] } | null>(null);
 
-  // Pinned Member IDs — read from SiteContent (Supabase-backed, cross-device)
+  // Pinned Member IDs | read from SiteContent (Supabase-backed, cross-device)
   const pinnedIds: string[] = siteContent?.pinnedMemberIds || [];
 
   useEffect(() => {
@@ -120,7 +120,7 @@ export const PeopleDirectoryView: React.FC = () => {
     const bPinnedIdx = pinnedIds.indexOf(b.id);
     if (aPinnedIdx !== -1 && bPinnedIdx === -1) return -1;
     if (aPinnedIdx === -1 && bPinnedIdx !== -1) return 1;
-    if (aPinnedIdx !== -1 && bPinnedIdx !== -1) return aPinnedIdx - bPinnedIdx;
+    if (aPinnedIdx !== -1 && bPinnedIdx !== -1) return aPinnedIdx | bPinnedIdx;
 
     return (a.name || '').localeCompare(b.name || '');
   });

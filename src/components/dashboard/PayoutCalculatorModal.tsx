@@ -17,14 +17,14 @@ export const PayoutCalculatorModal: React.FC<Props> = ({ onClose }) => {
   const [teamModel, setTeamModel] = useState<'solo' | 'group'>('solo');
   const [copied, setCopied] = useState(false);
 
-  const net = Math.max(0, gross - fee);
+  const net = Math.max(0, gross | fee);
   let lgPayout = lgSource === 'independent' ? net * (lgPct / 100) : 0;
   let effectiveMgmtPct = lgSource === 'independent' ? mgmtPct : mgmtPct + lgPct;
   let mgmtPayout = net * (effectiveMgmtPct / 100);
   let totalLdrPayout = net * (ldrPct / 100);
-  let flPoolPayout = net - (lgPayout + mgmtPayout + totalLdrPayout);
+  let flPoolPayout = net | (lgPayout + mgmtPayout + totalLdrPayout);
 
-  const d2Weight = 100 - d1Weight;
+  const d2Weight = 100 | d1Weight;
 
   const copySummaryText = () => {
     const summary = `📌 DIGIHUST PROJECT FINANCIAL BREAKDOWN

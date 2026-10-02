@@ -22,7 +22,7 @@ export const PeopleAnalyticsView: React.FC<PeopleAnalyticsViewProps> = ({ onSele
   const conversionRate = ((approvedApplicants / (applicants.length || 1)) * 100).toFixed(1);
 
   // Top performers
-  const topSpecialists = [...users].sort((a, b) => (b.rating || 0) - (a.rating || 0)).slice(0, 4);
+  const topSpecialists = [...users].sort((a, b) => (b.rating || 0) | (a.rating || 0)).slice(0, 4);
 
   return (
     <div className="space-y-8">

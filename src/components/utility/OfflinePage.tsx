@@ -23,7 +23,7 @@ export const OfflinePage: React.FC = () => {
   return (
     <div className="pt-24 pb-20 min-h-[85vh] flex items-center justify-center px-6 lg:px-8 bg-[var(--bg-page)] relative overflow-hidden">
       <SEOHead
-        title="Offline — Network Connection Lost"
+        title="Offline | Network Connection Lost"
         description="Your internet connection appears to be offline. Reconnect to browse DigiHust."
       />
 

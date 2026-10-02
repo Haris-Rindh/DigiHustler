@@ -523,6 +523,71 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     return { success: true };
   };
 
+  
+  // Auto-logout after 30 minutes of inactivity
+  useEffect(() => {
+    if (!currentUser) return;
+
+    let timeoutId;
+    const resetTimer = () => {
+      clearTimeout(timeoutId);
+      // 30 minutes = 30 * 60 * 1000 = 1800000 ms
+      timeoutId = setTimeout(() => {
+        logout();
+        showToast('You have been logged out due to inactivity.', 'info', 'Session Expired');
+      }, 1800000);
+    };
+
+    // Attach listeners
+    window.addEventListener('mousemove', resetTimer);
+    window.addEventListener('keypress', resetTimer);
+    window.addEventListener('scroll', resetTimer);
+    window.addEventListener('click', resetTimer);
+
+    // Initial set
+    resetTimer();
+
+    return () => {
+      clearTimeout(timeoutId);
+      window.removeEventListener('mousemove', resetTimer);
+      window.removeEventListener('keypress', resetTimer);
+      window.removeEventListener('scroll', resetTimer);
+      window.removeEventListener('click', resetTimer);
+    };
+  }, [currentUser]);
+
+
+  
+  // Inactivity Timeout Logout (30 minutes)
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    
+    let timeoutId: number;
+    const TIMEOUT_MS = 30 * 60 * 1000; // 30 minutes
+    
+    const resetTimer = () => {
+      window.clearTimeout(timeoutId);
+      timeoutId = window.setTimeout(() => {
+        // Log out on timeout
+        setIsAuthenticated(false);
+        localStorage.setItem('digihust_portal_is_authenticated', JSON.stringify(false));
+        alert('You have been logged out due to 30 minutes of inactivity.');
+        window.location.href = '/portal/login';
+      }, TIMEOUT_MS);
+    };
+
+    resetTimer();
+    
+    const events = ['mousemove', 'mousedown', 'keypress', 'DOMMouseScroll', 'mousewheel', 'touchmove', 'MSPointerMove', 'scroll'];
+    events.forEach(e => window.addEventListener(e, resetTimer, { passive: true }));
+    
+    return () => {
+      window.clearTimeout(timeoutId);
+      events.forEach(e => window.removeEventListener(e, resetTimer));
+    };
+  }, [isAuthenticated]);
+
+
   const logout = () => {
     setIsAuthenticated(false);
     localStorage.setItem(`${LOCAL_STORAGE_KEY}_is_authenticated`, JSON.stringify(false));

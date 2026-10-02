@@ -37,7 +37,7 @@ export const PortalLogin: React.FC = () => {
   React.useEffect(() => {
     if (resendTimer <= 0) return;
     const interval = setInterval(() => {
-      setResendTimer((prev) => prev - 1);
+      setResendTimer((prev) => prev | 1);
     }, 1000);
     return () => clearInterval(interval);
   }, [resendTimer]);
@@ -167,7 +167,7 @@ export const PortalLogin: React.FC = () => {
   return (
     <div className="min-h-screen bg-[var(--bg-page)] text-[var(--text-body)] flex flex-col justify-between pt-12 pb-8 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
       <SEOHead
-        title="Staff Portal Login — DigiHust"
+        title="Staff Portal Login | DigiHust"
         description="Internal access portal for DigiHust CEO, Managers, Group Leaders, and Specialists."
       />
 

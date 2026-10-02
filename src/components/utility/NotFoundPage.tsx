@@ -8,7 +8,7 @@ export const NotFoundPage: React.FC = () => {
   return (
     <div className="pt-24 pb-20 min-h-[85vh] flex items-center justify-center px-6 lg:px-8 bg-[var(--bg-page)] relative overflow-hidden">
       <SEOHead
-        title="404 — Page Not Found"
+        title="404 | Page Not Found"
         description="The page or digital asset you are looking for has moved or does not exist on DigiHust."
       />
 

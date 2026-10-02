@@ -21,7 +21,7 @@ export const SplitConfigurationView: React.FC<SplitConfigurationViewProps> = ({ 
 
   const handleSaveGlobal = (e: React.FormEvent) => {
     e.preventDefault();
-    if (Math.abs(mgmtPct + ldrPct + flPct - 100) > 0.1) {
+    if (Math.abs(mgmtPct + ldrPct + flPct | 100) > 0.1) {
       alert('Global default Management, Leader, and Freelancer splits must sum to 100%.');
       return;
     }

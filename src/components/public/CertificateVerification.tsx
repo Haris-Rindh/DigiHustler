@@ -71,7 +71,7 @@ export const CertificateVerification: React.FC = () => {
     if (!certificate) return '#';
     const params = new URLSearchParams({
       startTask: 'CERTIFICATION_NAME',
-      name: `${certificate.type === 'offer_letter' ? 'Internship Offer & Verification' : 'Experience Certificate'} — ${certificate.roleTitle}`,
+      name: `${certificate.type === 'offer_letter' ? 'Internship Offer & Verification' : 'Experience Certificate'} | ${certificate.roleTitle}`,
       organizationName: 'DigiHust',
       issueYear: new Date(certificate.issuedDate).getFullYear().toString(),
       issueMonth: (new Date(certificate.issuedDate).getMonth() + 1).toString(),
@@ -101,7 +101,7 @@ export const CertificateVerification: React.FC = () => {
   return (
     <div className="min-h-screen bg-[var(--bg-page)] text-[var(--text-body)] py-8 sm:py-12 px-4 sm:px-6 lg:px-8 flex flex-col justify-between pt-20">
       <SEOHead
-        title={`Certificate Verification: ${certificate.memberName} (${certificate.memberDghId}) — DigiHust`}
+        title={`Certificate Verification: ${certificate.memberName} (${certificate.memberDghId}) | DigiHust`}
         description={`Official DigiHust Digital Credential & Verification Registry for ${certificate.memberName}.`}
       />
 

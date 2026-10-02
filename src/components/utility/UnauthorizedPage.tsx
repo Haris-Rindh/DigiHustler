@@ -8,7 +8,7 @@ export const UnauthorizedPage: React.FC = () => {
   return (
     <div className="pt-24 pb-20 min-h-[85vh] flex items-center justify-center px-6 lg:px-8 bg-[var(--bg-page)] relative overflow-hidden">
       <SEOHead
-        title="401 — Authentication Required"
+        title="401 | Authentication Required"
         description="Please authenticate with your DigiHust credentials to access this internal portal workspace."
       />
 

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, ArrowRight } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useScroll, useMotionValueEvent } from 'framer-motion';
 import { LanguageSelector } from '../ui/LanguageSelector';
 import { ThemeToggle } from '../ui/ThemeToggle';
 import { useLanguage } from '../../context/LanguageContext';
@@ -16,6 +16,16 @@ export const Navbar: React.FC = () => {
   const { isAuthenticated } = useApp();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [hidden, setHidden] = useState(false);
+  const { scrollY } = useScroll();
+  useMotionValueEvent(scrollY, "change", (latest) => {
+    const previous = scrollY.getPrevious();
+    if (latest > 150 && latest > previous) {
+      setHidden(true);
+    } else {
+      setHidden(false);
+    }
+  });
 
   const isPortalLogin = location.pathname === '/portal/login';
   const isPortal = location.pathname.startsWith('/portal') || ['/dashboard', '/roster', '/admin'].some(p => location.pathname.startsWith(p));
@@ -57,7 +67,7 @@ export const Navbar: React.FC = () => {
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${
+      className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${hidden ? '-translate-y-full' : 'translate-y-0'} ${
         scrolled
           ? 'bg-[var(--bg-page)]/90 backdrop-blur-md shadow-md border-b border-[var(--border-subtle)] py-0'
           : 'bg-transparent py-2'

@@ -7,7 +7,7 @@ interface ProtectedRouteProps {
 }
 
 /**
- * ProtectedRoute — wraps portal pages and redirects unauthenticated
+ * ProtectedRoute | wraps portal pages and redirects unauthenticated
  * visitors to the portal login page, preserving the intended destination
  * so they are automatically redirected after a successful login.
  */

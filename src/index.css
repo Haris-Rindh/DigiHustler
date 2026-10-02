@@ -271,3 +271,8 @@ h1, h2, h3, h4, h5, h6 {
     color: #022B3A !important;
   }
 }
+
+/* Hide custom cursor when hovering navbar */
+header:hover ~ .custom-cursor { display: none !important; }
+.hide-cursor * { cursor: default !important; }
+

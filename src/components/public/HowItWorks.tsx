@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowRight, CheckCircle2, ChevronDown, HelpCircle, ShieldCheck } from 'lucide-react';
 import { SEOHead } from '../seo/SEOHead';
+import { useApp } from '../../context/AppContext';
 
 const STEPS = [
   {
@@ -76,6 +77,8 @@ const FAQS = [
 
 export const HowItWorks: React.FC = () => {
   const [openFaq, setOpenFaq] = useState<number | null>(0);
+  const { siteContent } = useApp();
+  const videoUrl = siteContent?.howItWorksVideoUrl;
 
   const faqSchema = {
     '@context': 'https://schema.org',
@@ -93,7 +96,7 @@ export const HowItWorks: React.FC = () => {
   return (
     <div className="pt-16">
       <SEOHead
-        title="How It Works & Project Methodology — DigiHust"
+        title="How It Works & Project Methodology | DigiHust"
         description="Learn about DigiHust's structured 4-step process: Intake & Scoping, Specialist Squad Assembly, Sprint Execution, and Production Handover."
         schema={faqSchema}
       />
@@ -119,6 +122,27 @@ export const HowItWorks: React.FC = () => {
         </div>
       </section>
 
+      
+      {videoUrl && (
+        <section className="bg-[var(--bg-subtle)] py-16 px-6 lg:px-8 border-b border-[var(--border-subtle)]">
+          <div className="max-w-5xl mx-auto">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.5 }}
+              className="relative w-full aspect-video rounded-3xl overflow-hidden shadow-2xl border border-[var(--border-subtle)]"
+            >
+              <iframe
+                src={videoUrl}
+                title="How DigiHust Works"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                className="absolute inset-0 w-full h-full"
+              ></iframe>
+            </motion.div>
+          </div>
+        </section>
+      )}
       {/* Process Steps */}
       <section className="bg-[var(--bg-page)] py-20 px-6 lg:px-8">
         <div className="max-w-7xl mx-auto space-y-12">

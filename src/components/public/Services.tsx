@@ -238,7 +238,7 @@ export const Services: React.FC = () => {
   return (
     <div className="pt-16 sm:pt-20 min-h-screen bg-[var(--bg-page)] text-[var(--text-body)]">
       <SEOHead
-        title="Digital Services & Capabilities — DigiHust"
+        title="Digital Services & Capabilities | DigiHust"
         description="Explore DigiHust's full range of services: Web Development, UI/UX Design, AI & Automations, Digital Marketing, Cybersecurity, and Data Intelligence."
       />
 
@@ -379,7 +379,7 @@ export const Services: React.FC = () => {
               Services Built for Execution.
             </h1>
             <p className="text-base sm:text-lg text-[var(--text-body)] max-w-2xl leading-relaxed">
-              Six specialized domains — delivered as one cohesive digital engine. Click any capability below to review included deliverables and technologies.
+              Six specialized domains | delivered as one cohesive digital engine. Click any capability below to review included deliverables and technologies.
             </p>
           </motion.div>
         </div>

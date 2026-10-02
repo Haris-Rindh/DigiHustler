@@ -10,7 +10,7 @@ export interface SEOProps {
   schema?: Record<string, unknown> | Array<Record<string, unknown>>;
 }
 
-const DEFAULT_TITLE = 'DigiHust — Digital Services Handled by Specialized Talent';
+const DEFAULT_TITLE = 'DigiHust | Digital Services Handled by Specialized Talent';
 const DEFAULT_DESC = 'DigiHust delivers web development, design, AI & automation, digital marketing, and cybersecurity through verified specialized teams under one professional brand.';
 const DEFAULT_IMAGE = 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1200&q=80';
 

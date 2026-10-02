@@ -154,7 +154,7 @@ export const Work: React.FC = () => {
   return (
     <div className="pt-16">
       <SEOHead
-        title="Our Work & Case Studies — DigiHust"
+        title="Our Work & Case Studies | DigiHust"
         description="Explore DigiHust's portfolio of delivered projects across full-stack development, brand identity systems, AI automation, and business intelligence."
       />
 
@@ -173,7 +173,7 @@ export const Work: React.FC = () => {
               Selected Work & Case Studies.
             </h1>
             <p className="text-lg text-[var(--text-body)] max-w-2xl leading-relaxed">
-              Explore real solutions engineered by our specialized squads — from enterprise web portals to autonomous AI assistants.
+              Explore real solutions engineered by our specialized squads | from enterprise web portals to autonomous AI assistants.
             </p>
           </motion.div>
         </div>

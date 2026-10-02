@@ -141,7 +141,7 @@ export const DEFAULT_SITE_CONTENT: SiteContent = {
     },
     {
       id: 'vp-2',
-      title: 'Top 5% Vetted DigiSkills Specialists',
+      title: 'Top 5% Vetted Trained & Tested by DigiHust Specialists',
       description: 'Every engineer, designer, and automation specialist on your project is skill-verified with proven real-world delivery history.',
       badge: 'Verified Talent'
     },

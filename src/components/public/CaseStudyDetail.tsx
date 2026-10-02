@@ -163,8 +163,9 @@ export const CaseStudyDetail: React.FC = () => {
   return (
     <div className="pt-20 lg:pt-24 min-h-screen bg-[var(--bg-page)] text-[var(--text-body)]">
       <SEOHead
-        title={`${study.title} — Case Study — DigiHust`}
+        title={`${study.title} | Case Study | DigiHust`}
         description={study.summary}
+        ogImage={study.img || study.imageUrl || study.coverImage}
       />
 
       {/* Header Banner */}

@@ -47,7 +47,7 @@ export const PeopleDirectory: React.FC<PeopleDirectoryProps> = ({
   const [sortField, setSortField] = useState<'name' | 'earnings' | 'projects' | 'rating' | 'joined'>('name');
   const [sortAsc, setSortAsc] = useState(true);
 
-  // Pinned Member IDs — read from SiteContent (Supabase-backed, cross-device)
+  // Pinned Member IDs | read from SiteContent (Supabase-backed, cross-device)
   const pinnedIds: string[] = siteContent?.pinnedMemberIds || [];
 
   useEffect(() => {
@@ -125,7 +125,7 @@ export const PeopleDirectory: React.FC<PeopleDirectoryProps> = ({
       const bPinnedIdx = pinnedIds.indexOf(b.id);
       if (aPinnedIdx !== -1 && bPinnedIdx === -1) return -1;
       if (aPinnedIdx === -1 && bPinnedIdx !== -1) return 1;
-      if (aPinnedIdx !== -1 && bPinnedIdx !== -1) return aPinnedIdx - bPinnedIdx;
+      if (aPinnedIdx !== -1 && bPinnedIdx !== -1) return aPinnedIdx | bPinnedIdx;
 
       // 3. Chosen field sorting
       let valA: any = (a.name || '').toLowerCase();
@@ -523,7 +523,7 @@ export const PeopleDirectory: React.FC<PeopleDirectoryProps> = ({
                           ))}
                           {person.specialties.length > 2 && (
                             <span className="text-[10px] text-[var(--text-dim)] font-bold">
-                              +{person.specialties.length - 2}
+                              +{person.specialties.length | 2}
                             </span>
                           )}
                         </div>

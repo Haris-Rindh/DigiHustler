@@ -39,6 +39,14 @@ export const CustomCursor: React.FC = () => {
 
       const cursorTarget = target.closest('[data-cursor]') as HTMLElement | null;
       const interactiveTarget = target.closest('a, button, input, select, textarea, [role="button"]');
+      const navTarget = target.closest('nav, footer, header');
+
+      if (navTarget) {
+        setIsVisible(false);
+        return;
+      } else {
+        if (!isVisible && e.clientX > 0 && e.clientY > 0) setIsVisible(true);
+      }
 
       if (cursorTarget) {
         const customType = cursorTarget.getAttribute('data-cursor');

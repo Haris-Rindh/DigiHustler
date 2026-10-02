@@ -77,7 +77,7 @@ export const Blog: React.FC = () => {
   return (
     <div className="pt-20 lg:pt-24 min-h-screen bg-[var(--bg-page)] text-[var(--text-body)]">
       <SEOHead
-        title="Knowledge Hub & Technical Insights — DigiHust"
+        title="Knowledge Hub & Technical Insights | DigiHust"
         description="Explore technical architecture guides, AI automation workflows, and cybersecurity benchmarks written by DigiHust domain specialists."
       />
 

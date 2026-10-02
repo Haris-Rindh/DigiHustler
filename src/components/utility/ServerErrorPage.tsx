@@ -8,7 +8,7 @@ export const ServerErrorPage: React.FC = () => {
   return (
     <div className="pt-24 pb-20 min-h-[85vh] flex items-center justify-center px-6 lg:px-8 bg-[var(--bg-page)] relative overflow-hidden">
       <SEOHead
-        title="500 — Internal Server Issue"
+        title="500 | Internal Server Issue"
         description="We encountered an unexpected digital processing issue. Our engineering team has been notified."
       />
 

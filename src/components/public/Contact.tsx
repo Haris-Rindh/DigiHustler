@@ -81,10 +81,10 @@ const SERVICES = [
 
 const BUDGETS = [
   'Under $100',
-  '$100 – $500',
-  '$500 – $1,000',
-  '$1,000 – $3,000',
-  '$3,000 – $7,500',
+  '$100 | $500',
+  '$500 | $1,000',
+  '$1,000 | $3,000',
+  '$3,000 | $7,500',
   '$7,500+',
   'Flexible / Not Sure',
 ];
@@ -92,7 +92,7 @@ const BUDGETS = [
 const TIMELINES = [
   'Urgent (Under 2 Weeks)',
   '1 Month',
-  '1 – 3 Months',
+  '1 | 3 Months',
   '3+ Months / Ongoing Retainer',
   'Flexible',
 ];
@@ -177,10 +177,10 @@ export const Contact: React.FC = () => {
     try {
       const budgetMap: Record<string, number> = {
         'Minimum under $100': 100,
-        '$100 – $500': 500,
-        '$500 – $1,000': 1000,
-        '$1,000 – $3,000': 3000,
-        '$3,000 – $7,500': 7500,
+        '$100 | $500': 500,
+        '$500 | $1,000': 1000,
+        '$1,000 | $3,000': 3000,
+        '$3,000 | $7,500': 7500,
         '$7,500+': 10000,
         'Flexible / Not Sure': 5000,
       };
@@ -198,7 +198,7 @@ export const Contact: React.FC = () => {
       const rawBudget = budgetMap[form.budget] || 100;
 
       const newLeadData = {
-        title: `${form.company || form.name} — ${form.services[0]}`,
+        title: `${form.company || form.name} | ${form.services[0]}`,
         clientName: form.name,
         clientCompany: form.company || undefined,
         clientEmail: form.email,
@@ -253,7 +253,7 @@ export const Contact: React.FC = () => {
   return (
     <div className="pt-16 sm:pt-20 min-h-screen bg-[var(--bg-page)] text-[var(--text-body)]">
       <SEOHead
-        title="Get a Quote & Start a Project — DigiHust"
+        title="Get a Quote & Start a Project | DigiHust"
         description="Submit your digital project scope for web development, UI/UX, AI automation, or cybersecurity. Receive a clear structured proposal within 24 hours."
         schema={{
           '@context': 'https://schema.org',
@@ -513,7 +513,7 @@ export const Contact: React.FC = () => {
                           company: '',
                           services: ['Website / Full-Stack App'],
                           description: '',
-                          budget: '$1,000 – $3,000',
+                          budget: '$1,000 | $3,000',
                           timeline: '1 Month',
                           file: null,
                           honeypot: '',
@@ -701,7 +701,7 @@ export const Contact: React.FC = () => {
                   <div>
                     <label className="block text-xs font-extrabold text-[var(--text-heading)] uppercase tracking-widest mb-2">
                       Attach Architecture / Brief Document{' '}
-                      <span className="text-[var(--text-muted)] font-normal normal-case text-xs">(PDF, ZIP, PNG, DOCX — Max 15MB)</span>
+                      <span className="text-[var(--text-muted)] font-normal normal-case text-xs">(PDF, ZIP, PNG, DOCX | Max 15MB)</span>
                     </label>
                     <label className="flex items-center space-x-3 px-4 py-3.5 rounded-xl border-2 border-dashed border-[var(--border-subtle)] hover:border-[var(--brand-teal)] cursor-pointer bg-[var(--bg-page)] transition-colors">
                       <Paperclip className="w-4 h-4 text-[var(--text-muted)] flex-shrink-0" />

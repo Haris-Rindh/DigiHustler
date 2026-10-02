@@ -52,8 +52,9 @@ export const BlogPost: React.FC = () => {
   return (
     <div className="pt-20 lg:pt-24 min-h-screen bg-[var(--bg-page)] text-[var(--text-body)]">
       <SEOHead
-        title={`${post.title} — DigiHust Insights`}
+        title={`${post.title} | DigiHust Insights`}
         description={post.excerpt}
+        ogImage={post.imageUrl || undefined}
       />
 
       {/* Hero Header */}

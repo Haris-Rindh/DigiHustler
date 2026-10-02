@@ -8,7 +8,7 @@ export const AccessDeniedPage: React.FC = () => {
   return (
     <div className="pt-24 pb-20 min-h-[85vh] flex items-center justify-center px-6 lg:px-8 bg-[var(--bg-page)] relative overflow-hidden">
       <SEOHead
-        title="403 — Access Denied"
+        title="403 | Access Denied"
         description="You do not possess the required security permissions to access this internal DigiHust node."
       />
 

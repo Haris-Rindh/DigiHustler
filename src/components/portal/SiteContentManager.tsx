@@ -16,7 +16,7 @@ export const SiteContentManager: React.FC = () => {
   const { 
     siteContent, updateSiteContent, addItemToSiteContent, 
     removeItemFromSiteContent, updateItemInSiteContent, 
-    resetSiteContent, currentTier, currentUser, showToast 
+    resetSiteContent, currentTier, currentUser, showToast, users 
   } = useApp();
 
   const [activeTab, setActiveTab] = useState<
@@ -28,6 +28,7 @@ export const SiteContentManager: React.FC = () => {
   // Active drafts with robust default fallbacks
   const safeContent = siteContent || DEFAULT_SITE_CONTENT;
   const [heroDraft, setHeroDraft] = useState(safeContent.hero || DEFAULT_SITE_CONTENT.hero);
+  const [howItWorksVideoUrlDraft, setHowItWorksVideoUrlDraft] = useState(safeContent.howItWorksVideoUrl || '');
   const [aboutDraft, setAboutDraft] = useState(safeContent.about || DEFAULT_SITE_CONTENT.about);
   const [contactDraft, setContactDraft] = useState(safeContent.contact || DEFAULT_SITE_CONTENT.contact);
   const [careersDraft, setCareersDraft] = useState(safeContent.careers || { noPositionsMessage: "We're always looking for exceptional talent, but we don't have any open positions right now. Check back soon!", openPositions: [] });
@@ -121,6 +122,7 @@ export const SiteContentManager: React.FC = () => {
   const handleSaveHero = (e: React.FormEvent) => {
     e.preventDefault();
     updateSiteContent('hero', heroDraft);
+    updateSiteContent('howItWorksVideoUrl', howItWorksVideoUrlDraft);
     triggerSaved('Hero section updated live!');
   };
 
@@ -162,6 +164,7 @@ export const SiteContentManager: React.FC = () => {
       summary: newCaseStudy.summary || '',
       impactMetric: newCaseStudy.impactMetric || '+100%',
       impactLabel: newCaseStudy.impactLabel || 'Conversion Growth',
+        projectUrl: newCaseStudy.projectUrl || '',
       imageUrl: newCaseStudy.imageUrl || 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=800&q=80',
       deliverables: newCaseStudy.deliverables || ['Full Architecture']
     };
@@ -233,6 +236,7 @@ export const SiteContentManager: React.FC = () => {
       id: `tm-${Date.now()}`,
       name: newTeam.name,
       role: newTeam.role || 'Specialist',
+        roleTier: newTeam.roleTier,
       squad: newTeam.squad || 'Engineering',
       bio: newTeam.bio || '',
       avatarUrl: newTeam.avatarUrl || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=250',
@@ -382,19 +386,19 @@ export const SiteContentManager: React.FC = () => {
         </div>
       )}
 
-      {/* Section Guide — helps users understand what each tab does */}
+      {/* Section Guide | helps users understand what each tab does */}
       <div className="p-4 rounded-2xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] text-xs text-[var(--text-muted)] flex flex-wrap gap-4">
         <div className="flex items-center gap-1.5">
           <span className="w-2 h-2 rounded-full bg-emerald-400 inline-block" />
-          <span><strong className="text-[var(--text-body)]">Live</strong> — changes appear instantly on the public website</span>
+          <span><strong className="text-[var(--text-body)]">Live</strong> | changes appear instantly on the public website</span>
         </div>
         <div className="flex items-center gap-1.5">
           <span className="w-2 h-2 rounded-full bg-amber-400 inline-block" />
-          <span><strong className="text-[var(--text-body)]">Fallback Active</strong> — website uses built-in defaults until you add your own content here</span>
+          <span><strong className="text-[var(--text-body)]">Fallback Active</strong> | website uses built-in defaults until you add your own content here</span>
         </div>
         <div className="flex items-center gap-1.5">
           <span className="w-2 h-2 rounded-full bg-[var(--text-muted)] inline-block" />
-          <span><strong className="text-[var(--text-body)]">Static</strong> — managed by code, not yet connected to CMS</span>
+          <span><strong className="text-[var(--text-body)]">Static</strong> | managed by code, not yet connected to CMS</span>
         </div>
       </div>
 
@@ -822,8 +826,18 @@ export const SiteContentManager: React.FC = () => {
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-bold uppercase text-[var(--text-muted)] mb-1">Image URL</label>
-                    <input
+                      <label className="block text-xs font-bold uppercase text-[var(--text-muted)] mb-1">Project Link (External URL)</label>
+                      <input
+                        type="url"
+                        placeholder="https://..."
+                        value={newCaseStudy.projectUrl || ''}
+                        onChange={(e) => setNewCaseStudy({ ...newCaseStudy, projectUrl: e.target.value })}
+                        className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs mb-3"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold uppercase text-[var(--text-muted)] mb-1">Image URL</label>
+                      <input
                       type="url"
                       value={cs.imageUrl}
                       onChange={(e) => updateItemInSiteContent('caseStudies', cs.id, { imageUrl: e.target.value })}
@@ -897,8 +911,18 @@ export const SiteContentManager: React.FC = () => {
                   </div>
                 </div>
                 <div>
-                  <label className="block text-xs font-bold uppercase text-[var(--text-muted)] mb-1">Image URL</label>
-                  <input
+                      <label className="block text-xs font-bold uppercase text-[var(--text-muted)] mb-1">Project Link (External URL)</label>
+                      <input
+                        type="url"
+                        placeholder="https://..."
+                        value={newCaseStudy.projectUrl || ''}
+                        onChange={(e) => setNewCaseStudy({ ...newCaseStudy, projectUrl: e.target.value })}
+                        className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs mb-3"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold uppercase text-[var(--text-muted)] mb-1">Image URL</label>
+                      <input
                     type="url"
                     value={newCaseStudy.imageUrl}
                     onChange={(e) => setNewCaseStudy({ ...newCaseStudy, imageUrl: e.target.value })}
@@ -1078,7 +1102,7 @@ export const SiteContentManager: React.FC = () => {
                   </div>
                 </div>
                 <div>
-                  <label className="block text-xs font-bold uppercase text-[var(--text-muted)] mb-1">Star Rating (1 - 5)</label>
+                  <label className="block text-xs font-bold uppercase text-[var(--text-muted)] mb-1">Star Rating (1 | 5)</label>
                   <div className="flex items-center space-x-1.5 py-1">
                     {[1, 2, 3, 4, 5].map((star) => (
                       <button
@@ -1174,8 +1198,32 @@ export const SiteContentManager: React.FC = () => {
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div>
-                    <label className="block text-xs font-bold uppercase text-[var(--text-muted)] mb-1">Full Name</label>
+                  
+                    <div className="sm:col-span-2">
+                      <label className="block text-xs font-bold uppercase text-[var(--text-muted)] mb-1">Link Backend User (Optional)</label>
+                      <select
+                        onChange={(e) => {
+                          const selectedUser = users.find(u => u.id === e.target.value);
+                          if (selectedUser) {
+                            setNewTeam({ 
+                              ...newTeam, 
+                              name: selectedUser.name,
+                              roleTier: selectedUser.roleTier
+                            });
+                          }
+                        }}
+                        className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs text-[var(--text-heading)]"
+                      >
+                        <option value="">-- Select a User --</option>
+                        {users.map(u => (
+                          <option key={u.id} value={u.id}>{u.name} ({u.roleTier})</option>
+                        ))}
+                      </select>
+                      <p className="text-[10px] text-[var(--text-muted)] mt-1">Linking a user will auto-pull their name and Role Tier.</p>
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold uppercase text-[var(--text-muted)] mb-1">Full Name</label>
+
                     <input
                       type="text"
                       value={member.name}
@@ -1438,7 +1486,7 @@ export const SiteContentManager: React.FC = () => {
                           value={post.content || ''}
                           onChange={(e) => updateItemInSiteContent('blogPosts', post.id, { content: e.target.value })}
                           rows={5}
-                          placeholder="Write article content using markdown (e.g. ## Heading 2, ### Heading 3, - Bullet item)..."
+                          placeholder="Write article content using markdown (e.g. ## Heading 2, ### Heading 3, | Bullet item)..."
                           className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl p-3 text-xs font-mono text-[var(--text-body)] leading-relaxed"
                         />
                       </div>
