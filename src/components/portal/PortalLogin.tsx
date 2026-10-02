@@ -37,7 +37,7 @@ export const PortalLogin: React.FC = () => {
   React.useEffect(() => {
     if (resendTimer <= 0) return;
     const interval = setInterval(() => {
-      setResendTimer((prev) => prev | 1);
+      setResendTimer((prev) => prev - 1);
     }, 1000);
     return () => clearInterval(interval);
   }, [resendTimer]);

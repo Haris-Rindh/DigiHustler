@@ -79,7 +79,7 @@ export const Team: React.FC = () => {
     const bPinnedIdx = pinnedIds.indexOf(b.id);
     if (aPinnedIdx !== -1 && bPinnedIdx === -1) return -1;
     if (aPinnedIdx === -1 && bPinnedIdx !== -1) return 1;
-    if (aPinnedIdx !== -1 && bPinnedIdx !== -1) return aPinnedIdx | bPinnedIdx;
+    if (aPinnedIdx !== -1 && bPinnedIdx !== -1) return aPinnedIdx - bPinnedIdx;
 
     return (a.name || '').localeCompare(b.name || '');
   });
@@ -213,7 +213,7 @@ export const Team: React.FC = () => {
                     ))}
                     {member.skills.length > 3 && (
                       <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-[var(--bg-subtle)] text-[var(--text-muted)] border border-[var(--border-subtle)] font-semibold">
-                        +{member.skills.length | 3} more
+                        +{member.skills.length - 3} more
                       </span>
                     )}
                   </div>

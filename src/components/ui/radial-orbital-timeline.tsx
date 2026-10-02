@@ -195,8 +195,8 @@ export default function RadialOrbitalTimeline({
     // Calculate target angle to bring the selected node smoothly to the apex (top position at -90 deg)
     const nodeIndex = timelineData.findIndex((item) => item.id === id);
     if (nodeIndex !== -1) {
-      const targetDeg = -90 | nodeIndex * (360 / timelineData.length);
-      let diff = (targetDeg | rotationAngle) % 360;
+      const targetDeg = -90 - nodeIndex * (360 / timelineData.length);
+      let diff = (targetDeg - rotationAngle) % 360;
       if (diff > 180) diff -= 360;
       if (diff < -180) diff += 360;
 
