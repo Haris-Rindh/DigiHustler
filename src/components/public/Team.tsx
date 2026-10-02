@@ -1,42 +1,54 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowRight, CheckCircle2, ShieldCheck, Sparkles, X, ExternalLink, Mail, UserCheck } from 'lucide-react';
+import { ArrowRight, CheckCircle2, ShieldCheck, Sparkles, X, UserCheck, Star, Pin, Award } from 'lucide-react';
 import { SEOHead } from '../seo/SEOHead';
 import { useApp } from '../../context/AppContext';
+import { realtimeSync } from '../../lib/realtimeSync';
 
-interface TeamMember {
+export type TeamTier = 'executive' | 'leader' | 'specialist' | 'intern';
+
+export interface TeamMember {
+  id: string;
   name: string;
   role: string;
+  tier: TeamTier;
   category: 'Development' | 'Creative' | 'AI & Data' | 'Marketing' | 'Cybersecurity';
+  headline?: string;
   bio: string;
   skills: string[];
   img: string;
+  email?: string;
+  phone?: string;
+  digiskillBatch?: string;
+  rating?: number;
+  completedProjectsCount?: number;
+  isCeoMaster?: boolean;
 }
 
 const CATS = ['All', 'Development', 'Creative', 'AI & Data', 'Marketing', 'Cybersecurity'] as const;
 
 const CAT_COLORS: Record<string, string> = {
   Development: '#1F7A8C',
-  Creative: '#1F7A8C',
-  'AI & Data': '#1F7A8C',
-  Marketing: '#B08D57',
-  Cybersecurity: '#A85C4A',
+  Creative: '#8B5CF6',
+  'AI & Data': '#0284C7',
+  Marketing: '#D97706',
+  Cybersecurity: '#E11D48',
 };
-
-import { realtimeSync } from '../../lib/realtimeSync';
 
 export const Team: React.FC = () => {
   const { siteContent, users } = useApp();
   const [filter, setFilter] = useState<string>('All');
   const [selectedMember, setSelectedMember] = useState<TeamMember | null>(null);
 
-  // Pinned Member IDs | from SiteContent (Supabase-backed, cross-device)
-  const pinnedIds: string[] = siteContent?.pinnedMemberIds || [];
+  // Pinned Member IDs directly from Supabase-backed siteContent
+  const pinnedIds: string[] = useMemo(() => {
+    return siteContent?.pinnedMemberIds || ['usr-1787949460689', 'usr-1788088620952', 'usr-1788119130873'];
+  }, [siteContent?.pinnedMemberIds]);
 
   useEffect(() => {
     const unsub = realtimeSync.subscribe((_payload) => {
-      // CMS_UPDATED triggers re-render via siteContent context | nothing extra needed
+      // CMS_UPDATED or USER_UPDATED triggers re-render via siteContent/users context
     });
     return unsub;
   }, []);
@@ -58,61 +70,165 @@ export const Team: React.FC = () => {
     };
   }, [selectedMember]);
 
-  // Helper to check CEO & Co-founders (Permanent Top Tier)
+  // Helper to identify CEO & Co-founders (Permanent Executive Tier)
   const isCeoOrFounder = (u: any) => {
-    if (u.isCeoMaster || u.roleTier === 'ceo') return true;
+    if (u.isCeoMaster || u.roleTier === 'ceo' || u.id === 'usr-ceo-1') return true;
     const t = (u.title || '').toLowerCase();
     const r = (u.role || '').toLowerCase();
     return t.includes('ceo') || t.includes('founder') || t.includes('co-founder') || r.includes('ceo');
   };
 
-  // Live member roster directly driven by portal database and sorted (CEO -> Co-founders -> Pinned in order -> Others)
-  const sortedActiveUsers = [...(users || []).filter((u) => u && u.status === 'active')].sort((a, b) => {
-    // 1. CEO & Co-founders on top
-    const aLeader = isCeoOrFounder(a);
-    const bLeader = isCeoOrFounder(b);
-    if (aLeader && !bLeader) return -1;
-    if (!aLeader && bLeader) return 1;
+  // Build authentic team exclusively from Supabase users
+  const teamMembers: TeamMember[] = useMemo(() => {
+    if (!users || users.length === 0) return [];
 
-    // 2. Pinned members in the exact chronological order they were pinned
-    const aPinnedIdx = pinnedIds.indexOf(a.id);
-    const bPinnedIdx = pinnedIds.indexOf(b.id);
-    if (aPinnedIdx !== -1 && bPinnedIdx === -1) return -1;
-    if (aPinnedIdx === -1 && bPinnedIdx !== -1) return 1;
-    if (aPinnedIdx !== -1 && bPinnedIdx !== -1) return aPinnedIdx - bPinnedIdx;
+    return users
+      .filter((u) => u && u.status === 'active')
+      .map((u) => {
+        const isExec = isCeoOrFounder(u);
+        const isPinned = pinnedIds.includes(u.id);
+        const t = (u.title || '').toLowerCase();
+        const r = (u.role || '').toLowerCase();
+        const rt = (u.roleTier || '').toLowerCase();
 
-    return (a.name || '').localeCompare(b.name || '');
-  });
+        // 1. Squad Leadership & Operations Tier
+        const isLeader = !isExec && (
+          isPinned ||
+          rt === 'group_leader' ||
+          rt === 'manager' ||
+          r === 'group_leader' ||
+          r === 'management' ||
+          /\b(lead|director|head|architect|chief|manager)\b/i.test(t)
+        );
 
-  const teamList: TeamMember[] = sortedActiveUsers.map((u) => ({
-    name: u.name,
-    role: u.title || (u.roleTier === 'ceo' ? 'Founder & CEO' : u.roleTier === 'manager' ? 'Operations Director' : u.roleTier === 'group_leader' ? 'Squad Leader' : 'Domain Specialist'),
-    category: (u.groupId === 'creative' || u.title?.toLowerCase().includes('design') || u.title?.toLowerCase().includes('brand')
-      ? 'Creative'
-      : u.groupId === 'data' || u.title?.toLowerCase().includes('ai') || u.title?.toLowerCase().includes('data')
-      ? 'AI & Data'
-      : u.groupId === 'growth' || u.title?.toLowerCase().includes('market')
-      ? 'Marketing'
-      : u.title?.toLowerCase().includes('security')
-      ? 'Cybersecurity'
-      : 'Development') as 'Development' | 'Creative' | 'AI & Data' | 'Marketing' | 'Cybersecurity',
-    bio: u.bio || (u.specialties && u.specialties.length > 0 ? `Specialist in ${u.specialties.join(', ')}.` : 'Verified DigiHust specialist with proven digital delivery track record.'),
-    skills: u.specialties && u.specialties.length > 0 ? u.specialties : ['Digital Delivery', 'Verified Talent'],
-    img: u.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(u.name)}&background=1F7A8C&color=fff`
-  }));
+        // 2. Domain Specialists Tier
+        const isSpecialist = !isExec && !isLeader && (
+          r === 'freelancer' ||
+          rt === 'member' ||
+          t.includes('engineer') ||
+          t.includes('full stack') ||
+          t.includes('full-stack') ||
+          t.includes('analyst') ||
+          t.includes('flutter') ||
+          t.includes('app developer') ||
+          (t.includes('ui/ux') && t.includes('ai'))
+        );
 
-  const displayed = filter === 'All'
-    ? teamList
-    : teamList.filter((m) => m.category === filter);
+        // 3. Emerging Talent & Interns Tier
+        const tier: TeamTier = isExec ? 'executive' : isLeader ? 'leader' : isSpecialist ? 'specialist' : 'intern';
+
+        // Functional Category
+        let category: TeamMember['category'] = 'Development';
+        if (
+          u.groupId === 'creative' ||
+          t.includes('design') ||
+          t.includes('brand') ||
+          t.includes('video') ||
+          t.includes('graphic') ||
+          t.includes('editor') ||
+          t.includes('ui/ux')
+        ) {
+          category = 'Creative';
+        } else if (
+          u.groupId === 'data' ||
+          t.includes('ai') ||
+          t.includes('data') ||
+          t.includes('intelligence') ||
+          t.includes('analyst') ||
+          t.includes('powerbi') ||
+          t.includes('machine learning')
+        ) {
+          category = 'AI & Data';
+        } else if (
+          u.groupId === 'growth' ||
+          t.includes('market') ||
+          t.includes('lead gen') ||
+          t.includes('growth') ||
+          t.includes('sourcing') ||
+          t.includes('sales')
+        ) {
+          category = 'Marketing';
+        } else if (t.includes('security') || t.includes('pen test') || t.includes('owasp')) {
+          category = 'Cybersecurity';
+        }
+
+        // Real profile image from Supabase Storage with clean avatar fallback
+        const img = u.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(u.name)}&background=1F7A8C&color=fff`;
+
+        // Executive rich profile text
+        let headline = u.title;
+        let bio = u.bio;
+
+        if (u.id === 'usr-ceo-1' || (isExec && (u.isCeoMaster || t.includes('ceo') || (t.includes('founder') && !t.includes('co-founder'))))) {
+          headline = 'Steering Strategic Vision, Enterprise Growth & Unified Delivery Governance';
+          bio = u.bio || 'As Founder and CEO of DigiHust, Mahad Abbas drives the strategic vision of transforming how global enterprises access elite, specialized digital talent. With a background in scalable web engineering and business operations, Mahad established DigiHust to bridge the gap between brilliant technical specialists and clients needing guaranteed, headache-free digital delivery under a single managed SLA.';
+        } else if (isExec && (t.includes('co-founder') || t.includes('cofounder') || u.id === 'usr-1788019490206')) {
+          headline = 'Orchestrating Architectural Excellence, AI Systems & Production Standards';
+          bio = u.bio || 'As Co-Founder, Muhammad Haseeb orchestrates the operational excellence and technical architecture that powers DigiHust\'s specialized squads. His expertise ensures that every AI automation, design system, and cybersecurity protocol executed by the team meets rigorous enterprise standards, delivering robust, high-performance digital products every time.';
+        } else if (!bio) {
+          bio = u.specialties && u.specialties.length > 0
+            ? `Specializing in ${u.specialties.join(', ')} with a verified track record in enterprise sprint delivery under DigiHust SLA standards.`
+            : `Verified DigiHust practitioner in ${category}, committed to high-velocity digital delivery and production craftsmanship.`;
+        }
+
+        return {
+          id: u.id,
+          name: u.name.trim(),
+          role: u.title ? u.title.trim() : (tier === 'executive' ? 'Executive Director' : tier === 'leader' ? 'Squad Lead' : tier === 'intern' ? 'Engineering Intern' : 'Domain Specialist'),
+          tier,
+          category,
+          headline,
+          bio,
+          skills: u.specialties && u.specialties.length > 0 ? u.specialties : ['Digital Delivery', 'Verified Talent'],
+          img,
+          email: u.email,
+          phone: u.phone,
+          digiskillBatch: u.digiskillBatch || 'Verified Member',
+          rating: u.rating || 5.0,
+          completedProjectsCount: u.completedProjectsCount || 0,
+          isCeoMaster: u.isCeoMaster,
+        };
+      });
+  }, [users, pinnedIds]);
+
+  // Sort helper: PINNED MEMBERS ALWAYS REMAIN ON TOP OF THEIR SECTION / CATEGORY
+  const sortWithPinnedFirst = (list: TeamMember[]) => {
+    return [...list].sort((a, b) => {
+      const aPinned = pinnedIds.indexOf(a.id);
+      const bPinned = pinnedIds.indexOf(b.id);
+      if (aPinned !== -1 && bPinned === -1) return -1;
+      if (aPinned === -1 && bPinned !== -1) return 1;
+      if (aPinned !== -1 && bPinned !== -1) return aPinned - bPinned;
+      return a.name.localeCompare(b.name);
+    });
+  };
+
+  // Filter members by category
+  const matchCat = (m: TeamMember) => filter === 'All' || m.category === filter;
+
+  // Split into role tiers with pinned members strictly on top
+  const executives = teamMembers.filter((m) => m.tier === 'executive');
+  const leaders = sortWithPinnedFirst(teamMembers.filter((m) => m.tier === 'leader'));
+  const filteredLeaders = sortWithPinnedFirst(leaders.filter(matchCat));
+
+  const specialists = sortWithPinnedFirst(teamMembers.filter((m) => m.tier === 'specialist'));
+  const filteredSpecialists = sortWithPinnedFirst(specialists.filter(matchCat));
+
+  const interns = sortWithPinnedFirst(teamMembers.filter((m) => m.tier === 'intern'));
+  const filteredInterns = sortWithPinnedFirst(interns.filter(matchCat));
+
+  // Executive members instances (CEO and Co-Founder)
+  const ceoMember = executives.find((m) => m.isCeoMaster || m.role.toLowerCase().includes('ceo') || m.id === 'usr-ceo-1') || executives[0];
+  const coFounderMember = executives.find((m) => (m.role.toLowerCase().includes('co-founder') || m.role.toLowerCase().includes('cofounder') || m.id === 'usr-1788019490206') && m.id !== ceoMember?.id) || executives[1];
 
   return (
     <div className="pt-16">
       <SEOHead
-        title="Our Team & Domain Specialists | DigiHust"
-        description="Meet the specialized talent behind DigiHust: Full-stack software engineers, UI/UX designers, AI practitioners, growth leads, and cybersecurity auditors."
+        title="Our Team & Leadership Hierarchy | DigiHust"
+        description="Meet the verified leadership, squad leads, domain specialists, and emerging talent behind DigiHust's managed digital delivery network."
       />
 
-      {/* Header */}
+      {/* Header Section */}
       <section className="bg-[var(--bg-page)] py-20 px-6 lg:px-8 border-b border-[var(--border-subtle)]">
         <div className="max-w-7xl mx-auto">
           <motion.div
@@ -120,21 +236,22 @@ export const Team: React.FC = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
           >
-            <p className="text-xs font-extrabold text-[var(--brand-teal)] uppercase tracking-widest mb-3">
-              Domain Specialists
+            <p className="text-xs font-extrabold text-[var(--brand-teal)] uppercase tracking-widest mb-3 flex items-center space-x-2">
+              <Award className="w-4 h-4" />
+              <span>Team Hierarchy & Verified Talent</span>
             </p>
             <h1 className="font-display font-extrabold text-4xl sm:text-5xl lg:text-6xl text-[var(--text-heading)] mb-5">
-              Meet the Talent.
+              Meet the Minds Behind DigiHust.
             </h1>
             <p className="text-lg text-[var(--text-body)] max-w-2xl leading-relaxed">
-              Every DigiHust squad member is a verified professional with specialized technical skills, trained and vetted through Pakistan's Digiskill ecosystem.
+              From executive visionaries and technical directors to cross-functional squad leads and vetted domain specialists — structured for flawless digital execution.
             </p>
           </motion.div>
         </div>
       </section>
 
       {/* Filter Tabs */}
-      <section className="bg-[var(--bg-page)] border-b border-[var(--border-subtle)] relative z-10">
+      <section className="bg-[var(--bg-page)] border-b border-[var(--border-subtle)] sticky top-16 z-20 backdrop-blur-md bg-opacity-95">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="flex items-center space-x-2 py-4 overflow-x-auto no-scrollbar">
             {CATS.map((cat) => {
@@ -157,98 +274,561 @@ export const Team: React.FC = () => {
         </div>
       </section>
 
-      {/* Team Grid */}
-      <section className="bg-[var(--bg-page)] py-16 px-6 lg:px-8">
+      {/* ── 1. TIER 1: EXECUTIVE LEADERSHIP (CEO & CO-FOUNDER SPOTLIGHT SHOWCASES) ── */}
+      <section className="bg-[var(--bg-subtle)] py-16 sm:py-20 px-6 lg:px-8 border-b border-[var(--border-subtle)] relative overflow-hidden">
         <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 items-stretch">
-            {displayed.map((member) => (
-              <div
-                key={member.name}
-                onClick={() => setSelectedMember(member)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    setSelectedMember(member);
-                  }
-                }}
-                role="button"
-                tabIndex={0}
-                className="group border border-[var(--border-subtle)] rounded-2xl p-6 bg-[var(--bg-surface)] hover:shadow-xl hover:border-[var(--brand-teal)] transition-all duration-200 ease-out flex flex-col justify-between cursor-pointer focus:outline-none focus:ring-2 focus:ring-[var(--brand-teal)]/40 hover:-translate-y-1.5 select-none"
+          <div className="mb-12">
+            <p className="text-xs font-extrabold text-[var(--brand-teal)] uppercase tracking-widest mb-2 flex items-center space-x-1.5">
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>Executive Leadership</span>
+            </p>
+            <h2 className="font-display font-black text-3xl sm:text-4xl text-[var(--text-heading)]">
+              The Visionaries
+            </h2>
+            <p className="text-sm text-[var(--text-body)] mt-1 max-w-xl">
+              Guiding DigiHust’s strategic vision, architectural governance, and global enterprise partnerships.
+            </p>
+          </div>
+
+          <div className="space-y-12">
+            {/* CEO Spotlight Card (Large Image One Side, Details Other Side) */}
+            {ceoMember && (
+              <motion.div
+                initial={{ opacity: 0, y: 25 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5 }}
+                className="relative rounded-3xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-6 sm:p-10 lg:p-12 overflow-hidden shadow-xl group hover:border-[var(--brand-teal)] transition-all duration-300"
               >
-                <div>
-                  {/* Top Profile Header */}
-                  <div className="flex items-start space-x-3.5 mb-4">
-                    <img
-                      src={member.img}
-                      alt={member.name}
-                      className="w-14 h-14 rounded-2xl object-cover ring-2 ring-gray-100 dark:ring-gray-800 group-hover:ring-[var(--brand-teal)]/40 transition-all flex-shrink-0"
-                    />
-                    <div className="min-w-0 flex-1">
-                      <h2 className="font-bold text-base text-[var(--text-heading)] leading-snug break-words group-hover:text-[var(--brand-teal)] transition-colors">
-                        {member.name}
-                      </h2>
-                      <p
-                        className="text-xs font-bold mt-1 leading-normal break-words"
-                        style={{ color: CAT_COLORS[member.category] || '#1a7a8c' }}
-                      >
-                        {member.role}
-                      </p>
+                <div className="absolute top-0 right-0 w-96 h-96 bg-[var(--brand-teal)] rounded-full blur-[140px] opacity-10 pointer-events-none" />
+
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+                  {/* Left Column: Large CEO Image */}
+                  <div className="lg:col-span-5 flex justify-center">
+                    <div className="relative w-full max-w-sm aspect-[4/5] rounded-3xl overflow-hidden border-2 border-[var(--brand-teal)]/30 shadow-2xl group-hover:scale-[1.01] transition-transform duration-300 bg-[var(--bg-subtle)]">
+                      <img
+                        src={ceoMember.img}
+                        alt={ceoMember.name}
+                        className="w-full h-full object-cover object-top"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/15 to-transparent pointer-events-none" />
+                      
+                      {/* Floating Executive Pill */}
+                      <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between p-3 rounded-2xl bg-black/75 backdrop-blur-md border border-white/15 text-white">
+                        <div className="flex items-center space-x-2">
+                          <div className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
+                          <span className="text-xs font-bold uppercase tracking-wider">{ceoMember.role}</span>
+                        </div>
+                        <span className="text-[10px] px-2.5 py-1 rounded-md bg-[var(--brand-teal)] text-white font-extrabold uppercase">
+                          Chief Executive
+                        </span>
+                      </div>
                     </div>
                   </div>
 
-                  {/* 3 to 4 Lines Clamped Description */}
-                  <p className="text-sm text-[var(--text-body)] leading-relaxed mb-4 line-clamp-3 sm:line-clamp-4">
-                    {member.bio}
-                  </p>
+                  {/* Right Column: CEO Details, Headline & Description */}
+                  <div className="lg:col-span-7 flex flex-col justify-center">
+                    <div className="inline-flex items-center space-x-2 px-3.5 py-1 rounded-full bg-[var(--brand-teal-subtle)] text-[var(--brand-teal)] border border-[var(--brand-teal)]/30 text-[11px] font-extrabold uppercase tracking-widest mb-3 w-fit">
+                      <Sparkles className="w-3 h-3" />
+                      <span>Chief Executive Officer</span>
+                    </div>
 
-                  {/* Skills badges */}
-                  <div className="flex flex-wrap gap-1.5 mb-4">
-                    {member.skills.slice(0, 3).map((s) => (
-                      <span
-                        key={s}
-                        className="text-[10px] px-2 py-0.5 rounded-md bg-[var(--bg-subtle)] text-[var(--text-body)] border border-[var(--border-subtle)] font-medium truncate max-w-[140px]"
+                    <h2 className="font-display font-black text-3xl sm:text-4xl lg:text-5xl text-[var(--text-heading)] mb-2 tracking-tight">
+                      {ceoMember.name}
+                    </h2>
+
+                    <p className="text-sm sm:text-base font-bold text-[var(--brand-teal)] mb-4">
+                      {ceoMember.role} · DigiHust
+                    </p>
+
+                    <h3 className="font-display font-extrabold text-lg sm:text-xl text-[var(--text-heading)] mb-4 leading-snug">
+                      "{ceoMember.headline || 'Building the Next Generation of Coordinated Digital Talent.'}"
+                    </h3>
+
+                    <p className="text-sm sm:text-base text-[var(--text-body)] leading-relaxed mb-6">
+                      {ceoMember.bio}
+                    </p>
+
+                    {/* Competencies Badges */}
+                    <div className="flex flex-wrap gap-2 mb-8">
+                      {ceoMember.skills.map((skill) => (
+                        <span
+                          key={skill}
+                          className="text-xs px-3 py-1.5 rounded-xl bg-[var(--bg-page)] text-[var(--text-heading)] border border-[var(--border-subtle)] font-semibold shadow-xs"
+                        >
+                          {skill}
+                        </span>
+                      ))}
+                    </div>
+
+                    {/* Action Buttons */}
+                    <div className="flex flex-wrap items-center gap-3.5">
+                      <Link
+                        to={`/contact?service=Executive%20Strategy&project=${encodeURIComponent(ceoMember.name)}`}
+                        className="px-6 py-3 rounded-xl bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-white font-extrabold text-xs sm:text-sm shadow-md transition-all hover:scale-105 active:scale-95 flex items-center space-x-2"
                       >
-                        {s}
-                      </span>
-                    ))}
-                    {member.skills.length > 3 && (
-                      <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-[var(--bg-subtle)] text-[var(--text-muted)] border border-[var(--border-subtle)] font-semibold">
-                        +{member.skills.length - 3} more
-                      </span>
-                    )}
+                        <span>Schedule Executive Consultation</span>
+                        <ArrowRight className="w-4 h-4" />
+                      </Link>
+                      <button
+                        onClick={() => setSelectedMember(ceoMember)}
+                        className="px-6 py-3 rounded-xl bg-[var(--bg-page)] hover:bg-[var(--bg-subtle)] text-[var(--text-heading)] border border-[var(--border-subtle)] font-bold text-xs sm:text-sm shadow-xs transition-all hover:border-[var(--brand-teal)] cursor-pointer"
+                      >
+                        View Full Credentials
+                      </button>
+                    </div>
                   </div>
                 </div>
+              </motion.div>
+            )}
 
-                {/* Footer and Click Prompt */}
-                <div className="pt-4 border-t border-[var(--border-subtle)] flex items-center justify-between mt-auto">
-                  <span
-                    className="text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wide"
-                    style={{
-                      color: CAT_COLORS[member.category] || '#1a7a8c',
-                      backgroundColor: (CAT_COLORS[member.category] || '#1a7a8c') + '18',
-                    }}
-                  >
-                    {member.category}
-                  </span>
-                  
-                  <div className="flex items-center space-x-1.5 text-xs font-semibold text-[var(--brand-teal)] group-hover:translate-x-0.5 transition-transform">
-                    <span className="text-[11px]">View Profile</span>
-                    <ArrowRight className="w-3.5 h-3.5" />
+            {/* Co-Founder Spotlight Card (Mirrored Layout: Content Left, Large Image Right) */}
+            {coFounderMember && (
+              <motion.div
+                initial={{ opacity: 0, y: 25 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: 0.1 }}
+                className="relative rounded-3xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-6 sm:p-10 lg:p-12 overflow-hidden shadow-xl group hover:border-[var(--brand-teal)] transition-all duration-300"
+              >
+                <div className="absolute top-0 left-0 w-96 h-96 bg-purple-500 rounded-full blur-[140px] opacity-10 pointer-events-none" />
+
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+                  {/* Left Column: Co-Founder Details, Headline & Description */}
+                  <div className="lg:col-span-7 flex flex-col justify-center order-2 lg:order-1">
+                    <div className="inline-flex items-center space-x-2 px-3.5 py-1 rounded-full bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/30 text-[11px] font-extrabold uppercase tracking-widest mb-3 w-fit">
+                      <ShieldCheck className="w-3 h-3" />
+                      <span>Co-Founder & Technical Operations</span>
+                    </div>
+
+                    <h2 className="font-display font-black text-3xl sm:text-4xl lg:text-5xl text-[var(--text-heading)] mb-2 tracking-tight">
+                      {coFounderMember.name}
+                    </h2>
+
+                    <p className="text-sm sm:text-base font-bold text-purple-600 dark:text-purple-400 mb-4">
+                      {coFounderMember.role} · DigiHust
+                    </p>
+
+                    <h3 className="font-display font-extrabold text-lg sm:text-xl text-[var(--text-heading)] mb-4 leading-snug">
+                      "{coFounderMember.headline || 'Orchestrating Architectural Excellence & Production Standards.'}"
+                    </h3>
+
+                    <p className="text-sm sm:text-base text-[var(--text-body)] leading-relaxed mb-6">
+                      {coFounderMember.bio}
+                    </p>
+
+                    {/* Competencies Badges */}
+                    <div className="flex flex-wrap gap-2 mb-8">
+                      {coFounderMember.skills.map((skill) => (
+                        <span
+                          key={skill}
+                          className="text-xs px-3 py-1.5 rounded-xl bg-[var(--bg-page)] text-[var(--text-heading)] border border-[var(--border-subtle)] font-semibold shadow-xs"
+                        >
+                          {skill}
+                        </span>
+                      ))}
+                    </div>
+
+                    {/* Action Buttons */}
+                    <div className="flex flex-wrap items-center gap-3.5">
+                      <Link
+                        to={`/contact?service=Technical%20Architecture&project=${encodeURIComponent(coFounderMember.name)}`}
+                        className="px-6 py-3 rounded-xl bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-white font-extrabold text-xs sm:text-sm shadow-md transition-all hover:scale-105 active:scale-95 flex items-center space-x-2"
+                      >
+                        <span>Discuss Technical Architecture</span>
+                        <ArrowRight className="w-4 h-4" />
+                      </Link>
+                      <button
+                        onClick={() => setSelectedMember(coFounderMember)}
+                        className="px-6 py-3 rounded-xl bg-[var(--bg-page)] hover:bg-[var(--bg-subtle)] text-[var(--text-heading)] border border-[var(--border-subtle)] font-bold text-xs sm:text-sm shadow-xs transition-all hover:border-[var(--brand-teal)] cursor-pointer"
+                      >
+                        View Full Credentials
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Right Column: Large Co-Founder Image */}
+                  <div className="lg:col-span-5 flex justify-center order-1 lg:order-2">
+                    <div className="relative w-full max-w-sm aspect-[4/5] rounded-3xl overflow-hidden border-2 border-purple-500/30 shadow-2xl group-hover:scale-[1.01] transition-transform duration-300 bg-[var(--bg-subtle)]">
+                      <img
+                        src={coFounderMember.img}
+                        alt={coFounderMember.name}
+                        className="w-full h-full object-cover object-top"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/15 to-transparent pointer-events-none" />
+                      
+                      {/* Floating Executive Pill */}
+                      <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between p-3 rounded-2xl bg-black/75 backdrop-blur-md border border-white/15 text-white">
+                        <div className="flex items-center space-x-2">
+                          <div className="w-2.5 h-2.5 rounded-full bg-purple-400 animate-pulse" />
+                          <span className="text-xs font-bold uppercase tracking-wider">{coFounderMember.role}</span>
+                        </div>
+                        <span className="text-[10px] px-2.5 py-1 rounded-md bg-purple-600 text-white font-extrabold uppercase">
+                          Technical Operations
+                        </span>
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              </motion.div>
+            )}
           </div>
-
-          {displayed.length === 0 && (
-            <div className="text-center py-16 bg-[var(--bg-surface)] rounded-2xl border border-[var(--border-subtle)] p-8">
-              <p className="text-base text-[var(--text-muted)]">
-                No team specialists found in this category yet.
-              </p>
-            </div>
-          )}
         </div>
       </section>
+
+      {/* ── 2. TIER 2: SQUAD LEADERS & OPERATIONS DIRECTORS (PINNED MEMBERS ALWAYS ON TOP) ── */}
+      {filteredLeaders.length > 0 && (
+        <section className="bg-[var(--bg-page)] py-16 px-6 lg:px-8 border-b border-[var(--border-subtle)]">
+          <div className="max-w-7xl mx-auto">
+            <div className="mb-10 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+              <div>
+                <p className="text-xs font-extrabold text-[var(--brand-teal)] uppercase tracking-widest mb-1.5 flex items-center space-x-1.5">
+                  <ShieldCheck className="w-3.5 h-3.5" />
+                  <span>Squad Leadership & Operations</span>
+                </p>
+                <h3 className="font-display font-extrabold text-2xl sm:text-3xl text-[var(--text-heading)]">
+                  Cross-Functional Squad Leads
+                </h3>
+                <p className="text-sm text-[var(--text-body)] mt-1">
+                  Senior leads orchestrating sprint execution, peer code review, and deliverable SLA compliance. Pinned leads are prioritized.
+                </p>
+              </div>
+              <span className="text-xs font-bold text-[var(--text-muted)] bg-[var(--bg-subtle)] px-3 py-1.5 rounded-full border border-[var(--border-subtle)] self-start sm:self-auto">
+                {filteredLeaders.length} Squad Leads Active
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {filteredLeaders.map((leader) => {
+                const isPinned = pinnedIds.includes(leader.id);
+                return (
+                  <div
+                    key={leader.id || leader.name}
+                    onClick={() => setSelectedMember(leader)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        setSelectedMember(leader);
+                      }
+                    }}
+                    role="button"
+                    tabIndex={0}
+                    className={`group relative rounded-3xl border p-7 bg-[var(--bg-surface)] hover:border-[var(--brand-teal)] hover:shadow-2xl transition-all duration-200 flex flex-col justify-between cursor-pointer hover:-translate-y-1.5 select-none ${
+                      isPinned
+                        ? 'border-[var(--brand-teal)]/50 ring-2 ring-[var(--brand-teal)]/15 shadow-md'
+                        : 'border-[var(--border-subtle)]'
+                    }`}
+                  >
+                    <div>
+                      {/* Pinned Lead Badge if applicable */}
+                      {isPinned && (
+                        <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/30 text-[10px] font-extrabold uppercase tracking-wider mb-4">
+                          <Pin className="w-3 h-3 fill-amber-500" />
+                          <span>Pinned Squad Lead</span>
+                        </div>
+                      )}
+
+                      {/* Header */}
+                      <div className="flex items-start space-x-4 mb-5">
+                        <div className="relative flex-shrink-0">
+                          <img
+                            src={leader.img}
+                            alt={leader.name}
+                            className="w-18 h-18 sm:w-20 sm:h-20 rounded-2xl object-cover ring-2 ring-[var(--brand-teal)]/40 group-hover:ring-[var(--brand-teal)] transition-all shadow-sm"
+                          />
+                          <div
+                            className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-emerald-500 border-2 border-[var(--bg-surface)] flex items-center justify-center text-white"
+                            title="Verified Squad Lead"
+                          >
+                            <CheckCircle2 className="w-3 h-3" />
+                          </div>
+                        </div>
+
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-center space-x-1.5 mb-1">
+                            <span className="inline-block text-[10px] font-extrabold px-2.5 py-0.5 rounded-md bg-[var(--brand-teal-subtle)] text-[var(--brand-teal)] border border-[var(--brand-teal)]/30 uppercase tracking-wider">
+                              Squad Lead
+                            </span>
+                          </div>
+                          <h4 className="font-display font-bold text-lg sm:text-xl text-[var(--text-heading)] group-hover:text-[var(--brand-teal)] transition-colors leading-snug">
+                            {leader.name}
+                          </h4>
+                          <p
+                            className="text-xs font-bold mt-0.5 truncate"
+                            style={{ color: CAT_COLORS[leader.category] || '#1a7a8c' }}
+                          >
+                            {leader.role}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Bio */}
+                      <p className="text-sm text-[var(--text-body)] leading-relaxed mb-5 line-clamp-3">
+                        {leader.bio}
+                      </p>
+
+                      {/* Skills */}
+                      <div className="flex flex-wrap gap-1.5 mb-5">
+                        {leader.skills.slice(0, 4).map((s) => (
+                          <span
+                            key={s}
+                            className="text-[10px] px-2.5 py-1 rounded-lg bg-[var(--bg-subtle)] text-[var(--text-heading)] border border-[var(--border-subtle)] font-semibold"
+                          >
+                            {s}
+                          </span>
+                        ))}
+                        {leader.skills.length > 4 && (
+                          <span className="text-[10px] px-2 py-1 rounded-lg bg-[var(--bg-subtle)] text-[var(--text-muted)] border border-[var(--border-subtle)] font-semibold">
+                            +{leader.skills.length - 4}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Card Footer */}
+                    <div className="pt-4 border-t border-[var(--border-subtle)] flex items-center justify-between mt-auto">
+                      <span
+                        className="text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wide"
+                        style={{
+                          color: CAT_COLORS[leader.category] || '#1a7a8c',
+                          backgroundColor: (CAT_COLORS[leader.category] || '#1a7a8c') + '18',
+                        }}
+                      >
+                        {leader.category}
+                      </span>
+
+                      <div className="flex items-center space-x-1.5 text-xs font-bold text-[var(--brand-teal)] group-hover:translate-x-1 transition-transform">
+                        <span>Inspect Squad Profile</span>
+                        <ArrowRight className="w-3.5 h-3.5" />
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* ── 3. TIER 3: DOMAIN SPECIALISTS (CORE TECHNICAL TALENT) ── */}
+      {filteredSpecialists.length > 0 && (
+        <section className="bg-[var(--bg-page)] py-16 px-6 lg:px-8 border-b border-[var(--border-subtle)]">
+          <div className="max-w-7xl mx-auto">
+            <div className="mb-10 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+              <div>
+                <p className="text-xs font-extrabold text-[var(--brand-teal)] uppercase tracking-widest mb-1.5 flex items-center space-x-1.5">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                  <span>Verified Technical Talent</span>
+                </p>
+                <h3 className="font-display font-extrabold text-2xl sm:text-3xl text-[var(--text-heading)]">
+                  Domain Specialists
+                </h3>
+                <p className="text-sm text-[var(--text-body)] mt-1">
+                  Engineers, developers, AI practitioners, and analysts driving client delivery sprints.
+                </p>
+              </div>
+              <span className="text-xs font-bold text-[var(--text-muted)] bg-[var(--bg-subtle)] px-3 py-1.5 rounded-full border border-[var(--border-subtle)] self-start sm:self-auto">
+                {filteredSpecialists.length} Specialists Available
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 items-stretch">
+              {filteredSpecialists.map((member) => {
+                const isPinned = pinnedIds.includes(member.id);
+                return (
+                  <div
+                    key={member.id || member.name}
+                    onClick={() => setSelectedMember(member)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        setSelectedMember(member);
+                      }
+                    }}
+                    role="button"
+                    tabIndex={0}
+                    className={`group border rounded-2xl p-6 bg-[var(--bg-surface)] hover:shadow-xl hover:border-[var(--brand-teal)] transition-all duration-200 ease-out flex flex-col justify-between cursor-pointer hover:-translate-y-1.5 select-none ${
+                      isPinned
+                        ? 'border-[var(--brand-teal)]/40 ring-1 ring-[var(--brand-teal)]/20 shadow-sm'
+                        : 'border-[var(--border-subtle)]'
+                    }`}
+                  >
+                    <div>
+                      {/* Pinned badge */}
+                      {isPinned && (
+                        <div className="inline-flex items-center space-x-1 px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 text-[9px] font-bold uppercase tracking-wider mb-3">
+                          <Star className="w-2.5 h-2.5 fill-amber-500" />
+                          <span>Pinned Specialist</span>
+                        </div>
+                      )}
+
+                      {/* Member Header */}
+                      <div className="flex items-start space-x-3.5 mb-4">
+                        <img
+                          src={member.img}
+                          alt={member.name}
+                          className="w-14 h-14 rounded-2xl object-cover ring-2 ring-gray-100 dark:ring-gray-800 group-hover:ring-[var(--brand-teal)]/40 transition-all flex-shrink-0"
+                        />
+                        <div className="min-w-0 flex-1">
+                          <h4 className="font-bold text-base text-[var(--text-heading)] leading-snug break-words group-hover:text-[var(--brand-teal)] transition-colors">
+                            {member.name}
+                          </h4>
+                          <p
+                            className="text-xs font-bold mt-1 leading-normal break-words"
+                            style={{ color: CAT_COLORS[member.category] || '#1a7a8c' }}
+                          >
+                            {member.role}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Bio */}
+                      <p className="text-xs sm:text-sm text-[var(--text-body)] leading-relaxed mb-4 line-clamp-3 sm:line-clamp-4">
+                        {member.bio}
+                      </p>
+
+                      {/* Skills */}
+                      <div className="flex flex-wrap gap-1.5 mb-4">
+                        {member.skills.slice(0, 3).map((s) => (
+                          <span
+                            key={s}
+                            className="text-[10px] px-2 py-0.5 rounded-md bg-[var(--bg-subtle)] text-[var(--text-body)] border border-[var(--border-subtle)] font-medium truncate max-w-[140px]"
+                          >
+                            {s}
+                          </span>
+                        ))}
+                        {member.skills.length > 3 && (
+                          <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-[var(--bg-subtle)] text-[var(--text-muted)] border border-[var(--border-subtle)] font-semibold">
+                            +{member.skills.length - 3}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Footer */}
+                    <div className="pt-4 border-t border-[var(--border-subtle)] flex items-center justify-between mt-auto">
+                      <span
+                        className="text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wide"
+                        style={{
+                          color: CAT_COLORS[member.category] || '#1a7a8c',
+                          backgroundColor: (CAT_COLORS[member.category] || '#1a7a8c') + '18',
+                        }}
+                      >
+                        {member.category}
+                      </span>
+                      
+                      <div className="flex items-center space-x-1.5 text-xs font-semibold text-[var(--brand-teal)] group-hover:translate-x-0.5 transition-transform">
+                        <span className="text-[11px]">View Profile</span>
+                        <ArrowRight className="w-3.5 h-3.5" />
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* ── 4. TIER 4: EMERGING TALENT & INTERNS ── */}
+      {filteredInterns.length > 0 && (
+        <section className="bg-[var(--bg-subtle)] py-16 px-6 lg:px-8 border-b border-[var(--border-subtle)]">
+          <div className="max-w-7xl mx-auto">
+            <div className="mb-10 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+              <div>
+                <p className="text-xs font-extrabold text-amber-500 uppercase tracking-widest mb-1.5 flex items-center space-x-1.5">
+                  <Sparkles className="w-3.5 h-3.5" />
+                  <span>DigiSkills Apprenticeship Ecosystem</span>
+                </p>
+                <h3 className="font-display font-extrabold text-2xl sm:text-3xl text-[var(--text-heading)]">
+                  Emerging Talent & Interns
+                </h3>
+                <p className="text-sm text-[var(--text-body)] mt-1">
+                  High-aptitude practitioners undergoing rigorous mentorship under senior architects.
+                </p>
+              </div>
+              <span className="text-xs font-bold text-amber-600 dark:text-amber-400 bg-amber-500/10 px-3 py-1.5 rounded-full border border-amber-500/20 self-start sm:self-auto">
+                {filteredInterns.length} Interns in Sprint
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 items-stretch">
+              {filteredInterns.map((intern) => {
+                const isPinned = pinnedIds.includes(intern.id);
+                return (
+                  <div
+                    key={intern.id || intern.name}
+                    onClick={() => setSelectedMember(intern)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        setSelectedMember(intern);
+                      }
+                    }}
+                    role="button"
+                    tabIndex={0}
+                    className={`group border rounded-2xl p-5 bg-[var(--bg-surface)] hover:border-amber-400/50 hover:shadow-lg transition-all duration-200 ease-out flex flex-col justify-between cursor-pointer hover:-translate-y-1 select-none ${
+                      isPinned
+                        ? 'border-amber-400/50 ring-1 ring-amber-400/30'
+                        : 'border-[var(--border-subtle)]'
+                    }`}
+                  >
+                    <div>
+                      {/* Header */}
+                      <div className="flex items-start space-x-3 mb-3.5">
+                        <img
+                          src={intern.img}
+                          alt={intern.name}
+                          className="w-12 h-12 rounded-xl object-cover ring-2 ring-amber-400/20 group-hover:ring-amber-400/50 transition-all flex-shrink-0"
+                        />
+                        <div className="min-w-0 flex-1">
+                          <span className="inline-block text-[9px] font-bold px-2 py-0.5 rounded bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 uppercase tracking-wider mb-1">
+                            Verified Intern
+                          </span>
+                          <h4 className="font-bold text-sm text-[var(--text-heading)] leading-snug break-words group-hover:text-amber-500 transition-colors">
+                            {intern.name}
+                          </h4>
+                          <p className="text-[11px] font-semibold text-[var(--text-muted)] truncate">
+                            {intern.role}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Bio */}
+                      <p className="text-xs text-[var(--text-body)] leading-relaxed mb-3.5 line-clamp-3">
+                        {intern.bio}
+                      </p>
+
+                      {/* Skills */}
+                      <div className="flex flex-wrap gap-1 mb-3.5">
+                        {intern.skills.slice(0, 3).map((s) => (
+                          <span
+                            key={s}
+                            className="text-[9px] px-2 py-0.5 rounded bg-[var(--bg-subtle)] text-[var(--text-body)] border border-[var(--border-subtle)] font-medium"
+                          >
+                            {s}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Footer */}
+                    <div className="pt-3 border-t border-[var(--border-subtle)] flex items-center justify-between mt-auto">
+                      <span className="text-[9px] font-bold text-[var(--text-muted)] uppercase tracking-wide">
+                        {intern.category}
+                      </span>
+                      <span className="text-[11px] font-bold text-amber-500 flex items-center space-x-1 group-hover:translate-x-0.5 transition-transform">
+                        <span>View Track</span>
+                        <ArrowRight className="w-3 h-3" />
+                      </span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Detailed Member Profile Modal Window */}
       <AnimatePresence>
@@ -301,7 +881,15 @@ export const Team: React.FC = () => {
                       </span>
                       <span className="text-[11px] text-emerald-600 dark:text-emerald-400 font-bold flex items-center space-x-1 bg-emerald-500/10 px-2.5 py-0.5 rounded-full">
                         <CheckCircle2 className="w-3.5 h-3.5" />
-                        <span>Verified Specialist</span>
+                        <span>
+                          {selectedMember.tier === 'executive'
+                            ? 'Executive Leadership'
+                            : selectedMember.tier === 'leader'
+                            ? 'Squad Director'
+                            : selectedMember.tier === 'intern'
+                            ? 'Verified Intern'
+                            : 'Verified Specialist'}
+                        </span>
                       </span>
                     </div>
 
@@ -399,4 +987,3 @@ export const Team: React.FC = () => {
     </div>
   );
 };
-
