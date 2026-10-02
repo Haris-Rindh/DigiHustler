@@ -134,7 +134,7 @@ export const Team: React.FC = () => {
       </section>
 
       {/* Filter Tabs */}
-      <section className="bg-[var(--bg-page)] border-b border-[var(--border-subtle)] sticky top-16 z-30 shadow-sm backdrop-blur-md bg-opacity-95">
+      <section className="bg-[var(--bg-page)] border-b border-[var(--border-subtle)] relative z-10">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="flex items-center space-x-2 py-4 overflow-x-auto no-scrollbar">
             {CATS.map((cat) => {

@@ -11,8 +11,10 @@ import {
   Zap,
   ShieldCheck,
   Code2,
+  ExternalLink,
 } from 'lucide-react';
 import { SEOHead } from '../seo/SEOHead';
+import { useApp } from '../../context/AppContext';
 
 interface CaseStudy {
   slug: string;
@@ -30,6 +32,7 @@ interface CaseStudy {
   tags: string[];
   heroImage: string;
   statHighlight: string;
+  projectUrl?: string;
   clientQuote?: { quote: string; author: string; role: string };
 }
 
@@ -157,22 +160,61 @@ const CASE_STUDIES: CaseStudy[] = [
 ];
 
 export const CaseStudyDetail: React.FC = () => {
+  const { siteContent } = useApp();
   const { slug } = useParams<{ slug: string }>();
-  const study = CASE_STUDIES.find((s) => s.slug === slug) || CASE_STUDIES[0];
+
+  const dynamicStudy = siteContent?.caseStudies?.find(
+    (s) => s.slug === slug || s.id === slug
+  );
+
+  const staticStudy = CASE_STUDIES.find((s) => s.slug === slug);
+
+  const study: CaseStudy = dynamicStudy
+    ? {
+        slug: dynamicStudy.slug || dynamicStudy.id,
+        title: dynamicStudy.title,
+        client: dynamicStudy.client || 'Enterprise Client',
+        clientIndustry: dynamicStudy.category || 'Digital Technology',
+        timeline: 'Sprint Delivery',
+        category: dynamicStudy.category || 'Web Engineering',
+        summary: dynamicStudy.summary || 'Custom engineered digital solution delivered by DigiHust specialized squads.',
+        challenge: dynamicStudy.challenge || 'The client required a modernized, scalable platform architecture with enhanced reliability, lightning performance, and optimized user acquisition funnels.',
+        solution: dynamicStudy.solution || 'DigiHust assembled a dedicated cross-functional squad to engineer an end-to-end custom application with enterprise SLA guarantees.',
+        architectureDetails: [
+          'Modular full-stack architecture built for high concurrency and sub-second load times.',
+          'Optimized database schema and cloud caching layer for seamless data throughput.',
+          'Automated CI/CD staging pipelines with pre-deployment QA validation.',
+          'Comprehensive documentation, source code handover, and SLA warranty.',
+        ],
+        metrics: [
+          { value: dynamicStudy.impactMetric || '+100%', label: dynamicStudy.impactLabel || 'Performance Growth', sub: 'Measured post-deployment' },
+          { value: '100%', label: 'Delivery Reliability', sub: 'Verified by DigiHust QA' },
+          { value: '24/7', label: 'Platform Availability', sub: 'Zero unmanaged downtime' },
+        ],
+        deliverables: dynamicStudy.deliverables && dynamicStudy.deliverables.length > 0
+          ? dynamicStudy.deliverables
+          : ['Full Production Application', 'Admin Management Console', 'Architecture Documentation', 'SLA Warranty'],
+        tags: dynamicStudy.tags || ['React', 'Full-Stack'],
+        heroImage: dynamicStudy.imageUrl || 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1200&q=80',
+        statHighlight: `${dynamicStudy.impactMetric || '+100%'} ${dynamicStudy.impactLabel || 'Uplift'}`,
+        projectUrl: dynamicStudy.projectUrl,
+        clientQuote: staticStudy?.clientQuote,
+      }
+    : (staticStudy || CASE_STUDIES[0]);
 
   return (
     <div className="pt-20 lg:pt-24 min-h-screen bg-[var(--bg-page)] text-[var(--text-body)]">
       <SEOHead
         title={`${study.title} | Case Study | DigiHust`}
         description={study.summary}
-        ogImage={study.img || study.imageUrl || study.coverImage}
+        ogImage={study.heroImage}
       />
 
       {/* Header Banner */}
       <section className="bg-[var(--bg-subtle)] py-14 sm:py-20 px-6 lg:px-8 border-b border-[var(--border-subtle)]">
         <div className="max-w-7xl mx-auto">
           <Link
-            to="/work"
+            to="/portfolio"
             className="inline-flex items-center space-x-2 text-xs font-bold text-[var(--brand-teal)] hover:underline mb-6"
           >
             <ArrowLeft className="w-4 h-4" />
@@ -192,7 +234,7 @@ export const CaseStudyDetail: React.FC = () => {
               </p>
 
               {/* Meta pills */}
-              <div className="flex flex-wrap gap-4 text-xs text-[var(--text-muted)]">
+              <div className="flex flex-wrap gap-4 text-xs text-[var(--text-muted)] items-center">
                 <span className="flex items-center gap-1.5 bg-[var(--bg-surface)] px-3 py-1.5 rounded-lg border border-[var(--border-subtle)]">
                   <Building2 className="w-4 h-4 text-[var(--brand-teal)]" />
                   <strong className="text-[var(--text-heading)] font-bold">{study.client}</strong>
@@ -205,6 +247,17 @@ export const CaseStudyDetail: React.FC = () => {
                   <Sparkles className="w-4 h-4 text-[var(--color-status-warning)]" />
                   <span>{study.statHighlight}</span>
                 </span>
+                {study.projectUrl && (
+                  <a
+                    href={study.projectUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 bg-emerald-500/15 text-emerald-400 hover:bg-emerald-500/25 px-3 py-1.5 rounded-lg border border-emerald-500/40 font-bold transition-colors shadow-sm"
+                  >
+                    <ExternalLink className="w-4 h-4" />
+                    <span>Live Product Demo</span>
+                  </a>
+                )}
               </div>
             </div>
 
@@ -214,11 +267,22 @@ export const CaseStudyDetail: React.FC = () => {
               <p className="text-xs text-[var(--text-muted)] mb-6 leading-relaxed">
                 Our specialized squads can architect, design, and build custom solutions for your industry.
               </p>
+              {study.projectUrl && (
+                <a
+                  href={study.projectUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full mb-3 flex items-center justify-center space-x-2 px-6 py-3.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-bold text-sm shadow-lg shadow-emerald-500/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
+                >
+                  <ExternalLink className="w-4 h-4" />
+                  <span>Visit Live Product</span>
+                </a>
+              )}
               <Link
-                to="/contact"
-                className="w-full flex items-center justify-center space-x-2 px-6 py-3.5 rounded-xl bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-white font-bold text-sm shadow-md transition-all"
+                to={`/contact?project=${encodeURIComponent(study.title)}&service=${encodeURIComponent(study.category)}`}
+                className="w-full flex items-center justify-center space-x-2 px-6 py-3.5 rounded-xl bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-white font-bold text-sm shadow-md transition-all hover:scale-[1.02] active:scale-[0.98]"
               >
-                <span>Request Project Proposal</span>
+                <span>Build a Similar Project</span>
                 <ArrowRight className="w-4 h-4" />
               </Link>
             </div>
@@ -364,10 +428,10 @@ export const CaseStudyDetail: React.FC = () => {
           Contact our team with your specifications to receive a scoped estimate and timeline.
         </p>
         <Link
-          to="/contact"
-          className="inline-flex items-center space-x-2 px-8 py-4 rounded-xl bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-white font-bold shadow-lg transition-all"
+          to={`/contact?project=${encodeURIComponent(study.title)}&service=${encodeURIComponent(study.category)}`}
+          className="inline-flex items-center space-x-2 px-8 py-4 rounded-xl bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-white font-bold shadow-lg transition-all hover:scale-105 active:scale-95"
         >
-          <span>Start a Project</span>
+          <span>Build a Similar Project</span>
           <ArrowRight className="w-4 h-4" />
         </Link>
       </section>

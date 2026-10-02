@@ -97,6 +97,8 @@ export const App: React.FC = () => {
                 <Route path="/services" element={<Services />} />
                 <Route path="/portfolio" element={<Work />} />
                 <Route path="/portfolio/:slug" element={<CaseStudyDetail />} />
+                <Route path="/work" element={<Navigate to="/portfolio" replace />} />
+                <Route path="/work/:slug" element={<CaseStudyDetail />} />
                 <Route path="/how-it-works" element={<HowItWorks />} />
                 <Route path="/about" element={<About />} />
                 <Route path="/team" element={<Team />} />

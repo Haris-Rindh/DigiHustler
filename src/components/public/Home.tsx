@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   ArrowRight,
   Code,
@@ -22,12 +22,17 @@ import {
   Building,
   Check,
   Briefcase,
+  ExternalLink,
+  ShieldCheck,
+  Code2,
+  X,
 } from 'lucide-react';
 import { SEOHead } from '../seo/SEOHead';
 import { InteractiveCanvas } from '../ui/InteractiveCanvas';
 import RadialOrbitalTimeline, { defaultServicesTimelineData } from '../ui/radial-orbital-timeline';
 import { useLanguage } from '../../context/LanguageContext';
 import { useApp } from '../../context/AppContext';
+import { Project, getProjectLiveUrl, PROJECTS } from './Work';
 
 // ── Service categories ──────────────────────────────────────────────────────
 const SERVICES = [
@@ -156,9 +161,27 @@ const itemVariants = {
 export const Home: React.FC = () => {
   const { t } = useLanguage();
   const { siteContent } = useApp();
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
 
   const hero = siteContent?.hero;
-  const caseStudies = siteContent?.caseStudies || [];
+  const rawCaseStudies = siteContent?.caseStudies || [];
+  const featuredProjects: Project[] = (rawCaseStudies && rawCaseStudies.length > 0)
+    ? rawCaseStudies.slice(0, 6).map((cs) => ({
+        id: cs.slug || cs.id,
+        category: cs.category || 'Web Development',
+        filterCat: cs.category?.includes('Design') || cs.category?.includes('Brand') ? 'Creative' : cs.category?.includes('AI') ? 'AI & Data' : 'Development',
+        title: cs.title,
+        client: cs.client || 'Enterprise Client',
+        description: cs.summary || 'Custom engineered digital solution delivered by DigiHust specialized squads.',
+        challenge: cs.challenge || 'Client required modernized architecture, scalable infrastructure, and optimized acquisition funnels.',
+        solution: cs.solution || 'DigiHust assembled a dedicated cross-functional squad to engineer an end-to-end custom application with enterprise SLA guarantees.',
+        results: cs.impactMetric ? [`${cs.impactMetric} ${cs.impactLabel || 'Uplift'}`] : ['+140% Conversion Rate', 'Sub-800ms Latency', '100% On-Time Delivery'],
+        tags: cs.tags && cs.tags.length > 0 ? cs.tags : ['React', 'Full Stack', 'Cloud'],
+        img: cs.imageUrl || 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=800&q=80',
+        projectUrl: getProjectLiveUrl(cs),
+      }))
+    : PROJECTS.slice(0, 6);
+
   const testimonials = siteContent?.testimonials || [];
   const valueProps = siteContent?.valueProps || [];
   const SERVICE_PALETTE = ['#1F7A8C', '#8B5CF6', '#0284C7', '#D97706', '#E11D48', '#059669'];
@@ -449,50 +472,124 @@ export const Home: React.FC = () => {
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5 }}
-              className="flex flex-col items-center select-none bg-[var(--bg-surface)] p-8 rounded-3xl border border-[var(--border-subtle)] shadow-xl"
+              className="relative flex flex-col items-center select-none bg-[var(--bg-surface)] p-8 sm:p-10 rounded-3xl border border-[var(--border-subtle)] shadow-2xl overflow-hidden group"
             >
+              {/* Ambient radial glow inside container */}
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-[var(--brand-teal)]/10 rounded-full blur-3xl pointer-events-none" />
+
+              {/* Status Header Pill */}
+              <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-[var(--brand-teal-subtle)] border border-[var(--brand-teal)]/30 text-[10px] font-bold text-[var(--brand-teal)] uppercase tracking-wider mb-5 relative z-10">
+                <span className="w-1.5 h-1.5 rounded-full bg-[var(--brand-teal)] animate-ping" />
+                <span>Coordinated Delivery Architecture</span>
+              </div>
+
               {/* Client Box */}
-              <div className="w-48 py-3 px-6 rounded-xl bg-[var(--bg-page)] text-[var(--text-heading)] border border-[var(--border-subtle)] text-center font-bold text-sm shadow-sm">
-                Client Organization
-              </div>
-              <div className="w-px h-6 bg-[var(--border-subtle)]" />
+              <motion.div
+                whileHover={{ scale: 1.03, y: -2 }}
+                className="w-52 py-3 px-6 rounded-2xl bg-[var(--bg-page)] text-[var(--text-heading)] border border-[var(--border-subtle)] hover:border-[var(--brand-teal)] shadow-sm text-center font-bold text-sm flex items-center justify-center gap-2 cursor-pointer transition-colors relative z-10"
+              >
+                <Building className="w-4 h-4 text-[var(--brand-teal)]" />
+                <span>Client Organization</span>
+              </motion.div>
 
-              {/* DigiHust Core */}
-              <div className="w-64 py-4 px-6 rounded-2xl bg-gradient-to-br from-[#022B3A] to-[#1F7A8C] text-white text-center font-extrabold text-base shadow-md border border-[var(--border-subtle)]">
-                DigiHust Management
-                <p className="text-[10px] font-normal text-[#E1E5F2] mt-0.5 tracking-wider uppercase">
-                  Single Accountable Entity
+              {/* Animated Vertical Flow Connector 1 */}
+              <div className="relative w-0.5 h-7 bg-[var(--border-subtle)] my-0.5 overflow-hidden">
+                <motion.div
+                  animate={{ y: [-15, 30] }}
+                  transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
+                  className="w-full h-3 bg-gradient-to-b from-transparent via-[var(--brand-teal)] to-transparent"
+                />
+              </div>
+
+              {/* DigiHust Core Management Hub */}
+              <motion.div
+                whileHover={{ scale: 1.04, y: -2 }}
+                className="relative w-72 py-4 px-6 rounded-2xl bg-gradient-to-br from-[#022B3A] to-[#1F7A8C] text-white text-center font-extrabold text-base shadow-xl shadow-[#1F7A8C]/25 border border-[#1F7A8C]/60 cursor-pointer overflow-hidden group z-10"
+              >
+                {/* Shimmer sweep effect */}
+                <motion.div
+                  animate={{ x: ['-100%', '200%'] }}
+                  transition={{ duration: 3.5, repeat: Infinity, ease: 'linear', repeatDelay: 1 }}
+                  className="absolute inset-0 w-1/2 bg-gradient-to-r from-transparent via-white/15 to-transparent skew-x-12 pointer-events-none"
+                />
+                <div className="relative z-10 flex items-center justify-center gap-2">
+                  <ShieldCheck className="w-4 h-4 text-emerald-400" />
+                  <span>DigiHust Management</span>
+                </div>
+                <p className="text-[10px] font-medium text-[#E1E5F2] mt-0.5 tracking-wider uppercase relative z-10">
+                  Single Accountable Entity · SLA Guaranteed
                 </p>
-              </div>
-              <div className="w-px h-6 bg-[var(--border-subtle)]" />
+              </motion.div>
 
-              {/* Specialized Squads */}
-              <div className="grid grid-cols-3 gap-3 w-full">
-                {['Engineering', 'Design & UX', 'AI & Data'].map((label) => (
-                  <div
-                    key={label}
-                    className="py-2.5 px-2 rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] text-[var(--text-heading)] text-center text-xs font-bold shadow-sm"
+              {/* Animated Vertical Flow Connector 2 */}
+              <div className="relative w-0.5 h-7 bg-[var(--border-subtle)] my-0.5 overflow-hidden">
+                <motion.div
+                  animate={{ y: [-15, 30] }}
+                  transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut', delay: 0.4 }}
+                  className="w-full h-3 bg-gradient-to-b from-transparent via-cyan-400 to-transparent"
+                />
+              </div>
+
+              {/* Specialized Squads Grid */}
+              <div className="grid grid-cols-3 gap-2.5 w-full relative z-10">
+                {[
+                  { label: 'Engineering', icon: <Code2 className="w-3.5 h-3.5 text-cyan-400" />, border: 'hover:border-cyan-500/60' },
+                  { label: 'Design & UX', icon: <Layers className="w-3.5 h-3.5 text-purple-400" />, border: 'hover:border-purple-500/60' },
+                  { label: 'AI & Data', icon: <Zap className="w-3.5 h-3.5 text-amber-400" />, border: 'hover:border-amber-500/60' },
+                ].map((squad) => (
+                  <motion.div
+                    key={squad.label}
+                    whileHover={{ scale: 1.05, y: -2 }}
+                    className={`py-2.5 px-2 rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-page)] text-[var(--text-heading)] text-center text-xs font-bold shadow-sm cursor-pointer flex flex-col items-center justify-center gap-1 transition-all ${squad.border} hover:bg-[var(--bg-subtle)]`}
                   >
-                    {label}
-                  </div>
+                    {squad.icon}
+                    <span>{squad.label}</span>
+                  </motion.div>
                 ))}
               </div>
-              <div className="grid grid-cols-2 gap-3 w-2/3 mt-3">
-                {['Growth / SEO', 'Cybersecurity'].map((label) => (
-                  <div
-                    key={label}
-                    className="py-2.5 px-2 rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] text-[var(--text-heading)] text-center text-xs font-bold shadow-sm"
+              <div className="grid grid-cols-2 gap-2.5 w-3/4 mt-2.5 relative z-10">
+                {[
+                  { label: 'Growth / SEO', icon: <Sparkles className="w-3.5 h-3.5 text-emerald-400" />, border: 'hover:border-emerald-500/60' },
+                  { label: 'Cybersecurity', icon: <Shield className="w-3.5 h-3.5 text-rose-400" />, border: 'hover:border-rose-500/60' },
+                ].map((squad) => (
+                  <motion.div
+                    key={squad.label}
+                    whileHover={{ scale: 1.05, y: -2 }}
+                    className={`py-2.5 px-2 rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-page)] text-[var(--text-heading)] text-center text-xs font-bold shadow-sm cursor-pointer flex flex-col items-center justify-center gap-1 transition-all ${squad.border} hover:bg-[var(--bg-subtle)]`}
                   >
-                    {label}
-                  </div>
+                    {squad.icon}
+                    <span>{squad.label}</span>
+                  </motion.div>
                 ))}
               </div>
-              <div className="w-px h-6 bg-[var(--border-subtle)] mt-3" />
+
+              {/* Animated Vertical Flow Connector 3 */}
+              <div className="relative w-0.5 h-7 bg-[var(--border-subtle)] my-0.5 overflow-hidden">
+                <motion.div
+                  animate={{ y: [-15, 30] }}
+                  transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut', delay: 0.8 }}
+                  className="w-full h-3 bg-gradient-to-b from-transparent via-emerald-400 to-transparent"
+                />
+              </div>
 
               {/* Final Delivered Output */}
-              <div className="w-60 py-3.5 px-6 rounded-xl bg-[var(--bg-surface)] border border-[var(--brand-teal)] text-[var(--brand-teal)] text-center font-bold text-sm shadow-sm">
-                ✓ Unified Delivered Solution
-              </div>
+              <motion.div
+                whileHover={{ scale: 1.03, y: -2 }}
+                animate={{
+                  boxShadow: [
+                    '0 4px 15px -3px rgba(31, 122, 140, 0.15)',
+                    '0 8px 25px -3px rgba(31, 122, 140, 0.35)',
+                    '0 4px 15px -3px rgba(31, 122, 140, 0.15)',
+                  ]
+                }}
+                transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+                className="w-64 py-3.5 px-6 rounded-2xl bg-[var(--bg-page)] border-2 border-[var(--brand-teal)] text-[var(--brand-teal)] text-center font-bold text-sm shadow-md cursor-pointer flex items-center justify-center gap-2 relative z-10 group"
+              >
+                <div className="w-5 h-5 rounded-full bg-[var(--brand-teal)] text-white flex items-center justify-center text-xs font-bold">
+                  <Check className="w-3.5 h-3.5" />
+                </div>
+                <span>Unified Delivered Solution</span>
+              </motion.div>
             </motion.div>
           </div>
         </div>
@@ -507,7 +604,7 @@ export const Home: React.FC = () => {
               <h2 className="font-display font-extrabold text-4xl text-[var(--text-heading)]">{t('work_heading')}</h2>
             </div>
             <Link
-              to="/work"
+              to="/portfolio"
               className="inline-flex items-center space-x-2 text-sm font-bold text-[var(--brand-teal)] hover:underline"
             >
               <span>{t('work_view_all')}</span>
@@ -515,84 +612,71 @@ export const Home: React.FC = () => {
             </Link>
           </div>
 
-          {caseStudies.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {caseStudies.map((project) => (
-                <motion.div
-                  key={project.id || project.title}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  whileHover={{ y: -6, scale: 1.01 }}
-                  transition={{ duration: 0.18, ease: 'easeOut' }}
-                  data-cursor="view"
-                  className="h-full"
-                >
-                  <Link
-                    to={`/work/${project.slug}`}
-                    className="group border border-[var(--border-subtle)] rounded-2xl overflow-hidden bg-[var(--bg-surface)] hover:border-[var(--brand-teal)] hover:shadow-xl transition-all duration-200 ease-out cursor-pointer flex flex-col justify-between h-full block"
-                  >
-                    <div>
-                      <div className="aspect-video overflow-hidden relative bg-[var(--bg-subtle)]">
-                        <img
-                          src={project.imageUrl || 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=800&q=80'}
-                          alt={project.title}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200 ease-out"
-                        />
-                        <div className="absolute top-3 right-3 px-3 py-1 rounded-full bg-black/60 backdrop-blur-md border border-white/20 text-[11px] font-extrabold text-white shadow-lg flex items-center gap-1.5">
-                          <span className="text-emerald-400">{project.impactMetric}</span>
-                          <span>{project.impactLabel}</span>
-                        </div>
-                      </div>
-                      <div className="p-6">
-                        <span className="inline-block px-2.5 py-0.5 rounded-md bg-[var(--brand-teal-subtle)] text-[var(--brand-teal)] border border-[var(--brand-teal)]/30 text-[10px] font-extrabold uppercase tracking-wider mb-2">
-                          {project.category}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {featuredProjects.map((project) => (
+              <motion.div
+                key={project.id || project.title}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                whileHover={{ y: -6, scale: 1.01 }}
+                transition={{ duration: 0.18, ease: 'easeOut' }}
+                onClick={() => setSelectedProject(project)}
+                className="group border border-[var(--border-subtle)] rounded-2xl overflow-hidden bg-[var(--bg-surface)] hover:border-[var(--brand-teal)] hover:shadow-xl transition-all duration-200 ease-out cursor-pointer flex flex-col justify-between h-full"
+              >
+                <div>
+                  <div className="aspect-video overflow-hidden relative bg-[var(--bg-subtle)]">
+                    <img
+                      src={project.img}
+                      alt={project.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200 ease-out"
+                    />
+                    <div className="absolute top-3 left-3 px-2.5 py-1 rounded-md bg-[var(--bg-page)]/85 backdrop-blur-sm text-[10px] font-bold text-[var(--text-heading)] border border-[var(--border-subtle)]">
+                      {project.client}
+                    </div>
+                  </div>
+                  <div className="p-6">
+                    <span className="inline-block px-2.5 py-0.5 rounded-md bg-[var(--brand-teal-subtle)] text-[var(--brand-teal)] border border-[var(--brand-teal)]/30 text-[10px] font-extrabold uppercase tracking-wider mb-2">
+                      {project.category}
+                    </span>
+                    <h3 className="font-display font-bold text-lg text-[var(--text-heading)] mb-3 group-hover:text-[var(--brand-teal)] transition-colors duration-150">
+                      {project.title}
+                    </h3>
+                    <p className="text-sm text-[var(--text-body)] leading-relaxed mb-4 line-clamp-2">
+                      {project.description}
+                    </p>
+                    <div className="flex flex-wrap gap-1.5 mb-2">
+                      {project.tags?.map((tTag) => (
+                        <span
+                          key={tTag}
+                          className="text-[10px] px-2.5 py-0.5 rounded-md bg-[var(--bg-subtle)] text-[var(--text-heading)] border border-[var(--border-subtle)] font-semibold"
+                        >
+                          {tTag}
                         </span>
-                        <h3 className="font-display font-bold text-lg text-[var(--text-heading)] mb-3 group-hover:text-[var(--brand-teal)] transition-colors duration-150">
-                          {project.title}
-                        </h3>
-                        <div className="flex flex-wrap gap-1.5 mb-4">
-                          {project.tags?.map((tTag) => (
-                            <span
-                              key={tTag}
-                              className="text-[10px] px-2.5 py-0.5 rounded-md bg-[var(--bg-subtle)] text-[var(--text-heading)] border border-[var(--border-subtle)] font-semibold"
-                            >
-                              {tTag}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
+                      ))}
                     </div>
-                    <div className="px-6 pb-6">
-                      <div className="inline-flex items-center space-x-1 text-xs font-bold text-[var(--brand-teal)] group-hover:translate-x-1 transition-transform duration-150">
-                        <span>{t('work_read_case')}</span>
-                        <ArrowRight className="w-3.5 h-3.5" />
-                      </div>
-                    </div>
-                  </Link>
-                </motion.div>
-              ))}
-            </div>
-          ) : (
-            <div className="p-12 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] text-center space-y-4 shadow-sm max-w-2xl mx-auto">
-              <Briefcase className="w-10 h-10 text-[var(--brand-teal)] mx-auto opacity-70" />
-              <h3 className="font-display font-bold text-xl text-[var(--text-heading)]">
-                Enterprise Portfolio & Client Deliverables
-              </h3>
-              <p className="text-xs text-[var(--text-body)] leading-relaxed">
-                We deliver tailored full-stack web applications, brand identity design systems, and AI automations under strict NDA standards. Add your case studies via the CMS Studio or contact our management team for a customized portfolio walkthrough.
-              </p>
-              <div className="pt-2">
-                <Link
-                  to="/contact"
-                  className="inline-flex items-center space-x-2 px-6 py-3 rounded-xl bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-white font-bold text-xs shadow transition-all"
-                >
-                  <span>Request Custom Portfolio Proposal</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </Link>
-              </div>
-            </div>
-          )}
+                  </div>
+                </div>
+
+                <div className="px-6 pb-6 pt-2 border-t border-[var(--border-subtle)] flex items-center justify-between text-xs font-bold text-[var(--brand-teal)]">
+                  <span className="flex items-center space-x-1">
+                    <span>Inspect Full Case Study</span>
+                    <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                  </span>
+                  <a
+                    href={getProjectLiveUrl(project)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={(e) => e.stopPropagation()}
+                    className="inline-flex items-center space-x-1 text-emerald-400 hover:text-emerald-300 hover:underline font-bold"
+                  >
+                    <span>Live Demo</span>
+                    <ExternalLink className="w-3.5 h-3.5" />
+                  </a>
+                </div>
+              </motion.div>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -684,6 +768,120 @@ export const Home: React.FC = () => {
           </motion.div>
         </div>
       </section>
+
+      {/* Case Study Detail Modal */}
+      <AnimatePresence>
+        {selectedProject && (
+          <div
+            className="fixed inset-0 z-50 flex items-start justify-center p-4 sm:p-6 bg-black/70 backdrop-blur-sm overflow-y-auto"
+            onClick={(e) => {
+              if (e.target === e.currentTarget) setSelectedProject(null);
+            }}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-3xl max-w-3xl w-full p-6 sm:p-8 text-[var(--text-body)] relative shadow-2xl my-8"
+            >
+              <button
+                onClick={() => setSelectedProject(null)}
+                className="absolute top-6 right-6 p-2 rounded-xl bg-[var(--bg-page)] border border-[var(--border-subtle)] hover:border-[var(--brand-teal)] text-[var(--text-body)] hover:text-[var(--text-heading)] transition-colors cursor-pointer"
+                aria-label="Close Case Study Modal"
+              >
+                <X className="w-5 h-5" />
+              </button>
+
+              <div className="pr-12 mb-6">
+                <span className="text-xs font-bold text-[var(--brand-teal)] uppercase tracking-wider">
+                  {selectedProject.category} · {selectedProject.client}
+                </span>
+                <h3 className="font-display font-extrabold text-2xl sm:text-3xl text-[var(--text-heading)] mt-1">
+                  {selectedProject.title}
+                </h3>
+              </div>
+
+              <div className="aspect-video rounded-2xl overflow-hidden mb-6 border border-[var(--border-subtle)]">
+                <img
+                  src={selectedProject.img}
+                  alt={selectedProject.title}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+
+              <div className="space-y-6 text-sm">
+                <div>
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--text-heading)] mb-2 flex items-center space-x-1.5">
+                    <Layers className="w-4 h-4" />
+                    <span>The Challenge</span>
+                  </h4>
+                  <p className="text-[var(--text-body)] leading-relaxed bg-[var(--bg-page)] p-4 rounded-xl border border-[var(--border-subtle)]">
+                    {selectedProject.challenge}
+                  </p>
+                </div>
+
+                <div>
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--brand-teal)] mb-2 flex items-center space-x-1.5">
+                    <Sparkles className="w-4 h-4" />
+                    <span>The DigiHust Solution</span>
+                  </h4>
+                  <p className="text-[var(--text-body)] leading-relaxed bg-[var(--bg-page)] p-4 rounded-xl border border-[var(--border-subtle)]">
+                    {selectedProject.solution}
+                  </p>
+                </div>
+
+                <div>
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-emerald-400 mb-2">
+                    Key Outcomes & Metrics
+                  </h4>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    {selectedProject.results.map((res) => (
+                      <div
+                        key={res}
+                        className="p-3.5 rounded-xl bg-[var(--bg-page)] border border-emerald-500/30 text-xs font-semibold text-[var(--text-body)] flex items-start space-x-2"
+                      >
+                        <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5" />
+                        <span>{res}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-8 pt-6 border-t border-[var(--border-subtle)] flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div className="flex flex-wrap gap-1.5">
+                  {selectedProject.tags.map((t) => (
+                    <span
+                      key={t}
+                      className="text-[10px] px-2.5 py-1 rounded-md bg-[var(--bg-page)] text-[var(--text-body)] border border-[var(--border-subtle)]"
+                    >
+                      {t}
+                    </span>
+                  ))}
+                </div>
+                <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
+                  <a
+                    href={getProjectLiveUrl(selectedProject)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full sm:w-auto flex items-center justify-center space-x-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-bold text-xs shadow-md transition-all hover:scale-105 active:scale-95 cursor-pointer"
+                  >
+                    <ExternalLink className="w-3.5 h-3.5" />
+                    <span>Live Demo</span>
+                  </a>
+                  <Link
+                    to={`/contact?project=${encodeURIComponent(selectedProject.title)}&service=${encodeURIComponent(selectedProject.category)}`}
+                    className="w-full sm:w-auto flex items-center justify-center space-x-2 px-5 py-2.5 rounded-xl bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-white font-bold text-xs shadow transition-all hover:scale-105 active:scale-95"
+                  >
+                    <span>Build a Similar Project</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </Link>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

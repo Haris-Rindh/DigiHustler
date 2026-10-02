@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Send,
@@ -121,6 +122,10 @@ export const Contact: React.FC = () => {
   };
 
   const currentSlide = CONTACT_SLIDESHOW[currentSlideIndex];
+  const [searchParams] = useSearchParams();
+  const projectParam = searchParams.get('project');
+  const serviceParam = searchParams.get('service');
+
   const [form, setForm] = useState({
     name: '',
     email: '',
@@ -132,6 +137,16 @@ export const Contact: React.FC = () => {
     file: null as File | null,
     honeypot: '', // anti-spam field
   });
+
+  useEffect(() => {
+    if (projectParam) {
+      setForm((prev) => ({
+        ...prev,
+        description: prev.description ? prev.description : `I am interested in building a solution similar to "${projectParam}". My requirements: `,
+        services: serviceParam ? [serviceParam] : prev.services,
+      }));
+    }
+  }, [projectParam, serviceParam]);
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -202,7 +217,7 @@ export const Contact: React.FC = () => {
         clientName: form.name,
         clientCompany: form.company || undefined,
         clientEmail: form.email,
-        brief: `${form.description}\n\nServices: ${form.services.join(', ')}\nTimeline: ${form.timeline}\nBudget: ${form.budget}`,
+        brief: `${projectParam ? `[Referenced Case Study: ${projectParam}]\n\n` : ''}${form.description}\n\nServices: ${form.services.join(', ')}\nTimeline: ${form.timeline}\nBudget: ${form.budget}`,
         budgetEstimate: rawBudget,
         status: 'new' as const,
         groupId: targetGroupId,
@@ -221,7 +236,7 @@ export const Contact: React.FC = () => {
           services: form.services,
           budget: form.budget,
           timeline: form.timeline,
-          description: form.description
+          description: `${projectParam ? `[Referenced Case Study: ${projectParam}]\n\n` : ''}${form.description}`
         });
       } catch (emailErr) {
         console.warn('Contact Form EmailJS dispatch warning:', emailErr);
@@ -232,6 +247,7 @@ export const Contact: React.FC = () => {
       const cleanPhone = phone.replace(/[^0-9]/g, '');
       const msg = encodeURIComponent(
         `*New DigiHust Project Request*\n\n` +
+        (projectParam ? `*Referenced Project:* ${projectParam}\n` : '') +
         `*Name:* ${form.name}\n` +
         `*Email:* ${form.email}\n` +
         `*Company:* ${form.company || 'Not Specified'}\n` +
@@ -547,6 +563,32 @@ export const Contact: React.FC = () => {
                       onChange={(e) => setForm({ ...form, honeypot: e.target.value })}
                     />
                   </div>
+
+                  {/* Referenced Project Scope Banner */}
+                  {projectParam && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="p-4 rounded-2xl bg-[var(--brand-teal-subtle)] border border-[var(--brand-teal)]/40 flex items-center justify-between gap-4"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl bg-[var(--brand-teal)] text-white flex items-center justify-center font-bold flex-shrink-0 shadow-sm">
+                          <Sparkles className="w-5 h-5" />
+                        </div>
+                        <div>
+                          <p className="text-[10px] font-extrabold text-[var(--brand-teal)] uppercase tracking-wider">
+                            Referenced Project Scope
+                          </p>
+                          <p className="text-sm font-extrabold text-[var(--text-heading)]">
+                            {projectParam}
+                          </p>
+                        </div>
+                      </div>
+                      <span className="text-xs font-bold text-[var(--brand-teal)] bg-[var(--bg-surface)] px-3 py-1.5 rounded-lg border border-[var(--brand-teal)]/30 hidden sm:inline-block">
+                        Tailored Scope Attached
+                      </span>
+                    </motion.div>
+                  )}
 
                   {/* Name + Email */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">

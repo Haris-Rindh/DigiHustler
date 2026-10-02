@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowRight, Sparkles, X, CheckCircle2, Layers } from 'lucide-react';
+import { ArrowRight, Sparkles, X, CheckCircle2, Layers, ExternalLink } from 'lucide-react';
 import { SEOHead } from '../seo/SEOHead';
 import { useApp } from '../../context/AppContext';
 
-interface Project {
+export interface Project {
   id: string;
   category: string;
   filterCat: string;
@@ -17,9 +17,27 @@ interface Project {
   results: string[];
   tags: string[];
   img: string;
+  projectUrl?: string;
 }
 
-const PROJECTS: Project[] = [
+export const getProjectLiveUrl = (project: { projectUrl?: string; title?: string }) => {
+  if (project.projectUrl && project.projectUrl.trim() !== '') {
+    return project.projectUrl;
+  }
+  const t = (project.title || '').toLowerCase();
+  if (t.includes('mashaallah')) return 'https://mashaallahbangles.com';
+  if (t.includes('nawaz')) return 'https://alnawazindustries.com';
+  if (t.includes('spoon')) return 'https://therusticspoon.com';
+  if (t.includes('real-estate') || t.includes('estate')) return 'https://estatesdirect.demo';
+  if (t.includes('automotive') || t.includes('veloce')) return 'https://veloce-motors.demo';
+  if (t.includes('hospital') || t.includes('titan')) return 'https://titan-bi.demo';
+  if (t.includes('fintech') || t.includes('apex')) return 'https://apex-trading.demo';
+  if (t.includes('logistics') || t.includes('logixpress')) return 'https://logixpress-ai.demo';
+  if (t.includes('ecommerce') || t.includes('nexus')) return 'https://nexus-goods.demo';
+  return 'https://github.com/DigiHust-Official';
+};
+
+export const PROJECTS: Project[] = [
   {
     id: 'real-estate-portal',
     category: 'Web Development',
@@ -36,6 +54,7 @@ const PROJECTS: Project[] = [
     ],
     tags: ['React', 'Node.js', 'PostgreSQL', 'Tailwind CSS', 'PostGIS', 'AWS'],
     img: 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=800&q=80',
+    projectUrl: 'https://estatesdirect.demo',
   },
   {
     id: 'automotive-brand',
@@ -53,6 +72,7 @@ const PROJECTS: Project[] = [
     ],
     tags: ['Brand Identity', 'Figma', 'After Effects', '3D Animation', 'Motion Design'],
     img: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=800&q=80',
+    projectUrl: 'https://veloce-motors.demo',
   },
   {
     id: 'hospital-bi-dashboard',
@@ -70,6 +90,7 @@ const PROJECTS: Project[] = [
     ],
     tags: ['PowerBI', 'SQL', 'Python', 'ETL Pipelines', 'Data Automation'],
     img: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=800&q=80',
+    projectUrl: 'https://titan-bi.demo',
   },
   {
     id: 'saas-fintech-redesign',
@@ -87,6 +108,7 @@ const PROJECTS: Project[] = [
     ],
     tags: ['React', 'TypeScript', 'WebSockets', 'Tailwind', 'High Throughput'],
     img: 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?auto=format&fit=crop&w=800&q=80',
+    projectUrl: 'https://apex-trading.demo',
   },
   {
     id: 'ai-logistics-bot',
@@ -104,6 +126,7 @@ const PROJECTS: Project[] = [
     ],
     tags: ['OpenAI', 'Python', 'WhatsApp API', 'Automation', 'FastAPI'],
     img: 'https://images.unsplash.com/photo-1677442135703-1787eea5ce01?auto=format&fit=crop&w=800&q=80',
+    projectUrl: 'https://logixpress-ai.demo',
   },
   {
     id: 'ecommerce-brand-kit',
@@ -121,6 +144,7 @@ const PROJECTS: Project[] = [
     ],
     tags: ['UI/UX', 'Figma', 'Brand Identity', 'Shopify', 'Mobile Design'],
     img: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=800&q=80',
+    projectUrl: 'https://nexus-goods.demo',
   },
 ];
 
@@ -133,19 +157,22 @@ export const Work: React.FC = () => {
 
   const rawCaseStudies = siteContent?.caseStudies || [];
 
-  const projectsList: Project[] = rawCaseStudies.map((cs) => ({
-    id: cs.slug || cs.id,
-    category: cs.category || 'Web Development',
-    filterCat: cs.category?.includes('Design') || cs.category?.includes('Brand') ? 'Creative' : cs.category?.includes('AI') ? 'AI & Data' : 'Development',
-    title: cs.title,
-    client: cs.client,
-    description: cs.summary,
-    challenge: cs.challenge || 'Client required modernized architecture and streamlined conversion funnels.',
-    solution: cs.solution || 'Engineered customized full-stack solution with enterprise performance guarantees.',
-    results: [cs.impactMetric ? `${cs.impactMetric} ${cs.impactLabel}` : '100% On-Time Delivery'],
-    tags: cs.tags || ['React', 'Full Stack'],
-    img: cs.imageUrl || 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=800&q=80'
-  }));
+  const projectsList: Project[] = (rawCaseStudies && rawCaseStudies.length > 0)
+    ? rawCaseStudies.map((cs) => ({
+        id: cs.slug || cs.id,
+        category: cs.category || 'Web Development',
+        filterCat: cs.category?.includes('Design') || cs.category?.includes('Brand') ? 'Creative' : cs.category?.includes('AI') ? 'AI & Data' : 'Development',
+        title: cs.title,
+        client: cs.client,
+        description: cs.summary,
+        challenge: cs.challenge || 'Client required modernized architecture and streamlined conversion funnels.',
+        solution: cs.solution || 'Engineered customized full-stack solution with enterprise performance guarantees.',
+        results: [cs.impactMetric ? `${cs.impactMetric} ${cs.impactLabel}` : '100% On-Time Delivery'],
+        tags: cs.tags || ['React', 'Full Stack'],
+        img: cs.imageUrl || 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=800&q=80',
+        projectUrl: getProjectLiveUrl(cs),
+      }))
+    : PROJECTS;
 
   const filtered = activeFilter === 'All'
     ? projectsList
@@ -180,7 +207,7 @@ export const Work: React.FC = () => {
       </section>
 
       {/* Filter Tabs with Framer Motion layoutId */}
-      <section className="bg-[var(--bg-page)] border-b border-[var(--border-subtle)] sticky top-16 z-30 shadow-sm">
+      <section className="bg-[var(--bg-page)] border-b border-[var(--border-subtle)] relative z-10">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="flex items-center space-x-2 py-4 overflow-x-auto">
             {FILTER_CATS.map((cat) => {
@@ -261,8 +288,22 @@ export const Work: React.FC = () => {
                     </div>
 
                     <div className="px-6 pb-6 pt-2 border-t border-[var(--border-subtle)] flex items-center justify-between text-xs font-bold text-[var(--brand-teal)]">
-                      <span>Inspect Full Case Study</span>
-                      <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                      <span className="flex items-center space-x-1">
+                        <span>Inspect Full Case Study</span>
+                        <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                      </span>
+                      {project.projectUrl && (
+                        <a
+                          href={project.projectUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={(e) => e.stopPropagation()}
+                          className="inline-flex items-center space-x-1 text-emerald-400 hover:text-emerald-300 hover:underline font-bold"
+                        >
+                          <span>Live Demo</span>
+                          <ExternalLink className="w-3.5 h-3.5" />
+                        </a>
+                      )}
                     </div>
                   </motion.div>
                 ))}
@@ -381,13 +422,24 @@ export const Work: React.FC = () => {
                     </span>
                   ))}
                 </div>
-                <Link
-                  to="/contact"
-                  className="w-full sm:w-auto flex items-center justify-center space-x-2 px-6 py-3 rounded-xl bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-white font-bold text-xs shadow transition-all"
-                >
-                  <span>Build a Similar Project</span>
-                  <ArrowRight className="w-4 h-4" />
-                </Link>
+                <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
+                  <a
+                    href={getProjectLiveUrl(selectedProject)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full sm:w-auto flex items-center justify-center space-x-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-bold text-xs shadow-md transition-all hover:scale-105 active:scale-95 cursor-pointer"
+                  >
+                    <ExternalLink className="w-3.5 h-3.5" />
+                    <span>Live Demo</span>
+                  </a>
+                  <Link
+                    to={`/contact?project=${encodeURIComponent(selectedProject.title)}&service=${encodeURIComponent(selectedProject.category)}`}
+                    className="w-full sm:w-auto flex items-center justify-center space-x-2 px-5 py-2.5 rounded-xl bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-white font-bold text-xs shadow transition-all hover:scale-105 active:scale-95"
+                  >
+                    <span>Build a Similar Project</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </Link>
+                </div>
               </div>
             </motion.div>
           </div>

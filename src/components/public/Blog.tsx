@@ -103,7 +103,7 @@ export const Blog: React.FC = () => {
       </section>
 
       {/* Category Tabs */}
-      <section className="bg-[var(--bg-surface)] border-b border-[var(--border-subtle)] sticky top-16 z-30 shadow-sm">
+      <section className="bg-[var(--bg-surface)] border-b border-[var(--border-subtle)] relative z-10">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="flex items-center space-x-2 py-4 overflow-x-auto">
             {categories.map((cat) => (
