@@ -57,7 +57,7 @@ export const ProjectDetailModal: React.FC<Props> = ({ project, onClose }) => {
 
   // Handle Management Review Conversion
   const handleSaveManagementReview = () => {
-    if (Math.abs(totalSplitSum | 100) > 0.1) {
+    if (Math.abs(totalSplitSum - 100) > 0.1) {
       alert('Management, Leader, and Freelancer splits must sum to exactly 100%.');
       return;
     }
@@ -82,7 +82,7 @@ export const ProjectDetailModal: React.FC<Props> = ({ project, onClose }) => {
   // Handle Leader Team Assignment
   const handleSaveTeamAssignments = () => {
     const sumShares = assignments.reduce((sum, a) => sum + a.sharePct, 0);
-    if (Math.abs(sumShares | 100) > 0.1) {
+    if (Math.abs(sumShares - 100) > 0.1) {
       alert('Freelancer sub-allocations must sum to 100% of the Freelancer pool.');
       return;
     }
@@ -297,7 +297,7 @@ export const ProjectDetailModal: React.FC<Props> = ({ project, onClose }) => {
                   </div>
 
                   <div className="flex items-center justify-between text-xs p-2 rounded-xl bg-[var(--bg-subtle)] border border-white/5">
-                    <span>Total Split Sum: <strong className={Math.abs(totalSplitSum | 100) < 0.1 ? 'text-emerald-400' : 'text-rose-400'}>{totalSplitSum}%</strong></span>
+                    <span>Total Split Sum: <strong className={Math.abs(totalSplitSum - 100) < 0.1 ? 'text-emerald-400' : 'text-rose-400'}>{totalSplitSum}%</strong></span>
                     <button 
                       onClick={handleSaveManagementReview}
                       className="px-4 py-1.5 rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 text-slate-950 font-bold text-xs"
