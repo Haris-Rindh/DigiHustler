@@ -33,6 +33,8 @@ import RadialOrbitalTimeline, { defaultServicesTimelineData } from '../ui/radial
 import { useLanguage } from '../../context/LanguageContext';
 import { useApp } from '../../context/AppContext';
 import { Project, getProjectLiveUrl, PROJECTS } from './Work';
+import { getServiceIcon } from '../../lib/serviceIcons';
+import { handleCardSpotlightMove, handleCardSpotlightLeave } from '../../lib/cardSpotlight';
 
 // ── Service categories ──────────────────────────────────────────────────────
 const SERVICES = [
@@ -227,7 +229,7 @@ export const Home: React.FC = () => {
   const SERVICE_PALETTE = ['#1F7A8C', '#8B5CF6', '#0284C7', '#D97706', '#E11D48', '#059669'];
   const servicesList = (siteContent?.services && siteContent.services.length > 0)
     ? siteContent.services.map((s, idx) => ({
-        icon: SERVICES[idx]?.icon || <Code className="w-6 h-6" />,
+        icon: s.icon ? getServiceIcon(s.icon, 'w-6 h-6') : (SERVICES[idx]?.icon || <Sparkles className="w-6 h-6" />),
         title: s.title,
         summary: s.tagline || 'Specialized Domain Squad',
         description: s.description,
@@ -424,44 +426,64 @@ export const Home: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {servicesList.map((svc) => (
+            {servicesList.map((svc, sIdx) => (
               <motion.div
                 key={svc.title}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                whileHover={{ y: -6, scale: 1.01 }}
-                transition={{ duration: 0.18, ease: 'easeOut' }}
                 className="h-full"
               >
                 <Link
                   to="/services"
-                  className="group border border-[var(--border-subtle)] rounded-2xl p-7 hover:border-[var(--brand-teal)] hover:shadow-xl transition-all duration-200 ease-out bg-[var(--bg-surface)] flex flex-col justify-between h-full cursor-pointer select-none block"
+                  data-cursor="view"
+                  onPointerMove={handleCardSpotlightMove}
+                  onPointerLeave={handleCardSpotlightLeave}
+                  className="group premium-card p-7 flex flex-col justify-between h-full cursor-pointer select-none block overflow-hidden relative"
                 >
-                  <div>
-                    <div
-                      className="w-12 h-12 rounded-xl flex items-center justify-center mb-5 text-white shadow-md group-hover:scale-105 transition-transform duration-200 ease-out"
-                      style={{ backgroundColor: svc.color }}
-                    >
-                      {svc.icon}
+                  {/* Luxury Watermark Numeral */}
+                  <span className="absolute top-3 right-5 font-mono font-black text-6xl text-[var(--text-heading)]/[0.04] group-hover:text-[var(--brand-teal)]/[0.14] transition-colors duration-500 select-none pointer-events-none">
+                    {String(sIdx + 1).padStart(2, '0')}
+                  </span>
+
+                  <div className="relative z-[2]">
+                    {/* Illuminated 3D Glass Icon Dock */}
+                    <div className="relative mb-5 w-fit">
+                      <div
+                        className="absolute -inset-1 rounded-2xl blur-md opacity-25 group-hover:opacity-60 transition-opacity duration-300"
+                        style={{ backgroundColor: svc.color }}
+                      />
+                      <div
+                        className="relative w-12 h-12 rounded-2xl flex items-center justify-center text-white shadow-md border border-white/20 group-hover:scale-105 group-hover:rotate-1 transition-all duration-300"
+                        style={{ backgroundColor: svc.color }}
+                      >
+                        {svc.icon}
+                      </div>
                     </div>
-                    <h3 className="font-display font-extrabold text-xl text-[var(--text-heading)] mb-1 group-hover:text-[var(--brand-teal)] transition-colors duration-150">
+
+                    <h3 className="font-display font-extrabold text-xl text-[var(--text-heading)] mb-1.5 group-hover:text-[var(--brand-teal)] transition-colors duration-200">
                       {svc.title}
                     </h3>
-                    <p className="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wide mb-3">{svc.summary}</p>
-                    <p className="text-sm text-[var(--text-body)] leading-relaxed mb-5">{svc.description}</p>
+                    <p className="text-xs font-semibold text-[var(--brand-teal)] uppercase tracking-wide mb-3">{svc.summary}</p>
+                    <p className="text-sm text-[var(--text-body)] leading-relaxed mb-6">{svc.description}</p>
                   </div>
-                  <div>
+
+                  <div className="relative z-[2]">
                     <div className="flex flex-wrap gap-1.5 mb-5">
                       {svc.tags.map((tTag) => (
-                        <span key={tTag} className="text-[11px] px-2.5 py-1 rounded-lg bg-[var(--bg-subtle)] text-[var(--text-body)] border border-[var(--border-subtle)] font-medium">
+                        <span key={tTag} className="text-[11px] px-2.5 py-1 rounded-lg bg-[var(--bg-subtle)] text-[var(--text-body)] border border-[var(--border-subtle)] font-medium group-hover:border-[var(--brand-teal)]/20 transition-colors">
                           {tTag}
                         </span>
                       ))}
                     </div>
-                    <div className="inline-flex items-center space-x-1 text-sm font-bold text-[var(--brand-teal)] group-hover:translate-x-1 transition-transform duration-150">
-                      <span>{t('services_explore')}</span>
-                      <ChevronRight className="w-4 h-4" />
+                    <div className="pt-3.5 border-t border-[var(--border-subtle)] flex items-center justify-between text-xs sm:text-sm font-bold text-[var(--brand-teal)]">
+                      <div className="inline-flex items-center space-x-1.5 group-hover:translate-x-1 transition-transform duration-200">
+                        <span>{t('services_explore')}</span>
+                        <ChevronRight className="w-4 h-4" />
+                      </div>
+                      <span className="text-[10px] font-mono text-[var(--text-muted)] uppercase tracking-wider opacity-60 group-hover:opacity-100 transition-opacity">
+                        Discipline 0{sIdx + 1}
+                      </span>
                     </div>
                   </div>
                 </Link>
@@ -685,31 +707,43 @@ export const Home: React.FC = () => {
                 initial={shouldReduceMotion ? { opacity: 1 } : { opacity: 0, y: 15 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                whileHover={shouldReduceMotion ? {} : { y: -4 }}
-                transition={{ duration: 0.22, ease: 'easeOut' }}
                 onClick={() => setSelectedProject(project)}
-                className="group border border-[var(--border-subtle)] rounded-2xl overflow-hidden bg-[var(--bg-surface)] hover:border-[var(--brand-teal)] hover:shadow-xl transition-all duration-200 ease-out cursor-pointer flex flex-col h-auto"
+                onPointerMove={handleCardSpotlightMove}
+                onPointerLeave={handleCardSpotlightLeave}
+                data-cursor="view"
+                className="group premium-card overflow-hidden cursor-pointer flex flex-col h-auto select-none"
               >
-                {/* Fixed aspect-ratio image area (55% image ratio) */}
-                <div className="w-full aspect-[16/10] overflow-hidden relative bg-[var(--bg-subtle)] flex-shrink-0">
-                  <img
-                    src={project.img}
-                    alt={project.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200 ease-out"
-                  />
-                  <div className="absolute top-2.5 left-2.5 px-2.5 py-0.5 rounded-md bg-[var(--bg-page)]/85 backdrop-blur-sm text-[10px] font-bold text-[var(--text-heading)] border border-[var(--border-subtle)] shadow-sm">
-                    {project.client}
+                {/* Nested gallery hardware frame (luxury bezel + subtle inset) */}
+                <div className="p-2.5 sm:p-3 pb-0 flex-shrink-0">
+                  <div className="w-full aspect-[16/10] overflow-hidden relative premium-card-nested-img bg-[var(--bg-subtle)]">
+                    <img
+                      src={project.img}
+                      alt={project.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+                    
+                    {/* Floating Frosted Client Badge */}
+                    <div className="absolute top-2.5 left-2.5 px-2.5 py-1 rounded-full glass-pill text-[10px] font-bold text-white shadow-sm flex items-center space-x-1.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                      <span>{project.client}</span>
+                    </div>
+
+                    {/* Floating Category Pill */}
+                    <div className="absolute top-2.5 right-2.5 px-2 py-0.5 rounded-md bg-black/65 backdrop-blur-md text-[9px] font-mono font-bold text-white/90 border border-white/10 uppercase tracking-wider">
+                      {project.category}
+                    </div>
                   </div>
                 </div>
 
-                {/* Reduced padding text area (45% text ratio) */}
-                <div className="p-4 sm:p-5 flex-1 flex flex-col">
-                  <div>
-                    <span className="inline-block px-2.5 py-0.5 rounded-md bg-[var(--brand-teal-subtle)] text-[var(--brand-teal)] border border-[var(--brand-teal)]/30 text-[11px] font-extrabold uppercase tracking-wider mb-2">
+                {/* Refined padding text area */}
+                <div className="p-4 sm:p-5 flex-1 flex flex-col relative z-[2]">
+                  <div className="mb-2">
+                    <span className="inline-block px-2.5 py-0.5 rounded-md bg-[var(--brand-teal-subtle)] text-[var(--brand-teal)] border border-[var(--brand-teal)]/30 text-[11px] font-extrabold uppercase tracking-wider">
                       {project.category}
                     </span>
                   </div>
-                  <h3 className="font-display font-bold text-base sm:text-[1.125rem] text-[var(--text-heading)] leading-[1.3] mb-2 line-clamp-2 min-h-[2.6rem] group-hover:text-[var(--brand-teal)] transition-colors duration-150">
+                  <h3 className="font-display font-bold text-base sm:text-[1.125rem] text-[var(--text-heading)] leading-[1.3] mb-2 line-clamp-2 min-h-[2.6rem] group-hover:text-[var(--brand-teal)] transition-colors duration-200">
                     {project.title}
                   </h3>
                   <p className="text-xs sm:text-[13px] text-[var(--text-body)] leading-relaxed mb-3 line-clamp-2 min-h-[2.4rem]">
@@ -719,7 +753,7 @@ export const Home: React.FC = () => {
                     {project.tags?.slice(0, 4).map((tTag) => (
                       <span
                         key={tTag}
-                        className="text-[11px] sm:text-xs px-2.5 py-0.5 rounded-md bg-[var(--bg-subtle)] text-[var(--text-heading)] border border-[var(--border-subtle)] font-medium"
+                        className="text-[11px] sm:text-xs px-2.5 py-0.5 rounded-md bg-[var(--bg-subtle)] text-[var(--text-heading)] border border-[var(--border-subtle)] font-medium group-hover:border-[var(--brand-teal)]/20 transition-colors"
                       >
                         {tTag}
                       </span>
@@ -728,17 +762,17 @@ export const Home: React.FC = () => {
                 </div>
 
                 {/* Bottom-pinned footer row */}
-                <div className="mt-auto px-4 sm:px-5 py-3 border-t border-[var(--border-subtle)] flex items-center justify-between text-xs sm:text-[13px] font-bold text-[var(--brand-teal)]">
-                  <span className="flex items-center space-x-1">
-                    <span>Inspect Full Case Study</span>
-                    <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform duration-200" />
+                <div className="mt-auto px-4 sm:px-5 py-3 border-t border-[var(--border-subtle)] flex items-center justify-between text-xs sm:text-[13px] font-bold text-[var(--brand-teal)] relative z-[2]">
+                  <span className="flex items-center space-x-1.5">
+                    <span>Inspect Case Study</span>
+                    <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1.5 transition-transform duration-200" />
                   </span>
                   <a
                     href={getProjectLiveUrl(project)}
                     target="_blank"
                     rel="noopener noreferrer"
                     onClick={(e) => e.stopPropagation()}
-                    className="inline-flex items-center space-x-1 text-emerald-400 hover:text-emerald-300 hover:underline font-bold"
+                    className="inline-flex items-center space-x-1 text-emerald-400 hover:text-emerald-300 hover:underline font-bold px-2 py-0.5 rounded-md hover:bg-emerald-500/10 transition-colors"
                   >
                     <span>Live Demo</span>
                     <ExternalLink className="w-3.5 h-3.5" />
@@ -771,34 +805,45 @@ export const Home: React.FC = () => {
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  className="p-8 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] flex flex-col justify-between shadow-md"
+                  onPointerMove={handleCardSpotlightMove}
+                  onPointerLeave={handleCardSpotlightLeave}
+                  className="premium-card p-8 flex flex-col justify-between group overflow-hidden relative select-none"
                 >
-                  <div>
-                    <div className="flex items-center space-x-1 text-[var(--color-status-warning)] mb-4">
+                  {/* Elegant typographic quote glyph watermark */}
+                  <span className="absolute top-4 right-6 font-serif text-7xl text-[var(--brand-teal)]/[0.08] select-none pointer-events-none group-hover:text-[var(--brand-teal)]/[0.2] transition-colors duration-500 leading-none">
+                    &ldquo;
+                  </span>
+
+                  <div className="relative z-[2]">
+                    <div className="flex items-center space-x-1.5 text-amber-400 mb-5 px-3 py-1 rounded-full bg-amber-400/10 border border-amber-400/20 w-fit">
                       {[...Array(tItem.rating || 5)].map((_, i) => (
-                        <Star key={i} className="w-4 h-4 fill-[var(--color-status-warning)]" />
+                        <Star key={i} className="w-3.5 h-3.5 fill-amber-400" />
                       ))}
+                      <span className="text-[10px] font-mono font-bold text-amber-500 ml-1">5.0</span>
                     </div>
-                    <p className="text-xs text-[var(--text-body)] italic leading-relaxed mb-6">
+                    <p className="text-xs sm:text-[13px] text-[var(--text-body)] italic leading-relaxed mb-6">
                       "{tItem.quote}"
                     </p>
                   </div>
-                  <div className="flex items-center space-x-3 pt-4 border-t border-[var(--border-subtle)]">
+                  <div className="flex items-center space-x-3 pt-4 border-t border-[var(--border-subtle)] relative z-[2]">
                     <img
                       src={tItem.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(tItem.name)}&background=1F7A8C&color=fff`}
                       alt={tItem.name}
-                      className="w-10 h-10 rounded-full object-cover"
+                      className="w-10 h-10 rounded-full object-cover ring-2 ring-[var(--brand-teal)]/30 group-hover:ring-[var(--brand-teal)] transition-all"
                     />
-                    <div>
-                      <h4 className="font-bold text-xs text-[var(--text-heading)]">{tItem.name}</h4>
-                      <p className="text-[10px] text-[var(--text-muted)]">{tItem.role}, {tItem.company}</p>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center space-x-1.5">
+                        <h4 className="font-bold text-xs sm:text-sm text-[var(--text-heading)] truncate">{tItem.name}</h4>
+                        <ShieldCheck className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0" />
+                      </div>
+                      <p className="text-[10px] sm:text-[11px] text-[var(--text-muted)] truncate">{tItem.role}, {tItem.company}</p>
                     </div>
                   </div>
                 </motion.div>
               ))}
             </div>
           ) : (
-            <div className="p-10 rounded-3xl bg-[var(--bg-  )] border border-[var(--border-subtle)] text-center space-y-3 max-w-xl mx-auto shadow-sm">
+            <div className="p-10 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] text-center space-y-3 max-w-xl mx-auto shadow-sm">
               <Shield className="w-8 h-8 text-[var(--brand-teal)] mx-auto opacity-70" />
               <h3 className="font-display font-bold text-lg text-[var(--text-heading)]">
                 100% Quality & Milestone Guarantee

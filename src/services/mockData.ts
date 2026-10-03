@@ -753,30 +753,83 @@ export const DEFAULT_SITE_CONTENT: SiteContent = {
   services: [
     {
       id: 's-web',
+      slug: 'web-mobile-engineering',
+      order: 1,
       groupId: 'tech',
       title: 'Web & Mobile Engineering',
       tagline: 'Custom React · Next.js · Node.js · Scalable Backend',
       description: 'Production-ready full-stack applications built with modern architectures, microservices, and extreme performance benchmarks.',
+      shortDescription: 'Production-ready full-stack applications built with modern architectures, microservices, and extreme performance benchmarks.',
       features: ['Single Page Applications', 'Enterprise APIs', 'Database Optimization', 'Mobile App Development'],
-      color: '#1F7A8C'
+      color: '#1F7A8C',
+      icon: 'terminal',
+      size: 'large',
+      patternVariant: 'dotted-grid',
+      linkTarget: '/contact?service=web-engineering'
     },
     {
       id: 's-creative',
+      slug: 'ui-ux-brand-systems',
+      order: 2,
       groupId: 'creative',
       title: 'UI/UX & 3D Brand Systems',
       tagline: 'Design Systems · 3D Motion · Commercial Visuals',
       description: 'Distinctive brand identities, Figma component libraries, and Cinema 4D animation suites that elevate digital perception.',
+      shortDescription: 'Distinctive brand identities, Figma component libraries, and Cinema 4D animation suites that elevate digital perception.',
       features: ['Figma Design Systems', '3D Product Rendering', 'Brand Guidelines', 'Interactive Prototypes'],
-      color: '#022B3A'
+      color: '#022B3A',
+      icon: 'layers',
+      size: 'medium',
+      patternVariant: 'concentric-rings',
+      linkTarget: '/contact?service=creative-design'
     },
     {
       id: 's-data',
+      slug: 'ai-workflows-bi',
+      order: 3,
       groupId: 'data',
       title: 'AI Workflows & Business Intelligence',
       tagline: 'PowerBI · Python ETL · OpenAI Workflows',
       description: 'Intelligent automation pipelines, autonomous agent workflows, and executive analytics dashboards that drive operational speed.',
+      shortDescription: 'Intelligent automation pipelines, autonomous agent workflows, and executive analytics dashboards that drive operational speed.',
       features: ['Automated ETL Pipelines', 'AI Customer Bots', 'Executive Dashboards', 'n8n Workflow Automations'],
-      color: '#1F7A8C'
+      color: '#1F7A8C',
+      icon: 'sparkles',
+      size: 'small',
+      patternVariant: 'mesh-gradient',
+      linkTarget: '/contact?service=ai-automation'
+    },
+    {
+      id: 's-graphics',
+      slug: 'graphic-design-video-editing',
+      order: 4,
+      groupId: 'creative',
+      title: 'Graphic Design & Video Editing',
+      tagline: 'Brand Visuals · Motion Graphics · Video Production · Social Kits',
+      description: 'High-impact commercial graphic design, vector brand assets, custom packaging, and cinematic short-form video editing that elevate brand awareness and social media engagement across digital channels.',
+      shortDescription: 'High-impact commercial graphic design, vector brand assets, custom packaging, and cinematic short-form video editing that elevate brand awareness.',
+      features: ['Commercial Visuals', 'Motion Graphics', 'Video Editing', 'Brand Assets'],
+      color: '#022B3A',
+      icon: 'film',
+      size: 'small',
+      patternVariant: 'flowing-waves',
+      linkTarget: '/contact?service=graphic-design'
+    },
+    {
+      id: 's-marketing',
+      slug: 'digital-marketing-seo',
+      order: 5,
+      groupId: 'growth',
+      title: 'Digital Marketing & SEO',
+      tagline: 'Search Optimization · Google/Meta Ads · B2B Outreach',
+      description: 'Data-driven marketing and technical search engine optimization that place your brand in front of high-intent buyers, drive organic conversions, and scale revenue funnels through targeted multichannel campaigns.',
+      shortDescription: 'Data-driven marketing and technical search engine optimization that place your brand in front of high-intent buyers and drive organic conversions.',
+      features: ['Technical SEO Audits', 'Google Ads', 'Meta Ads', 'B2B Sales Funnels'],
+      color: '#1F7A8C',
+      icon: 'trending-up',
+      size: 'small',
+      patternVariant: 'isometric-grid',
+      linkTarget: '/contact?service=digital-marketing'
     }
   ],
   packages: [

@@ -57,7 +57,7 @@ export const Navbar: React.FC = () => {
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${
+      className={`fixed top-0 left-0 right-0 z-[9980] transition-all duration-300 ${
         scrolled
           ? 'bg-[var(--bg-page)]/90 backdrop-blur-md shadow-md border-b border-[var(--border-subtle)] py-0'
           : 'bg-transparent py-2'
@@ -126,6 +126,7 @@ export const Navbar: React.FC = () => {
             onClick={() => setMobileOpen(!mobileOpen)}
             className="p-2 rounded-xl text-[var(--text-heading)] hover:bg-[var(--bg-subtle)] transition-colors cursor-pointer"
             aria-label={mobileOpen ? 'Close Menu' : 'Open Menu'}
+            aria-expanded={mobileOpen}
           >
             {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
@@ -136,6 +137,7 @@ export const Navbar: React.FC = () => {
       <AnimatePresence>
         {mobileOpen && (
           <motion.div
+            id="mobile-nav-menu"
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}

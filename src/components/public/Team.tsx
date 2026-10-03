@@ -5,6 +5,7 @@ import { ArrowRight, CheckCircle2, ShieldCheck, Sparkles, X, UserCheck, Star, Pi
 import { SEOHead } from '../seo/SEOHead';
 import { useApp } from '../../context/AppContext';
 import { realtimeSync } from '../../lib/realtimeSync';
+import { handleCardSpotlightMove, handleCardSpotlightLeave } from '../../lib/cardSpotlight';
 
 export type TeamTier = 'executive' | 'specialist' | 'intern';
 
@@ -269,7 +270,9 @@ export const Team: React.FC = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5 }}
-                className="relative rounded-3xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-6 sm:p-10 lg:p-12 overflow-hidden shadow-xl group hover:border-[var(--brand-teal)] transition-all duration-300"
+                onPointerMove={handleCardSpotlightMove}
+                onPointerLeave={handleCardSpotlightLeave}
+                className="premium-card p-6 sm:p-10 lg:p-12 overflow-hidden shadow-xl group hover:border-[var(--brand-teal)] transition-all duration-300 relative select-none"
               >
                 <div className="absolute top-0 right-0 w-96 h-96 bg-[var(--brand-teal)] rounded-full blur-[140px] opacity-10 pointer-events-none" />
 
@@ -356,7 +359,9 @@ export const Team: React.FC = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: 0.1 }}
-                className="relative rounded-3xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-6 sm:p-10 lg:p-12 overflow-hidden shadow-xl group hover:border-[var(--brand-teal)] transition-all duration-300"
+                onPointerMove={handleCardSpotlightMove}
+                onPointerLeave={handleCardSpotlightLeave}
+                className="premium-card p-6 sm:p-10 lg:p-12 overflow-hidden shadow-xl group hover:border-[var(--brand-teal)] transition-all duration-300 relative select-none"
               >
                 <div className="absolute top-0 left-0 w-96 h-96 bg-purple-500 rounded-full blur-[140px] opacity-10 pointer-events-none" />
 
@@ -476,13 +481,22 @@ export const Team: React.FC = () => {
                     }}
                     role="button"
                     tabIndex={0}
-                    className={`group border rounded-2xl p-6 bg-[var(--bg-surface)] hover:shadow-xl hover:border-[var(--brand-teal)] transition-all duration-200 ease-out flex flex-col justify-between cursor-pointer hover:-translate-y-1.5 select-none ${
+                    data-cursor="view"
+                    onPointerMove={handleCardSpotlightMove}
+                    onPointerLeave={handleCardSpotlightLeave}
+                    className={`group premium-card p-6 flex flex-col justify-between cursor-pointer select-none overflow-hidden relative ${
                       isPinned
-                        ? 'border-[var(--brand-teal)]/50 ring-2 ring-[var(--brand-teal)]/15 shadow-md'
-                        : 'border-[var(--border-subtle)]'
+                        ? 'border-[var(--brand-teal)]/70 ring-2 ring-[var(--brand-teal)]/25 shadow-lg'
+                        : ''
                     }`}
                   >
-                    <div>
+                    {/* Ambient Category-Colored Halo */}
+                    <div
+                      className="absolute top-0 right-0 w-32 h-32 rounded-full blur-3xl opacity-15 pointer-events-none group-hover:opacity-35 transition-opacity duration-300"
+                      style={{ backgroundColor: CAT_COLORS[member.category] || '#1a7a8c' }}
+                    />
+
+                    <div className="relative z-[2]">
                       {/* Pinned Badge */}
                       {isPinned && (
                         <div className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/30 text-[9px] font-extrabold uppercase tracking-wider mb-3">
@@ -493,11 +507,13 @@ export const Team: React.FC = () => {
 
                       {/* Header */}
                       <div className="flex items-start space-x-3.5 mb-4">
-                        <img
-                          src={member.img}
-                          alt={member.name}
-                          className="w-14 h-14 rounded-2xl object-cover ring-2 ring-gray-100 dark:ring-gray-800 group-hover:ring-[var(--brand-teal)]/40 transition-all flex-shrink-0"
-                        />
+                        <div className="relative flex-shrink-0">
+                          <img
+                            src={member.img}
+                            alt={member.name}
+                            className="w-14 h-14 rounded-2xl object-cover ring-2 ring-gray-100 dark:ring-gray-800 group-hover:ring-[var(--brand-teal)]/50 transition-all"
+                          />
+                        </div>
                         <div className="min-w-0 flex-1">
                           <h4 className="font-bold text-base text-[var(--text-heading)] leading-snug break-words group-hover:text-[var(--brand-teal)] transition-colors">
                             {member.name}
@@ -521,7 +537,7 @@ export const Team: React.FC = () => {
                         {member.skills.slice(0, 3).map((s) => (
                           <span
                             key={s}
-                            className="text-[10px] px-2 py-0.5 rounded-md bg-[var(--bg-subtle)] text-[var(--text-body)] border border-[var(--border-subtle)] font-medium truncate max-w-[140px]"
+                            className="text-[10px] px-2 py-0.5 rounded-md bg-[var(--bg-subtle)] text-[var(--text-body)] border border-[var(--border-subtle)] font-medium truncate max-w-[140px] group-hover:border-[var(--brand-teal)]/20 transition-colors"
                           >
                             {s}
                           </span>
@@ -535,7 +551,7 @@ export const Team: React.FC = () => {
                     </div>
 
                     {/* Footer */}
-                    <div className="pt-4 border-t border-[var(--border-subtle)] flex items-center justify-between mt-auto">
+                    <div className="pt-4 border-t border-[var(--border-subtle)] flex items-center justify-between mt-auto relative z-[2]">
                       <span
                         className="text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wide"
                         style={{
@@ -546,7 +562,7 @@ export const Team: React.FC = () => {
                         {member.category}
                       </span>
                       
-                      <div className="flex items-center space-x-1.5 text-xs font-semibold text-[var(--brand-teal)] group-hover:translate-x-0.5 transition-transform">
+                      <div className="flex items-center space-x-1.5 text-xs font-semibold text-[var(--brand-teal)] group-hover:translate-x-1 transition-transform">
                         <span className="text-[11px]">View Profile</span>
                         <ArrowRight className="w-3.5 h-3.5" />
                       </div>
@@ -596,13 +612,19 @@ export const Team: React.FC = () => {
                     }}
                     role="button"
                     tabIndex={0}
-                    className={`group border rounded-2xl p-5 bg-[var(--bg-surface)] hover:border-amber-400/50 hover:shadow-lg transition-all duration-200 ease-out flex flex-col justify-between cursor-pointer hover:-translate-y-1 select-none ${
+                    data-cursor="view"
+                    onPointerMove={handleCardSpotlightMove}
+                    onPointerLeave={handleCardSpotlightLeave}
+                    className={`group premium-card p-5 flex flex-col justify-between cursor-pointer select-none overflow-hidden relative ${
                       isPinned
-                        ? 'border-amber-400/60 ring-2 ring-amber-400/20 shadow-md'
-                        : 'border-[var(--border-subtle)]'
+                        ? 'border-amber-400/80 ring-2 ring-amber-400/25 shadow-lg'
+                        : ''
                     }`}
                   >
-                    <div>
+                    {/* Ambient Amber Halo */}
+                    <div className="absolute top-0 right-0 w-28 h-28 rounded-full blur-3xl opacity-15 pointer-events-none group-hover:opacity-35 transition-opacity duration-300 bg-amber-400" />
+
+                    <div className="relative z-[2]">
                       {/* Pinned Badge */}
                       {isPinned && (
                         <div className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/30 text-[9px] font-extrabold uppercase tracking-wider mb-3">
@@ -613,11 +635,13 @@ export const Team: React.FC = () => {
 
                       {/* Header */}
                       <div className="flex items-start space-x-3 mb-3.5">
-                        <img
-                          src={intern.img}
-                          alt={intern.name}
-                          className="w-12 h-12 rounded-xl object-cover ring-2 ring-amber-400/20 group-hover:ring-amber-400/50 transition-all flex-shrink-0"
-                        />
+                        <div className="relative flex-shrink-0">
+                          <img
+                            src={intern.img}
+                            alt={intern.name}
+                            className="w-12 h-12 rounded-xl object-cover ring-2 ring-amber-400/20 group-hover:ring-amber-400/50 transition-all"
+                          />
+                        </div>
                         <div className="min-w-0 flex-1">
                           <span className="inline-block text-[9px] font-bold px-2 py-0.5 rounded bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 uppercase tracking-wider mb-1">
                             Intern
@@ -641,7 +665,7 @@ export const Team: React.FC = () => {
                         {intern.skills.slice(0, 3).map((s) => (
                           <span
                             key={s}
-                            className="text-[9px] px-2 py-0.5 rounded bg-[var(--bg-subtle)] text-[var(--text-body)] border border-[var(--border-subtle)] font-medium"
+                            className="text-[9px] px-2 py-0.5 rounded bg-[var(--bg-subtle)] text-[var(--text-body)] border border-[var(--border-subtle)] font-medium group-hover:border-amber-400/20 transition-colors"
                           >
                             {s}
                           </span>
@@ -650,11 +674,11 @@ export const Team: React.FC = () => {
                     </div>
 
                     {/* Footer */}
-                    <div className="pt-3 border-t border-[var(--border-subtle)] flex items-center justify-between mt-auto">
+                    <div className="pt-3 border-t border-[var(--border-subtle)] flex items-center justify-between mt-auto relative z-[2]">
                       <span className="text-[9px] font-bold text-[var(--text-muted)] uppercase tracking-wide">
                         {intern.category}
                       </span>
-                      <span className="text-[11px] font-bold text-amber-500 flex items-center space-x-1 group-hover:translate-x-0.5 transition-transform">
+                      <span className="text-[11px] font-bold text-amber-500 flex items-center space-x-1 group-hover:translate-x-1 transition-transform">
                         <span>View Profile</span>
                         <ArrowRight className="w-3 h-3" />
                       </span>

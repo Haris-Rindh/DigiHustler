@@ -115,11 +115,11 @@ export const SaasDevelopmentLanding: React.FC = () => {
               bullets: ["Automated daily backups", "Zero-downtime migrations", "Scalable cloud cluster setup"]
             }
           ].map((card, idx) => (
-            <div key={idx} className="p-8 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] space-y-4 hover:border-[var(--brand-teal)]/50 transition-all shadow-sm">
-              <div className="w-12 h-12 rounded-2xl bg-[var(--brand-teal-subtle)] flex items-center justify-center">
+            <div key={idx} className="p-8 premium-card space-y-4 relative overflow-hidden group select-none">
+              <div className="w-12 h-12 rounded-2xl bg-[var(--brand-teal-subtle)] flex items-center justify-center group-hover:scale-105 transition-transform duration-200">
                 {card.icon}
               </div>
-              <h3 className="font-display font-bold text-xl text-[var(--text-heading)]">{card.title}</h3>
+              <h3 className="font-display font-bold text-xl text-[var(--text-heading)] group-hover:text-[var(--brand-teal)] transition-colors duration-200">{card.title}</h3>
               <p className="text-xs text-[var(--text-body)] leading-relaxed">{card.desc}</p>
               <ul className="space-y-2 pt-2 border-t border-[var(--border-subtle)]">
                 {card.bullets.map((b, i) => (
@@ -185,9 +185,9 @@ export const SaasDevelopmentLanding: React.FC = () => {
               <Link 
                 key={idx} 
                 to="/contact"
-                className={`group p-8 rounded-3xl bg-[var(--bg-surface)] border ${
-                  pkg.popular ? 'border-[var(--brand-teal)] ring-2 ring-[var(--brand-teal)]/30' : 'border-[var(--border-subtle)]'
-                } space-y-6 flex flex-col justify-between shadow-lg hover:shadow-2xl hover:border-[var(--brand-teal)] hover:-translate-y-2 transition-all duration-200 ease-out relative cursor-pointer block select-none`}
+                className={`group p-8 premium-card ${
+                  pkg.popular ? 'border-[var(--brand-teal)] ring-2 ring-[var(--brand-teal)]/30' : ''
+                } space-y-6 flex flex-col justify-between relative cursor-pointer block select-none`}
               >
                 {pkg.popular && (
                   <span className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-[var(--brand-teal)] text-white text-[10px] font-black uppercase tracking-widest shadow-md">

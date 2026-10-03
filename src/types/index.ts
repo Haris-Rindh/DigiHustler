@@ -417,13 +417,20 @@ export interface SiteTestimonial {
 
 export interface SiteServiceItem {
   id: string;
-  groupId: GroupId;
+  slug?: string;
+  order?: number;
+  groupId?: GroupId;
   title: string;
   tagline: string;
   description: string;
-  features: string[];
+  shortDescription?: string;
+  features?: string[];
   color: string;
+  icon?: string;
   iconName?: string;
+  size?: 'large' | 'medium' | 'small';
+  patternVariant?: 'dotted-grid' | 'concentric-rings' | 'diagonal-hatch' | 'flowing-waves' | 'mesh-gradient' | 'isometric-grid';
+  linkTarget?: string;
 }
 
 export interface SitePackage {

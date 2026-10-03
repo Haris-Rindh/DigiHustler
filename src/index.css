@@ -147,7 +147,7 @@ h1, h2, h3, h4, h5, h6 {
   color: var(--text-heading);
 }
 
-/* Universal Card Class */
+/* Universal Card Class - Buttery Spring Physics */
 .card-surface,
 .matte-card,
 .breeze-card,
@@ -155,9 +155,13 @@ h1, h2, h3, h4, h5, h6 {
   background-color: var(--bg-surface);
   border: 1px solid var(--border-subtle);
   color: var(--text-body);
-  box-shadow: 0 4px 20px rgba(2, 43, 58, 0.08);
+  box-shadow: 0 4px 20px rgba(2, 43, 58, 0.08), inset 0 1px 0 0 rgba(255, 255, 255, 0.06);
   border-radius: 1.25rem;
-  transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.18s ease-out, border-color 0.18s ease-out, box-shadow 0.18s cubic-bezier(0.16, 1, 0.3, 1), color 0.18s ease-out;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+              background-color 0.25s ease-out,
+              border-color 0.25s ease-out,
+              box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+              color 0.25s ease-out;
   will-change: transform, box-shadow;
 }
 
@@ -165,9 +169,11 @@ h1, h2, h3, h4, h5, h6 {
 .matte-card:hover,
 .breeze-card-hover:hover,
 .glass-card:hover {
-  border-color: var(--border-hover);
-  box-shadow: 0 10px 30px rgba(2, 43, 58, 0.18);
-  transform: translateY(-3px);
+  border-color: rgba(31, 122, 140, 0.5);
+  box-shadow: 0 16px 36px -8px rgba(2, 43, 58, 0.18),
+              0 0 20px -2px rgba(31, 122, 140, 0.18),
+              inset 0 1px 0 0 rgba(255, 255, 255, 0.12);
+  transform: translateY(-4px);
 }
 
 /* Primary Button */
@@ -272,7 +278,85 @@ h1, h2, h3, h4, h5, h6 {
   }
 }
 
-/* Hide custom cursor when hovering navbar */
-header:hover ~ .custom-cursor { display: none !important; }
-.hide-cursor * { cursor: default !important; }
+/* ── KINETIC RETICLE CURSOR NATIVE OVERRIDES ── */
+@media (hover: hover) and (pointer: fine) {
+  body.has-custom-cursor {
+    cursor: none !important;
+  }
+  body.has-custom-cursor a,
+  body.has-custom-cursor button,
+  body.has-custom-cursor [role="button"],
+  body.has-custom-cursor [data-cursor] {
+    cursor: none !important;
+  }
+  body.has-custom-cursor input[type="text"],
+  body.has-custom-cursor input[type="email"],
+  body.has-custom-cursor input[type="password"],
+  body.has-custom-cursor textarea {
+    cursor: text !important;
+  }
+}
+
+/* ── BOLD, PREMIUM, BUTTERY CARD DESIGN SYSTEM ── */
+.premium-card {
+  position: relative;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%), var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: 1.5rem;
+  box-shadow: 0 4px 20px -2px rgba(2, 43, 58, 0.1), inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform;
+}
+
+.premium-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(550px circle at var(--mouse-x, -999px) var(--mouse-y, -999px), rgba(31, 122, 140, 0.2), transparent 65%);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  z-index: 0;
+}
+
+.premium-card:hover::before {
+  opacity: 1;
+}
+
+.premium-card:hover {
+  transform: translateY(-6px);
+  border-color: rgba(31, 122, 140, 0.65);
+  box-shadow: 0 24px 48px -12px rgba(2, 43, 58, 0.35),
+              0 0 30px -4px rgba(31, 122, 140, 0.28),
+              inset 0 1px 0 0 rgba(255, 255, 255, 0.2);
+}
+
+.dark .premium-card {
+  box-shadow: 0 6px 24px -2px rgba(0, 0, 0, 0.35), inset 0 1px 0 0 rgba(255, 255, 255, 0.08);
+}
+
+.dark .premium-card:hover {
+  box-shadow: 0 24px 48px -12px rgba(0, 0, 0, 0.7),
+              0 0 35px -4px rgba(31, 122, 140, 0.35),
+              inset 0 1px 0 0 rgba(255, 255, 255, 0.18);
+}
+
+.glass-pill {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow: 0 2px 8px -1px rgba(0, 0, 0, 0.15);
+}
+
+.premium-card-nested-img {
+  border-radius: 1.125rem;
+  overflow: hidden;
+  position: relative;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.12);
+}
 

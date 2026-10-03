@@ -11,6 +11,22 @@ import {
 } from '../../types';
 import { DEFAULT_SITE_CONTENT } from '../../services/mockData';
 import { PERMISSIONS } from '../../lib/permissions';
+import { AVAILABLE_SERVICE_ICONS, getServiceIcon } from '../../lib/serviceIcons';
+
+const SERVICE_PATTERN_OPTIONS = [
+  { id: 'dotted-grid', label: 'Dotted Grid' },
+  { id: 'concentric-rings', label: 'Concentric Rings' },
+  { id: 'diagonal-hatch', label: 'Diagonal Hatch' },
+  { id: 'flowing-waves', label: 'Flowing Waves' },
+  { id: 'mesh-gradient', label: 'Mesh Gradient' },
+  { id: 'isometric-grid', label: 'Isometric Grid' },
+] as const;
+
+const SERVICE_SIZE_OPTIONS = [
+  { id: 'large', label: 'Large (7 cols / Row 1)' },
+  { id: 'medium', label: 'Medium (5 cols / Row 1)' },
+  { id: 'small', label: 'Small (4 cols / Row 2)' },
+] as const;
 
 export const SiteContentManager: React.FC = () => {
   const { 
@@ -65,7 +81,19 @@ export const SiteContentManager: React.FC = () => {
 
   const [showAddService, setShowAddService] = useState(false);
   const [newService, setNewService] = useState<Partial<SiteServiceItem>>({
-    groupId: 'tech', title: '', tagline: '', description: '', features: ['Scalable Architecture'], color: '#1F7A8C'
+    groupId: 'tech',
+    title: '',
+    slug: '',
+    order: 1,
+    size: 'small',
+    icon: 'terminal',
+    patternVariant: 'dotted-grid',
+    tagline: '',
+    description: '',
+    shortDescription: '',
+    linkTarget: '',
+    features: ['Scalable Architecture'],
+    color: '#1F7A8C'
   });
 
   const [showAddPackage, setShowAddPackage] = useState(false);
@@ -195,18 +223,40 @@ export const SiteContentManager: React.FC = () => {
   const handleCreateService = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newService.title) return;
+    const generatedSlug = newService.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
     const item: SiteServiceItem = {
       id: `s-${Date.now()}`,
       groupId: (newService.groupId as GroupId) || 'tech',
       title: newService.title,
+      slug: newService.slug || generatedSlug,
+      order: Number(newService.order) || (siteContent?.services?.length || 0) + 1,
+      size: (newService.size as 'large' | 'medium' | 'small') || 'small',
+      icon: newService.icon || 'terminal',
+      patternVariant: (newService.patternVariant as any) || 'dotted-grid',
       tagline: newService.tagline || '',
       description: newService.description || '',
+      shortDescription: newService.shortDescription || newService.description?.slice(0, 160) || '',
+      linkTarget: newService.linkTarget || `/contact?service=${encodeURIComponent(newService.slug || generatedSlug)}`,
       features: newService.features || [],
       color: newService.color || '#1F7A8C'
     };
     addItemToSiteContent('services', item);
     setShowAddService(false);
-    setNewService({ groupId: 'tech', title: '', tagline: '', description: '', features: [], color: '#1F7A8C' });
+    setNewService({
+      groupId: 'tech',
+      title: '',
+      slug: '',
+      order: (siteContent?.services?.length || 0) + 2,
+      size: 'small',
+      icon: 'terminal',
+      patternVariant: 'dotted-grid',
+      tagline: '',
+      description: '',
+      shortDescription: '',
+      linkTarget: '',
+      features: ['Scalable Architecture'],
+      color: '#1F7A8C'
+    });
     triggerSaved('New Capability Service added!');
   };
 
@@ -663,64 +713,393 @@ export const SiteContentManager: React.FC = () => {
               </button>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {(siteContent.services || []).map((service) => (
-                <div key={service.id} className="p-6 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] space-y-4">
-                  <div className="flex items-center justify-between pb-3 border-b border-[var(--border-subtle)]">
-                    <h4 className="font-bold text-sm text-[var(--text-heading)]">{service.title}</h4>
-                    <button
-                      onClick={() => {
-                        if (confirm(`Remove service '${service.title}'?`)) {
-                          removeItemFromSiteContent('services', service.id);
-                          triggerSaved('Service removed.');
-                        }
-                      }}
-                      className="p-1.5 rounded-lg text-[var(--text-muted)] hover:text-rose-400 hover:bg-rose-500/10 cursor-pointer"
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+              {[...(siteContent.services || [])]
+                .sort((a, b) => (a.order ?? 99) - (b.order ?? 99))
+                .map((service) => {
+                  const descLength = (service.shortDescription || '').length;
+                  return (
+                    <div
+                      key={service.id}
+                      className="p-6 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] space-y-4 shadow-sm"
                     >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  </div>
-                  <div>
-                    <label className="block text-xs font-bold uppercase text-[var(--text-muted)] mb-1">Service Title</label>
-                    <input
-                      type="text"
-                      value={service.title}
-                      onChange={(e) => updateItemInSiteContent('services', service.id, { title: e.target.value })}
-                      className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs text-[var(--text-heading)]"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-bold uppercase text-[var(--text-muted)] mb-1">Description</label>
-                    <textarea
-                      value={service.description}
-                      onChange={(e) => updateItemInSiteContent('services', service.id, { description: e.target.value })}
-                      rows={3}
-                      className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl p-2.5 text-xs text-[var(--text-body)]"
-                    />
-                  </div>
-                </div>
-              ))}
+                      {/* Top Bar with Icon preview, Title and Badges */}
+                      <div className="flex items-center justify-between pb-3 border-b border-[var(--border-subtle)]">
+                        <div className="flex items-center space-x-3">
+                          <div className="w-8 h-8 rounded-xl bg-[var(--bg-page)] border border-[var(--border-subtle)] flex items-center justify-center text-[var(--brand-teal)] shadow-inner">
+                            {getServiceIcon(service.icon, 'w-4 h-4')}
+                          </div>
+                          <div>
+                            <h4 className="font-bold text-sm text-[var(--text-heading)] flex items-center gap-2">
+                              <span>{service.title}</span>
+                              <span className="text-[10px] px-2 py-0.5 rounded-full bg-[var(--brand-teal)]/10 text-[var(--brand-teal)] font-mono font-bold">
+                                #{service.order || 1}
+                              </span>
+                            </h4>
+                            <div className="flex items-center gap-1.5 mt-0.5">
+                              <span className="text-[9px] uppercase px-1.5 py-0.5 rounded bg-[var(--bg-subtle)] text-[var(--text-muted)] font-semibold">
+                                {service.size || 'small'}
+                              </span>
+                              <span className="text-[9px] uppercase px-1.5 py-0.5 rounded bg-[var(--bg-subtle)] text-[var(--text-muted)] font-mono">
+                                {service.patternVariant || 'dotted-grid'}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (confirm(`Remove service '${service.title}'?`)) {
+                              removeItemFromSiteContent('services', service.id);
+                              triggerSaved('Service removed.');
+                            }
+                          }}
+                          className="p-1.5 rounded-lg text-[var(--text-muted)] hover:text-rose-400 hover:bg-rose-500/10 cursor-pointer"
+                          title="Remove service"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+
+                      {/* 2-Column Fields Grid */}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-[11px] font-bold uppercase text-[var(--text-muted)] mb-1">
+                            Service Title
+                          </label>
+                          <input
+                            type="text"
+                            value={service.title}
+                            onChange={(e) =>
+                              updateItemInSiteContent('services', service.id, { title: e.target.value })
+                            }
+                            className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs text-[var(--text-heading)] font-semibold"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-[11px] font-bold uppercase text-[var(--text-muted)] mb-1">
+                            Slug
+                          </label>
+                          <input
+                            type="text"
+                            value={service.slug || ''}
+                            placeholder="e.g. web-mobile-engineering"
+                            onChange={(e) =>
+                              updateItemInSiteContent('services', service.id, { slug: e.target.value })
+                            }
+                            className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs font-mono text-[var(--text-heading)]"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-[11px] font-bold uppercase text-[var(--text-muted)] mb-1">
+                            Grid Order (Number)
+                          </label>
+                          <input
+                            type="number"
+                            min="1"
+                            max="20"
+                            value={service.order ?? 1}
+                            onChange={(e) =>
+                              updateItemInSiteContent('services', service.id, {
+                                order: Number(e.target.value),
+                              })
+                            }
+                            className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs font-mono text-[var(--text-heading)]"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-[11px] font-bold uppercase text-[var(--text-muted)] mb-1">
+                            Tile Size (12-Col Grid)
+                          </label>
+                          <select
+                            value={service.size || 'small'}
+                            onChange={(e) =>
+                              updateItemInSiteContent('services', service.id, {
+                                size: e.target.value as 'large' | 'medium' | 'small',
+                              })
+                            }
+                            className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs text-[var(--text-heading)]"
+                          >
+                            {SERVICE_SIZE_OPTIONS.map((opt) => (
+                              <option key={opt.id} value={opt.id}>
+                                {opt.label}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+
+                        <div>
+                          <label className="block text-[11px] font-bold uppercase text-[var(--text-muted)] mb-1 flex items-center justify-between">
+                            <span>Service Icon</span>
+                            <span className="text-[10px] text-[var(--brand-teal)] font-normal flex items-center gap-1">
+                              Preview: {getServiceIcon(service.icon, 'w-3 h-3')}
+                            </span>
+                          </label>
+                          <select
+                            value={service.icon || 'terminal'}
+                            onChange={(e) =>
+                              updateItemInSiteContent('services', service.id, { icon: e.target.value })
+                            }
+                            className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs text-[var(--text-heading)]"
+                          >
+                            {AVAILABLE_SERVICE_ICONS.map((opt) => (
+                              <option key={opt.id} value={opt.id}>
+                                {opt.label}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+
+                        <div>
+                          <label className="block text-[11px] font-bold uppercase text-[var(--text-muted)] mb-1">
+                            Generative Pattern
+                          </label>
+                          <select
+                            value={service.patternVariant || 'dotted-grid'}
+                            onChange={(e) =>
+                              updateItemInSiteContent('services', service.id, {
+                                patternVariant: e.target.value as any,
+                              })
+                            }
+                            className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs text-[var(--text-heading)]"
+                          >
+                            {SERVICE_PATTERN_OPTIONS.map((opt) => (
+                              <option key={opt.id} value={opt.id}>
+                                {opt.label}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+
+                        <div>
+                          <label className="block text-[11px] font-bold uppercase text-[var(--text-muted)] mb-1">
+                            Tagline / Tech Subtitle
+                          </label>
+                          <input
+                            type="text"
+                            value={service.tagline || ''}
+                            onChange={(e) =>
+                              updateItemInSiteContent('services', service.id, { tagline: e.target.value })
+                            }
+                            className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs text-[var(--text-heading)]"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-[11px] font-bold uppercase text-[var(--text-muted)] mb-1">
+                            Explore Link Target
+                          </label>
+                          <input
+                            type="text"
+                            value={service.linkTarget || ''}
+                            placeholder="/contact?service=..."
+                            onChange={(e) =>
+                              updateItemInSiteContent('services', service.id, { linkTarget: e.target.value })
+                            }
+                            className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs font-mono text-[var(--text-heading)]"
+                          />
+                        </div>
+                      </div>
+
+                      {/* Short Description with Character Counter */}
+                      <div>
+                        <div className="flex items-center justify-between mb-1">
+                          <label className="block text-[11px] font-bold uppercase text-[var(--text-muted)]">
+                            Hover Short Description (Max ~160 chars)
+                          </label>
+                          <span
+                            className={`text-[10px] font-mono font-semibold ${
+                              descLength > 160 ? 'text-amber-400' : 'text-[var(--text-dim)]'
+                            }`}
+                          >
+                            {descLength} / 160 chars
+                          </span>
+                        </div>
+                        <textarea
+                          value={service.shortDescription ?? service.description}
+                          onChange={(e) =>
+                            updateItemInSiteContent('services', service.id, {
+                              shortDescription: e.target.value,
+                            })
+                          }
+                          rows={2}
+                          className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl p-2.5 text-xs text-[var(--text-body)]"
+                        />
+                      </div>
+
+                      {/* Full Scope Description */}
+                      <div>
+                        <label className="block text-[11px] font-bold uppercase text-[var(--text-muted)] mb-1">
+                          Full Scope Description
+                        </label>
+                        <textarea
+                          value={service.description}
+                          onChange={(e) =>
+                            updateItemInSiteContent('services', service.id, { description: e.target.value })
+                          }
+                          rows={3}
+                          className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl p-2.5 text-xs text-[var(--text-body)]"
+                        />
+                      </div>
+                    </div>
+                  );
+                })}
             </div>
-            
+
             {showAddService && (
               <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
-                <form onSubmit={handleCreateService} className="bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
+                <form
+                  onSubmit={handleCreateService}
+                  className="bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-3xl p-6 sm:p-8 max-w-xl w-full shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto"
+                >
                   <div className="flex items-center justify-between pb-3 border-b border-[var(--border-subtle)]">
-                    <h3 className="font-bold text-base text-[var(--text-heading)]">Add New Service</h3>
-                    <button type="button" onClick={() => setShowAddService(false)} className="text-[var(--text-muted)] hover:text-[var(--text-heading)]"><X className="w-5 h-5" /></button>
+                    <h3 className="font-bold text-base text-[var(--text-heading)]">Add New Capability Service</h3>
+                    <button
+                      type="button"
+                      onClick={() => setShowAddService(false)}
+                      className="text-[var(--text-muted)] hover:text-[var(--text-heading)]"
+                    >
+                      <X className="w-5 h-5" />
+                    </button>
                   </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-xs font-bold uppercase text-[var(--text-muted)] mb-1">
+                        Service Title *
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        value={newService.title}
+                        onChange={(e) => {
+                          const title = e.target.value;
+                          const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+                          setNewService({ ...newService, title, slug: newService.slug || slug });
+                        }}
+                        className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs text-[var(--text-heading)]"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-bold uppercase text-[var(--text-muted)] mb-1">
+                        Slug
+                      </label>
+                      <input
+                        type="text"
+                        value={newService.slug || ''}
+                        onChange={(e) => setNewService({ ...newService, slug: e.target.value })}
+                        placeholder="e.g. web-mobile-engineering"
+                        className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs font-mono text-[var(--text-heading)]"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-bold uppercase text-[var(--text-muted)] mb-1">
+                        Grid Order
+                      </label>
+                      <input
+                        type="number"
+                        min="1"
+                        max="20"
+                        value={newService.order || 1}
+                        onChange={(e) => setNewService({ ...newService, order: Number(e.target.value) })}
+                        className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs font-mono text-[var(--text-heading)]"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-bold uppercase text-[var(--text-muted)] mb-1">
+                        Tile Size (12-Col Grid)
+                      </label>
+                      <select
+                        value={newService.size || 'small'}
+                        onChange={(e) =>
+                          setNewService({ ...newService, size: e.target.value as 'large' | 'medium' | 'small' })
+                        }
+                        className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs text-[var(--text-heading)]"
+                      >
+                        {SERVICE_SIZE_OPTIONS.map((opt) => (
+                          <option key={opt.id} value={opt.id}>
+                            {opt.label}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-bold uppercase text-[var(--text-muted)] mb-1">
+                        Service Icon
+                      </label>
+                      <select
+                        value={newService.icon || 'terminal'}
+                        onChange={(e) => setNewService({ ...newService, icon: e.target.value })}
+                        className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs text-[var(--text-heading)]"
+                      >
+                        {AVAILABLE_SERVICE_ICONS.map((opt) => (
+                          <option key={opt.id} value={opt.id}>
+                            {opt.label}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-bold uppercase text-[var(--text-muted)] mb-1">
+                        Generative Pattern
+                      </label>
+                      <select
+                        value={newService.patternVariant || 'dotted-grid'}
+                        onChange={(e) => setNewService({ ...newService, patternVariant: e.target.value as any })}
+                        className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs text-[var(--text-heading)]"
+                      >
+                        {SERVICE_PATTERN_OPTIONS.map((opt) => (
+                          <option key={opt.id} value={opt.id}>
+                            {opt.label}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div className="sm:col-span-2">
+                      <label className="block text-xs font-bold uppercase text-[var(--text-muted)] mb-1">
+                        Tagline / Subtitle
+                      </label>
+                      <input
+                        type="text"
+                        value={newService.tagline || ''}
+                        onChange={(e) => setNewService({ ...newService, tagline: e.target.value })}
+                        placeholder="e.g. Custom React · Next.js · Node.js"
+                        className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs text-[var(--text-heading)]"
+                      />
+                    </div>
+                  </div>
+
                   <div>
-                    <label className="block text-xs font-bold uppercase text-[var(--text-muted)] mb-1">Service Title</label>
-                    <input
-                      type="text"
-                      required
-                      value={newService.title}
-                      onChange={(e) => setNewService({ ...newService, title: e.target.value })}
+                    <div className="flex items-center justify-between mb-1">
+                      <label className="block text-xs font-bold uppercase text-[var(--text-muted)]">
+                        Short Description (Hover preview, max ~160 chars)
+                      </label>
+                      <span className="text-[10px] font-mono text-[var(--text-dim)]">
+                        {(newService.shortDescription || '').length} / 160 chars
+                      </span>
+                    </div>
+                    <textarea
+                      value={newService.shortDescription || ''}
+                      onChange={(e) => setNewService({ ...newService, shortDescription: e.target.value })}
+                      rows={2}
                       className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs text-[var(--text-heading)]"
                     />
                   </div>
+
                   <div>
-                    <label className="block text-xs font-bold uppercase text-[var(--text-muted)] mb-1">Description</label>
+                    <label className="block text-xs font-bold uppercase text-[var(--text-muted)] mb-1">
+                      Full Scope Description *
+                    </label>
                     <textarea
                       required
                       value={newService.description}
@@ -729,9 +1108,21 @@ export const SiteContentManager: React.FC = () => {
                       className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs text-[var(--text-heading)]"
                     />
                   </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4">
-                    <button type="button" onClick={() => setShowAddService(false)} className="px-4 py-2 rounded-xl text-xs font-semibold text-[var(--text-muted)] hover:bg-[var(--bg-subtle)]">Cancel</button>
-                    <button type="submit" className="px-5 py-2 rounded-xl bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-white text-xs font-bold">Add Service</button>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4 pt-3 border-t border-[var(--border-subtle)]">
+                    <button
+                      type="button"
+                      onClick={() => setShowAddService(false)}
+                      className="px-4 py-2 rounded-xl text-xs font-semibold text-[var(--text-muted)] hover:bg-[var(--bg-subtle)]"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      className="px-5 py-2 rounded-xl bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-white text-xs font-bold"
+                    >
+                      Add Service
+                    </button>
                   </div>
                 </form>
               </div>

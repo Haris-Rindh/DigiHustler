@@ -115,11 +115,11 @@ export const AiAutomationLanding: React.FC = () => {
               bullets: ["OCR & Vision AI parsing", "Automated invoice reconciliation", "Continuous web scraper bots"]
             }
           ].map((card, idx) => (
-            <div key={idx} className="p-8 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] space-y-4 hover:border-[var(--brand-teal)]/50 transition-all shadow-sm">
-              <div className="w-12 h-12 rounded-2xl bg-[var(--brand-teal-subtle)] flex items-center justify-center">
+            <div key={idx} className="p-8 premium-card space-y-4 relative overflow-hidden group select-none">
+              <div className="w-12 h-12 rounded-2xl bg-[var(--brand-teal-subtle)] flex items-center justify-center group-hover:scale-105 transition-transform duration-200">
                 {card.icon}
               </div>
-              <h3 className="font-display font-bold text-xl text-[var(--text-heading)]">{card.title}</h3>
+              <h3 className="font-display font-bold text-xl text-[var(--text-heading)] group-hover:text-[var(--brand-teal)] transition-colors duration-200">{card.title}</h3>
               <p className="text-xs text-[var(--text-body)] leading-relaxed">{card.desc}</p>
               <ul className="space-y-2 pt-2 border-t border-[var(--border-subtle)]">
                 {card.bullets.map((b, i) => (
