@@ -10,6 +10,7 @@ import { CustomCursor } from './components/ui/CustomCursor';
 import { ScrollProgress } from './components/ui/ScrollProgress';
 import { CookieConsent } from './components/ui/CookieConsent';
 import { PWAInstallPrompt } from './components/ui/PWAInstallPrompt';
+import { FloatingCTA } from './components/ui/FloatingCTA';
 
 // Public pages
 import { Home } from './components/public/Home';
@@ -90,6 +91,7 @@ export const App: React.FC = () => {
             <OfflineBanner />
             <CookieConsent />
             <PWAInstallPrompt />
+            <FloatingCTA />
             <PageContainer>
               <Routes>
                 {/* ── Public Core Routes ── */}

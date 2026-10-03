@@ -54,6 +54,7 @@ export const PWAInstallPrompt: React.FC = () => {
         initial={{ opacity: 0, y: 30, scale: 0.95 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         exit={{ opacity: 0, y: 30, scale: 0.95 }}
+        id="pwa-install-prompt"
         className="fixed bottom-4 left-4 z-50 p-4 rounded-2xl bg-[var(--bg-surface)]/95 backdrop-blur-md border border-[var(--brand-teal)] shadow-2xl text-white max-w-sm flex items-center justify-between gap-3.5"
       >
         <div className="flex items-center space-x-3">

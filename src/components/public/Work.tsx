@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { ArrowRight, Sparkles, X, CheckCircle2, Layers, ExternalLink } from 'lucide-react';
 import { SEOHead } from '../seo/SEOHead';
 import { useApp } from '../../context/AppContext';
@@ -152,6 +152,7 @@ const FILTER_CATS = ['All', 'Development', 'Creative', 'AI & Data'];
 
 export const Work: React.FC = () => {
   const { siteContent } = useApp();
+  const shouldReduceMotion = useReducedMotion();
   const [activeFilter, setActiveFilter] = useState<string>('All');
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
 
@@ -239,7 +240,7 @@ export const Work: React.FC = () => {
       <section className="bg-[var(--bg-page)] py-16 px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           {filtered.length > 0 ? (
-            <motion.div layout className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <motion.div layout className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 lg:gap-6 items-stretch">
               <AnimatePresence>
                 {filtered.map((project) => (
                   <motion.div
@@ -249,48 +250,52 @@ export const Work: React.FC = () => {
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.95 }}
                     transition={{ duration: 0.2 }}
-                    whileHover={{ y: -6, scale: 1.01 }}
+                    whileHover={shouldReduceMotion ? {} : { y: -4 }}
                     onClick={() => setSelectedProject(project)}
-                    className="group border border-[var(--border-subtle)] rounded-2xl overflow-hidden hover:shadow-xl hover:border-[var(--brand-teal)] transition-all duration-200 ease-out cursor-pointer bg-[var(--bg-surface)] flex flex-col justify-between"
+                    className="group border border-[var(--border-subtle)] rounded-2xl overflow-hidden hover:shadow-xl hover:border-[var(--brand-teal)] transition-all duration-200 ease-out cursor-pointer bg-[var(--bg-surface)] flex flex-col h-auto"
                   >
-                    <div>
-                      <div className="aspect-video overflow-hidden bg-[var(--bg-subtle)] relative">
-                        <img
-                          src={project.img}
-                          alt={project.title}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200 ease-out"
-                        />
-                        <div className="absolute top-3 left-3 px-2.5 py-1 rounded-md bg-[var(--bg-page)]/85 backdrop-blur-sm text-[10px] font-bold text-[var(--text-heading)] border border-[var(--border-subtle)]">
-                          {project.client}
-                        </div>
-                      </div>
-                      <div className="p-6">
-                        <p className="text-[11px] font-bold text-[var(--brand-teal)] uppercase tracking-wider mb-1">
-                          {project.category}
-                        </p>
-                        <h2 className="font-display font-bold text-xl text-[var(--text-heading)] mb-3 group-hover:text-[var(--brand-teal)] transition-colors">
-                          {project.title}
-                        </h2>
-                        <p className="text-sm text-[var(--text-body)] leading-relaxed mb-4">
-                          {project.description}
-                        </p>
-                        <div className="flex flex-wrap gap-1.5 mb-2">
-                          {project.tags.map((t) => (
-                            <span
-                              key={t}
-                              className="text-[10px] px-2.5 py-1 rounded-lg bg-[var(--bg-subtle)] text-[var(--text-body)] border border-[var(--border-subtle)] font-medium"
-                            >
-                              {t}
-                            </span>
-                          ))}
-                        </div>
+                    {/* Fixed aspect-ratio image area (55% image ratio) */}
+                    <div className="w-full aspect-[16/10] overflow-hidden bg-[var(--bg-subtle)] relative flex-shrink-0">
+                      <img
+                        src={project.img}
+                        alt={project.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200 ease-out"
+                      />
+                      <div className="absolute top-2.5 left-2.5 px-2.5 py-0.5 rounded-md bg-[var(--bg-page)]/85 backdrop-blur-sm text-[10px] font-bold text-[var(--text-heading)] border border-[var(--border-subtle)] shadow-sm">
+                        {project.client}
                       </div>
                     </div>
 
-                    <div className="px-6 pb-6 pt-2 border-t border-[var(--border-subtle)] flex items-center justify-between text-xs font-bold text-[var(--brand-teal)]">
+                    {/* Reduced padding text area (45% text ratio) */}
+                    <div className="p-4 sm:p-5 flex-1 flex flex-col">
+                      <div>
+                        <span className="inline-block px-2.5 py-0.5 rounded-md bg-[var(--brand-teal-subtle)] text-[var(--brand-teal)] border border-[var(--brand-teal)]/30 text-[11px] font-extrabold uppercase tracking-wider mb-2">
+                          {project.category}
+                        </span>
+                      </div>
+                      <h2 className="font-display font-bold text-base sm:text-[1.125rem] text-[var(--text-heading)] leading-[1.3] mb-2 line-clamp-2 min-h-[2.6rem] group-hover:text-[var(--brand-teal)] transition-colors duration-150">
+                        {project.title}
+                      </h2>
+                      <p className="text-xs sm:text-[13px] text-[var(--text-body)] leading-relaxed mb-3 line-clamp-2 min-h-[2.4rem]">
+                        {project.description}
+                      </p>
+                      <div className="flex flex-wrap gap-1.5 mb-2">
+                        {project.tags?.slice(0, 4).map((t) => (
+                          <span
+                            key={t}
+                            className="text-[11px] sm:text-xs px-2.5 py-0.5 rounded-md bg-[var(--bg-subtle)] text-[var(--text-heading)] border border-[var(--border-subtle)] font-medium"
+                          >
+                            {t}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Bottom-pinned footer row */}
+                    <div className="mt-auto px-4 sm:px-5 py-3 border-t border-[var(--border-subtle)] flex items-center justify-between text-xs sm:text-[13px] font-bold text-[var(--brand-teal)]">
                       <span className="flex items-center space-x-1">
                         <span>Inspect Full Case Study</span>
-                        <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                        <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform duration-200" />
                       </span>
                       {project.projectUrl && (
                         <a
