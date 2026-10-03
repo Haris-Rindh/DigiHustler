@@ -1,8 +1,67 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
 import { ShieldCheck, Linkedin, Github, Facebook, Instagram, Twitter, Mail, AtSign } from 'lucide-react';
 import logoImg from '../../assets/logo.png';
+
+interface SocialLink {
+  label: string;
+  href: string;
+  icon: React.ComponentType<{ className?: string; style?: React.CSSProperties }>;
+  color: string;
+  glowColor: string;
+}
+
+const SOCIAL_LINKS: SocialLink[] = [
+  {
+    label: 'LinkedIn',
+    href: 'https://www.linkedin.com/company/digihust/',
+    icon: Linkedin,
+    color: '#0A66C2',
+    glowColor: 'rgba(10, 102, 194, 0.45)',
+  },
+  {
+    label: 'GitHub',
+    href: 'https://github.com/DigiHust-Official',
+    icon: Github,
+    color: 'var(--text-heading)',
+    glowColor: 'rgba(31, 122, 140, 0.4)',
+  },
+  {
+    label: 'Facebook',
+    href: 'https://www.facebook.com/digihust.tech',
+    icon: Facebook,
+    color: '#1877F2',
+    glowColor: 'rgba(24, 119, 242, 0.45)',
+  },
+  {
+    label: 'Instagram',
+    href: 'https://www.instagram.com/digi_hust/',
+    icon: Instagram,
+    color: '#E1306C',
+    glowColor: 'rgba(225, 48, 108, 0.45)',
+  },
+  {
+    label: 'Twitter/X',
+    href: 'https://x.com/DigiHust',
+    icon: Twitter,
+    color: '#1DA1F2',
+    glowColor: 'rgba(29, 161, 242, 0.45)',
+  },
+  {
+    label: 'Threads',
+    href: 'https://www.threads.com/@digi_hust',
+    icon: AtSign,
+    color: 'var(--text-heading)',
+    glowColor: 'rgba(31, 122, 140, 0.4)',
+  },
+  {
+    label: 'Email Inquiries',
+    href: 'mailto:digihust@gmail.com',
+    icon: Mail,
+    color: 'var(--brand-teal)',
+    glowColor: 'rgba(31, 122, 140, 0.5)',
+  },
+];
 
 export const Footer: React.FC = () => {
   return (
@@ -12,18 +71,18 @@ export const Footer: React.FC = () => {
 
       <div className="max-w-7xl mx-auto">
 
-        {/* Top Grid (Balanced 4-column layout without System & Portals) */}
+        {/* Top Grid (Balanced 4-column layout) */}
         <div className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-4 gap-10 pb-12 border-b border-[var(--border-subtle)]">
 
           {/* Brand Column (Spans 2 columns) */}
           <div className="md:col-span-2 space-y-4">
-            <Link to="/" className="flex items-center space-x-2.5 group">
+            <Link to="/" className="inline-flex items-center space-x-2.5 group">
               <img 
                 src={logoImg} 
                 alt="DigiHust Logo" 
-                className="h-8 sm:h-9 w-auto max-w-[42px] object-contain group-hover:scale-105 transition-all drop-shadow-sm dark:drop-shadow-[0_0_8px_rgba(255,255,255,0.75)]" 
+                className="h-8 sm:h-9 w-auto max-w-[42px] object-contain group-hover:scale-105 group-hover:-translate-y-0.5 transition-all duration-200 ease-out drop-shadow-sm dark:drop-shadow-[0_0_8px_rgba(255,255,255,0.75)]" 
               />
-              <span className="font-display font-extrabold text-xl text-[var(--text-heading)] group-hover:text-[var(--brand-teal)] transition-colors">
+              <span className="font-display font-extrabold text-xl text-[var(--text-heading)] group-hover:text-[var(--brand-teal)] transition-colors duration-200">
                 DigiHust
               </span>
             </Link>
@@ -34,31 +93,39 @@ export const Footer: React.FC = () => {
               One company. Specialized digital talent. Providing end-to-end web engineering, brand identity, AI workflows, and cybersecurity.
             </p>
             
-            {/* Social Vector Icons */}
-            <div className="flex flex-wrap gap-2.5 pt-2">
-              {[
-                { label: 'LinkedIn', icon: <Linkedin className="w-4 h-4 text-[#0A66C2] group-hover:scale-110 transition-transform duration-150" />, href: 'https://www.linkedin.com/company/digihust/' },
-                { label: 'GitHub', icon: <Github className="w-4 h-4 text-[var(--text-heading)] group-hover:scale-110 transition-transform duration-150" />, href: 'https://github.com/DigiHust-Official' },
-                { label: 'Facebook', icon: <Facebook className="w-4 h-4 text-[#1877F2] group-hover:scale-110 transition-transform duration-150" />, href: 'https://www.facebook.com/digihust.tech' },
-                { label: 'Instagram', icon: <Instagram className="w-4 h-4 text-[#E1306C] group-hover:scale-110 transition-transform duration-150" />, href: 'https://www.instagram.com/digi_hust/' },
-                { label: 'Twitter/X', icon: <Twitter className="w-4 h-4 text-[#1DA1F2] group-hover:scale-110 transition-transform duration-150" />, href: 'https://x.com/DigiHust' },
-                { label: 'Threads', icon: <AtSign className="w-4 h-4 text-[var(--text-heading)] group-hover:scale-110 transition-transform duration-150" />, href: 'https://www.threads.com/@digi_hust' },
-                { label: 'Email Inquiries', icon: <Mail className="w-4 h-4 text-[var(--brand-teal)] group-hover:scale-110 transition-transform duration-150" />, href: 'mailto:digihust@gmail.com' },
-              ].map((s) => (
-                <motion.a
-                  key={s.label}
-                  href={s.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  whileHover={{ scale: 1.08, y: -2 }}
-                  whileTap={{ scale: 0.95 }}
-                  title={s.label}
-                  aria-label={s.label}
-                  className="w-10 h-10 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] hover:border-[var(--brand-teal)] hover:bg-[var(--brand-teal-subtle)] flex items-center justify-center transition-all duration-150 shadow-sm group"
-                >
-                  {s.icon}
-                </motion.a>
-              ))}
+            {/* Social Vector Icons with Instant Buttery Hover & Footstep Shadows */}
+            <div className="flex flex-wrap gap-3 pt-3">
+              {SOCIAL_LINKS.map((s) => {
+                const IconComponent = s.icon;
+                return (
+                  <div key={s.label} className="relative group">
+                    {/* Footstep ground shadow that expands and blurs as the icon lifts up */}
+                    <span 
+                      className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-4 h-1.5 rounded-[100%] blur-[2.5px] opacity-0 group-hover:opacity-100 group-hover:w-8 group-hover:h-2.5 group-hover:scale-125 transition-all duration-200 ease-[cubic-bezier(0.34,1.56,0.64,1)] pointer-events-none"
+                      style={{ 
+                        backgroundColor: s.glowColor,
+                        boxShadow: `0 4px 14px ${s.glowColor}`
+                      }}
+                    />
+
+                    {/* Interactive Button */}
+                    <a
+                      href={s.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      title={s.label}
+                      aria-label={s.label}
+                      className="relative w-10 h-10 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] hover:border-[var(--brand-teal)] hover:bg-[var(--brand-teal-subtle)] flex items-center justify-center transition-all duration-200 ease-[cubic-bezier(0.34,1.56,0.64,1)] shadow-sm cursor-pointer group-hover:-translate-y-1.5 group-hover:shadow-[0_12px_24px_-6px_rgba(0,0,0,0.25)] active:translate-y-0 active:scale-95 z-10"
+                    >
+                      {/* Inner Icon that floats up and casts a distinct drop shadow */}
+                      <IconComponent 
+                        className="w-4 h-4 transition-all duration-200 ease-[cubic-bezier(0.34,1.56,0.64,1)] group-hover:-translate-y-1 group-hover:scale-120 group-hover:drop-shadow-[0_5px_7px_rgba(0,0,0,0.35)]" 
+                        style={{ color: s.color }}
+                      />
+                    </a>
+                  </div>
+                );
+              })}
             </div>
           </div>
 
@@ -75,7 +142,10 @@ export const Footer: React.FC = () => {
                 { name: 'Data Intelligence', href: '/services' },
               ].map((s) => (
                 <li key={s.name}>
-                  <Link to={s.href} className="hover:text-[var(--text-heading)] transition-colors inline-flex items-center space-x-1 group">
+                  <Link 
+                    to={s.href} 
+                    className="hover:text-[var(--text-heading)] hover:translate-x-1 transition-all duration-180 ease-out inline-flex items-center space-x-1 group"
+                  >
                     <span>{s.name}</span>
                   </Link>
                 </li>
@@ -97,7 +167,10 @@ export const Footer: React.FC = () => {
                 { label: 'Get a Quote', href: '/contact' },
               ].map((link) => (
                 <li key={link.label}>
-                  <Link to={link.href} className="hover:text-[var(--text-heading)] transition-colors">
+                  <Link 
+                    to={link.href} 
+                    className="hover:text-[var(--text-heading)] hover:translate-x-1 transition-all duration-180 ease-out inline-block"
+                  >
                     {link.label}
                   </Link>
                 </li>
@@ -114,9 +187,9 @@ export const Footer: React.FC = () => {
             <span>© {new Date().getFullYear()} DigiHust. All rights reserved. Sourced on Digiskill talent.</span>
           </div>
           <div className="flex items-center space-x-4">
-            <Link to="/privacy" className="hover:text-[var(--text-heading)] transition-colors">Privacy Policy</Link>
+            <Link to="/privacy" className="hover:text-[var(--text-heading)] hover:underline transition-colors duration-180">Privacy Policy</Link>
             <span>·</span>
-            <Link to="/terms" className="hover:text-[var(--text-heading)] transition-colors">Terms of Service</Link>
+            <Link to="/terms" className="hover:text-[var(--text-heading)] hover:underline transition-colors duration-180">Terms of Service</Link>
           </div>
         </div>
 
@@ -124,5 +197,3 @@ export const Footer: React.FC = () => {
     </footer>
   );
 };
-
-

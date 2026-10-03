@@ -11,13 +11,10 @@ export const CustomCursor: React.FC = () => {
   const mouseX = useMotionValue(-100);
   const mouseY = useMotionValue(-100);
 
-  // Ultra-responsive, buttery-smooth spring physics for outer trailing ring (near-zero lag)
-  const springConfig = { damping: 38, stiffness: 1200, mass: 0.06 };
+  // Smooth spring physics for outer trailing ring
+  const springConfig = { damping: 28, stiffness: 350, mass: 0.5 };
   const smoothX = useSpring(mouseX, springConfig);
   const smoothY = useSpring(mouseY, springConfig);
-
-  const isVisibleRef = React.useRef(false);
-  const rafRef = React.useRef<number | null>(null);
 
   useEffect(() => {
     // Only enable on desktop pointer devices with fine hover capability
@@ -31,25 +28,25 @@ export const CustomCursor: React.FC = () => {
 
     setIsPointerDevice(true);
 
-    const inspectTarget = (target: HTMLElement | null, clientX: number, clientY: number) => {
-      if (!target) return;
+    const onMouseMove = (e: MouseEvent) => {
+      mouseX.set(e.clientX);
+      mouseY.set(e.clientY);
+      if (!isVisible) setIsVisible(true);
 
-      const navTarget = target.closest('nav, footer, header');
-      if (navTarget) {
-        if (isVisibleRef.current) {
-          isVisibleRef.current = false;
-          setIsVisible(false);
-        }
-        return;
-      } else {
-        if (!isVisibleRef.current && clientX > 0 && clientY > 0) {
-          isVisibleRef.current = true;
-          setIsVisible(true);
-        }
-      }
+      // Contextual inspection of hovered element
+      const target = e.target as HTMLElement | null;
+      if (!target) return;
 
       const cursorTarget = target.closest('[data-cursor]') as HTMLElement | null;
       const interactiveTarget = target.closest('a, button, input, select, textarea, [role="button"]');
+      const navTarget = target.closest('nav, footer, header');
+
+      if (navTarget) {
+        setIsVisible(false);
+        return;
+      } else {
+        if (!isVisible && e.clientX > 0 && e.clientY > 0) setIsVisible(true);
+      }
 
       if (cursorTarget) {
         const customType = cursorTarget.getAttribute('data-cursor');
@@ -72,26 +69,7 @@ export const CustomCursor: React.FC = () => {
       }
     };
 
-    const onMouseMove = (e: MouseEvent) => {
-      mouseX.set(e.clientX);
-      mouseY.set(e.clientY);
-
-      if (!isVisibleRef.current) {
-        isVisibleRef.current = true;
-        setIsVisible(true);
-      }
-
-      if (rafRef.current) {
-        cancelAnimationFrame(rafRef.current);
-      }
-
-      rafRef.current = requestAnimationFrame(() => {
-        inspectTarget(e.target as HTMLElement | null, e.clientX, e.clientY);
-      });
-    };
-
     const onMouseLeave = () => {
-      isVisibleRef.current = false;
       setIsVisible(false);
     };
 
@@ -99,11 +77,10 @@ export const CustomCursor: React.FC = () => {
     document.addEventListener('mouseleave', onMouseLeave);
 
     return () => {
-      if (rafRef.current) cancelAnimationFrame(rafRef.current);
       window.removeEventListener('mousemove', onMouseMove);
       document.removeEventListener('mouseleave', onMouseLeave);
     };
-  }, [mouseX, mouseY]);
+  }, [mouseX, mouseY, isVisible]);
 
   if (!isPointerDevice || !isVisible) return null;
 
@@ -130,7 +107,7 @@ export const CustomCursor: React.FC = () => {
               : 'transparent',
           borderColor: cursorVariant === 'default' ? 'var(--brand-teal)' : 'var(--brand-teal)',
         }}
-        transition={{ type: 'spring', stiffness: 850, damping: 35 }}
+        transition={{ type: 'spring', stiffness: 450, damping: 28 }}
         className="rounded-full border flex items-center justify-center backdrop-blur-[1px] shadow-sm"
       >
         {cursorText && (
@@ -152,7 +129,6 @@ export const CustomCursor: React.FC = () => {
           scale: cursorVariant === 'card' || cursorVariant === 'orbit' ? 0 : cursorVariant === 'hover' ? 1.5 : 1,
           backgroundColor: 'var(--brand-teal)',
         }}
-        transition={{ duration: 0.12, ease: [0.16, 1, 0.3, 1] }}
         className="w-1.5 h-1.5 rounded-full shadow-sm"
       />
     </div>
