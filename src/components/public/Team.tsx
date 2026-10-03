@@ -6,7 +6,7 @@ import { SEOHead } from '../seo/SEOHead';
 import { useApp } from '../../context/AppContext';
 import { realtimeSync } from '../../lib/realtimeSync';
 
-export type TeamTier = 'executive' | 'leader' | 'specialist' | 'intern';
+export type TeamTier = 'executive' | 'specialist' | 'intern';
 
 export interface TeamMember {
   id: string;
@@ -14,7 +14,6 @@ export interface TeamMember {
   role: string;
   tier: TeamTier;
   category: 'Development' | 'Creative' | 'AI & Data' | 'Marketing' | 'Cybersecurity';
-  headline?: string;
   bio: string;
   skills: string[];
   img: string;
@@ -41,14 +40,14 @@ export const Team: React.FC = () => {
   const [filter, setFilter] = useState<string>('All');
   const [selectedMember, setSelectedMember] = useState<TeamMember | null>(null);
 
-  // Pinned Member IDs directly from Supabase-backed siteContent
+  // Real Pinned Member IDs directly from Supabase-backed siteContent
   const pinnedIds: string[] = useMemo(() => {
     return siteContent?.pinnedMemberIds || ['usr-1787949460689', 'usr-1788088620952', 'usr-1788119130873'];
   }, [siteContent?.pinnedMemberIds]);
 
   useEffect(() => {
     const unsub = realtimeSync.subscribe((_payload) => {
-      // CMS_UPDATED or USER_UPDATED triggers re-render via siteContent/users context
+      // Real-time synchronization triggers re-render via Context
     });
     return unsub;
   }, []);
@@ -72,13 +71,13 @@ export const Team: React.FC = () => {
 
   // Helper to identify CEO & Co-founders (Permanent Executive Tier)
   const isCeoOrFounder = (u: any) => {
-    if (u.isCeoMaster || u.roleTier === 'ceo' || u.id === 'usr-ceo-1') return true;
+    if (u.id === 'usr-ceo-1' || u.isCeoMaster || u.roleTier === 'ceo') return true;
     const t = (u.title || '').toLowerCase();
     const r = (u.role || '').toLowerCase();
     return t.includes('ceo') || t.includes('founder') || t.includes('co-founder') || r.includes('ceo');
   };
 
-  // Build authentic team exclusively from Supabase users
+  // Map real team members from Supabase with their original roles, titles, and bios
   const teamMembers: TeamMember[] = useMemo(() => {
     if (!users || users.length === 0) return [];
 
@@ -86,104 +85,78 @@ export const Team: React.FC = () => {
       .filter((u) => u && u.status === 'active')
       .map((u) => {
         const isExec = isCeoOrFounder(u);
-        const isPinned = pinnedIds.includes(u.id);
-        const t = (u.title || '').toLowerCase();
+        const t = (u.title || '').trim();
         const r = (u.role || '').toLowerCase();
-        const rt = (u.roleTier || '').toLowerCase();
 
-        // 1. Squad Leadership & Operations Tier
-        const isLeader = !isExec && (
-          isPinned ||
-          rt === 'group_leader' ||
-          rt === 'manager' ||
-          r === 'group_leader' ||
-          r === 'management' ||
-          /\b(lead|director|head|architect|chief|manager)\b/i.test(t)
-        );
+        // Categorize into real roles from Supabase: Executive, Specialist, or Intern
+        const isIntern = !isExec && (r === 'intern' || u.roleTier === 'intern');
+        const tier: TeamTier = isExec ? 'executive' : isIntern ? 'intern' : 'specialist';
 
-        // 2. Domain Specialists Tier
-        const isSpecialist = !isExec && !isLeader && (
-          r === 'freelancer' ||
-          rt === 'member' ||
-          t.includes('engineer') ||
-          t.includes('full stack') ||
-          t.includes('full-stack') ||
-          t.includes('analyst') ||
-          t.includes('flutter') ||
-          t.includes('app developer') ||
-          (t.includes('ui/ux') && t.includes('ai'))
-        );
-
-        // 3. Emerging Talent & Interns Tier
-        const tier: TeamTier = isExec ? 'executive' : isLeader ? 'leader' : isSpecialist ? 'specialist' : 'intern';
-
-        // Functional Category
+        // Functional Category from user's groupId or title
         let category: TeamMember['category'] = 'Development';
         if (
           u.groupId === 'creative' ||
-          t.includes('design') ||
-          t.includes('brand') ||
-          t.includes('video') ||
-          t.includes('graphic') ||
-          t.includes('editor') ||
-          t.includes('ui/ux')
+          t.toLowerCase().includes('design') ||
+          t.toLowerCase().includes('brand') ||
+          t.toLowerCase().includes('video') ||
+          t.toLowerCase().includes('graphic') ||
+          t.toLowerCase().includes('editor') ||
+          t.toLowerCase().includes('creative')
         ) {
           category = 'Creative';
         } else if (
           u.groupId === 'data' ||
-          t.includes('ai') ||
-          t.includes('data') ||
-          t.includes('intelligence') ||
-          t.includes('analyst') ||
-          t.includes('powerbi') ||
-          t.includes('machine learning')
+          t.toLowerCase().includes('ai') ||
+          t.toLowerCase().includes('data') ||
+          t.toLowerCase().includes('intelligence') ||
+          t.toLowerCase().includes('analyst') ||
+          t.toLowerCase().includes('machine learning')
         ) {
           category = 'AI & Data';
         } else if (
           u.groupId === 'growth' ||
-          t.includes('market') ||
-          t.includes('lead gen') ||
-          t.includes('growth') ||
-          t.includes('sourcing') ||
-          t.includes('sales')
+          t.toLowerCase().includes('market') ||
+          t.toLowerCase().includes('lead generator') ||
+          t.toLowerCase().includes('growth') ||
+          t.toLowerCase().includes('sales')
         ) {
           category = 'Marketing';
-        } else if (t.includes('security') || t.includes('pen test') || t.includes('owasp')) {
+        } else if (t.toLowerCase().includes('security') || t.toLowerCase().includes('pen test')) {
           category = 'Cybersecurity';
         }
 
-        // Real profile image from Supabase Storage with clean avatar fallback
-        const img = u.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(u.name)}&background=1F7A8C&color=fff`;
+        // Original role title directly from Supabase record
+        const role = t || (isExec ? 'Executive Leader' : isIntern ? 'Intern' : 'Specialist');
 
-        // Executive rich profile text
-        let headline = u.title;
-        let bio = u.bio;
-
-        if (u.id === 'usr-ceo-1' || (isExec && (u.isCeoMaster || t.includes('ceo') || (t.includes('founder') && !t.includes('co-founder'))))) {
-          headline = 'Steering Strategic Vision, Enterprise Growth & Unified Delivery Governance';
-          bio = u.bio || 'As Founder and CEO of DigiHust, Mahad Abbas drives the strategic vision of transforming how global enterprises access elite, specialized digital talent. With a background in scalable web engineering and business operations, Mahad established DigiHust to bridge the gap between brilliant technical specialists and clients needing guaranteed, headache-free digital delivery under a single managed SLA.';
-        } else if (isExec && (t.includes('co-founder') || t.includes('cofounder') || u.id === 'usr-1788019490206')) {
-          headline = 'Orchestrating Architectural Excellence, AI Systems & Production Standards';
-          bio = u.bio || 'As Co-Founder, Muhammad Haseeb orchestrates the operational excellence and technical architecture that powers DigiHust\'s specialized squads. His expertise ensures that every AI automation, design system, and cybersecurity protocol executed by the team meets rigorous enterprise standards, delivering robust, high-performance digital products every time.';
-        } else if (!bio) {
-          bio = u.specialties && u.specialties.length > 0
-            ? `Specializing in ${u.specialties.join(', ')} with a verified track record in enterprise sprint delivery under DigiHust SLA standards.`
-            : `Verified DigiHust practitioner in ${category}, committed to high-velocity digital delivery and production craftsmanship.`;
+        // Original bio from Supabase record
+        let bio = (u.bio || '').trim();
+        if (!bio) {
+          if (u.id === 'usr-ceo-1' || t.toLowerCase().includes('ceo') || (t.toLowerCase().includes('founder') && !t.toLowerCase().includes('co-founder'))) {
+            bio = 'Founder & CEO of DigiHust. Leading strategic direction, enterprise client partnerships, and company-wide delivery governance at DigiHust.';
+          } else if (t.toLowerCase().includes('co-founder') || u.id === 'usr-1788019490206') {
+            bio = 'Passionate about building scalable digital solutions and driving business growth. Co-founder with experience in managing operations, client outreach, and digital strategy.';
+          } else if (u.specialties && u.specialties.length > 0) {
+            bio = `Specialist in ${u.specialties.join(', ')}.`;
+          } else {
+            bio = `Specialist in ${category} at DigiHust.`;
+          }
         }
+
+        // Authentic avatar URL from Supabase Storage with clean fallback
+        const img = u.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(u.name)}&background=1F7A8C&color=fff`;
 
         return {
           id: u.id,
           name: u.name.trim(),
-          role: u.title ? u.title.trim() : (tier === 'executive' ? 'Executive Director' : tier === 'leader' ? 'Squad Lead' : tier === 'intern' ? 'Engineering Intern' : 'Domain Specialist'),
+          role,
           tier,
           category,
-          headline,
           bio,
-          skills: u.specialties && u.specialties.length > 0 ? u.specialties : ['Digital Delivery', 'Verified Talent'],
+          skills: u.specialties && u.specialties.length > 0 ? u.specialties : ['Digital Delivery'],
           img,
           email: u.email,
           phone: u.phone,
-          digiskillBatch: u.digiskillBatch || 'Verified Member',
+          digiskillBatch: u.digiskillBatch || (isExec ? 'Founding Member' : 'Batch 05 Graduate'),
           rating: u.rating || 5.0,
           completedProjectsCount: u.completedProjectsCount || 0,
           isCeoMaster: u.isCeoMaster,
@@ -206,10 +179,8 @@ export const Team: React.FC = () => {
   // Filter members by category
   const matchCat = (m: TeamMember) => filter === 'All' || m.category === filter;
 
-  // Split into role tiers with pinned members strictly on top
+  // Split into real role tiers with pinned members strictly on top
   const executives = teamMembers.filter((m) => m.tier === 'executive');
-  const leaders = sortWithPinnedFirst(teamMembers.filter((m) => m.tier === 'leader'));
-  const filteredLeaders = sortWithPinnedFirst(leaders.filter(matchCat));
 
   const specialists = sortWithPinnedFirst(teamMembers.filter((m) => m.tier === 'specialist'));
   const filteredSpecialists = sortWithPinnedFirst(specialists.filter(matchCat));
@@ -224,8 +195,8 @@ export const Team: React.FC = () => {
   return (
     <div className="pt-16">
       <SEOHead
-        title="Our Team & Leadership Hierarchy | DigiHust"
-        description="Meet the verified leadership, squad leads, domain specialists, and emerging talent behind DigiHust's managed digital delivery network."
+        title="Our Team & Leadership | DigiHust"
+        description="Meet our real executive leadership, domain specialists, and interns driving digital delivery at DigiHust."
       />
 
       {/* Header Section */}
@@ -238,20 +209,20 @@ export const Team: React.FC = () => {
           >
             <p className="text-xs font-extrabold text-[var(--brand-teal)] uppercase tracking-widest mb-3 flex items-center space-x-2">
               <Award className="w-4 h-4" />
-              <span>Team Hierarchy & Verified Talent</span>
+              <span>Team & Original Roles</span>
             </p>
             <h1 className="font-display font-extrabold text-4xl sm:text-5xl lg:text-6xl text-[var(--text-heading)] mb-5">
               Meet the Minds Behind DigiHust.
             </h1>
             <p className="text-lg text-[var(--text-body)] max-w-2xl leading-relaxed">
-              From executive visionaries and technical directors to cross-functional squad leads and vetted domain specialists — structured for flawless digital execution.
+              Explore our core team: from executive leadership to specialized engineers, designers, and emerging talent.
             </p>
           </motion.div>
         </div>
       </section>
 
-      {/* Filter Tabs */}
-      <section className="bg-[var(--bg-page)] border-b border-[var(--border-subtle)] sticky top-16 z-20 backdrop-blur-md bg-opacity-95">
+      {/* Category Filter Section Navbar - Natural & Responsive (No awkward freezing or gap on scroll) */}
+      <section className="bg-[var(--bg-page)] border-b border-[var(--border-subtle)] relative z-10">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="flex items-center space-x-2 py-4 overflow-x-auto no-scrollbar">
             {CATS.map((cat) => {
@@ -274,7 +245,7 @@ export const Team: React.FC = () => {
         </div>
       </section>
 
-      {/* ── 1. TIER 1: EXECUTIVE LEADERSHIP (CEO & CO-FOUNDER SPOTLIGHT SHOWCASES) ── */}
+      {/* ── 1. TIER 1: EXECUTIVE LEADERSHIP (CEO & CO-FOUNDER SHOWCASES) ── */}
       <section className="bg-[var(--bg-subtle)] py-16 sm:py-20 px-6 lg:px-8 border-b border-[var(--border-subtle)] relative overflow-hidden">
         <div className="max-w-7xl mx-auto">
           <div className="mb-12">
@@ -283,15 +254,15 @@ export const Team: React.FC = () => {
               <span>Executive Leadership</span>
             </p>
             <h2 className="font-display font-black text-3xl sm:text-4xl text-[var(--text-heading)]">
-              The Visionaries
+              Executive Leadership
             </h2>
             <p className="text-sm text-[var(--text-body)] mt-1 max-w-xl">
-              Guiding DigiHust’s strategic vision, architectural governance, and global enterprise partnerships.
+              Founders directing strategic growth, operations, and enterprise delivery governance.
             </p>
           </div>
 
           <div className="space-y-12">
-            {/* CEO Spotlight Card (Large Image One Side, Details Other Side) */}
+            {/* CEO Spotlight Card (Image Left, Details Right) */}
             {ceoMember && (
               <motion.div
                 initial={{ opacity: 0, y: 25 }}
@@ -320,17 +291,17 @@ export const Team: React.FC = () => {
                           <span className="text-xs font-bold uppercase tracking-wider">{ceoMember.role}</span>
                         </div>
                         <span className="text-[10px] px-2.5 py-1 rounded-md bg-[var(--brand-teal)] text-white font-extrabold uppercase">
-                          Chief Executive
+                          Executive
                         </span>
                       </div>
                     </div>
                   </div>
 
-                  {/* Right Column: CEO Details, Headline & Description */}
+                  {/* Right Column: CEO Details, Role & Description */}
                   <div className="lg:col-span-7 flex flex-col justify-center">
                     <div className="inline-flex items-center space-x-2 px-3.5 py-1 rounded-full bg-[var(--brand-teal-subtle)] text-[var(--brand-teal)] border border-[var(--brand-teal)]/30 text-[11px] font-extrabold uppercase tracking-widest mb-3 w-fit">
                       <Sparkles className="w-3 h-3" />
-                      <span>Chief Executive Officer</span>
+                      <span>{ceoMember.role}</span>
                     </div>
 
                     <h2 className="font-display font-black text-3xl sm:text-4xl lg:text-5xl text-[var(--text-heading)] mb-2 tracking-tight">
@@ -341,11 +312,7 @@ export const Team: React.FC = () => {
                       {ceoMember.role} · DigiHust
                     </p>
 
-                    <h3 className="font-display font-extrabold text-lg sm:text-xl text-[var(--text-heading)] mb-4 leading-snug">
-                      "{ceoMember.headline || 'Building the Next Generation of Coordinated Digital Talent.'}"
-                    </h3>
-
-                    <p className="text-sm sm:text-base text-[var(--text-body)] leading-relaxed mb-6">
+                    <p className="text-sm sm:text-base text-[var(--text-body)] leading-relaxed mb-6 whitespace-pre-line">
                       {ceoMember.bio}
                     </p>
 
@@ -367,7 +334,7 @@ export const Team: React.FC = () => {
                         to={`/contact?service=Executive%20Strategy&project=${encodeURIComponent(ceoMember.name)}`}
                         className="px-6 py-3 rounded-xl bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-white font-extrabold text-xs sm:text-sm shadow-md transition-all hover:scale-105 active:scale-95 flex items-center space-x-2"
                       >
-                        <span>Schedule Executive Consultation</span>
+                        <span>Schedule Consultation</span>
                         <ArrowRight className="w-4 h-4" />
                       </Link>
                       <button
@@ -382,7 +349,7 @@ export const Team: React.FC = () => {
               </motion.div>
             )}
 
-            {/* Co-Founder Spotlight Card (Mirrored Layout: Content Left, Large Image Right) */}
+            {/* Co-Founder Spotlight Card (Details Left, Image Right) */}
             {coFounderMember && (
               <motion.div
                 initial={{ opacity: 0, y: 25 }}
@@ -394,11 +361,11 @@ export const Team: React.FC = () => {
                 <div className="absolute top-0 left-0 w-96 h-96 bg-purple-500 rounded-full blur-[140px] opacity-10 pointer-events-none" />
 
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-                  {/* Left Column: Co-Founder Details, Headline & Description */}
+                  {/* Left Column: Co-Founder Details, Role & Description */}
                   <div className="lg:col-span-7 flex flex-col justify-center order-2 lg:order-1">
                     <div className="inline-flex items-center space-x-2 px-3.5 py-1 rounded-full bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/30 text-[11px] font-extrabold uppercase tracking-widest mb-3 w-fit">
                       <ShieldCheck className="w-3 h-3" />
-                      <span>Co-Founder & Technical Operations</span>
+                      <span>{coFounderMember.role}</span>
                     </div>
 
                     <h2 className="font-display font-black text-3xl sm:text-4xl lg:text-5xl text-[var(--text-heading)] mb-2 tracking-tight">
@@ -409,11 +376,7 @@ export const Team: React.FC = () => {
                       {coFounderMember.role} · DigiHust
                     </p>
 
-                    <h3 className="font-display font-extrabold text-lg sm:text-xl text-[var(--text-heading)] mb-4 leading-snug">
-                      "{coFounderMember.headline || 'Orchestrating Architectural Excellence & Production Standards.'}"
-                    </h3>
-
-                    <p className="text-sm sm:text-base text-[var(--text-body)] leading-relaxed mb-6">
+                    <p className="text-sm sm:text-base text-[var(--text-body)] leading-relaxed mb-6 whitespace-pre-line">
                       {coFounderMember.bio}
                     </p>
 
@@ -432,10 +395,10 @@ export const Team: React.FC = () => {
                     {/* Action Buttons */}
                     <div className="flex flex-wrap items-center gap-3.5">
                       <Link
-                        to={`/contact?service=Technical%20Architecture&project=${encodeURIComponent(coFounderMember.name)}`}
+                        to={`/contact?service=Operations%20Strategy&project=${encodeURIComponent(coFounderMember.name)}`}
                         className="px-6 py-3 rounded-xl bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-white font-extrabold text-xs sm:text-sm shadow-md transition-all hover:scale-105 active:scale-95 flex items-center space-x-2"
                       >
-                        <span>Discuss Technical Architecture</span>
+                        <span>Discuss Operations</span>
                         <ArrowRight className="w-4 h-4" />
                       </Link>
                       <button
@@ -464,7 +427,7 @@ export const Team: React.FC = () => {
                           <span className="text-xs font-bold uppercase tracking-wider">{coFounderMember.role}</span>
                         </div>
                         <span className="text-[10px] px-2.5 py-1 rounded-md bg-purple-600 text-white font-extrabold uppercase">
-                          Technical Operations
+                          Co-Founder
                         </span>
                       </div>
                     </div>
@@ -476,141 +439,7 @@ export const Team: React.FC = () => {
         </div>
       </section>
 
-      {/* ── 2. TIER 2: SQUAD LEADERS & OPERATIONS DIRECTORS (PINNED MEMBERS ALWAYS ON TOP) ── */}
-      {filteredLeaders.length > 0 && (
-        <section className="bg-[var(--bg-page)] py-16 px-6 lg:px-8 border-b border-[var(--border-subtle)]">
-          <div className="max-w-7xl mx-auto">
-            <div className="mb-10 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
-              <div>
-                <p className="text-xs font-extrabold text-[var(--brand-teal)] uppercase tracking-widest mb-1.5 flex items-center space-x-1.5">
-                  <ShieldCheck className="w-3.5 h-3.5" />
-                  <span>Squad Leadership & Operations</span>
-                </p>
-                <h3 className="font-display font-extrabold text-2xl sm:text-3xl text-[var(--text-heading)]">
-                  Cross-Functional Squad Leads
-                </h3>
-                <p className="text-sm text-[var(--text-body)] mt-1">
-                  Senior leads orchestrating sprint execution, peer code review, and deliverable SLA compliance. Pinned leads are prioritized.
-                </p>
-              </div>
-              <span className="text-xs font-bold text-[var(--text-muted)] bg-[var(--bg-subtle)] px-3 py-1.5 rounded-full border border-[var(--border-subtle)] self-start sm:self-auto">
-                {filteredLeaders.length} Squad Leads Active
-              </span>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {filteredLeaders.map((leader) => {
-                const isPinned = pinnedIds.includes(leader.id);
-                return (
-                  <div
-                    key={leader.id || leader.name}
-                    onClick={() => setSelectedMember(leader)}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault();
-                        setSelectedMember(leader);
-                      }
-                    }}
-                    role="button"
-                    tabIndex={0}
-                    className={`group relative rounded-3xl border p-7 bg-[var(--bg-surface)] hover:border-[var(--brand-teal)] hover:shadow-2xl transition-all duration-200 flex flex-col justify-between cursor-pointer hover:-translate-y-1.5 select-none ${
-                      isPinned
-                        ? 'border-[var(--brand-teal)]/50 ring-2 ring-[var(--brand-teal)]/15 shadow-md'
-                        : 'border-[var(--border-subtle)]'
-                    }`}
-                  >
-                    <div>
-                      {/* Pinned Lead Badge if applicable */}
-                      {isPinned && (
-                        <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/30 text-[10px] font-extrabold uppercase tracking-wider mb-4">
-                          <Pin className="w-3 h-3 fill-amber-500" />
-                          <span>Pinned Squad Lead</span>
-                        </div>
-                      )}
-
-                      {/* Header */}
-                      <div className="flex items-start space-x-4 mb-5">
-                        <div className="relative flex-shrink-0">
-                          <img
-                            src={leader.img}
-                            alt={leader.name}
-                            className="w-18 h-18 sm:w-20 sm:h-20 rounded-2xl object-cover ring-2 ring-[var(--brand-teal)]/40 group-hover:ring-[var(--brand-teal)] transition-all shadow-sm"
-                          />
-                          <div
-                            className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-emerald-500 border-2 border-[var(--bg-surface)] flex items-center justify-center text-white"
-                            title="Verified Squad Lead"
-                          >
-                            <CheckCircle2 className="w-3 h-3" />
-                          </div>
-                        </div>
-
-                        <div className="min-w-0 flex-1">
-                          <div className="flex items-center space-x-1.5 mb-1">
-                            <span className="inline-block text-[10px] font-extrabold px-2.5 py-0.5 rounded-md bg-[var(--brand-teal-subtle)] text-[var(--brand-teal)] border border-[var(--brand-teal)]/30 uppercase tracking-wider">
-                              Squad Lead
-                            </span>
-                          </div>
-                          <h4 className="font-display font-bold text-lg sm:text-xl text-[var(--text-heading)] group-hover:text-[var(--brand-teal)] transition-colors leading-snug">
-                            {leader.name}
-                          </h4>
-                          <p
-                            className="text-xs font-bold mt-0.5 truncate"
-                            style={{ color: CAT_COLORS[leader.category] || '#1a7a8c' }}
-                          >
-                            {leader.role}
-                          </p>
-                        </div>
-                      </div>
-
-                      {/* Bio */}
-                      <p className="text-sm text-[var(--text-body)] leading-relaxed mb-5 line-clamp-3">
-                        {leader.bio}
-                      </p>
-
-                      {/* Skills */}
-                      <div className="flex flex-wrap gap-1.5 mb-5">
-                        {leader.skills.slice(0, 4).map((s) => (
-                          <span
-                            key={s}
-                            className="text-[10px] px-2.5 py-1 rounded-lg bg-[var(--bg-subtle)] text-[var(--text-heading)] border border-[var(--border-subtle)] font-semibold"
-                          >
-                            {s}
-                          </span>
-                        ))}
-                        {leader.skills.length > 4 && (
-                          <span className="text-[10px] px-2 py-1 rounded-lg bg-[var(--bg-subtle)] text-[var(--text-muted)] border border-[var(--border-subtle)] font-semibold">
-                            +{leader.skills.length - 4}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Card Footer */}
-                    <div className="pt-4 border-t border-[var(--border-subtle)] flex items-center justify-between mt-auto">
-                      <span
-                        className="text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wide"
-                        style={{
-                          color: CAT_COLORS[leader.category] || '#1a7a8c',
-                          backgroundColor: (CAT_COLORS[leader.category] || '#1a7a8c') + '18',
-                        }}
-                      >
-                        {leader.category}
-                      </span>
-
-                      <div className="flex items-center space-x-1.5 text-xs font-bold text-[var(--brand-teal)] group-hover:translate-x-1 transition-transform">
-                        <span>Inspect Squad Profile</span>
-                        <ArrowRight className="w-3.5 h-3.5" />
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* ── 3. TIER 3: DOMAIN SPECIALISTS (CORE TECHNICAL TALENT) ── */}
+      {/* ── 2. TIER 2: DOMAIN SPECIALISTS (PINNED MEMBERS ALWAYS ON TOP) ── */}
       {filteredSpecialists.length > 0 && (
         <section className="bg-[var(--bg-page)] py-16 px-6 lg:px-8 border-b border-[var(--border-subtle)]">
           <div className="max-w-7xl mx-auto">
@@ -618,13 +447,13 @@ export const Team: React.FC = () => {
               <div>
                 <p className="text-xs font-extrabold text-[var(--brand-teal)] uppercase tracking-widest mb-1.5 flex items-center space-x-1.5">
                   <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
-                  <span>Verified Technical Talent</span>
+                  <span>Domain Specialists</span>
                 </p>
                 <h3 className="font-display font-extrabold text-2xl sm:text-3xl text-[var(--text-heading)]">
-                  Domain Specialists
+                  Specialists & Engineers
                 </h3>
                 <p className="text-sm text-[var(--text-body)] mt-1">
-                  Engineers, developers, AI practitioners, and analysts driving client delivery sprints.
+                  Experienced specialists driving production web architecture, UI/UX design, and client sprints.
                 </p>
               </div>
               <span className="text-xs font-bold text-[var(--text-muted)] bg-[var(--bg-subtle)] px-3 py-1.5 rounded-full border border-[var(--border-subtle)] self-start sm:self-auto">
@@ -637,7 +466,7 @@ export const Team: React.FC = () => {
                 const isPinned = pinnedIds.includes(member.id);
                 return (
                   <div
-                    key={member.id || member.name}
+                    key={member.id}
                     onClick={() => setSelectedMember(member)}
                     onKeyDown={(e) => {
                       if (e.key === 'Enter' || e.key === ' ') {
@@ -649,20 +478,20 @@ export const Team: React.FC = () => {
                     tabIndex={0}
                     className={`group border rounded-2xl p-6 bg-[var(--bg-surface)] hover:shadow-xl hover:border-[var(--brand-teal)] transition-all duration-200 ease-out flex flex-col justify-between cursor-pointer hover:-translate-y-1.5 select-none ${
                       isPinned
-                        ? 'border-[var(--brand-teal)]/40 ring-1 ring-[var(--brand-teal)]/20 shadow-sm'
+                        ? 'border-[var(--brand-teal)]/50 ring-2 ring-[var(--brand-teal)]/15 shadow-md'
                         : 'border-[var(--border-subtle)]'
                     }`}
                   >
                     <div>
-                      {/* Pinned badge */}
+                      {/* Pinned Badge */}
                       {isPinned && (
-                        <div className="inline-flex items-center space-x-1 px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 text-[9px] font-bold uppercase tracking-wider mb-3">
-                          <Star className="w-2.5 h-2.5 fill-amber-500" />
-                          <span>Pinned Specialist</span>
+                        <div className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/30 text-[9px] font-extrabold uppercase tracking-wider mb-3">
+                          <Pin className="w-2.5 h-2.5 fill-amber-500" />
+                          <span>Pinned Member</span>
                         </div>
                       )}
 
-                      {/* Member Header */}
+                      {/* Header */}
                       <div className="flex items-start space-x-3.5 mb-4">
                         <img
                           src={member.img}
@@ -730,7 +559,7 @@ export const Team: React.FC = () => {
         </section>
       )}
 
-      {/* ── 4. TIER 4: EMERGING TALENT & INTERNS ── */}
+      {/* ── 3. TIER 3: INTERNS (PINNED MEMBERS ALWAYS ON TOP) ── */}
       {filteredInterns.length > 0 && (
         <section className="bg-[var(--bg-subtle)] py-16 px-6 lg:px-8 border-b border-[var(--border-subtle)]">
           <div className="max-w-7xl mx-auto">
@@ -738,17 +567,17 @@ export const Team: React.FC = () => {
               <div>
                 <p className="text-xs font-extrabold text-amber-500 uppercase tracking-widest mb-1.5 flex items-center space-x-1.5">
                   <Sparkles className="w-3.5 h-3.5" />
-                  <span>DigiSkills Apprenticeship Ecosystem</span>
+                  <span>DigiSkills Ecosystem</span>
                 </p>
                 <h3 className="font-display font-extrabold text-2xl sm:text-3xl text-[var(--text-heading)]">
-                  Emerging Talent & Interns
+                  Interns & Apprentices
                 </h3>
                 <p className="text-sm text-[var(--text-body)] mt-1">
-                  High-aptitude practitioners undergoing rigorous mentorship under senior architects.
+                  Active interns and graduates contributing to sprints across web, AI, design, and marketing.
                 </p>
               </div>
               <span className="text-xs font-bold text-amber-600 dark:text-amber-400 bg-amber-500/10 px-3 py-1.5 rounded-full border border-amber-500/20 self-start sm:self-auto">
-                {filteredInterns.length} Interns in Sprint
+                {filteredInterns.length} Interns Active
               </span>
             </div>
 
@@ -757,7 +586,7 @@ export const Team: React.FC = () => {
                 const isPinned = pinnedIds.includes(intern.id);
                 return (
                   <div
-                    key={intern.id || intern.name}
+                    key={intern.id}
                     onClick={() => setSelectedMember(intern)}
                     onKeyDown={(e) => {
                       if (e.key === 'Enter' || e.key === ' ') {
@@ -769,11 +598,19 @@ export const Team: React.FC = () => {
                     tabIndex={0}
                     className={`group border rounded-2xl p-5 bg-[var(--bg-surface)] hover:border-amber-400/50 hover:shadow-lg transition-all duration-200 ease-out flex flex-col justify-between cursor-pointer hover:-translate-y-1 select-none ${
                       isPinned
-                        ? 'border-amber-400/50 ring-1 ring-amber-400/30'
+                        ? 'border-amber-400/60 ring-2 ring-amber-400/20 shadow-md'
                         : 'border-[var(--border-subtle)]'
                     }`}
                   >
                     <div>
+                      {/* Pinned Badge */}
+                      {isPinned && (
+                        <div className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/30 text-[9px] font-extrabold uppercase tracking-wider mb-3">
+                          <Pin className="w-2.5 h-2.5 fill-amber-500" />
+                          <span>Pinned Member</span>
+                        </div>
+                      )}
+
                       {/* Header */}
                       <div className="flex items-start space-x-3 mb-3.5">
                         <img
@@ -783,7 +620,7 @@ export const Team: React.FC = () => {
                         />
                         <div className="min-w-0 flex-1">
                           <span className="inline-block text-[9px] font-bold px-2 py-0.5 rounded bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 uppercase tracking-wider mb-1">
-                            Verified Intern
+                            Intern
                           </span>
                           <h4 className="font-bold text-sm text-[var(--text-heading)] leading-snug break-words group-hover:text-amber-500 transition-colors">
                             {intern.name}
@@ -818,7 +655,7 @@ export const Team: React.FC = () => {
                         {intern.category}
                       </span>
                       <span className="text-[11px] font-bold text-amber-500 flex items-center space-x-1 group-hover:translate-x-0.5 transition-transform">
-                        <span>View Track</span>
+                        <span>View Profile</span>
                         <ArrowRight className="w-3 h-3" />
                       </span>
                     </div>
@@ -884,11 +721,9 @@ export const Team: React.FC = () => {
                         <span>
                           {selectedMember.tier === 'executive'
                             ? 'Executive Leadership'
-                            : selectedMember.tier === 'leader'
-                            ? 'Squad Director'
                             : selectedMember.tier === 'intern'
-                            ? 'Verified Intern'
-                            : 'Verified Specialist'}
+                            ? 'Intern'
+                            : 'Specialist'}
                         </span>
                       </span>
                     </div>
@@ -910,7 +745,7 @@ export const Team: React.FC = () => {
               <div className="p-6 sm:p-8 space-y-6 max-h-[60vh] overflow-y-auto">
                 <div>
                   <h3 className="text-xs font-extrabold text-[var(--brand-teal)] uppercase tracking-wider mb-2.5">
-                    Full Profile & Background
+                    Profile & Background
                   </h3>
                   <p className="text-sm sm:text-base text-[var(--text-body)] leading-relaxed whitespace-pre-line">
                     {selectedMember.bio}
@@ -919,7 +754,7 @@ export const Team: React.FC = () => {
 
                 <div>
                   <h3 className="text-xs font-extrabold text-[var(--brand-teal)] uppercase tracking-wider mb-3">
-                    Core Specialties & Skills
+                    Specialties & Skills
                   </h3>
                   <div className="flex flex-wrap gap-2">
                     {selectedMember.skills.map((skill) => (
@@ -936,7 +771,7 @@ export const Team: React.FC = () => {
                 <div className="p-4 rounded-2xl bg-[var(--brand-teal)]/5 border border-[var(--brand-teal)]/20 flex items-start space-x-3">
                   <UserCheck className="w-5 h-5 text-[var(--brand-teal)] flex-shrink-0 mt-0.5" />
                   <div className="text-xs text-[var(--text-body)] leading-relaxed">
-                    <strong className="text-[var(--text-heading)] font-bold">Vetted & Squad-Ready:</strong> This specialist undergoes continuous performance evaluations, sprint adherence reviews, and deliverable QA under DigiHust SLA governance.
+                    <strong className="text-[var(--text-heading)] font-bold">Verified Member:</strong> Direct team contributor operating under DigiHust delivery standards and service level agreements.
                   </div>
                 </div>
               </div>
@@ -954,7 +789,7 @@ export const Team: React.FC = () => {
                   onClick={() => setSelectedMember(null)}
                   className="w-full sm:w-auto inline-flex items-center justify-center space-x-2 px-6 py-2.5 rounded-xl bg-[var(--brand-teal)] hover:bg-[var(--brand-teal)]/90 text-white text-sm font-bold shadow-md shadow-[var(--brand-teal)]/20 transition-all cursor-pointer"
                 >
-                  <span>Request Squad Project</span>
+                  <span>Request Project</span>
                   <ArrowRight className="w-4 h-4" />
                 </Link>
               </div>

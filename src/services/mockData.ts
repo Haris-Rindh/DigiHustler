@@ -60,6 +60,7 @@ export const INITIAL_USERS: User[] = [
     "isCeoMaster": false,
     "groupId": "data",
     "title": "Artificial Intelligence Engineer",
+    "bio": "Hi, Raffy here I am currently a 4th year student of Ai, and pursuing my journey in Ai Engineering and web development.",
     "specialties": [
       "Artificial Intelligence"
     ],
@@ -85,10 +86,11 @@ export const INITIAL_USERS: User[] = [
     "phone": "+923176497197",
     "avatarUrl": "https://ptvchzbzokyumeizsuge.supabase.co/storage/v1/object/public/avatars/usr-1788119130873.png?t=1788253088287",
     "role": "freelancer",
-    "roleTier": "member",
+    "roleTier": "freelancer",
     "isCeoMaster": false,
     "groupId": "creative",
     "title": "Graphic Designer",
+    "bio": "I am Waliha, a creative Graphic Designer with 4 years of experience delivering modern and eye-catching designs. I focus on building strong visual identities through logos, branding, social media graphics, and marketing materials",
     "specialties": [
       "Graphic Design",
       "Video Editing"
@@ -119,6 +121,7 @@ export const INITIAL_USERS: User[] = [
     "isCeoMaster": false,
     "groupId": "data",
     "title": "UI/UX Designer & AI Engineer",
+    "bio": "AI & Machine Learning Engineer | AI Chatbot & Agent Developer | UI/UX Designer | Building intelligent, scalable & user-focused digital solutions.",
     "specialties": [
       "UI/UX Design",
       "Artificiail Intelligence"
@@ -149,6 +152,7 @@ export const INITIAL_USERS: User[] = [
     "isCeoMaster": false,
     "groupId": "growth",
     "title": "Co-founder",
+    "bio": "I help businesses and busy professionals optimize workflows through data-driven Virtual Assistance, B2B Lead Generation, and targeted Web Research. Skilled in Python and Generative AI, I automate repetitive tasks, manage operations, and deliver precise results—helping you scale faster with less effort.",
     "specialties": [
       "Lead Generation",
       "Management",
@@ -181,6 +185,7 @@ export const INITIAL_USERS: User[] = [
     "isCeoMaster": false,
     "groupId": "tech",
     "title": "Full-Stack Developer",
+    "bio": "Full-stack developer turning complex business problems into intuitive, high-performance web applications. Expert in React, Node.js, and cloud deployment.",
     "specialties": [
       "Web Dev"
     ],
@@ -210,6 +215,7 @@ export const INITIAL_USERS: User[] = [
     "isCeoMaster": false,
     "groupId": "data",
     "title": "AI  & App developer",
+    "bio": "Building foundational skills in AI and cross-platform mobile app development. Currently learning how to build intelligent systems using Python—covering core concepts like data analysis, machine learning algorithms, neural networks, and data visualization. Alongside AI, also learning mobile development with Flutter and Dart to create responsive Android and iOS applications with state management, API integration, and Firebase backend services. Eager to apply my growing skills to write clean code and develop practical, real-world solutions.",
     "specialties": [
       "Artificial Intelligence",
       "Data Analysis",
@@ -241,6 +247,7 @@ export const INITIAL_USERS: User[] = [
     "isCeoMaster": true,
     "groupId": "tech",
     "title": "Founder & CEO",
+    "bio": "",
     "specialties": [
       "Executive Strategy",
       "Global Delivery Governance",
@@ -272,6 +279,7 @@ export const INITIAL_USERS: User[] = [
     "isCeoMaster": false,
     "groupId": "tech",
     "title": "WordPress Developer + App Developer",
+    "bio": "As an App and WordPress developer I am passionate about building modern, user-friendly mobile apps and responsive websites.\nSkilled in Flutter, UI/UX, and WordPress, with a focus on clean design, smooth performance, and practical digital solutions.",
     "specialties": [
       "Wordpress",
       "Flutter"
@@ -302,6 +310,7 @@ export const INITIAL_USERS: User[] = [
     "isCeoMaster": false,
     "groupId": "data",
     "title": "AI Engineer",
+    "bio": "AI & Machine Learning Engineer | PyTorch, TensorFlow & LLMs\n\n",
     "specialties": [
       "Artificial Intelligence",
       "Python Programming"
@@ -321,40 +330,9 @@ export const INITIAL_USERS: User[] = [
     "documents": []
   },
   {
-    "id": "usr-1788521489395",
-    "memberId": "DGH2600175",
-    "name": "Abdullah Tariq",
-    "email": "abdullaht9217@gmail.com",
-    "phone": "+923314995315",
-    "avatarUrl": "https://ui-avatars.com/api/?name=Abdullah%20Tariq&background=1F7A8C&color=fff",
-    "role": "intern",
-    "roleTier": "member",
-    "isCeoMaster": false,
-    "groupId": "tech",
-    "title": "Flutter App developer",
-    "specialties": [
-      "Flutter",
-      "firebase",
-      "restapi"
-    ],
-    "completedProjectsCount": 0,
-    "totalEarnings": 0,
-    "rating": 5,
-    "digiskillBatch": "Batch 05 Graduate",
-    "status": "active",
-    "joinedAt": "2026-09-04T11:31:30.064787+00:00",
-    "joinYear": 2026,
-    "onTimeDeliveryPct": 100,
-    "csatScore": 5,
-    "forcePasswordChange": false,
-    "notes": [],
-    "statusHistory": [],
-    "documents": []
-  },
-  {
     "id": "usr-1788090818390",
     "memberId": "DGH2600161",
-    "name": "Faiza Hanif",
+    "name": "Faiza Hanif ",
     "email": "faizaraj1711@gmail.com",
     "phone": "+923112464003",
     "avatarUrl": "https://ptvchzbzokyumeizsuge.supabase.co/storage/v1/object/public/avatars/usr-1788090818390.png?t=1788257103432",
@@ -363,6 +341,7 @@ export const INITIAL_USERS: User[] = [
     "isCeoMaster": false,
     "groupId": "tech",
     "title": "Wordpress Developer & Lead Generators",
+    "bio": "WordPress Developer & Lead Generation Intern\n\nIT student with an interest in WordPress development and web technologies. Currently gaining practical experience in building and improving WordPress websites, while developing skills in lead generation and client outreach. Eager to learn, contribute to projects, and grow professionally in the tech industry.",
     "specialties": [
       "Wordpress",
       "Lead Generation"
@@ -393,6 +372,7 @@ export const INITIAL_USERS: User[] = [
     "isCeoMaster": false,
     "groupId": "creative",
     "title": "Graphic Designer & Video Editor",
+    "bio": "I’m Ambreen, a passionate Graphic Designer and Video Editor with a strong interest in creative design, visual storytelling, and digital content creation. I specialize in creating engaging social media designs, branding materials, logos, promotional graphics, and short-form videos.",
     "specialties": [
       "Graphic Design",
       "Video Editing"
@@ -423,6 +403,7 @@ export const INITIAL_USERS: User[] = [
     "isCeoMaster": false,
     "groupId": "creative",
     "title": "Designer, Video Editor & Digital Marketer",
+    "bio": "Creative and skilled Designer, Video Editor, and Digital Marketer with experience in creating engaging visual content, editing professional videos, designing graphics, and promoting brands through digital marketing. Passionate about delivering high-quality, creative, and effective digital solutions.",
     "specialties": [
       "Graphic Design",
       "Video Editing",
@@ -454,6 +435,7 @@ export const INITIAL_USERS: User[] = [
     "isCeoMaster": false,
     "groupId": "tech",
     "title": "Wordpress & Web Developer",
+    "bio": "Specialist in WordPress and Web Development",
     "specialties": [
       "App Development",
       "Full-stack Development",
@@ -486,6 +468,7 @@ export const INITIAL_USERS: User[] = [
     "isCeoMaster": false,
     "groupId": "tech",
     "title": "Full Stack Web & Mobile Appliction Developer",
+    "bio": "I am a creative and motivated Full Stack Web Developer with a passion for building modern, scalable, and high-performance web applications. I specialize in Laravel, PHP, Vue.js, JavaScript, MySQL, REST APIs, WordPress, Shopify, and SaaS development. I enjoy creating clean, user-friendly, and secure digital solutions while continuously improving my skills and exploring new web technologies. I am passionate about turning ideas into reliable websites, eCommerce platforms, and custom web applications that deliver real business value.",
     "specialties": [
       "Front-end Development"
     ],
@@ -515,6 +498,7 @@ export const INITIAL_USERS: User[] = [
     "isCeoMaster": false,
     "groupId": "creative",
     "title": "Graphic Designer & Video Editor",
+    "bio": "Graphic Designer | Branding & Visual Identity\nI create clean, creative & purposeful designs that help brands stand out.\n🎨 Logos • Social Media • Posters • Brand Identity\n💡 Turning ideas into impactful visuals\n📩 Open to creative collaborations",
     "specialties": [
       "Graphic Design",
       "Video Editing",
@@ -535,43 +519,9 @@ export const INITIAL_USERS: User[] = [
     "documents": []
   },
   {
-    "id": "usr-1788497220268",
-    "memberId": "DGH2600174",
-    "name": "Muhammad Ahsan",
-    "email": "mahsanbutt724@gmail.com",
-    "phone": "+923044275710",
-    "avatarUrl": "https://ptvchzbzokyumeizsuge.supabase.co/storage/v1/object/public/avatars/usr-1788497220268.jpeg?t=1788497856098",
-    "role": "intern",
-    "roleTier": "intern",
-    "isCeoMaster": false,
-    "groupId": "data",
-    "title": "Data Analyst",
-    "specialties": [
-      "Python",
-      "PostgreSQL",
-      "Power BI",
-      "Tableau",
-      "Microsoft Excel",
-      "Looker studio"
-    ],
-    "completedProjectsCount": 0,
-    "totalEarnings": 0,
-    "rating": 5,
-    "digiskillBatch": "Batch 05 Graduate",
-    "status": "active",
-    "joinedAt": "2026-09-04T04:47:01.012976+00:00",
-    "joinYear": 2026,
-    "onTimeDeliveryPct": 100,
-    "csatScore": 5,
-    "forcePasswordChange": false,
-    "notes": [],
-    "statusHistory": [],
-    "documents": []
-  },
-  {
     "id": "usr-1788088212299",
     "memberId": "DGH2600155",
-    "name": "Muhammad Haris",
+    "name": "Muhammad Haris ",
     "email": "2025csf005@multanust.edu.pk",
     "phone": "+923452054911",
     "avatarUrl": "https://ptvchzbzokyumeizsuge.supabase.co/storage/v1/object/public/avatars/usr-1788088212299.jpg?t=1788202594543",
@@ -580,6 +530,7 @@ export const INITIAL_USERS: User[] = [
     "isCeoMaster": false,
     "groupId": "tech",
     "title": "Front-end  Developer",
+    "bio": "Specialist in Frontend Development.",
     "specialties": [
       "Front-end Development"
     ],
@@ -609,6 +560,7 @@ export const INITIAL_USERS: User[] = [
     "isCeoMaster": false,
     "groupId": "tech",
     "title": "Web Developer",
+    "bio": "",
     "specialties": [
       "Web Development"
     ],
@@ -629,7 +581,7 @@ export const INITIAL_USERS: User[] = [
   {
     "id": "usr-1788091047185",
     "memberId": "DGH2600163",
-    "name": "Faiza Aslam",
+    "name": "Faiza Aslam ",
     "email": "aslamfaiza768@gmail.com",
     "phone": "+923017708946",
     "avatarUrl": "https://ptvchzbzokyumeizsuge.supabase.co/storage/v1/object/public/avatars/usr-1788091047185.webp?t=1788265531505",
@@ -638,6 +590,7 @@ export const INITIAL_USERS: User[] = [
     "isCeoMaster": false,
     "groupId": "tech",
     "title": "Wordpress Developer",
+    "bio": "WordPress Developer | Elementor & Custom Themes\n\nI build fast, responsive, and SEO-friendly WordPress websites. Experienced in custom themes, Elementor, WooCommerce, and plugin customization. Focused on clean design and results that convert.\n\n",
     "specialties": [
       "Wordpress"
     ],
@@ -656,37 +609,6 @@ export const INITIAL_USERS: User[] = [
     "documents": []
   },
   {
-    "id": "usr-1788496035192",
-    "memberId": "DGH2600173",
-    "name": "Iman Ishtiaq",
-    "email": "Imanch689@gmail.com",
-    "phone": "+923142720261",
-    "avatarUrl": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=250",
-    "role": "intern",
-    "roleTier": "intern",
-    "isCeoMaster": false,
-    "groupId": "tech",
-    "title": "Web Development & UI/UX Designer",
-    "specialties": [
-      "Figma",
-      "Web Development",
-      "UI/UX Development"
-    ],
-    "completedProjectsCount": 0,
-    "totalEarnings": 0,
-    "rating": 5,
-    "digiskillBatch": "Batch 05 Graduate",
-    "status": "active",
-    "joinedAt": "2026-09-04T04:27:15.802033+00:00",
-    "joinYear": 2026,
-    "onTimeDeliveryPct": 100,
-    "csatScore": 5,
-    "forcePasswordChange": true,
-    "notes": [],
-    "statusHistory": [],
-    "documents": []
-  },
-  {
     "id": "usr-1788088747320",
     "memberId": "DGH2600158",
     "name": "Absaar Farooq",
@@ -698,6 +620,7 @@ export const INITIAL_USERS: User[] = [
     "isCeoMaster": false,
     "groupId": "tech",
     "title": "Front-end Developer",
+    "bio": "Front-End Developer skilled in HTML, CSS, JavaScript, and responsive web development, focused on building clean, user-friendly, and modern web interfaces.",
     "specialties": [
       "Front-end Development"
     ],
@@ -727,6 +650,7 @@ export const INITIAL_USERS: User[] = [
     "isCeoMaster": false,
     "groupId": "tech",
     "title": "Full-Stack Developer",
+    "bio": "Full-Stack Engineer passionate about building complete, resilient digital products from the ground up. Combining sleek, accessible client-side interfaces with reliable, distributed backend systems and REST/GraphQL APIs, I turn complex business requirements into fast, scalable applications. Whether tuning SQL queries, managing cloud deployments, or polishing pixel-perfect UIs, I focus on system reliability, clean code, and measurable performance.",
     "specialties": [
       "Digital Services"
     ],
