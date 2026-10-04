@@ -217,7 +217,7 @@ export const HowItWorks: React.FC = () => {
                   <th className="p-4 sm:p-5 text-[var(--text-dim)]">Individual Freelancers</th>
                 </tr> 
               </thead>
-              <tbody className="divide-y divide-[#1e4a5d] text-xs sm:text-sm">
+              <tbody className="divide-y divide-[var(--border-subtle)] text-xs sm:text-sm">
                 {[
                   ['Point of Contact', 'Single accountable lead manager', 'You manage 3–6 separate people'],
                   ['Accountability', 'Guaranteed company SLA & backup talent', 'High risk of ghosting or delays'],
@@ -227,8 +227,8 @@ export const HowItWorks: React.FC = () => {
                 ].map(([metric, digi, free]) => (
                   <tr key={metric} className="hover:bg-[var(--bg-subtle)] transition-colors">
                     <td className="p-4 sm:p-5 font-bold text-[var(--text-dim)]">{metric}</td>
-                    <td className="p-4 sm:p-5 font-semibold text-emerald-400 flex items-center space-x-1.5">
-                      <CheckCircle2 className="w-4 h-4 flex-shrink-0" />
+                    <td className="p-4 sm:p-5 font-semibold text-emerald-700 dark:text-emerald-400 flex items-center space-x-1.5">
+                      <CheckCircle2 className="w-4 h-4 flex-shrink-0 text-emerald-600 dark:text-emerald-400" />
                       <span>{digi}</span>
                     </td>
                     <td className="p-4 sm:p-5 text-[var(--text-muted)]">{free}</td>

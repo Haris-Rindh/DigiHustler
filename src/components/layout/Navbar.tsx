@@ -111,7 +111,7 @@ export const Navbar: React.FC = () => {
           <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
             <Link
               to="/contact"
-              className="flex items-center space-x-2 px-5 py-2.5 rounded-xl bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-white text-sm font-bold shadow-md transition-colors"
+              className="flex items-center space-x-2 px-5 py-2.5 rounded-xl btn-brand-futuristic text-white text-sm font-bold shadow-md transition-all"
             >
               <span>{t('btn_get_quote')}</span>
               <ArrowRight className="w-4 h-4" />
@@ -167,7 +167,7 @@ export const Navbar: React.FC = () => {
             <Link
               to="/contact"
               onClick={() => setMobileOpen(false)}
-              className="flex items-center justify-center space-x-2 px-4 py-3.5 rounded-xl bg-[var(--brand-teal)] text-white text-sm font-bold mt-3 shadow-md"
+              className="flex items-center justify-center space-x-2 px-4 py-3.5 rounded-xl btn-brand-futuristic text-white text-sm font-bold mt-3 shadow-md"
             >
               <span>{t('btn_get_quote')}</span>
               <ArrowRight className="w-4 h-4" />

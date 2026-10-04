@@ -317,7 +317,7 @@ export const Work: React.FC = () => {
                           target="_blank"
                           rel="noopener noreferrer"
                           onClick={(e) => e.stopPropagation()}
-                          className="inline-flex items-center space-x-1 text-emerald-400 hover:text-emerald-300 hover:underline font-bold px-2 py-0.5 rounded-md hover:bg-emerald-500/10 transition-colors"
+                          className="inline-flex items-center space-x-1 text-emerald-700 dark:text-emerald-400 hover:text-emerald-800 dark:hover:text-emerald-300 hover:underline font-bold px-2 py-0.5 rounded-md hover:bg-emerald-500/10 transition-colors"
                         >
                           <span>Live Demo</span>
                           <ExternalLink className="w-3.5 h-3.5" />
@@ -413,7 +413,7 @@ export const Work: React.FC = () => {
                 </div>
 
                 <div>
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-emerald-400 mb-2">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400 mb-2">
                     Key Outcomes & Metrics
                   </h4>
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -422,7 +422,7 @@ export const Work: React.FC = () => {
                         key={res}
                         className="p-3.5 rounded-xl bg-[var(--bg-page)] border border-emerald-500/30 text-xs font-semibold text-[var(--text-body)] flex items-start space-x-2"
                       >
-                        <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5" />
+                        <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 flex-shrink-0 mt-0.5" />
                         <span>{res}</span>
                       </div>
                     ))}

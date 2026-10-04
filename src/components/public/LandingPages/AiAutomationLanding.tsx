@@ -124,7 +124,7 @@ export const AiAutomationLanding: React.FC = () => {
               <ul className="space-y-2 pt-2 border-t border-[var(--border-subtle)]">
                 {card.bullets.map((b, i) => (
                   <li key={i} className="flex items-center space-x-2 text-xs text-[var(--text-heading)] font-semibold">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0" />
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 flex-shrink-0" />
                     <span>{b}</span>
                   </li>
                 ))}

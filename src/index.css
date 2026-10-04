@@ -6,6 +6,7 @@
 :root,
 html[data-theme="dark"],
 html.dark {
+  color-scheme: dark;
   --bg-page: #022B3A;
   --bg-surface: #073547;
   --bg-subtle: #0b4156;
@@ -15,20 +16,20 @@ html.dark {
   --border-strong: #1F7A8C;
   --text-heading: #FFFFFF;
   --text-body: #D5DEE8;
-  --text-muted: #8EADC0;
-  --text-dim: #5B7B8F;
-  --brand-teal: #1F7A8C;
-  --brand-teal-hover: #165F6D;
+  --text-muted: #96B4C8;
+  --text-dim: #9EBAC9;
+  --brand-teal: #22A0B4;
+  --brand-teal-hover: #198090;
   --brand-teal-text: #FFFFFF;
-  --brand-teal-subtle: rgba(31, 122, 140, 0.22);
+  --brand-teal-subtle: rgba(34, 160, 180, 0.22);
   --color-status-error: #E06D53;
-  --color-status-success: #1F7A8C;
+  --color-status-success: #22A0B4;
   --color-status-warning: #D9A84E;
 
-  --canvas-particle: #1F7A8C;
+  --canvas-particle: #22A0B4;
   --canvas-line: rgba(225, 229, 242, 0.12);
-  --orbit-ring: rgba(31, 122, 140, 0.35);
-  --orbit-ring-dashed: rgba(31, 122, 140, 0.22);
+  --orbit-ring: rgba(34, 160, 180, 0.35);
+  --orbit-ring-dashed: rgba(34, 160, 180, 0.22);
 
   /* Legacy Backward Compatibility Mappings */
   --color-bg: var(--bg-page);
@@ -72,6 +73,7 @@ html.dark {
 /* ── Light Mode Token Overrides ── */
 html[data-theme="light"],
 html.light {
+  color-scheme: light;
   --bg-page: #EFF3F6;
   --bg-surface: #FFFFFF;
   --bg-subtle: #E2EAF0;
@@ -81,8 +83,8 @@ html.light {
   --border-strong: #1F7A8C;
   --text-heading: #022B3A;
   --text-body: #163C4A;
-  --text-muted: #4E6E7E;
-  --text-dim: #7A96A6;
+  --text-muted: #3D5A6C;
+  --text-dim: #4B6B7C;
   --brand-teal: #1F7A8C;
   --brand-teal-hover: #14535F;
   --brand-teal-text: #FFFFFF;
@@ -134,6 +136,12 @@ html.light {
   --ring: var(--brand-teal);
 }
 
+/* Ensure native select and option controls have proper surface and text contrast */
+select, option {
+  background-color: var(--bg-surface);
+  color: var(--text-heading);
+}
+
 /* Base Body Styles */
 body {
   background-color: var(--bg-page);
@@ -176,22 +184,66 @@ h1, h2, h3, h4, h5, h6 {
   transform: translateY(-4px);
 }
 
-/* Primary Button */
+/* Modern Futuristic Primary CTA Button */
 .btn-brand-primary,
 .matte-btn-primary,
-.breeze-btn-primary {
-  background-color: var(--brand-teal);
+.breeze-btn-primary,
+.btn-brand-futuristic {
+  position: relative;
+  background: linear-gradient(135deg, #1F7A8C 0%, #156271 50%, #0c424d 100%);
   color: #FFFFFF !important;
   font-weight: 700;
-  border-radius: 0.75rem;
-  transition: background-color 0.15s ease, transform 0.15s ease;
+  border-radius: 0.85rem;
+  border: 1px solid rgba(56, 189, 248, 0.4);
+  box-shadow: 0 4px 16px -2px rgba(2, 43, 58, 0.4),
+              0 0 12px -2px rgba(34, 160, 180, 0.35),
+              inset 0 1px 0 0 rgba(255, 255, 255, 0.28);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+  will-change: transform, box-shadow;
+}
+
+.btn-brand-primary::before,
+.matte-btn-primary::before,
+.breeze-btn-primary::before,
+.btn-brand-futuristic::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.25), transparent);
+  transform: skewX(-22deg);
+  transition: left 0.65s ease;
+  pointer-events: none;
+}
+
+.btn-brand-primary:hover::before,
+.matte-btn-primary:hover::before,
+.breeze-btn-primary:hover::before,
+.btn-brand-futuristic:hover::before {
+  left: 180%;
 }
 
 .btn-brand-primary:hover,
 .matte-btn-primary:hover,
-.breeze-btn-primary:hover {
-  background-color: var(--brand-teal-hover);
-  transform: translateY(-1px);
+.breeze-btn-primary:hover,
+.btn-brand-futuristic:hover {
+  background: linear-gradient(135deg, #2492a7 0%, #1a7486 50%, #105260 100%);
+  border-color: rgba(52, 211, 153, 0.75);
+  box-shadow: 0 10px 28px -4px rgba(2, 43, 58, 0.5),
+              0 0 24px 2px rgba(52, 211, 153, 0.45),
+              0 0 12px 1px rgba(34, 160, 180, 0.4),
+              inset 0 1px 0 0 rgba(255, 255, 255, 0.45);
+  transform: translateY(-2px) scale(1.02);
+}
+
+.btn-brand-primary:active,
+.matte-btn-primary:active,
+.breeze-btn-primary:active,
+.btn-brand-futuristic:active {
+  transform: translateY(0px) scale(0.98);
 }
 
 /* Secondary Button */

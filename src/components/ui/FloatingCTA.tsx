@@ -460,51 +460,61 @@ export const FloatingCTA: React.FC = () => {
                   animate={{ opacity: 1, scale: 1, y: 0 }}
                   exit={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, scale: 0.88, y: 10 }}
                   transition={{ duration: shouldReduceMotion ? 0.15 : 0.26, ease: [0.16, 1, 0.3, 1] }}
-                  className="w-[285px] sm:w-[300px] p-5 rounded-3xl bg-[#022B3A]/98 backdrop-blur-xl border border-[var(--brand-teal)]/40 shadow-2xl shadow-black/60 text-white origin-bottom-left select-none"
+                  className="w-[300px] sm:w-[324px] p-5 rounded-3xl bg-[#022B3A]/98 backdrop-blur-2xl border border-cyan-400/50 shadow-[0_20px_50px_rgba(0,0,0,0.7),0_0_30px_rgba(34,160,180,0.35)] text-white origin-bottom-left select-none relative overflow-hidden"
                 >
+                  {/* Subtle Scanline / Tech grid overlay */}
+                  <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(34,160,180,0.18),transparent_60%)] pointer-events-none" />
+
                   {/* Header: Live Badge + Close Button */}
-                  <div className="flex items-center justify-between pb-1">
-                    <span className="text-[10px] font-extrabold uppercase tracking-widest text-emerald-400 flex items-center gap-1.5">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-sm shadow-emerald-400" />
-                      <span>Proposal in 24 hours</span>
+                  <div className="relative z-10 flex items-center justify-between pb-1">
+                    <span className="text-[10px] font-mono font-extrabold uppercase tracking-widest text-emerald-400 flex items-center gap-1.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_6px_#34D399]" />
+                      <span>// PROPOSAL IN 24 HOURS</span>
                     </span>
 
                     <button
                       type="button"
                       onClick={handleDismiss}
                       aria-label="Close project dialog"
-                      className="w-6 h-6 rounded-full bg-white/10 hover:bg-white/20 text-white/80 hover:text-white flex items-center justify-center transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-teal)]"
+                      className="w-6 h-6 rounded-lg bg-white/10 hover:bg-white/20 text-white/80 hover:text-white flex items-center justify-center transition-colors cursor-pointer border border-white/10"
                     >
                       <X className="w-3.5 h-3.5" />
                     </button>
                   </div>
 
                   {/* Headline */}
-                  <h3 className="font-display font-extrabold text-lg text-white leading-snug mt-2 mb-4">
-                    Have a project in mind?
-                  </h3>
+                  <div className="relative z-10 mt-3 mb-4">
+                    <h3 className="font-display font-extrabold text-xl text-white leading-snug">
+                      Have a project in mind?
+                    </h3>
+                    <p className="text-xs text-cyan-100/75 mt-1 leading-relaxed">
+                      Connect with our engineering & design squads for a calibrated scope breakdown.
+                    </p>
+                  </div>
 
                   {/* Primary CTA Button */}
-                  <Link
-                    to="/contact"
-                    onClick={handlePrimaryClick}
-                    className="w-full py-3 px-4 rounded-xl bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-white text-xs font-bold flex items-center justify-center space-x-2 shadow-lg shadow-[var(--brand-teal)]/30 transition-all hover:scale-[1.02] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
-                  >
-                    <span>Start a Project Proposal</span>
-                    <ArrowRight className="w-4 h-4" />
-                  </Link>
+                  <div className="relative z-10">
+                    <Link
+                      to="/contact"
+                      onClick={handlePrimaryClick}
+                      className="w-full py-3 px-4 rounded-xl btn-brand-futuristic text-white text-xs font-bold flex items-center justify-center space-x-2 shadow-lg transition-all"
+                    >
+                      <span>START PROJECT PROPOSAL</span>
+                      <ArrowRight className="w-4 h-4" />
+                    </Link>
 
-                  {/* Secondary Link: Hire a Specialist */}
-                  <Link
-                    to="/contact?type=specialist"
-                    onClick={handleHireClick}
-                    className="mt-3 text-center text-xs font-semibold text-[var(--text-dim)] hover:text-white transition-colors block focus-visible:outline-none focus-visible:underline"
-                  >
-                    <span>Hire a Specialist &rarr;</span>
-                  </Link>
+                    {/* Secondary Link: Hire a Specialist */}
+                    <Link
+                      to="/contact?type=specialist"
+                      onClick={handleHireClick}
+                      className="mt-3 text-center text-xs font-mono font-semibold text-cyan-300 hover:text-white transition-colors block focus-visible:outline-none focus-visible:underline"
+                    >
+                      <span>&gt; BROWSE SPECIALIST ROSTER &rarr;</span>
+                    </Link>
+                  </div>
                 </motion.div>
               ) : (
-                /* ── COLLAPSED STATE: ORBIT BEACON ── */
+                /* ── COLLAPSED STATE: MODERN FUTURISTIC CYBER CAPSULE ── */
                 <motion.div
                   key="beacon-orb-anchor"
                   initial={false}
@@ -523,52 +533,26 @@ export const FloatingCTA: React.FC = () => {
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: 4, scale: 0.9 }}
                         transition={{ duration: 0.2 }}
-                        className="absolute -top-11 left-0 sm:left-2 bg-[#022B3A] border border-[var(--brand-teal)] text-white text-[11px] font-bold px-3 py-1.5 rounded-xl shadow-xl pointer-events-none z-30 whitespace-nowrap"
+                        className="absolute -top-11 left-0 sm:left-2 bg-[#022B3A] border border-cyan-400 text-cyan-200 text-[11px] font-mono font-bold px-3 py-1.5 rounded-lg shadow-[0_4px_16px_rgba(0,0,0,0.4)] pointer-events-none z-30 whitespace-nowrap"
                       >
-                        <span>Got a project?</span>
-                        <div className="absolute -bottom-1 left-5 w-2 h-2 bg-[#022B3A] border-b border-r border-[var(--brand-teal)] rotate-45" />
+                        <span>[ INITIATE SCOPE ]</span>
+                        <div className="absolute -bottom-1 left-5 w-2 h-2 bg-[#022B3A] border-b border-r border-cyan-400 rotate-45" />
                       </motion.div>
                     )}
                   </AnimatePresence>
 
-                  {/* Breathing Soft Glow behind Orb */}
+                  {/* Ambient Futuristic Glow Aura */}
                   {!shouldReduceMotion && (
                     <div
                       style={{
-                        animation: 'orbitBeaconBreath 3.5s ease-in-out infinite',
+                        animation: 'orbitBeaconBreath 3s ease-in-out infinite',
                         animationPlayState: isAnimationPaused ? 'paused' : 'running',
                       }}
-                      className="absolute inset-[-6px] md:inset-[-8px] rounded-full bg-[var(--brand-teal)]/35 blur-md pointer-events-none -z-10"
+                      className="absolute inset-[-4px] md:inset-[-6px] rounded-2xl bg-cyan-500/25 blur-lg pointer-events-none -z-10"
                     />
                   )}
 
-                  {/* Rotating Circular Text Ring (Desktop/Tablet Only) */}
-                  <div className="hidden md:block pointer-events-none select-none">
-                    <svg
-                      viewBox="0 0 110 110"
-                      className="w-[104px] h-[104px] absolute -top-[16px] -left-[16px] pointer-events-none select-none z-10"
-                      style={{
-                        animation: shouldReduceMotion ? 'none' : 'orbitBeaconRotate 14s linear infinite',
-                        animationPlayState: isAnimationPaused ? 'paused' : 'running',
-                        transformOrigin: '55px 55px',
-                      }}
-                      aria-hidden="true"
-                    >
-                      <defs>
-                        <path
-                          id="beacon-text-path"
-                          d="M 55, 55 m -44, 0 a 44,44 0 1,1 88,0 a 44,44 0 1,1 -88,0"
-                        />
-                      </defs>
-                      <text className="font-mono text-[8.5px] font-bold uppercase tracking-[0.18em] fill-[var(--brand-teal)] select-none">
-                        <textPath href="#beacon-text-path" startOffset="0%">
-                          START A PROJECT • HIRE DIGIHUST •
-                        </textPath>
-                      </text>
-                    </svg>
-                  </div>
-
-                  {/* Glassy Teal Orb Button */}
+                  {/* Modern Futuristic Cyber Capsule Button */}
                   <motion.button
                     ref={orbRef}
                     type="button"
@@ -580,40 +564,43 @@ export const FloatingCTA: React.FC = () => {
                       }
                     }}
                     animate={{
-                      rotate: isNudging && !shouldReduceMotion ? [0, -4, 4, -4, 4, 0] : 0,
+                      scale: isNudging && !shouldReduceMotion ? [1, 1.05, 0.98, 1.04, 1] : 1,
                     }}
                     transition={{ duration: 0.55, ease: 'easeInOut' }}
-                    aria-label="Start a project or hire us"
+                    aria-label="Start a project proposal or hire us"
                     aria-expanded={isExpanded}
                     aria-controls="orbit-beacon-card"
                     aria-haspopup="dialog"
                     style={{
-                      background:
-                        'radial-gradient(circle at 35% 35%, rgba(31, 122, 140, 0.95), rgba(2, 43, 58, 0.98))',
-                      boxShadow:
-                        '0 10px 30px -5px rgba(2, 43, 58, 0.6), 0 0 20px 2px rgba(31, 122, 140, 0.25)',
+                      background: 'linear-gradient(135deg, rgba(2, 43, 58, 0.96) 0%, rgba(7, 53, 71, 0.94) 100%)',
                     }}
-                    className="w-14 h-14 md:w-[72px] md:h-[72px] rounded-full border border-white/25 md:border-[var(--brand-teal)]/60 backdrop-blur-xl flex items-center justify-center text-white relative z-20 cursor-pointer shadow-lg group hover:border-white/50 hover:shadow-2xl hover:shadow-[var(--brand-teal)]/40 transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-teal)] focus-visible:ring-offset-2 focus-visible:ring-offset-[#022B3A]"
+                    className="relative px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-2xl border border-cyan-400/40 hover:border-emerald-400/80 backdrop-blur-2xl flex items-center gap-2.5 sm:gap-3 text-white z-20 cursor-pointer shadow-[0_12px_32px_rgba(2,43,58,0.7),0_0_20px_rgba(34,160,180,0.3)] hover:shadow-[0_16px_40px_rgba(2,43,58,0.8),0_0_28px_rgba(52,211,153,0.45)] transition-all duration-300 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400"
                   >
-                    {/* Inner Arrow Up Right Icon */}
-                    <ArrowUpRight
-                      className="w-6 h-6 md:w-7 md:h-7 text-white group-hover:scale-110 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-200"
-                      strokeWidth={2.2}
-                    />
+                    {/* Animated Cyber Edge Runner */}
+                    <div className="absolute inset-0 rounded-2xl overflow-hidden pointer-events-none">
+                      <div className="absolute top-0 left-0 right-0 h-[1.5px] bg-gradient-to-r from-transparent via-cyan-400 to-transparent opacity-75 group-hover:opacity-100" />
+                    </div>
 
-                    {/* Tiny Green "Live" Dot with Slow Pulse on Orb Edge */}
-                    <span className="absolute top-1.5 right-1.5 md:top-2 md:right-2 w-2.5 h-2.5 flex items-center justify-center pointer-events-none">
-                      {!shouldReduceMotion && (
-                        <span
-                          style={{
-                            animation: 'orbitLivePing 3s cubic-bezier(0, 0, 0.2, 1) infinite',
-                            animationPlayState: isAnimationPaused ? 'paused' : 'running',
-                          }}
-                          className="absolute inset-0 rounded-full bg-emerald-400"
-                        />
-                      )}
-                      <span className="relative w-2 h-2 rounded-full bg-emerald-400 border border-[#022B3A] shadow-sm" />
+                    {/* Live Telemetry Beacon Dot */}
+                    <span className="relative flex h-2.5 w-2.5 items-center justify-center">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400 shadow-[0_0_8px_#34D399]" />
                     </span>
+
+                    {/* High-Tech Monospace Label & Secondary Text */}
+                    <div className="flex flex-col text-left">
+                      <span className="text-[11px] sm:text-xs font-mono font-black tracking-[0.14em] text-white uppercase group-hover:text-cyan-300 transition-colors">
+                        START A PROJECT
+                      </span>
+                      <span className="hidden sm:block text-[9px] font-mono tracking-wider text-emerald-400/90 font-medium">
+                        24H PROPOSAL &bull; SQUAD READY
+                      </span>
+                    </div>
+
+                    {/* Micro Futuristic Arrow Vector */}
+                    <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-cyan-500/15 border border-cyan-400/30 flex items-center justify-center group-hover:bg-emerald-400 group-hover:text-[#022B3A] text-cyan-300 transition-all duration-200 shadow-sm ml-0.5">
+                      <ArrowUpRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.5] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                    </div>
                   </motion.button>
                 </motion.div>
               )}

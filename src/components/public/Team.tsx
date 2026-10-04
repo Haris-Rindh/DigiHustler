@@ -28,6 +28,53 @@ export interface TeamMember {
 
 const CATS = ['All', 'Development', 'Creative', 'AI & Data', 'Marketing', 'Cybersecurity'] as const;
 
+export const getCategoryStyles = (category: string) => {
+  switch (category) {
+    case 'Development':
+      return {
+        text: 'text-cyan-700 dark:text-cyan-300',
+        bg: 'bg-cyan-500/10 dark:bg-cyan-400/15',
+        border: 'border-cyan-500/30',
+        glow: '#22D3EE',
+      };
+    case 'Creative':
+      return {
+        text: 'text-purple-700 dark:text-purple-300',
+        bg: 'bg-purple-500/10 dark:bg-purple-400/15',
+        border: 'border-purple-500/30',
+        glow: '#C084FC',
+      };
+    case 'AI & Data':
+      return {
+        text: 'text-sky-700 dark:text-sky-300',
+        bg: 'bg-sky-500/10 dark:bg-sky-400/15',
+        border: 'border-sky-500/30',
+        glow: '#38BDF8',
+      };
+    case 'Marketing':
+      return {
+        text: 'text-amber-700 dark:text-amber-300',
+        bg: 'bg-amber-500/10 dark:bg-amber-400/15',
+        border: 'border-amber-500/30',
+        glow: '#FBBF24',
+      };
+    case 'Cybersecurity':
+      return {
+        text: 'text-rose-700 dark:text-rose-300',
+        bg: 'bg-rose-500/10 dark:bg-rose-400/15',
+        border: 'border-rose-500/30',
+        glow: '#FB7185',
+      };
+    default:
+      return {
+        text: 'text-[var(--brand-teal)] dark:text-cyan-300',
+        bg: 'bg-[var(--brand-teal-subtle)]',
+        border: 'border-[var(--brand-teal)]/30',
+        glow: '#22A0B4',
+      };
+  }
+};
+
 const CAT_COLORS: Record<string, string> = {
   Development: '#1F7A8C',
   Creative: '#8B5CF6',
@@ -493,7 +540,7 @@ export const Team: React.FC = () => {
                     {/* Ambient Category-Colored Halo */}
                     <div
                       className="absolute top-0 right-0 w-32 h-32 rounded-full blur-3xl opacity-15 pointer-events-none group-hover:opacity-35 transition-opacity duration-300"
-                      style={{ backgroundColor: CAT_COLORS[member.category] || '#1a7a8c' }}
+                      style={{ backgroundColor: getCategoryStyles(member.category).glow }}
                     />
 
                     <div className="relative z-[2]">
@@ -518,10 +565,7 @@ export const Team: React.FC = () => {
                           <h4 className="font-bold text-base text-[var(--text-heading)] leading-snug break-words group-hover:text-[var(--brand-teal)] transition-colors">
                             {member.name}
                           </h4>
-                          <p
-                            className="text-xs font-bold mt-1 leading-normal break-words"
-                            style={{ color: CAT_COLORS[member.category] || '#1a7a8c' }}
-                          >
+                          <p className={`text-xs font-bold mt-1 leading-normal break-words ${getCategoryStyles(member.category).text}`}>
                             {member.role}
                           </p>
                         </div>
@@ -731,13 +775,7 @@ export const Team: React.FC = () => {
                   />
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 mb-1.5">
-                      <span
-                        className="text-[11px] font-extrabold px-2.5 py-0.5 rounded-full uppercase tracking-wider"
-                        style={{
-                          color: CAT_COLORS[selectedMember.category] || '#1a7a8c',
-                          backgroundColor: (CAT_COLORS[selectedMember.category] || '#1a7a8c') + '20',
-                        }}
-                      >
+                      <span className={`text-[11px] font-extrabold px-2.5 py-0.5 rounded-full uppercase tracking-wider border ${getCategoryStyles(selectedMember.category).text} ${getCategoryStyles(selectedMember.category).bg} ${getCategoryStyles(selectedMember.category).border}`}>
                         {selectedMember.category}
                       </span>
                       <span className="text-[11px] text-emerald-600 dark:text-emerald-400 font-bold flex items-center space-x-1 bg-emerald-500/10 px-2.5 py-0.5 rounded-full">
@@ -755,10 +793,7 @@ export const Team: React.FC = () => {
                     <h2 className="font-display font-extrabold text-2xl sm:text-3xl text-[var(--text-heading)] leading-tight">
                       {selectedMember.name}
                     </h2>
-                    <p
-                      className="text-sm font-bold mt-1"
-                      style={{ color: CAT_COLORS[selectedMember.category] || '#1a7a8c' }}
-                    >
+                    <p className={`text-sm font-bold mt-1 ${getCategoryStyles(selectedMember.category).text}`}>
                       {selectedMember.role}
                     </p>
                   </div>

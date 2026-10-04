@@ -11,7 +11,7 @@ export const Groups: React.FC = () => {
       
       {/* Header */}
       <div className="text-center space-y-3 max-w-2xl mx-auto">
-        <span className="text-[10px] font-bold px-3 py-1 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 uppercase tracking-widest">
+        <span className="text-[10px] font-bold px-3 py-1 rounded-full bg-cyan-500/10 text-cyan-700 dark:text-cyan-400 border border-cyan-500/20 uppercase tracking-widest">
           Organizational Flowchart
         </span>
         <h1 className="font-display font-extrabold text-4xl text-[var(--text-heading)]">Groups & Department Structure</h1>
@@ -45,7 +45,7 @@ export const Groups: React.FC = () => {
 
                 <Link
                   to="/roster"
-                  className="px-4 py-2 rounded-xl bg-[var(--bg-subtle)] border border-[var(--border-subtle)] hover:border-cyan-500/40 text-xs font-bold text-cyan-300 transition-all flex items-center space-x-1"
+                  className="px-4 py-2 rounded-xl bg-[var(--bg-subtle)] border border-[var(--border-subtle)] hover:border-[var(--brand-teal)] text-xs font-bold text-[var(--brand-teal)] hover:text-[var(--brand-teal-hover)] transition-all flex items-center space-x-1"
                 >
                   <span>View Full Group Roster</span>
                   <ArrowRight className="w-3.5 h-3.5" />
@@ -57,13 +57,13 @@ export const Groups: React.FC = () => {
                 <div className="p-4 rounded-2xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] flex items-center space-x-4">
                   <img src={leader.avatarUrl} alt={leader.name} className="w-12 h-12 rounded-xl object-cover ring-2 ring-cyan-500/30" />
                   <div className="flex-1">
-                    <span className="text-[9px] uppercase font-bold text-cyan-400">Department Leader</span>
+                    <span className="text-[9px] uppercase font-bold text-cyan-700 dark:text-cyan-400">Department Leader</span>
                     <h4 className="font-bold text-sm text-[var(--text-heading)]">{leader.name}</h4>
                     <p className="text-xs text-[var(--text-muted)]">{leader.title} • {leader.digiskillBatch}</p>
                   </div>
                   <div className="text-right hidden sm:block">
-                    <span className="text-xs text-emerald-400 font-bold flex items-center gap-1 justify-end">
-                      <Star className="w-3.5 h-3.5 fill-emerald-400" />
+                    <span className="text-xs text-emerald-700 dark:text-emerald-400 font-bold flex items-center gap-1 justify-end">
+                      <Star className="w-3.5 h-3.5 fill-emerald-500 text-emerald-500" />
                       <span>{leader.rating}</span>
                     </span>
                     <span className="text-[10px] text-[var(--text-muted)]">{leader.completedProjectsCount} projects led</span>

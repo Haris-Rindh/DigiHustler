@@ -296,7 +296,7 @@ export const Home: React.FC = () => {
                 <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                   <Link
                     to="/contact"
-                    className="flex items-center justify-center space-x-2 px-6 py-3 rounded-xl bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-white font-bold text-xs sm:text-sm shadow-md transition-colors"
+                    className="flex items-center justify-center space-x-2 px-6 py-3 rounded-xl btn-brand-futuristic text-white font-bold text-xs sm:text-sm shadow-md transition-all"
                   >
                     <span>{hero?.ctaPrimaryText || t('btn_scoped_quote')}</span>
                     <ArrowRight className="w-4 h-4" />
@@ -609,9 +609,9 @@ export const Home: React.FC = () => {
               <motion.div variants={squadGroupVariants} className="w-full flex flex-col items-center relative z-10">
                 <div className="grid grid-cols-3 gap-2 w-full">
                   {[
-                    { label: 'Engineering', icon: <Code2 className="w-3.5 h-3.5 text-cyan-400" />, border: 'hover:border-cyan-500/60' },
-                    { label: 'Design & UX', icon: <Layers className="w-3.5 h-3.5 text-purple-400" />, border: 'hover:border-purple-500/60' },
-                    { label: 'AI & Data', icon: <Zap className="w-3.5 h-3.5 text-amber-400" />, border: 'hover:border-amber-500/60' },
+                    { label: 'Engineering', icon: <Code2 className="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400" />, border: 'hover:border-cyan-500/60' },
+                    { label: 'Design & UX', icon: <Layers className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />, border: 'hover:border-purple-500/60' },
+                    { label: 'AI & Data', icon: <Zap className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />, border: 'hover:border-amber-500/60' },
                   ].map((squad) => (
                     <motion.div
                       key={squad.label}
@@ -626,8 +626,8 @@ export const Home: React.FC = () => {
                 </div>
                 <div className="grid grid-cols-2 gap-2 w-3/4 sm:w-2/3 mt-2">
                   {[
-                    { label: 'Growth / SEO', icon: <Sparkles className="w-3.5 h-3.5 text-emerald-400" />, border: 'hover:border-emerald-500/60' },
-                    { label: 'Cybersecurity', icon: <Shield className="w-3.5 h-3.5 text-rose-400" />, border: 'hover:border-rose-500/60' },
+                    { label: 'Growth / SEO', icon: <Sparkles className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />, border: 'hover:border-emerald-500/60' },
+                    { label: 'Cybersecurity', icon: <Shield className="w-3.5 h-3.5 text-rose-600 dark:text-rose-400" />, border: 'hover:border-rose-500/60' },
                   ].map((squad) => (
                     <motion.div
                       key={squad.label}
@@ -658,7 +658,7 @@ export const Home: React.FC = () => {
               <motion.div
                 variants={diagramNodeVariants}
                 whileHover={{ scale: 1.03, y: -2 }}
-                className="relative w-56 sm:w-64 py-2 px-4 rounded-xl bg-[var(--bg-page)] border-2 border-[var(--brand-teal)] text-[var(--brand-teal)] text-center font-bold text-xs sm:text-sm shadow-md cursor-pointer flex items-center justify-center gap-2 z-10 group"
+                className="relative w-56 sm:w-64 py-2 px-4 rounded-xl bg-[var(--bg-page)] border-2 border-[var(--brand-teal)] text-[var(--brand-teal)] dark:text-cyan-300 text-center font-bold text-xs sm:text-sm shadow-md cursor-pointer flex items-center justify-center gap-2 z-10 group"
               >
                 {!shouldReduceMotion && (
                   <motion.div
@@ -772,7 +772,7 @@ export const Home: React.FC = () => {
                     target="_blank"
                     rel="noopener noreferrer"
                     onClick={(e) => e.stopPropagation()}
-                    className="inline-flex items-center space-x-1 text-emerald-400 hover:text-emerald-300 hover:underline font-bold px-2 py-0.5 rounded-md hover:bg-emerald-500/10 transition-colors"
+                    className="inline-flex items-center space-x-1 text-emerald-700 dark:text-emerald-400 hover:text-emerald-800 dark:hover:text-emerald-300 hover:underline font-bold px-2 py-0.5 rounded-md hover:bg-emerald-500/10 transition-colors"
                   >
                     <span>Live Demo</span>
                     <ExternalLink className="w-3.5 h-3.5" />
@@ -946,7 +946,7 @@ export const Home: React.FC = () => {
                 </div>
 
                 <div>
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-emerald-400 mb-2">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400 mb-2">
                     Key Outcomes & Metrics
                   </h4>
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -955,7 +955,7 @@ export const Home: React.FC = () => {
                         key={res}
                         className="p-3.5 rounded-xl bg-[var(--bg-page)] border border-emerald-500/30 text-xs font-semibold text-[var(--text-body)] flex items-start space-x-2"
                       >
-                        <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5" />
+                        <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 flex-shrink-0 mt-0.5" />
                         <span>{res}</span>
                       </div>
                     ))}

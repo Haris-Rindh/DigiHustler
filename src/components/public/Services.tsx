@@ -6,6 +6,10 @@ import {
   ChevronDown,
   Layers,
   Sparkles,
+  Cpu,
+  ShieldCheck,
+  Zap,
+  CheckCircle2,
 } from 'lucide-react';
 import { SEOHead } from '../seo/SEOHead';
 import { useApp } from '../../context/AppContext';
@@ -72,10 +76,19 @@ const SLIDESHOW_ITEMS = [
   },
 ];
 
+const CATEGORIES = [
+  { id: 'all', label: 'All Capabilities' },
+  { id: 'tech', label: 'Engineering & Apps' },
+  { id: 'creative', label: 'Design & 3D' },
+  { id: 'data', label: 'AI & Automations' },
+  { id: 'growth', label: 'Growth & SEO' },
+];
+
 export const Services: React.FC = () => {
   const { siteContent } = useApp();
   const shouldReduceMotion = useReducedMotion();
   const [activeTileId, setActiveTileId] = useState<string | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
 
   const rawServices: SiteServiceItem[] =
     siteContent?.services && siteContent.services.length > 0
@@ -85,6 +98,11 @@ export const Services: React.FC = () => {
   const sortedServices = [...rawServices].sort(
     (a, b) => (a.order ?? 99) - (b.order ?? 99)
   );
+
+  const filteredServices = sortedServices.filter((svc) => {
+    if (selectedCategory === 'all') return true;
+    return (svc.groupId || '').toLowerCase() === selectedCategory.toLowerCase();
+  });
 
   // ── AUTO SLIDER STATE ──
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
@@ -99,7 +117,7 @@ export const Services: React.FC = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       nextSlide();
-    }, 4000); // changes every 4 seconds
+    }, 4000);
 
     return () => clearInterval(interval);
   }, [nextSlide]);
@@ -217,7 +235,7 @@ export const Services: React.FC = () => {
 
                   <Link
                     to="/contact"
-                    className="inline-flex items-center space-x-2 px-5 py-2.5 sm:px-6 sm:py-3 rounded-xl bg-white/10 hover:bg-white/20 text-white backdrop-blur-md border border-white/20 text-xs sm:text-sm font-bold shadow-lg transition-all hover:scale-105 active:scale-95"
+                    className="inline-flex items-center space-x-2 px-5 py-2.5 sm:px-6 sm:py-3 rounded-xl btn-brand-futuristic text-white text-xs sm:text-sm font-bold shadow-lg transition-all"
                   >
                     <span>Start Project</span>
                     <ArrowRight className="w-4 h-4" />
@@ -227,7 +245,7 @@ export const Services: React.FC = () => {
 
             </div>
 
-            {/* Bottom Progress Bar Indicator (Purely Automatic) */}
+            {/* Bottom Progress Bar Indicator */}
             <div className="absolute bottom-4 sm:bottom-6 right-6 sm:right-10 flex items-center space-x-1.5 sm:space-x-2 z-20 pointer-events-none">
               {SLIDESHOW_ITEMS.map((_, idx) => (
                 <div
@@ -246,8 +264,8 @@ export const Services: React.FC = () => {
         </div>
       </section>
 
-      {/* Header Banner */}
-      <section ref={servicesSectionRef} className="bg-[var(--bg-page)] py-14 sm:py-18 px-6 lg:px-8 border-b border-[var(--border-subtle)]">
+      {/* Header Banner & Domain Filter Tabs */}
+      <section ref={servicesSectionRef} className="bg-[var(--bg-page)] pt-14 sm:pt-18 pb-6 px-4 sm:px-6 lg:px-8 border-b border-[var(--border-subtle)]">
         <div className="max-w-7xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 15 }}
@@ -261,17 +279,49 @@ export const Services: React.FC = () => {
             <h1 className="font-display font-extrabold text-3xl sm:text-4xl lg:text-5xl text-[var(--text-heading)] mb-4">
               Services Built for Execution.
             </h1>
-            <p className="text-base sm:text-lg text-[var(--text-body)] max-w-2xl leading-relaxed">
-              Six specialized domains | delivered as one cohesive digital engine. Click any capability below to review included deliverables and technologies.
+            <p className="text-base sm:text-lg text-[var(--text-body)] max-w-2xl leading-relaxed mb-8">
+              Specialized domain squads delivered as one cohesive digital engine. Select any capability domain or expand specs to inspect dedicated rosters.
             </p>
+
+            {/* Capability Filter Tabs */}
+            <div className="flex flex-wrap items-center gap-2 pt-2 pb-1">
+              {CATEGORIES.map((cat) => {
+                const isSelected = selectedCategory === cat.id;
+                const count = cat.id === 'all'
+                  ? sortedServices.length
+                  : sortedServices.filter((s) => (s.groupId || '').toLowerCase() === cat.id).length;
+
+                return (
+                  <button
+                    key={cat.id}
+                    onClick={() => setSelectedCategory(cat.id)}
+                    className={`px-4 py-2 rounded-xl text-xs font-mono font-bold transition-all duration-200 cursor-pointer flex items-center gap-2 ${
+                      isSelected
+                        ? 'bg-[var(--brand-teal)] text-white shadow-md shadow-[var(--brand-teal)]/30 border border-cyan-400/50'
+                        : 'bg-[var(--bg-surface)] text-[var(--text-body)] hover:text-[var(--text-heading)] border border-[var(--border-subtle)] hover:border-[var(--brand-teal)]/50'
+                    }`}
+                  >
+                    <span>{cat.label}</span>
+                    <span
+                      className={`text-[10px] px-1.5 py-0.5 rounded-md font-mono ${
+                        isSelected ? 'bg-white/20 text-white' : 'bg-[var(--bg-subtle)] text-[var(--text-dim)]'
+                      }`}
+                    >
+                      {count}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
           </motion.div>
         </div>
       </section>
 
-      {/* ── BENTO GRID: TYPOGRAPHIC + GENERATIVE ARCHITECTURE ── */}
+      {/* ── BENTO GRID: AUTONOMOUS SQUAD PODS ── */}
       <section className="bg-[var(--bg-page)] py-14 sm:py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <motion.div
+            layout
             variants={{
               hidden: {},
               visible: {
@@ -281,11 +331,10 @@ export const Services: React.FC = () => {
               },
             }}
             initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.15 }}
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-4 lg:gap-5"
+            animate="visible"
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-5 lg:gap-6"
           >
-            {sortedServices.map((svc, index) => (
+            {filteredServices.map((svc, index) => (
               <ServiceBentoCard
                 key={svc.id || svc.slug || index}
                 service={svc}
@@ -302,6 +351,85 @@ export const Services: React.FC = () => {
         </div>
       </section>
 
+      {/* ── SECTION: SQUAD ORCHESTRATION ARCHITECTURE ── */}
+      <section className="bg-[var(--bg-page)] py-16 sm:py-24 px-4 sm:px-6 lg:px-8 border-t border-[var(--border-subtle)] relative overflow-hidden">
+        {/* Ambient Subtle Grid Backdrop */}
+        <div className="absolute inset-0 bg-[radial-gradient(#1F7A8C_1px,transparent_1px)] [background-size:24px_24px] opacity-15 pointer-events-none" />
+
+        <div className="max-w-7xl mx-auto relative z-10">
+          <div className="text-center max-w-3xl mx-auto mb-12 sm:mb-16">
+            <span className="text-xs font-mono font-extrabold uppercase tracking-widest text-[var(--brand-teal)] mb-3 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[var(--brand-teal-subtle)] border border-[var(--brand-teal)]/30">
+              <Zap className="w-3.5 h-3.5" />
+              <span>CO-ORDINATED DELIVERY MODEL</span>
+            </span>
+            <h2 className="font-display font-extrabold text-3xl sm:text-4xl text-[var(--text-heading)] mt-2 mb-4">
+              How One Managed Contract Powers Multiple Specialized Squads
+            </h2>
+            <p className="text-sm sm:text-base text-[var(--text-body)] leading-relaxed">
+              No freelancer chaos. No disconnected contractors. DigiHust delivers cross-functional squads under one accountable technical director.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+            {[
+              {
+                step: '01',
+                title: 'Technical Scoping & Squad Assembly',
+                desc: 'We decompose your product requirements, assemble verified specialists from our roster, and create an immutable milestone roadmap.',
+                icon: <Cpu className="w-5 h-5 text-cyan-400" />,
+                tag: 'ARCHITECT AUDIT',
+              },
+              {
+                step: '02',
+                title: 'Parallel Sprint Execution',
+                desc: 'Frontend, backend, 3D design, and automation squads work concurrently with synchronized daily CI/CD staging builds.',
+                icon: <Layers className="w-5 h-5 text-purple-400" />,
+                tag: 'PARALLEL BUILDS',
+              },
+              {
+                step: '03',
+                title: 'Security Hardening & QA Audit',
+                desc: 'Every milestone undergoes OWASP vulnerability scanning, automated test suites, and cross-browser performance benchmarking.',
+                icon: <ShieldCheck className="w-5 h-5 text-emerald-400" />,
+                tag: 'ENTERPRISE QA',
+              },
+              {
+                step: '04',
+                title: 'Clean Handover & SLA Assurance',
+                desc: 'Full production deployment, complete source code & design system repository transfer, backed by our 30-day post-launch warranty.',
+                icon: <CheckCircle2 className="w-5 h-5 text-amber-400" />,
+                tag: '100% SLA BACKED',
+              },
+            ].map((p, idx) => (
+              <div
+                key={idx}
+                className="relative rounded-2xl p-6 bg-[var(--bg-surface)] border border-[var(--border-subtle)] hover:border-[var(--brand-teal)]/60 transition-all duration-300 shadow-md hover:shadow-xl flex flex-col justify-between group"
+              >
+                <div>
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="font-mono text-2xl font-black text-[var(--brand-teal)] opacity-60 group-hover:opacity-100 transition-opacity">
+                      {p.step}
+                    </span>
+                    <span className="text-[10px] font-mono font-bold tracking-wider text-[var(--text-dim)] uppercase bg-[var(--bg-page)] px-2 py-0.5 rounded border border-[var(--border-subtle)]">
+                      {p.tag}
+                    </span>
+                  </div>
+                  <div className="w-10 h-10 rounded-xl bg-[var(--bg-page)] border border-[var(--border-subtle)] flex items-center justify-center mb-4 group-hover:scale-105 transition-transform">
+                    {p.icon}
+                  </div>
+                  <h3 className="font-display font-bold text-base sm:text-lg text-[var(--text-heading)] mb-2">
+                    {p.title}
+                  </h3>
+                  <p className="text-xs text-[var(--text-body)] leading-relaxed">
+                    {p.desc}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Bottom CTA Banner */}
       <section className="bg-[var(--bg-page)] py-20 px-6 lg:px-8 border-t border-[var(--border-subtle)] text-center">
         <div className="max-w-2xl mx-auto">
@@ -313,7 +441,7 @@ export const Services: React.FC = () => {
           </p>
           <Link
             to="/contact"
-            className="inline-flex items-center space-x-2 px-8 py-4 rounded-xl bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-white font-bold shadow-lg transition-all"
+            className="inline-flex items-center space-x-2 px-8 py-4 rounded-xl btn-brand-futuristic text-white font-bold shadow-lg transition-all"
           >
             <span>Start a Combined Scope</span>
             <ArrowRight className="w-4 h-4" />
