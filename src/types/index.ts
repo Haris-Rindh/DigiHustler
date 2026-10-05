@@ -428,6 +428,7 @@ export interface SiteServiceItem {
   color: string;
   icon?: string;
   iconName?: string;
+  imageUrl?: string;
   size?: 'large' | 'medium' | 'small';
   patternVariant?: 'dotted-grid' | 'concentric-rings' | 'diagonal-hatch' | 'flowing-waves' | 'mesh-gradient' | 'isometric-grid';
   linkTarget?: string;

@@ -28,6 +28,15 @@ const SERVICE_SIZE_OPTIONS = [
   { id: 'small', label: 'Small (4 cols / Row 2)' },
 ] as const;
 
+const CURATED_SERVICE_IMAGE_PRESETS = [
+  { label: 'Web Tech', url: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=1200&q=80' },
+  { label: 'UI/UX 3D', url: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1200&q=80' },
+  { label: 'AI & Data', url: 'https://images.unsplash.com/photo-1677442136019-21780efad99a?auto=format&fit=crop&w=1200&q=80' },
+  { label: 'Video Studio', url: 'https://images.unsplash.com/photo-1626785774573-4b799315345d?auto=format&fit=crop&w=1200&q=80' },
+  { label: 'Growth SEO', url: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1200&q=80' },
+  { label: 'Cybersecurity', url: 'https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=1200&q=80' },
+];
+
 export const SiteContentManager: React.FC = () => {
   const { 
     siteContent, updateSiteContent, addItemToSiteContent, 
@@ -93,7 +102,8 @@ export const SiteContentManager: React.FC = () => {
     shortDescription: '',
     linkTarget: '',
     features: ['Scalable Architecture'],
-    color: '#1F7A8C'
+    color: '#1F7A8C',
+    imageUrl: ''
   });
 
   const [showAddPackage, setShowAddPackage] = useState(false);
@@ -238,7 +248,8 @@ export const SiteContentManager: React.FC = () => {
       shortDescription: newService.shortDescription || newService.description?.slice(0, 160) || '',
       linkTarget: newService.linkTarget || `/contact?service=${encodeURIComponent(newService.slug || generatedSlug)}`,
       features: newService.features || [],
-      color: newService.color || '#1F7A8C'
+      color: newService.color || '#1F7A8C',
+      imageUrl: newService.imageUrl || ''
     };
     addItemToSiteContent('services', item);
     setShowAddService(false);
@@ -255,7 +266,8 @@ export const SiteContentManager: React.FC = () => {
       shortDescription: '',
       linkTarget: '',
       features: ['Scalable Architecture'],
-      color: '#1F7A8C'
+      color: '#1F7A8C',
+      imageUrl: ''
     });
     triggerSaved('New Capability Service added!');
   };
@@ -905,6 +917,96 @@ export const SiteContentManager: React.FC = () => {
                         </div>
                       </div>
 
+                      {/* Service Card Visual Image */}
+                      <div className="p-3.5 rounded-2xl bg-[var(--bg-subtle)] border border-[var(--border-subtle)] space-y-2">
+                        <div className="flex items-center justify-between">
+                          <label className="block text-[11px] font-bold uppercase text-[var(--text-muted)]">
+                            Service Card Image
+                          </label>
+                          {service.imageUrl && (
+                            <button
+                              type="button"
+                              onClick={() => updateItemInSiteContent('services', service.id, { imageUrl: '' })}
+                              className="text-[10px] text-rose-500 hover:underline cursor-pointer"
+                            >
+                              Remove Image
+                            </button>
+                          )}
+                        </div>
+
+                        <div className="flex flex-col sm:flex-row gap-3 items-start">
+                          {/* Preview thumbnail */}
+                          <div className="w-24 h-16 rounded-xl overflow-hidden bg-black/20 border border-[var(--border-subtle)] shrink-0 relative">
+                            {service.imageUrl ? (
+                              <img
+                                src={service.imageUrl}
+                                alt={service.title}
+                                className="w-full h-full object-cover"
+                                onError={(e) => {
+                                  (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=400&q=80';
+                                }}
+                              />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center text-[10px] font-mono text-[var(--text-muted)] text-center p-1">
+                                No Image
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Inputs & Actions */}
+                          <div className="flex-1 space-y-2 w-full">
+                            <div className="flex gap-2">
+                              <input
+                                type="text"
+                                value={service.imageUrl || ''}
+                                placeholder="Image URL (https://images.unsplash.com/... or /assets/...)"
+                                onChange={(e) =>
+                                  updateItemInSiteContent('services', service.id, { imageUrl: e.target.value })
+                                }
+                                className="flex-1 bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-1.5 text-xs text-[var(--text-heading)] font-mono"
+                              />
+                              <label className="px-3 py-1.5 rounded-xl bg-[var(--bg-page)] border border-[var(--border-subtle)] hover:border-[var(--brand-teal)] text-[var(--text-heading)] text-xs font-bold cursor-pointer whitespace-nowrap flex items-center gap-1">
+                                <span>Upload</span>
+                                <input
+                                  type="file"
+                                  accept="image/*"
+                                  className="hidden"
+                                  onChange={(e) => {
+                                    const file = e.target.files?.[0];
+                                    if (file) {
+                                      const reader = new FileReader();
+                                      reader.onload = () => {
+                                        if (typeof reader.result === 'string') {
+                                          updateItemInSiteContent('services', service.id, { imageUrl: reader.result });
+                                        }
+                                      };
+                                      reader.readAsDataURL(file);
+                                    }
+                                  }}
+                                />
+                              </label>
+                            </div>
+
+                            {/* Preset Buttons */}
+                            <div className="flex flex-wrap items-center gap-1">
+                              <span className="text-[10px] text-[var(--text-muted)] font-mono mr-1">Presets:</span>
+                              {CURATED_SERVICE_IMAGE_PRESETS.map((preset) => (
+                                <button
+                                  key={preset.label}
+                                  type="button"
+                                  onClick={() =>
+                                    updateItemInSiteContent('services', service.id, { imageUrl: preset.url })
+                                  }
+                                  className="text-[10px] px-2 py-0.5 rounded-md bg-[var(--bg-page)] hover:bg-[var(--brand-teal-subtle)] text-[var(--text-body)] hover:text-[var(--brand-teal)] border border-[var(--border-subtle)] transition-colors cursor-pointer"
+                                >
+                                  {preset.label}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
                       {/* Short Description with Character Counter */}
                       <div>
                         <div className="flex items-center justify-between mb-1">
@@ -1076,6 +1178,92 @@ export const SiteContentManager: React.FC = () => {
                         placeholder="e.g. Custom React · Next.js · Node.js"
                         className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs text-[var(--text-heading)]"
                       />
+                    </div>
+                  </div>
+
+                  {/* Service Card Visual Image */}
+                  <div className="p-3.5 rounded-2xl bg-[var(--bg-subtle)] border border-[var(--border-subtle)] space-y-2">
+                    <div className="flex items-center justify-between">
+                      <label className="block text-xs font-bold uppercase text-[var(--text-muted)]">
+                        Service Card Image
+                      </label>
+                      {newService.imageUrl && (
+                        <button
+                          type="button"
+                          onClick={() => setNewService({ ...newService, imageUrl: '' })}
+                          className="text-[10px] text-rose-500 hover:underline cursor-pointer"
+                        >
+                          Clear Image
+                        </button>
+                      )}
+                    </div>
+
+                    <div className="flex flex-col sm:flex-row gap-3 items-start">
+                      {/* Preview thumbnail */}
+                      <div className="w-24 h-16 rounded-xl overflow-hidden bg-black/20 border border-[var(--border-subtle)] shrink-0 relative">
+                        {newService.imageUrl ? (
+                          <img
+                            src={newService.imageUrl}
+                            alt="Service preview"
+                            className="w-full h-full object-cover"
+                            onError={(e) => {
+                              (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=400&q=80';
+                            }}
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-[10px] font-mono text-[var(--text-muted)] text-center p-1">
+                            No Image
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Inputs & Actions */}
+                      <div className="flex-1 space-y-2 w-full">
+                        <div className="flex gap-2">
+                          <input
+                            type="text"
+                            value={newService.imageUrl || ''}
+                            placeholder="Image URL (https://images.unsplash.com/... or /assets/...)"
+                            onChange={(e) => setNewService({ ...newService, imageUrl: e.target.value })}
+                            className="flex-1 bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-1.5 text-xs text-[var(--text-heading)] font-mono"
+                          />
+                          <label className="px-3 py-1.5 rounded-xl bg-[var(--bg-page)] border border-[var(--border-subtle)] hover:border-[var(--brand-teal)] text-[var(--text-heading)] text-xs font-bold cursor-pointer whitespace-nowrap flex items-center gap-1">
+                            <span>Upload</span>
+                            <input
+                              type="file"
+                              accept="image/*"
+                              className="hidden"
+                              onChange={(e) => {
+                                const file = e.target.files?.[0];
+                                if (file) {
+                                  const reader = new FileReader();
+                                  reader.onload = () => {
+                                    if (typeof reader.result === 'string') {
+                                      setNewService({ ...newService, imageUrl: reader.result });
+                                    }
+                                  };
+                                  reader.readAsDataURL(file);
+                                }
+                              }}
+                            />
+                          </label>
+                        </div>
+
+                        {/* Preset Buttons */}
+                        <div className="flex flex-wrap items-center gap-1">
+                          <span className="text-[10px] text-[var(--text-muted)] font-mono mr-1">Presets:</span>
+                          {CURATED_SERVICE_IMAGE_PRESETS.map((preset) => (
+                            <button
+                              key={preset.label}
+                              type="button"
+                              onClick={() => setNewService({ ...newService, imageUrl: preset.url })}
+                              className="text-[10px] px-2 py-0.5 rounded-md bg-[var(--bg-page)] hover:bg-[var(--brand-teal-subtle)] text-[var(--text-body)] hover:text-[var(--brand-teal)] border border-[var(--border-subtle)] transition-colors cursor-pointer"
+                            >
+                              {preset.label}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
                     </div>
                   </div>
 

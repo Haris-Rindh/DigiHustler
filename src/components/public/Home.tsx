@@ -234,7 +234,8 @@ export const Home: React.FC = () => {
         summary: s.tagline || 'Specialized Domain Squad',
         description: s.description,
         tags: s.features || ['Specialized Delivery'],
-        color: (s.color && s.color !== '#1F7A8C') ? s.color : SERVICE_PALETTE[idx % SERVICE_PALETTE.length]
+        color: (s.color && s.color !== '#1F7A8C') ? s.color : SERVICE_PALETTE[idx % SERVICE_PALETTE.length],
+        imageUrl: s.imageUrl,
       }))
     : SERVICES;
 
@@ -439,7 +440,7 @@ export const Home: React.FC = () => {
                   data-cursor="view"
                   onPointerMove={handleCardSpotlightMove}
                   onPointerLeave={handleCardSpotlightLeave}
-                  className="group premium-card p-7 flex flex-col justify-between h-full cursor-pointer select-none block overflow-hidden relative"
+                  className="group premium-card p-6 sm:p-7 flex flex-col justify-between h-full cursor-pointer select-none block overflow-hidden relative"
                 >
                   {/* Luxury Watermark Numeral */}
                   <span className="absolute top-3 right-5 font-mono font-black text-6xl text-[var(--text-heading)]/[0.04] group-hover:text-[var(--brand-teal)]/[0.14] transition-colors duration-500 select-none pointer-events-none">
@@ -447,14 +448,32 @@ export const Home: React.FC = () => {
                   </span>
 
                   <div className="relative z-[2]">
+                    {/* Visual Card Image Banner if present */}
+                    {svc.imageUrl && (
+                      <div className="relative h-40 w-full rounded-2xl overflow-hidden mb-5 border border-[var(--border-subtle)] bg-black/20 shadow-sm">
+                        <img
+                          src={svc.imageUrl}
+                          alt={svc.title}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                          loading="lazy"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none" />
+                        <div className="absolute bottom-2.5 left-3">
+                          <span className="text-[10px] font-mono font-bold text-white/90 bg-black/60 px-2 py-0.5 rounded backdrop-blur-xs">
+                            SQUAD 0{sIdx + 1}
+                          </span>
+                        </div>
+                      </div>
+                    )}
+
                     {/* Illuminated 3D Glass Icon Dock */}
-                    <div className="relative mb-5 w-fit">
+                    <div className="relative mb-4 w-fit">
                       <div
                         className="absolute -inset-1 rounded-2xl blur-md opacity-25 group-hover:opacity-60 transition-opacity duration-300"
                         style={{ backgroundColor: svc.color }}
                       />
                       <div
-                        className="relative w-12 h-12 rounded-2xl flex items-center justify-center text-white shadow-md border border-white/20 group-hover:scale-105 group-hover:rotate-1 transition-all duration-300"
+                        className="relative w-11 h-11 rounded-2xl flex items-center justify-center text-white shadow-md border border-white/20 group-hover:scale-105 group-hover:rotate-1 transition-all duration-300"
                         style={{ backgroundColor: svc.color }}
                       >
                         {svc.icon}

@@ -763,6 +763,7 @@ export const DEFAULT_SITE_CONTENT: SiteContent = {
       features: ['Single Page Applications', 'Enterprise APIs', 'Database Optimization', 'Mobile App Development'],
       color: '#1F7A8C',
       icon: 'terminal',
+      imageUrl: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=1200&q=80',
       size: 'large',
       patternVariant: 'dotted-grid',
       linkTarget: '/contact?service=web-engineering'
@@ -779,6 +780,7 @@ export const DEFAULT_SITE_CONTENT: SiteContent = {
       features: ['Figma Design Systems', '3D Product Rendering', 'Brand Guidelines', 'Interactive Prototypes'],
       color: '#022B3A',
       icon: 'layers',
+      imageUrl: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1200&q=80',
       size: 'medium',
       patternVariant: 'concentric-rings',
       linkTarget: '/contact?service=creative-design'
@@ -795,6 +797,7 @@ export const DEFAULT_SITE_CONTENT: SiteContent = {
       features: ['Automated ETL Pipelines', 'AI Customer Bots', 'Executive Dashboards', 'n8n Workflow Automations'],
       color: '#1F7A8C',
       icon: 'sparkles',
+      imageUrl: 'https://images.unsplash.com/photo-1677442136019-21780efad99a?auto=format&fit=crop&w=1200&q=80',
       size: 'small',
       patternVariant: 'mesh-gradient',
       linkTarget: '/contact?service=ai-automation'
@@ -811,6 +814,7 @@ export const DEFAULT_SITE_CONTENT: SiteContent = {
       features: ['Commercial Visuals', 'Motion Graphics', 'Video Editing', 'Brand Assets'],
       color: '#022B3A',
       icon: 'film',
+      imageUrl: 'https://images.unsplash.com/photo-1626785774573-4b799315345d?auto=format&fit=crop&w=1200&q=80',
       size: 'small',
       patternVariant: 'flowing-waves',
       linkTarget: '/contact?service=graphic-design'
@@ -827,6 +831,7 @@ export const DEFAULT_SITE_CONTENT: SiteContent = {
       features: ['Technical SEO Audits', 'Google Ads', 'Meta Ads', 'B2B Sales Funnels'],
       color: '#1F7A8C',
       icon: 'trending-up',
+      imageUrl: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1200&q=80',
       size: 'small',
       patternVariant: 'isometric-grid',
       linkTarget: '/contact?service=digital-marketing'

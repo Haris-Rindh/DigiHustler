@@ -218,52 +218,103 @@ export const ServiceBentoCard: React.FC<ServiceBentoCardProps> = ({
           background: `radial-gradient(420px circle at var(--mx, -999px) var(--my, -999px), ${theme.glow}, transparent 75%), var(--bg-surface)`,
         }}
       >
-        {/* Generative Circuitry/Grid Backdrop */}
-        <GenerativePattern variant={service.patternVariant} accent={theme.accent} isHovered={isHovered} />
+        {/* ── CARD VISUAL HERO / IMAGE BANNER ── */}
+        {service.imageUrl ? (
+          <div className="relative h-44 sm:h-48 md:h-52 w-full rounded-2xl overflow-hidden mb-4 group/img z-10 border border-[var(--border-subtle)] bg-black/25 shadow-md">
+            <img
+              src={service.imageUrl}
+              alt={service.title}
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+              loading="lazy"
+            />
+            {/* Cinematic contrast gradient */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-black/15 pointer-events-none" />
 
-        {/* Top Glow Accent Bar */}
-        <div
-          className="absolute top-0 left-6 right-6 h-[2px] opacity-40 group-hover:opacity-100 transition-opacity duration-300"
-          style={{
-            background: `linear-gradient(90deg, transparent, ${theme.accent}, transparent)`,
-          }}
-        />
+            {/* Badges on Image */}
+            <div className="absolute top-3 left-3 right-3 flex items-center justify-between z-10">
+              <span
+                className="text-[10px] sm:text-[11px] font-mono font-black tracking-wider uppercase px-2.5 py-1 rounded-md backdrop-blur-md border shadow-sm"
+                style={{
+                  borderColor: `${theme.accent}60`,
+                  backgroundColor: 'rgba(2, 43, 58, 0.85)',
+                  color: theme.accent,
+                }}
+              >
+                // {theme.label}
+              </span>
 
-        {/* ── CARD HEADER: Squad Monospace Code + SLA Indicator + Glowing Icon Hub ── */}
-        <div className="relative z-10 flex items-center justify-between gap-4 mb-4">
-          <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
-            {/* Squad Category Badge */}
-            <span
-              className="text-[10px] sm:text-[11px] font-mono font-black tracking-wider uppercase px-2.5 py-1 rounded-md border"
+              {/* Glowing Icon Hub floating on Image */}
+              <div
+                className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl flex items-center justify-center transition-all duration-300 shadow-md group-hover:scale-105 backdrop-blur-md"
+                style={{
+                  backgroundColor: 'rgba(2, 43, 58, 0.85)',
+                  border: `1.5px solid ${theme.accent}80`,
+                  boxShadow: isHovered ? `0 0 20px -2px ${theme.accent}80` : 'none',
+                  color: theme.accent,
+                }}
+              >
+                {getServiceIcon(service.icon, 'w-5 h-5 stroke-[2.2]')}
+              </div>
+            </div>
+
+            {/* Live SLA Badge on Bottom-Left of Image */}
+            <div className="absolute bottom-3 left-3 z-10">
+              <span className="inline-flex items-center gap-1.5 text-[10px] font-mono font-bold text-emerald-400 bg-black/75 backdrop-blur-md border border-emerald-400/30 px-2.5 py-1 rounded-full shadow-sm">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_6px_#34D399]" />
+                <span>SLA GUARANTEED</span>
+              </span>
+            </div>
+          </div>
+        ) : (
+          <>
+            {/* Generative Circuitry/Grid Backdrop Fallback */}
+            <GenerativePattern variant={service.patternVariant} accent={theme.accent} isHovered={isHovered} />
+
+            {/* Top Glow Accent Bar */}
+            <div
+              className="absolute top-0 left-6 right-6 h-[2px] opacity-40 group-hover:opacity-100 transition-opacity duration-300"
               style={{
-                borderColor: `${theme.accent}40`,
-                backgroundColor: `${theme.accent}12`,
-                color: theme.accent,
+                background: `linear-gradient(90deg, transparent, ${theme.accent}, transparent)`,
               }}
-            >
-              // {theme.label}
-            </span>
+            />
 
-            {/* Live SLA Badge */}
-            <span className="inline-flex items-center gap-1.5 text-[10px] font-mono font-bold text-emerald-400 bg-emerald-400/10 border border-emerald-400/30 px-2 py-0.5 rounded-full">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_6px_#34D399]" />
-              <span>SLA GUARANTEED</span>
-            </span>
-          </div>
+            {/* ── CARD HEADER: Squad Monospace Code + SLA Indicator + Glowing Icon Hub ── */}
+            <div className="relative z-10 flex items-center justify-between gap-4 mb-4">
+              <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
+                {/* Squad Category Badge */}
+                <span
+                  className="text-[10px] sm:text-[11px] font-mono font-black tracking-wider uppercase px-2.5 py-1 rounded-md border"
+                  style={{
+                    borderColor: `${theme.accent}40`,
+                    backgroundColor: `${theme.accent}12`,
+                    color: theme.accent,
+                  }}
+                >
+                  // {theme.label}
+                </span>
 
-          {/* Futuristic Glowing Icon Hub */}
-          <div
-            className="w-12 h-12 rounded-2xl flex items-center justify-center transition-all duration-300 shadow-md group-hover:scale-105"
-            style={{
-              backgroundColor: 'var(--bg-page)',
-              border: `1.5px solid ${theme.accent}60`,
-              boxShadow: isHovered ? `0 0 20px -2px ${theme.accent}60` : 'none',
-              color: theme.accent,
-            }}
-          >
-            {getServiceIcon(service.icon, 'w-6 h-6 stroke-[2.2]')}
-          </div>
-        </div>
+                {/* Live SLA Badge */}
+                <span className="inline-flex items-center gap-1.5 text-[10px] font-mono font-bold text-emerald-400 bg-emerald-400/10 border border-emerald-400/30 px-2 py-0.5 rounded-full">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_6px_#34D399]" />
+                  <span>SLA GUARANTEED</span>
+                </span>
+              </div>
+
+              {/* Futuristic Glowing Icon Hub */}
+              <div
+                className="w-12 h-12 rounded-2xl flex items-center justify-center transition-all duration-300 shadow-md group-hover:scale-105"
+                style={{
+                  backgroundColor: 'var(--bg-page)',
+                  border: `1.5px solid ${theme.accent}60`,
+                  boxShadow: isHovered ? `0 0 20px -2px ${theme.accent}60` : 'none',
+                  color: theme.accent,
+                }}
+              >
+                {getServiceIcon(service.icon, 'w-6 h-6 stroke-[2.2]')}
+              </div>
+            </div>
+          </>
+        )}
 
         {/* ── CARD BODY: Numeral, Headline, Tagline & Description ── */}
         <div className="relative z-10 flex-1 flex flex-col justify-center my-2">

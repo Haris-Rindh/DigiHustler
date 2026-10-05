@@ -6,6 +6,7 @@ import { SEOHead } from '../seo/SEOHead';
 import { useApp } from '../../context/AppContext';
 import { realtimeSync } from '../../lib/realtimeSync';
 import { handleCardSpotlightMove, handleCardSpotlightLeave } from '../../lib/cardSpotlight';
+import { FounderBrainsShowcase } from './FounderBrainsShowcase';
 
 export type TeamTier = 'executive' | 'specialist' | 'intern';
 
@@ -293,203 +294,13 @@ export const Team: React.FC = () => {
         </div>
       </section>
 
-      {/* ── 1. TIER 1: EXECUTIVE LEADERSHIP (CEO & CO-FOUNDER SHOWCASES) ── */}
-      <section className="bg-[var(--bg-subtle)] py-16 sm:py-20 px-6 lg:px-8 border-b border-[var(--border-subtle)] relative overflow-hidden">
-        <div className="max-w-7xl mx-auto">
-          <div className="mb-12">
-            <p className="text-xs font-extrabold text-[var(--brand-teal)] uppercase tracking-widest mb-2 flex items-center space-x-1.5">
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>Executive Leadership</span>
-            </p>
-            <h2 className="font-display font-black text-3xl sm:text-4xl text-[var(--text-heading)]">
-              Executive Leadership
-            </h2>
-            <p className="text-sm text-[var(--text-body)] mt-1 max-w-xl">
-              Founders directing strategic growth, operations, and enterprise delivery governance.
-            </p>
-          </div>
-
-          <div className="space-y-12">
-            {/* CEO Spotlight Card (Image Left, Details Right) */}
-            {ceoMember && (
-              <motion.div
-                initial={{ opacity: 0, y: 25 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5 }}
-                onPointerMove={handleCardSpotlightMove}
-                onPointerLeave={handleCardSpotlightLeave}
-                className="premium-card p-6 sm:p-10 lg:p-12 overflow-hidden shadow-xl group hover:border-[var(--brand-teal)] transition-all duration-300 relative select-none"
-              >
-                <div className="absolute top-0 right-0 w-96 h-96 bg-[var(--brand-teal)] rounded-full blur-[140px] opacity-10 pointer-events-none" />
-
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-                  {/* Left Column: Large CEO Image */}
-                  <div className="lg:col-span-5 flex justify-center">
-                    <div className="relative w-full max-w-sm aspect-[4/5] rounded-3xl overflow-hidden border-2 border-[var(--brand-teal)]/30 shadow-2xl group-hover:scale-[1.01] transition-transform duration-300 bg-[var(--bg-subtle)]">
-                      <img
-                        src={ceoMember.img}
-                        alt={ceoMember.name}
-                        className="w-full h-full object-cover object-top"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/15 to-transparent pointer-events-none" />
-                      
-                      {/* Floating Executive Pill */}
-                      <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between p-3 rounded-2xl bg-black/75 backdrop-blur-md border border-white/15 text-white">
-                        <div className="flex items-center space-x-2">
-                          <div className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
-                          <span className="text-xs font-bold uppercase tracking-wider">{ceoMember.role}</span>
-                        </div>
-                        <span className="text-[10px] px-2.5 py-1 rounded-md bg-[var(--brand-teal)] text-white font-extrabold uppercase">
-                          Executive
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Right Column: CEO Details, Role & Description */}
-                  <div className="lg:col-span-7 flex flex-col justify-center">
-                    <div className="inline-flex items-center space-x-2 px-3.5 py-1 rounded-full bg-[var(--brand-teal-subtle)] text-[var(--brand-teal)] border border-[var(--brand-teal)]/30 text-[11px] font-extrabold uppercase tracking-widest mb-3 w-fit">
-                      <Sparkles className="w-3 h-3" />
-                      <span>{ceoMember.role}</span>
-                    </div>
-
-                    <h2 className="font-display font-black text-3xl sm:text-4xl lg:text-5xl text-[var(--text-heading)] mb-2 tracking-tight">
-                      {ceoMember.name}
-                    </h2>
-
-                    <p className="text-sm sm:text-base font-bold text-[var(--brand-teal)] mb-4">
-                      {ceoMember.role} · DigiHust
-                    </p>
-
-                    <p className="text-sm sm:text-base text-[var(--text-body)] leading-relaxed mb-6 whitespace-pre-line">
-                      {ceoMember.bio}
-                    </p>
-
-                    {/* Competencies Badges */}
-                    <div className="flex flex-wrap gap-2 mb-8">
-                      {ceoMember.skills.map((skill) => (
-                        <span
-                          key={skill}
-                          className="text-xs px-3 py-1.5 rounded-xl bg-[var(--bg-page)] text-[var(--text-heading)] border border-[var(--border-subtle)] font-semibold shadow-xs"
-                        >
-                          {skill}
-                        </span>
-                      ))}
-                    </div>
-
-                    {/* Action Buttons */}
-                    <div className="flex flex-wrap items-center gap-3.5">
-                      <Link
-                        to={`/contact?service=Executive%20Strategy&project=${encodeURIComponent(ceoMember.name)}`}
-                        className="px-6 py-3 rounded-xl bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-white font-extrabold text-xs sm:text-sm shadow-md transition-all hover:scale-105 active:scale-95 flex items-center space-x-2"
-                      >
-                        <span>Schedule Consultation</span>
-                        <ArrowRight className="w-4 h-4" />
-                      </Link>
-                      <button
-                        onClick={() => setSelectedMember(ceoMember)}
-                        className="px-6 py-3 rounded-xl bg-[var(--bg-page)] hover:bg-[var(--bg-subtle)] text-[var(--text-heading)] border border-[var(--border-subtle)] font-bold text-xs sm:text-sm shadow-xs transition-all hover:border-[var(--brand-teal)] cursor-pointer"
-                      >
-                        View Full Credentials
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-            )}
-
-            {/* Co-Founder Spotlight Card (Details Left, Image Right) */}
-            {coFounderMember && (
-              <motion.div
-                initial={{ opacity: 0, y: 25 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: 0.1 }}
-                onPointerMove={handleCardSpotlightMove}
-                onPointerLeave={handleCardSpotlightLeave}
-                className="premium-card p-6 sm:p-10 lg:p-12 overflow-hidden shadow-xl group hover:border-[var(--brand-teal)] transition-all duration-300 relative select-none"
-              >
-                <div className="absolute top-0 left-0 w-96 h-96 bg-purple-500 rounded-full blur-[140px] opacity-10 pointer-events-none" />
-
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-                  {/* Left Column: Co-Founder Details, Role & Description */}
-                  <div className="lg:col-span-7 flex flex-col justify-center order-2 lg:order-1">
-                    <div className="inline-flex items-center space-x-2 px-3.5 py-1 rounded-full bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/30 text-[11px] font-extrabold uppercase tracking-widest mb-3 w-fit">
-                      <ShieldCheck className="w-3 h-3" />
-                      <span>{coFounderMember.role}</span>
-                    </div>
-
-                    <h2 className="font-display font-black text-3xl sm:text-4xl lg:text-5xl text-[var(--text-heading)] mb-2 tracking-tight">
-                      {coFounderMember.name}
-                    </h2>
-
-                    <p className="text-sm sm:text-base font-bold text-purple-600 dark:text-purple-400 mb-4">
-                      {coFounderMember.role} · DigiHust
-                    </p>
-
-                    <p className="text-sm sm:text-base text-[var(--text-body)] leading-relaxed mb-6 whitespace-pre-line">
-                      {coFounderMember.bio}
-                    </p>
-
-                    {/* Competencies Badges */}
-                    <div className="flex flex-wrap gap-2 mb-8">
-                      {coFounderMember.skills.map((skill) => (
-                        <span
-                          key={skill}
-                          className="text-xs px-3 py-1.5 rounded-xl bg-[var(--bg-page)] text-[var(--text-heading)] border border-[var(--border-subtle)] font-semibold shadow-xs"
-                        >
-                          {skill}
-                        </span>
-                      ))}
-                    </div>
-
-                    {/* Action Buttons */}
-                    <div className="flex flex-wrap items-center gap-3.5">
-                      <Link
-                        to={`/contact?service=Operations%20Strategy&project=${encodeURIComponent(coFounderMember.name)}`}
-                        className="px-6 py-3 rounded-xl bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-white font-extrabold text-xs sm:text-sm shadow-md transition-all hover:scale-105 active:scale-95 flex items-center space-x-2"
-                      >
-                        <span>Discuss Operations</span>
-                        <ArrowRight className="w-4 h-4" />
-                      </Link>
-                      <button
-                        onClick={() => setSelectedMember(coFounderMember)}
-                        className="px-6 py-3 rounded-xl bg-[var(--bg-page)] hover:bg-[var(--bg-subtle)] text-[var(--text-heading)] border border-[var(--border-subtle)] font-bold text-xs sm:text-sm shadow-xs transition-all hover:border-[var(--brand-teal)] cursor-pointer"
-                      >
-                        View Full Credentials
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Right Column: Large Co-Founder Image */}
-                  <div className="lg:col-span-5 flex justify-center order-1 lg:order-2">
-                    <div className="relative w-full max-w-sm aspect-[4/5] rounded-3xl overflow-hidden border-2 border-purple-500/30 shadow-2xl group-hover:scale-[1.01] transition-transform duration-300 bg-[var(--bg-subtle)]">
-                      <img
-                        src={coFounderMember.img}
-                        alt={coFounderMember.name}
-                        className="w-full h-full object-cover object-top"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/15 to-transparent pointer-events-none" />
-                      
-                      {/* Floating Executive Pill */}
-                      <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between p-3 rounded-2xl bg-black/75 backdrop-blur-md border border-white/15 text-white">
-                        <div className="flex items-center space-x-2">
-                          <div className="w-2.5 h-2.5 rounded-full bg-purple-400 animate-pulse" />
-                          <span className="text-xs font-bold uppercase tracking-wider">{coFounderMember.role}</span>
-                        </div>
-                        <span className="text-[10px] px-2.5 py-1 rounded-md bg-purple-600 text-white font-extrabold uppercase">
-                          Co-Founder
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-            )}
-          </div>
-        </div>
-      </section>
+      {/* ── 1. TIER 1: EXECUTIVE LEADERSHIP ("Meet the Brains Behind DigiHust") ── */}
+      {filter === 'All' && (
+        <FounderBrainsShowcase
+          onSelectMahad={() => ceoMember && setSelectedMember(ceoMember)}
+          onSelectHaseeb={() => coFounderMember && setSelectedMember(coFounderMember)}
+        />
+      )}
 
       {/* ── 2. TIER 2: DOMAIN SPECIALISTS (PINNED MEMBERS ALWAYS ON TOP) ── */}
       {filteredSpecialists.length > 0 && (
