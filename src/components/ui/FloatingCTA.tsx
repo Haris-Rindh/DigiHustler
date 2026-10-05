@@ -388,6 +388,14 @@ export const FloatingCTA: React.FC = () => {
     <>
       {/* Embedded pure CSS keyframe animations for high performance */}
       <style>{`
+        @keyframes orbitBurst {
+          0%   { transform: scale(0.9); opacity: 0.7; }
+          35%, 100% { transform: scale(2.3); opacity: 0; }
+        }
+        @keyframes orbitCorePulse {
+          0%, 100% { transform: scale(1);    opacity: 0.85; }
+          50%      { transform: scale(1.35); opacity: 1; }
+        }
         @keyframes orbitBeaconRotate {
           from {
             transform: rotate(0deg);
@@ -442,11 +450,10 @@ export const FloatingCTA: React.FC = () => {
                 : undefined,
               willChange: isAnimating ? 'transform, opacity' : 'auto',
             }}
-            className={`fixed z-[9990] left-4 sm:left-6 origin-bottom-left transition-[bottom] duration-300 ${
-              hasPwaPrompt
+            className={`fixed z-[9990] left-4 sm:left-6 origin-bottom-left transition-[bottom] duration-300 ${hasPwaPrompt
                 ? ''
                 : '[bottom:calc(16px+env(safe-area-inset-bottom,0px))] sm:[bottom:calc(24px+env(safe-area-inset-bottom,0px))]'
-            }`}
+              }`}
           >
             {/* ── EXPANDED STATE: MORPHED COMPACT CARD ── */}
             <AnimatePresence mode="wait">
@@ -460,7 +467,8 @@ export const FloatingCTA: React.FC = () => {
                   animate={{ opacity: 1, scale: 1, y: 0 }}
                   exit={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, scale: 0.88, y: 10 }}
                   transition={{ duration: shouldReduceMotion ? 0.15 : 0.26, ease: [0.16, 1, 0.3, 1] }}
-                  className="w-[300px] sm:w-[324px] p-5 rounded-3xl bg-[#022B3A]/98 backdrop-blur-2xl border border-cyan-400/50 shadow-[0_20px_50px_rgba(0,0,0,0.7),0_0_30px_rgba(34,160,180,0.35)] text-white origin-bottom-left select-none relative overflow-hidden"
+                  style={{ background: 'rgba(2, 43, 58, 0.98)' }}
+                  className="w-[300px] sm:w-[324px] p-5 rounded-3xl backdrop-blur-2xl border border-cyan-400/50 shadow-[0_20px_50px_rgba(0,0,0,0.7),0_0_30px_rgba(34,160,180,0.35)] text-white origin-bottom-left select-none relative overflow-hidden"
                 >
                   {/* Subtle Scanline / Tech grid overlay */}
                   <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(34,160,180,0.18),transparent_60%)] pointer-events-none" />
@@ -582,10 +590,62 @@ export const FloatingCTA: React.FC = () => {
                     </div>
 
                     {/* Live Telemetry Beacon Dot */}
-                    <span className="relative flex h-2.5 w-2.5 items-center justify-center">
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                      <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400 shadow-[0_0_8px_#34D399]" />
-                    </span>
+                    {/* Orbit Attention Indicator */}
+<span className="relative flex h-5 w-5 shrink-0 items-center justify-center" aria-hidden="true">
+  {/* Ripple: fires once every 4s */}
+  {!shouldReduceMotion && (
+    <span
+      className="absolute inset-0 rounded-full border border-emerald-400"
+      style={{
+        animation: 'orbitBurst 4s ease-out infinite',
+        animationPlayState: isAnimationPaused ? 'paused' : 'running',
+      }}
+    />
+  )}
+
+  {/* Static base ring */}
+  <span className="absolute inset-0 rounded-full border border-cyan-400/40" />
+
+  {/* Fast orbit: comet tail + leading dot (clockwise) */}
+  <span
+    className="absolute inset-0"
+    style={{
+      animation: shouldReduceMotion ? 'none' : 'orbitBeaconRotate 2s linear infinite',
+      animationPlayState: isAnimationPaused ? 'paused' : 'running',
+    }}
+  >
+    <span
+      className="absolute inset-0 rounded-full"
+      style={{
+        background:
+          'conic-gradient(from 0deg, transparent 0deg, transparent 200deg, rgba(52,211,153,0.9) 360deg)',
+        WebkitMask: 'radial-gradient(farthest-side, transparent calc(100% - 2px), #000 calc(100% - 2px))',
+        mask: 'radial-gradient(farthest-side, transparent calc(100% - 2px), #000 calc(100% - 2px))',
+      }}
+    />
+    <span className="absolute -top-[3px] left-1/2 h-1.5 w-1.5 -translate-x-1/2 rounded-full bg-emerald-400 shadow-[0_0_8px_#34D399]" />
+  </span>
+
+  {/* Slow counter-orbit dot (anticlockwise) */}
+  <span
+    className="absolute inset-[3px]"
+    style={{
+      animation: shouldReduceMotion ? 'none' : 'orbitBeaconRotate 3.2s linear infinite reverse',
+      animationPlayState: isAnimationPaused ? 'paused' : 'running',
+    }}
+  >
+    <span className="absolute -bottom-[2px] left-1/2 h-1 w-1 -translate-x-1/2 rounded-full bg-cyan-300" />
+  </span>
+
+  {/* Pulsing core */}
+  <span
+    className="h-1.5 w-1.5 rounded-full bg-cyan-300 shadow-[0_0_6px_rgba(103,232,249,0.9)]"
+    style={{
+      animation: shouldReduceMotion ? 'none' : 'orbitCorePulse 2s ease-in-out infinite',
+      animationPlayState: isAnimationPaused ? 'paused' : 'running',
+    }}
+  />
+</span>
 
                     {/* High-Tech Monospace Label & Secondary Text */}
                     <div className="flex flex-col text-left">
