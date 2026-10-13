@@ -202,6 +202,14 @@ h1, h2, h3, h4, h5, h6 {
   will-change: transform;
 }
 
+.dark .btn-brand-primary,
+.dark .btn-brand-futuristic,
+[data-theme="dark"] .btn-brand-primary,
+[data-theme="dark"] .btn-brand-futuristic {
+  border-color: rgba(34, 160, 180, 0.55);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+}
+
 .btn-brand-primary:hover,
 .matte-btn-primary:hover,
 .breeze-btn-primary:hover,

@@ -9,10 +9,13 @@ import {
   ShieldCheck,
   Zap,
   CheckCircle2,
+  Code2,
+  Rocket,
 } from 'lucide-react';
 import { SEOHead } from '../seo/SEOHead';
 import { useApp } from '../../context/AppContext';
 import { ServiceCard } from '../ui/ServiceCard';
+import { ServiceFeatureRow } from '../ui/ServiceFeatureRow';
 import { DEFAULT_SITE_CONTENT } from '../../services/mockData';
 import { SiteServiceItem } from '../../types';
 
@@ -23,6 +26,12 @@ import slide3 from '../../assets/slideshow 3.jpg';
 import slide4 from '../../assets/slideshow 4.jpg';
 import slide5 from '../../assets/slideshow 5.jpg';
 import slide6 from '../../assets/slideshow 6.jpg';
+
+// Import Delivery Model Step Images
+import modelStep1 from '../../assets/model_step_1.png';
+import modelStep2 from '../../assets/model_step_2.png';
+import modelStep3 from '../../assets/model_step_3.png';
+import modelStep4 from '../../assets/model_step_4.png';
 
 const SLIDESHOW_ITEMS = [
   {
@@ -261,12 +270,12 @@ export const Services: React.FC = () => {
             <h1 className="font-display font-extrabold text-3xl sm:text-4xl lg:text-5xl text-[var(--text-heading)] mb-4">
               Services Built for Execution.
             </h1>
-            <p className="text-base sm:text-lg text-[var(--text-body)] max-w-2xl leading-relaxed mb-8">
+            <p className="text-base sm:text-lg text-[var(--text-body)] max-w-2xl leading-relaxed mb-4">
               Specialized domain squads delivered as one cohesive digital engine. Select any capability domain or expand specs to inspect dedicated rosters.
             </p>
 
-            {/* Capability Filter Tabs (No Numbers) */}
-            <div className="flex flex-wrap items-center gap-2 pt-2 pb-1">
+            {/* Capability Filter Tabs (Hidden per reference design; retained for CMS/future use) */}
+            <div className="hidden flex-wrap items-center gap-2 pt-2 pb-1" aria-hidden="true">
               {CATEGORIES.map((cat) => {
                 const isSelected = selectedCategory === cat.id;
 
@@ -289,120 +298,120 @@ export const Services: React.FC = () => {
         </div>
       </section>
 
-      {/* ── BENTO GRID: AUTONOMOUS SQUAD PODS (Restored Bento Cards) ── */}
-      <section className="bg-[var(--bg-page)] py-14 sm:py-20 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto">
-          <motion.div
-            layout
-            variants={{
-              hidden: {},
-              visible: {
-                transition: {
-                  staggerChildren: shouldReduceMotion ? 0 : 0.06,
-                },
-              },
-            }}
-            initial="hidden"
-            animate="visible"
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 lg:gap-6"
-          >
-            {filteredServices.map((svc, index) => (
-              <ServiceCard
-                key={svc.id || svc.slug || index}
-                service={{
-                  title: svc.title,
-                  description: svc.description,
-                  summary: svc.tagline,
-                  tags: svc.features || (svc as any).deliverables || [],
-                  icon: svc.icon,
-                  imageUrl: svc.imageUrl,
-                  linkTarget: svc.linkTarget || `/contact?service=${encodeURIComponent(svc.title)}`,
-                }}
-              />
-            ))}
-          </motion.div>
+      {/* ── ALTERNATING ZIGZAG SERVICE LISTING (Matching Reference Design) ── */}
+      <section className="bg-[var(--bg-page)] py-[64px] px-[20px] sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto flex flex-col gap-[48px] lg:gap-[56px]">
+          {sortedServices.map((svc, index) => (
+            <ServiceFeatureRow
+              key={svc.id || svc.slug || index}
+              service={svc}
+              index={index}
+              isFirst={index === 0}
+            />
+          ))}
         </div>
       </section>
 
-      {/* ── SECTION: SQUAD ORCHESTRATION ARCHITECTURE (Item 10b Clean Stepper) ── */}
-      <section className="bg-[var(--bg-page)] py-16 sm:py-24 px-4 sm:px-6 lg:px-8 border-t border-[var(--border-subtle)] relative overflow-hidden">
+      {/* ── SECTION: SQUAD ORCHESTRATION ARCHITECTURE (Matching Reference Design) ── */}
+      <section className="bg-[var(--bg-page)] py-18 sm:py-24 px-4 sm:px-6 lg:px-8 border-t border-[var(--border-subtle)] relative overflow-hidden">
+        {/* Soft Ambient Corner Glows & Dots */}
+        <div className="absolute top-0 left-0 w-[450px] h-[450px] bg-gradient-to-br from-[#1F7A8C]/10 via-[#1F7A8C]/5 to-transparent rounded-full blur-3xl pointer-events-none -translate-x-1/3 -translate-y-1/3" aria-hidden="true" />
+        <div className="absolute bottom-0 right-0 w-[450px] h-[450px] bg-gradient-to-tl from-[#1F7A8C]/10 via-[#1F7A8C]/5 to-transparent rounded-full blur-3xl pointer-events-none translate-x-1/3 translate-y-1/3" aria-hidden="true" />
+        <div className="absolute bottom-8 left-8 hidden xl:grid grid-cols-6 gap-2.5 opacity-20 pointer-events-none" aria-hidden="true">
+          {Array.from({ length: 24 }).map((_, i) => (
+            <span key={i} className="w-1.5 h-1.5 rounded-full bg-[var(--brand-teal)]" />
+          ))}
+        </div>
+
         <div className="max-w-7xl mx-auto relative z-10">
-          <div className="text-center max-w-3xl mx-auto mb-14 sm:mb-20">
-            <span className="text-xs font-sans font-extrabold uppercase tracking-widest text-[var(--brand-teal)] mb-3 inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[var(--brand-teal-subtle)] border border-[var(--brand-teal)]/30">
+          {/* Header */}
+          <div className="text-center max-w-3xl mx-auto mb-12 sm:mb-16">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/80 dark:bg-slate-900/60 border border-[#1F7A8C]/35 text-xs font-bold uppercase tracking-widest text-[var(--brand-teal)] mb-4 shadow-xs backdrop-blur-xs">
               <Zap className="w-3.5 h-3.5" />
               <span>CO-ORDINATED DELIVERY MODEL</span>
-            </span>
-            <h2 className="font-display font-extrabold text-3xl sm:text-4xl text-[var(--text-heading)] mt-2 mb-4">
-              How One Managed Contract Powers Multiple Specialized Squads
+            </div>
+            <h2 className="font-display font-extrabold text-3xl sm:text-4xl lg:text-5xl leading-tight text-[var(--text-heading)] mb-4">
+              How One Managed Contract Powers<br className="hidden sm:inline" />{' '}
+              <span className="text-[var(--brand-teal)]">Multiple Specialized Squads</span>
             </h2>
-            <p className="font-sans text-sm sm:text-base text-[var(--text-body)] leading-relaxed">
+            <p className="font-sans text-sm sm:text-base text-[var(--text-body)] max-w-2xl mx-auto leading-relaxed">
               No freelancer chaos. No disconnected contractors. DigiHust delivers cross-functional squads under one accountable technical director.
             </p>
           </div>
 
-          {/* Clean 4-step Stepper with 40px numbered circle and 1px desktop connector line */}
-          <div className="relative">
-            {/* 1px Connector line between steps on desktop */}
-            <div
-              className="hidden lg:block absolute top-5 left-[12%] right-[12%] h-[1px] bg-[var(--border-subtle)] z-0"
-              aria-hidden="true"
-            />
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 relative z-10">
-              {[
-                {
-                  num: '01',
-                  title: 'Technical Scoping & Squad Assembly',
-                  desc: 'We decompose your product requirements, assemble verified specialists from our roster, and create an immutable milestone roadmap.',
-                  tag: 'Architect Audit',
-                },
-                {
-                  num: '02',
-                  title: 'Parallel Sprint Execution',
-                  desc: 'Frontend, backend, 3D design, and automation squads work concurrently with synchronized daily CI/CD staging builds.',
-                  tag: 'Parallel Builds',
-                },
-                {
-                  num: '03',
-                  title: 'Security Hardening & QA Audit',
-                  desc: 'Every milestone undergoes OWASP vulnerability scanning, automated test suites, and cross-browser performance benchmarking.',
-                  tag: 'Enterprise QA',
-                },
-                {
-                  num: '04',
-                  title: 'Clean Handover & SLA Assurance',
-                  desc: 'Full production deployment, complete source code & design system repository transfer, backed by our 30-day post-launch warranty.',
-                  tag: '100% SLA Backed',
-                },
-              ].map((p, idx) => (
-                <div
-                  key={idx}
-                  className="rounded-2xl p-6 bg-[var(--bg-surface)] border border-[var(--border-subtle)] hover:border-[var(--brand-teal)]/60 transition-all duration-200 shadow-sm hover:shadow-lg flex flex-col justify-between group"
-                >
+          {/* 2x2 Grid of Illustrated Spec Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-7 max-w-6xl mx-auto">
+            {[
+              {
+                num: '01',
+                icon: <Code2 className="w-5 h-5 text-[var(--brand-teal)] stroke-[2.2]" />,
+                title: 'Technical Scoping & Squad Assembly',
+                desc: 'We align on goals, define the scope, and build the right squad for your project.',
+                img: modelStep1,
+              },
+              {
+                num: '02',
+                icon: <Layers className="w-5 h-5 text-[var(--brand-teal)] stroke-[2.2]" />,
+                title: 'Parallel Sprint Execution',
+                desc: 'Multiple squads work in sync, delivering faster and more efficiently.',
+                img: modelStep2,
+              },
+              {
+                num: '03',
+                icon: <ShieldCheck className="w-5 h-5 text-[var(--brand-teal)] stroke-[2.2]" />,
+                title: 'Security Hardening & QA Audit',
+                desc: 'We run continuous security scans and automated tests to ensure quality and stability.',
+                img: modelStep3,
+              },
+              {
+                num: '04',
+                icon: <Rocket className="w-5 h-5 text-[var(--brand-teal)] stroke-[2.2]" />,
+                title: 'Clean Handover & SLA Assurance',
+                desc: 'We deliver complete code, documentation, and support — backed by our 30-day warranty.',
+                img: modelStep4,
+              },
+            ].map((step) => (
+              <div
+                key={step.num}
+                className="rounded-[28px] sm:rounded-[32px] bg-white dark:bg-[#073547] border border-slate-150/80 dark:border-white/10 shadow-[0_4px_24px_rgba(2,43,58,0.04)] dark:shadow-none hover:shadow-xl hover:border-[var(--brand-teal)]/40 transition-all duration-300 p-6 sm:p-7 lg:p-8 flex flex-col sm:flex-row items-center justify-between gap-5 sm:gap-6 overflow-hidden group select-none"
+              >
+                {/* Left Column: Specs & Copy */}
+                <div className="w-full sm:w-[50%] flex flex-col justify-between shrink-0">
                   <div>
-                    {/* Header: 40px numbered circle + Tag */}
-                    <div className="flex items-center justify-between mb-5">
-                      <div className="w-10 h-10 rounded-full bg-[#1F7A8C] text-white font-display font-bold text-sm flex items-center justify-center shadow-md">
-                        {p.num}
-                      </div>
-                      <span className="text-[11px] font-sans font-semibold tracking-wide text-[var(--brand-teal)] bg-[var(--brand-teal-subtle)] px-2.5 py-0.5 rounded-full border border-[var(--brand-teal)]/30">
-                        {p.tag}
-                      </span>
+                    {/* Number Badge */}
+                    <div className="w-fit px-3 py-0.5 rounded-full bg-[#E0F2F1] dark:bg-[#0b4156] text-[#00796B] dark:text-cyan-300 font-display font-extrabold text-xs tracking-wider mb-3.5">
+                      {step.num}
                     </div>
 
-                    {/* Step Title in Outfit (font-display) */}
-                    <h3 className="font-display font-bold text-base sm:text-lg text-[var(--text-heading)] mb-2 group-hover:text-[var(--brand-teal)] transition-colors">
-                      {p.title}
+                    {/* Step Icon */}
+                    <div className="w-9 h-9 rounded-lg border border-[#1F7A8C]/35 dark:border-cyan-400/35 flex items-center justify-center text-[var(--brand-teal)] mb-3 bg-[#1F7A8C]/5 dark:bg-cyan-400/5">
+                      {step.icon}
+                    </div>
+
+                    {/* Title */}
+                    <h3 className="font-display font-bold text-lg sm:text-[19px] lg:text-xl text-[var(--text-heading)] leading-snug mb-2 group-hover:text-[var(--brand-teal)] transition-colors">
+                      {step.title}
                     </h3>
 
-                    {/* Description in Plus Jakarta Sans (font-sans) */}
-                    <p className="font-sans text-xs sm:text-[13px] text-[var(--text-body)] leading-relaxed">
-                      {p.desc}
+                    {/* Description */}
+                    <p className="font-sans text-xs sm:text-[13px] lg:text-sm text-[var(--text-body)] leading-relaxed">
+                      {step.desc}
                     </p>
                   </div>
                 </div>
-              ))}
-            </div>
+
+                {/* Right Column: Organic Illustrated Graphic */}
+                <div className="w-full sm:w-[50%] flex items-center justify-center shrink-0">
+                  <img
+                    src={step.img}
+                    alt={step.title}
+                    loading="lazy"
+                    decoding="async"
+                    className="w-full max-w-[220px] sm:max-w-none h-auto object-contain transition-transform duration-300 group-hover:scale-105 pointer-events-none"
+                  />
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </section>

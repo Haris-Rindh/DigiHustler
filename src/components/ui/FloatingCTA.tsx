@@ -205,7 +205,7 @@ export const FloatingCTA: React.FC = () => {
               title="Start a project proposal"
               className="group block rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1F7A8C] focus-visible:ring-offset-2"
             >
-              <div className="relative w-[76px] h-[76px] rounded-full bg-[var(--bg-surface)] border border-[#1F7A8C]/35 hover:border-[#1F7A8C] shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center cursor-pointer">
+              <div className="relative w-[76px] h-[76px] rounded-full bg-[var(--bg-surface)] border border-[#1F7A8C]/35 dark:border-[#22A0B4]/40 hover:border-[#1F7A8C] dark:hover:border-[#22A0B4] shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center cursor-pointer">
                 <BeaconVisual isPaused={isAnimationPaused} />
               </div>
             </Link>

@@ -9,7 +9,6 @@ import { useApp } from '../../context/AppContext';
 import logoImg from '../../assets/logo.png';
 
 import { PortalNavbar } from '../portal/PortalNavbar';
-import { LogoBadge } from '../ui/LogoBadge';
 
 export const Navbar: React.FC = () => {
   const location = useLocation();
@@ -67,8 +66,17 @@ export const Navbar: React.FC = () => {
       <nav className="max-w-7xl mx-auto px-6 lg:px-8 h-16 flex items-center justify-between" aria-label="Main Navigation">
 
         {/* Logo */}
-        <Link to="/" className="flex items-center group">
-          <LogoBadge />
+        <Link to="/" className="flex items-center space-x-2.5 group">
+          <motion.div
+            whileHover={{ scale: 1.05, rotate: 3 }}
+            whileTap={{ scale: 0.95 }}
+            className="w-9 h-9 rounded-xl overflow-hidden flex items-center justify-center shadow-md bg-white border border-[var(--border-subtle)] p-0.5"
+          >
+            <img src={logoImg} alt="DigiHust Logo" className="w-full h-full object-contain" />
+          </motion.div>
+          <span className="font-display font-extrabold text-xl tracking-tight text-[var(--text-heading)] group-hover:text-[var(--brand-teal)] transition-colors">
+            DigiHust
+          </span>
         </Link>
 
         {/* Desktop Nav with Animated Pill and Hover Expanding Line */}

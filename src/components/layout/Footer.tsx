@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ShieldCheck, Linkedin, Github, Facebook, Instagram, Twitter, Mail, AtSign, ArrowRight, CheckCircle2 } from 'lucide-react';
 import logoImg from '../../assets/logo.png';
-import { LogoBadge } from '../ui/LogoBadge';
 import { LAST_UPDATED, LAST_UPDATED_DISPLAY } from '../../config/siteConfig';
 import { dbService } from '../../lib/dbService';
 
@@ -163,20 +162,29 @@ const NewsletterForm: React.FC = () => {
 
 export const Footer: React.FC = () => {
   return (
-    <footer className="bg-[var(--bg-page)] border-t border-[var(--border-subtle)] pt-8 pb-5 px-6 lg:px-8 relative overflow-hidden" aria-label="Site Footer">
+    <footer className="bg-[var(--bg-page)] border-t border-[var(--border-subtle)] pt-16 pb-12 px-6 lg:px-8 relative overflow-hidden" aria-label="Site Footer">
       {/* Subtle top ambient border */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-4xl h-px bg-gradient-to-r from-transparent via-[var(--border-subtle)] to-transparent pointer-events-none" />
 
       <div className="max-w-7xl mx-auto">
 
-        {/* Top Grid (Responsive 4-column layout) */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8 pb-6 border-b border-[var(--border-subtle)]">
+        {/* Top Grid (Responsive 4-column layout with generous breathing room) */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10 xl:gap-14 pb-12 border-b border-[var(--border-subtle)]">
 
           {/* Brand Column */}
-          <div className="lg:col-span-4 space-y-2">
+          <div className="lg:col-span-4 space-y-4">
             <div className="flex items-center gap-3 flex-wrap">
-              <Link to="/" className="inline-flex items-center group">
-                <LogoBadge />
+              <Link to="/" className="inline-flex items-center space-x-2.5 group">
+                <img 
+                  src={logoImg} 
+                  alt="DigiHust Logo" 
+                  width={32}
+                  height={32}
+                  className="h-8 w-auto max-w-[36px] object-contain group-hover:scale-105 transition-transform duration-200 ease-out" 
+                />
+                <span className="font-display font-extrabold text-xl text-[var(--text-heading)] group-hover:text-[var(--brand-teal)] transition-colors duration-200">
+                  DigiHust
+                </span>
               </Link>
               <span className="text-[10px] font-extrabold text-[var(--brand-teal)] uppercase tracking-widest border-l border-[var(--border-subtle)] pl-3">
                 Hustle. Create. Deliver.
@@ -190,7 +198,7 @@ export const Footer: React.FC = () => {
             </p>
             
             {/* Social Vector Icons */}
-            <div className="flex flex-wrap gap-2 pt-1.5">
+            <div className="flex flex-wrap gap-2.5 pt-2">
               {SOCIAL_LINKS.map((s) => {
                 const IconComponent = s.icon;
                 return (
@@ -215,9 +223,9 @@ export const Footer: React.FC = () => {
           </div>
 
           {/* Capabilities */}
-          <div className="lg:col-span-2 space-y-2">
+          <div className="lg:col-span-2 space-y-3.5">
             <h3 className="text-[11px] font-extrabold text-[var(--text-heading)] uppercase tracking-widest">Capabilities</h3>
-            <ul className="grid grid-cols-2 md:grid-cols-1 gap-x-4 gap-y-1 text-xs text-[var(--text-muted)]">
+            <ul className="grid grid-cols-2 md:grid-cols-1 gap-x-4 gap-y-2.5 text-xs text-[var(--text-muted)]">
               {[
                 { name: 'Web Development', href: '/services' },
                 { name: 'Creative & UI/UX', href: '/services' },
@@ -239,9 +247,9 @@ export const Footer: React.FC = () => {
           </div>
 
           {/* Navigation */}
-          <div className="lg:col-span-2 space-y-2">
+          <div className="lg:col-span-2 space-y-3.5">
             <h3 className="text-[11px] font-extrabold text-[var(--text-heading)] uppercase tracking-widest">Company</h3>
-            <ul className="grid grid-cols-2 md:grid-cols-1 gap-x-4 gap-y-1 text-xs text-[var(--text-muted)]">
+            <ul className="grid grid-cols-2 md:grid-cols-1 gap-x-4 gap-y-2.5 text-xs text-[var(--text-muted)]">
               {[
                 { label: 'Selected Work', href: '/portfolio' },
                 { label: 'How We Work', href: '/how-it-works' },
@@ -265,14 +273,14 @@ export const Footer: React.FC = () => {
           </div>
 
           {/* Newsletter Column */}
-          <div className="lg:col-span-4 space-y-2">
+          <div className="lg:col-span-4 space-y-3.5">
             <NewsletterForm />
           </div>
 
         </div>
 
         {/* Bottom Row */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4 text-[11px] text-[var(--text-dim)]">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-8 pb-2 text-[11px] text-[var(--text-dim)]">
           <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-3 text-center sm:text-left">
             <div className="flex items-center space-x-1.5">
               <ShieldCheck className="w-3.5 h-3.5 text-[var(--brand-teal)]" />

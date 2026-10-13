@@ -33,8 +33,7 @@ export const BeaconVisual: React.FC<BeaconVisualProps> = ({ isPaused = false }) 
           />
         </defs>
         <text
-          fill="#1F7A8C"
-          className="font-display font-bold uppercase"
+          className="font-display font-bold uppercase fill-[#1F7A8C] dark:fill-[#22A0B4]"
           style={{ fontSize: '7.8px', letterSpacing: '1.6px' }}
         >
           <textPath href="#beacon-text-path" startOffset="0%">
@@ -45,7 +44,7 @@ export const BeaconVisual: React.FC<BeaconVisualProps> = ({ isPaused = false }) 
 
       {/* Static center icon (mint/teal) */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
-        <div className="w-8 h-8 rounded-full bg-[#1F7A8C]/10 flex items-center justify-center text-[#1F7A8C] transition-transform duration-200 group-hover:scale-110">
+        <div className="w-8 h-8 rounded-full bg-[#1F7A8C]/15 dark:bg-[#22A0B4]/20 flex items-center justify-center text-[#1F7A8C] dark:text-[#22A0B4] transition-transform duration-200 group-hover:scale-110">
           <ArrowUpRight className="w-4 h-4 stroke-[2.5] transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
         </div>
       </div>

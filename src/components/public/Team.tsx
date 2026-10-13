@@ -248,8 +248,15 @@ export const Team: React.FC = () => {
         description="Meet our real executive leadership, domain specialists, and interns driving digital delivery at DigiHust."
       />
 
-      {/* Header Section */}
-      <section data-hero="true" className="bg-[var(--bg-page)] py-20 px-6 lg:px-8 border-b border-[var(--border-subtle)]">
+      {/* ── 1. TIER 1: EXECUTIVE LEADERSHIP (Top of page, always visible across filters) ── */}
+      <FounderBrainsShowcase
+        dataHero
+        onSelectMahad={() => ceoMember && setSelectedMember(ceoMember)}
+        onSelectHaseeb={() => coFounderMember && setSelectedMember(coFounderMember)}
+      />
+
+      {/* ── 2. PAGE HEADING SECTION ── */}
+      <section className="bg-[var(--bg-page)] py-14 sm:py-16 px-6 lg:px-8 border-b border-[var(--border-subtle)]">
         <div className="max-w-7xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 15 }}
@@ -260,17 +267,17 @@ export const Team: React.FC = () => {
               <Award className="w-4 h-4" />
               <span>Team & Original Roles</span>
             </p>
-            <h1 className="font-display font-extrabold text-4xl sm:text-5xl lg:text-6xl text-[var(--text-heading)] mb-5">
+            <h1 className="font-display font-extrabold text-3xl sm:text-4xl lg:text-5xl text-[var(--text-heading)] mb-4">
               Meet the Minds Behind DigiHust.
             </h1>
-            <p className="text-lg text-[var(--text-body)] max-w-2xl leading-relaxed">
-              Explore our core team: from executive leadership to specialized engineers, designers, and emerging talent.
+            <p className="text-base sm:text-lg text-[var(--text-body)] max-w-2xl leading-relaxed">
+              Explore our core team: specialized engineers, designers, and emerging talent driving digital delivery.
             </p>
           </motion.div>
         </div>
       </section>
 
-      {/* Category Filter Section Navbar - Natural & Responsive (No awkward freezing or gap on scroll) */}
+      {/* ── 3. CATEGORY FILTER SECTION NAVBAR ── */}
       <section className="bg-[var(--bg-page)] border-b border-[var(--border-subtle)] relative z-10">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="flex items-center space-x-2 py-4 overflow-x-auto no-scrollbar">
@@ -293,14 +300,6 @@ export const Team: React.FC = () => {
           </div>
         </div>
       </section>
-
-      {/* ── 1. TIER 1: EXECUTIVE LEADERSHIP ("Meet the Brains Behind DigiHust") ── */}
-      {filter === 'All' && (
-        <FounderBrainsShowcase
-          onSelectMahad={() => ceoMember && setSelectedMember(ceoMember)}
-          onSelectHaseeb={() => coFounderMember && setSelectedMember(coFounderMember)}
-        />
-      )}
 
       {/* ── 2. TIER 2: DOMAIN SPECIALISTS (PINNED MEMBERS ALWAYS ON TOP) ── */}
       {filteredSpecialists.length > 0 && (
@@ -353,6 +352,12 @@ export const Team: React.FC = () => {
                           alt={member.name}
                           loading="lazy"
                           decoding="async"
+                          style={{
+                            objectPosition:
+                              member.id === 'usr-1787949460689' || member.name.toLowerCase().includes('haris')
+                                ? '41% 12%'
+                                : 'center 15%',
+                          }}
                           className="w-full h-full object-cover pointer-events-none"
                         />
                         {/* Smooth bottom fade into card surface */}
@@ -368,7 +373,7 @@ export const Team: React.FC = () => {
                       </div>
 
                       {/* Card Body */}
-                      <div className="p-5 sm:p-6 pb-2">
+                      <div className="p-5 sm:p-6 pb-4">
                         {/* Translucent Chips on Dark Surface */}
                         <div className="flex flex-wrap items-center gap-1.5 mb-3">
                           <span className="text-[11px] font-sans font-bold px-2.5 py-0.5 rounded-full bg-[#1F7A8C]/30 text-cyan-300 border border-cyan-400/20">
@@ -390,13 +395,8 @@ export const Team: React.FC = () => {
                         </h4>
 
                         {/* Designation / Role */}
-                        <p className="text-xs font-medium text-cyan-300/90 mt-1 mb-2.5">
+                        <p className="text-xs font-medium text-cyan-300/90 mt-1 mb-1">
                           {member.role}
-                        </p>
-
-                        {/* Bio */}
-                        <p className="text-xs text-white/75 leading-relaxed line-clamp-3 mb-4">
-                          {member.bio}
                         </p>
                       </div>
                     </div>

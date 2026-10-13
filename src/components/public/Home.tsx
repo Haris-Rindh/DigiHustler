@@ -282,6 +282,8 @@ export const Home: React.FC = () => {
         color: (s.color && s.color !== '#1F7A8C') ? s.color : SERVICE_PALETTE[idx % SERVICE_PALETTE.length],
         imageUrl: s.imageUrl,
         patternVariant: s.patternVariant,
+        slug: s.slug || s.id,
+        linkTarget: s.linkTarget,
       }))
     : SERVICES;
 
@@ -786,7 +788,7 @@ export const Home: React.FC = () => {
                   key={tItem.id || tItem.name || idx}
                   className={`relative rounded-[20px] shadow-md p-7 pt-12 flex flex-col justify-between transition-all duration-200 hover:-translate-y-1 hover:shadow-xl select-none ${
                     isMiddle
-                      ? 'bg-[#073547] text-white border border-white/10'
+                      ? 'bg-[#E3EFF3] dark:bg-[#0c4458] text-[var(--text-body)] dark:text-white border border-[#1F7A8C]/35 dark:border-[#22A0B4]/40 shadow-lg'
                       : 'bg-[var(--bg-surface)] text-[var(--text-body)] border border-[var(--border-subtle)]'
                   }`}
                 >
@@ -801,14 +803,14 @@ export const Home: React.FC = () => {
                         loading="lazy"
                         decoding="async"
                         className={`w-[72px] h-[72px] rounded-full object-cover ring-4 ${
-                          isMiddle ? 'ring-[#073547]' : 'ring-[var(--bg-surface)]'
+                          isMiddle ? 'ring-[#E3EFF3] dark:ring-[#0c4458]' : 'ring-[var(--bg-surface)]'
                         } shadow-md`}
                       />
                     ) : (
                       <div
                         className={`w-[72px] h-[72px] rounded-full flex items-center justify-center font-display font-bold text-lg ring-4 ${
                           isMiddle
-                            ? 'bg-[#1F7A8C] text-white ring-[#073547]'
+                            ? 'bg-[#1F7A8C] text-white ring-[#E3EFF3] dark:ring-[#0c4458]'
                             : 'bg-[#1F7A8C]/15 text-[#1F7A8C] ring-[var(--bg-surface)]'
                         } shadow-md`}
                       >
@@ -823,7 +825,7 @@ export const Home: React.FC = () => {
                     <div
                       className={`font-display font-extrabold leading-none mb-3 select-none ${
                         isMiddle
-                          ? 'text-cyan-300 text-5xl sm:text-6xl'
+                          ? 'text-[#1F7A8C] dark:text-cyan-300 text-5xl sm:text-6xl'
                           : 'text-[var(--brand-teal)] text-4xl sm:text-5xl'
                       }`}
                       aria-hidden="true"
@@ -833,7 +835,7 @@ export const Home: React.FC = () => {
 
                     <blockquote
                       className={`font-sans text-[15px] sm:text-[16px] leading-[1.6] mb-6 ${
-                        isMiddle ? 'text-white/90' : 'text-[var(--text-body)]'
+                        isMiddle ? 'text-[var(--text-body)] dark:text-white/90' : 'text-[var(--text-body)]'
                       }`}
                     >
                       &ldquo;{tItem.quote}&rdquo;
@@ -843,13 +845,13 @@ export const Home: React.FC = () => {
                   {/* Figcaption with semibold name and muted role */}
                   <figcaption
                     className={`pt-4 border-t ${
-                      isMiddle ? 'border-white/10' : 'border-[var(--border-subtle)]'
+                      isMiddle ? 'border-[#1F7A8C]/20 dark:border-white/15' : 'border-[var(--border-subtle)]'
                     }`}
                   >
-                    <div className={`font-semibold text-sm ${isMiddle ? 'text-white' : 'text-[var(--text-heading)]'}`}>
+                    <div className={`font-semibold text-sm ${isMiddle ? 'text-[var(--text-heading)] dark:text-white' : 'text-[var(--text-heading)]'}`}>
                       {tItem.name}
                     </div>
-                    <div className={`text-xs ${isMiddle ? 'text-white/70' : 'text-[var(--text-muted)]'}`}>
+                    <div className={`text-xs ${isMiddle ? 'text-[var(--text-muted)] dark:text-white/70' : 'text-[var(--text-muted)]'}`}>
                       {tItem.role}{tItem.company ? `, ${tItem.company}` : ''}
                     </div>
                   </figcaption>

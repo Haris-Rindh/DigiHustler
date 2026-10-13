@@ -91,7 +91,7 @@ export const LavaProposalButton: React.FC<LavaProposalButtonProps> = ({
       ref={buttonRef}
       to={to}
       onClick={onClick}
-      className={`group relative inline-flex items-center justify-center px-10 py-5 rounded-2xl bg-[#022B3A] text-white font-extrabold text-base sm:text-lg border border-white/20 dark:border-white/25 shadow-xl overflow-hidden select-none cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white active:scale-[0.98] transition-transform duration-150 ${className}`}
+      className={`group relative inline-flex items-center justify-center px-10 py-5 rounded-2xl bg-[#022B3A] text-white font-extrabold text-base sm:text-lg border border-[#022B3A]/40 dark:border-[#22A0B4]/50 shadow-xl dark:shadow-[0_0_28px_rgba(34,160,180,0.22)] overflow-hidden select-none cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white active:scale-[0.98] transition-all duration-150 ${className}`}
     >
       {/* ── LAVA CONTAINER (STATIC CSS BLUR, CLIPPED INSIDE BUTTON) ── */}
       <div

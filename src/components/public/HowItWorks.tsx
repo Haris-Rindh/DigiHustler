@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 import { SEOHead } from '../seo/SEOHead';
 import { useApp } from '../../context/AppContext';
+import { TechLogo } from './TechLogo';
 
 const TOOL_CATEGORIES = [
   {
@@ -361,9 +362,10 @@ export const HowItWorks: React.FC = () => {
                       {cat.tools.map((t) => (
                         <span
                           key={t}
-                          className="px-2.5 py-1 text-xs rounded-lg bg-[var(--bg-page)] text-[var(--text-body)] border border-[var(--border-subtle)] font-medium"
+                          className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs rounded-lg bg-[var(--bg-page)] text-[var(--text-heading)] border border-[var(--border-subtle)] font-medium transition-all duration-150 hover:border-[var(--brand-teal)]/40 hover:bg-[var(--bg-surface)] hover:shadow-xs group"
                         >
-                          {t}
+                          <TechLogo name={t} className="w-3.5 h-3.5 flex-shrink-0 transition-transform duration-150 group-hover:scale-110" />
+                          <span>{t}</span>
                         </span>
                       ))}
                     </div>

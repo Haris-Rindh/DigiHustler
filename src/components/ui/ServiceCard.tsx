@@ -58,7 +58,13 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
     ? service.tags 
     : ['Production Ready', 'Milestone SLAs'];
 
-  const targetLink = service.linkTarget || `/contact?service=${encodeURIComponent(service.title)}`;
+  let targetLink = service.linkTarget || `/contact?service=${encodeURIComponent(service.title)}`;
+  if (targetLink === '/services' || targetLink === '/services/') {
+    const slug = service.slug || service.id;
+    if (slug) {
+      targetLink = `/services#${slug}`;
+    }
+  }
   const descriptionText = service.description || service.summary || service.tagline || '';
 
   return (
