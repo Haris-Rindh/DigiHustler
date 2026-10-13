@@ -37,9 +37,92 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Mrs+Saint+Delafield&family=Outfit:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Sora:wght@700&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
+
+    <!-- Inlined Critical Cube Loader CSS (<2KB) per Item 16 -->
+    <style id="critical-cube-loader-css">
+      :root {
+        --cube-size: 40px;
+        --cube-face-front: #1F7A8C;
+        --cube-face-back: #14535F;
+        --cube-face-right: #22A0B4;
+        --cube-face-left: #166270;
+        --cube-face-top: #34B3C7;
+        --cube-face-bottom: #0D3B45;
+        --cube-shadow: rgba(2, 43, 58, 0.25);
+      }
+      .dark, [data-theme="dark"] {
+        --cube-shadow: rgba(0, 0, 0, 0.45);
+      }
+      .cube-loader-wrapper {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        width: 80px;
+        height: 80px;
+      }
+      .cube-loader {
+        width: var(--cube-size);
+        height: var(--cube-size);
+        transform-style: preserve-3d;
+        transform: rotateX(-24deg) rotateY(45deg);
+        animation: cubeSpin 3.6s ease-in-out infinite;
+      }
+      .cube-side {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+      }
+      .cube-front  { transform: translateZ(calc(var(--cube-size) / 2)); background: var(--cube-face-front); }
+      .cube-back   { transform: rotateY(180deg) translateZ(calc(var(--cube-size) / 2)); background: var(--cube-face-back); }
+      .cube-right  { transform: rotateY(90deg) translateZ(calc(var(--cube-size) / 2)); background: var(--cube-face-right); }
+      .cube-left   { transform: rotateY(-90deg) translateZ(calc(var(--cube-size) / 2)); background: var(--cube-face-left); }
+      .cube-top    { transform: rotateX(90deg) translateZ(calc(var(--cube-size) / 2)); background: var(--cube-face-top); }
+      .cube-bottom { transform: rotateX(-90deg) translateZ(calc(var(--cube-size) / 2)); background: var(--cube-face-bottom); }
+      .cube-shadow {
+        width: calc(var(--cube-size) * 1.1);
+        height: 12px;
+        background: var(--cube-shadow);
+        border-radius: 50%;
+        margin-top: 24px;
+        filter: blur(4px);
+        animation: shadowScale 3.6s ease-in-out infinite;
+      }
+      @keyframes cubeSpin {
+        0% { transform: translateY(0px) rotateX(-24deg) rotateY(45deg); }
+        50% { transform: translateY(-12px) rotateX(-24deg) rotateY(405deg); }
+        100% { transform: translateY(0px) rotateX(-24deg) rotateY(765deg); }
+      }
+      @keyframes shadowScale {
+        0%, 100% { transform: scale(1); opacity: 0.8; }
+        50% { transform: scale(0.7); opacity: 0.4; }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .cube-loader, .cube-shadow {
+          animation: none !important;
+        }
+      }
+    </style>
   </head>
   <body class="bg-[var(--bg-page)] text-[var(--text-body)] min-h-screen font-sans antialiased selection:bg-[var(--brand-teal)] selection:text-white">
-    <div id="root"></div>
+    <div id="root">
+      <div id="app-boot-splash" style="display:flex;min-height:100vh;align-items:center;justify-content:center;background:var(--bg-page,#022B3A);">
+        <div class="cube-loader-wrapper" role="status" aria-label="Loading DigiHust">
+          <div class="cube-loader">
+            <div class="cube-side cube-front"></div>
+            <div class="cube-side cube-back"></div>
+            <div class="cube-side cube-right"></div>
+            <div class="cube-side cube-left"></div>
+            <div class="cube-side cube-top"></div>
+            <div class="cube-side cube-bottom"></div>
+          </div>
+          <div class="cube-shadow"></div>
+          <span style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">Loading DigiHust...</span>
+        </div>
+      </div>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

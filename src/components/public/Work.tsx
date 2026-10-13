@@ -5,6 +5,7 @@ import { ArrowRight, X, CheckCircle2, Layers, ExternalLink } from 'lucide-react'
 import { SEOHead } from '../seo/SEOHead';
 import { useApp } from '../../context/AppContext';
 import { handleCardSpotlightMove, handleCardSpotlightLeave } from '../../lib/cardSpotlight';
+import { ProjectCard } from '../ui/ProjectCard';
 
 export interface Project {
   id: string;
@@ -188,7 +189,7 @@ export const Work: React.FC = () => {
       />
 
       {/* Header */}
-      <section className="bg-[var(--bg-page)] py-20 px-6 lg:px-8 border-b border-[var(--border-subtle)]">
+      <section data-hero="true" className="bg-[var(--bg-page)] py-20 px-6 lg:px-8 border-b border-[var(--border-subtle)]">
         <div className="max-w-7xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 15 }}
@@ -251,72 +252,12 @@ export const Work: React.FC = () => {
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.95 }}
                     transition={{ duration: 0.2 }}
-                    onClick={() => setSelectedProject(project)}
-                    data-cursor="view"
-                    className="group satin-card overflow-hidden cursor-pointer flex flex-col h-auto select-none"
+                    className="h-full"
                   >
-                    {/* Satin Architectural Image Bezel Frame (Compact) */}
-                    <div className="p-2.5 pb-0 flex-shrink-0">
-                      <div className="w-full aspect-[16/9] overflow-hidden relative satin-img-frame">
-                        <img
-                          src={project.img}
-                          alt={project.title}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
-
-                        {/* Floating Frosted Client Badge */}
-                        <div className="absolute top-2 left-2 px-2 py-0.5 rounded-full glass-pill text-[9px] sm:text-[10px] font-bold text-white shadow-sm flex items-center space-x-1.5">
-                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                          <span>{project.client}</span>
-                        </div>
-
-                        {/* Floating Category Pill */}
-                        <div className="absolute top-2 right-2 px-2 py-0.5 rounded-lg bg-black/75 backdrop-blur-md text-[9px] font-mono font-bold text-white/90 border border-white/15 uppercase tracking-wider">
-                          {project.category}
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Compact text area */}
-                    <div className="p-3.5 sm:p-4 flex-1 flex flex-col relative z-[2]">
-                      <h2 className="font-display font-bold text-base text-[var(--text-heading)] leading-snug mb-1.5 line-clamp-2 group-hover:text-[var(--brand-teal)] transition-colors duration-200">
-                        {project.title}
-                      </h2>
-                      <p className="text-xs text-[var(--text-body)] leading-relaxed mb-2.5 line-clamp-2">
-                        {project.description}
-                      </p>
-                      <div className="flex flex-wrap gap-1.5 mb-1 mt-auto">
-                        {project.tags?.slice(0, 3).map((t) => (
-                          <span
-                            key={t}
-                            className="text-[10px] sm:text-[11px] px-2 py-0.5 rounded-md satin-pill text-[var(--text-heading)] font-medium"
-                          >
-                            {t}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Bottom-pinned footer row */}
-                    <div className="mt-auto px-3.5 sm:px-4 py-2.5 border-t border-[var(--border-subtle)] flex items-center justify-between text-xs font-bold text-[var(--brand-teal)] relative z-[2]">
-                      <span className="flex items-center space-x-1.5">
-                        <span>Inspect Case Study</span>
-                        <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform duration-200" />
-                      </span>
-                      {project.projectUrl && (
-                        <a
-                          href={project.projectUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          onClick={(e) => e.stopPropagation()}
-                          className="inline-flex items-center space-x-1 text-emerald-700 dark:text-emerald-400 hover:text-emerald-800 dark:hover:text-emerald-300 hover:underline font-bold px-2 py-0.5 rounded-md hover:bg-emerald-500/10 transition-colors"
-                        >
-                          <span>Live Demo</span>
-                          <ExternalLink className="w-3 h-3" />
-                        </a>
-                      )}
-                    </div>
+                    <ProjectCard
+                      project={project}
+                      onInspect={(p) => setSelectedProject(p as any)}
+                    />
                   </motion.div>
                 ))}
               </AnimatePresence>
@@ -442,7 +383,7 @@ export const Work: React.FC = () => {
                     href={getProjectLiveUrl(selectedProject)}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-full sm:w-auto flex items-center justify-center space-x-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-bold text-xs shadow-md transition-all hover:scale-105 active:scale-95 cursor-pointer"
+                    className="w-full sm:w-auto flex items-center justify-center space-x-2 px-5 py-2.5 rounded-xl bg-[#1F7A8C] hover:bg-[#1A6877] text-white font-bold text-xs shadow-md transition-all hover:scale-105 active:scale-95 cursor-pointer"
                   >
                     <ExternalLink className="w-3.5 h-3.5" />
                     <span>Live Demo</span>

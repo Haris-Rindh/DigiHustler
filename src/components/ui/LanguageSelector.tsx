@@ -71,7 +71,6 @@ export const LanguageSelector: React.FC = () => {
         aria-label={`Current language: ${activeOption.label}. Click to switch.`}
         aria-expanded={isOpen}
       >
-        <Globe className="w-4 h-4 text-[var(--brand-teal)] flex-shrink-0 group-hover:scale-110 transition-transform duration-150" />
         <FlagIcon code={activeOption.code} />
         <span className="uppercase text-[11px] font-extrabold tracking-wide">{activeOption.code}</span>
         <ChevronDown className={`w-3.5 h-3.5 text-[var(--text-muted)] transition-transform duration-150 ${isOpen ? 'rotate-180 text-[var(--brand-teal)]' : ''}`} />

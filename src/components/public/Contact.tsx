@@ -2,26 +2,29 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  Send,
-  CheckCircle2,
-  AlertCircle,
-  Clock,
-  Shield,
-  MessageSquare,
-  Paperclip,
-  Check,
+  User,
   Mail,
-  Phone,
-  MapPin,
-  HelpCircle,
+  Building2,
+  FileText,
+  Paperclip,
+  UploadCloud,
   ChevronDown,
   ArrowRight,
+  ArrowLeft,
+  CheckCircle2,
+  Target,
+  Zap,
+  Phone,
+  MapPin,
+  X,
+  MessageSquare,
+  AlertCircle,
+  ExternalLink,
 } from 'lucide-react';
 import { SEOHead } from '../seo/SEOHead';
 import { useApp } from '../../context/AppContext';
 import { GroupId } from '../../types';
 import { notificationService } from '../../lib/notificationService';
-
 
 const SERVICES = [
   'Website / Full-Stack App',
@@ -33,28 +36,33 @@ const SERVICES = [
   'Other Custom Scope',
 ];
 
-const BUDGETS = [
-  'Under $100',
-  '$100 | $500',
-  '$500 | $1,000',
-  '$1,000 | $3,000',
-  '$3,000 | $7,500',
-  '$7,500+',
-  'Flexible / Not Sure',
+const BUDGET_OPTIONS = [
+  'Select a range',
+  'Under $1,000',
+  '$1,000 – $3,000',
+  '$3,000 – $7,500',
+  '$7,500 – $15,000',
+  '$15,000+',
+  'Flexible / Undecided',
 ];
 
-const TIMELINES = [
-  'Urgent (Under 2 Weeks)',
+const TIMELINE_OPTIONS = [
+  'Select a timeframe',
+  'Urgent (Under 2 weeks)',
   '1 Month',
-  '1 | 3 Months',
-  '3+ Months / Ongoing Retainer',
+  '1 – 3 Months',
+  '3 – 6 Months',
   'Flexible',
 ];
 
+const STAGE_OPTIONS = [
+  'New Idea / Exploration',
+  'Wireframes / Specs Ready',
+  'Existing MVP Needing Scale',
+  'Enterprise System Migration',
+];
+
 export const Contact: React.FC = () => {
-  const formSectionRef = useRef<HTMLDivElement>(null);
-
-
   const [searchParams] = useSearchParams();
   const projectParam = searchParams.get('project');
   const serviceParam = searchParams.get('service');
@@ -63,19 +71,30 @@ export const Contact: React.FC = () => {
   const stageParam = searchParams.get('stage');
   const timelineParam = searchParams.get('timeline');
 
+  const [step, setStep] = useState<number>(1);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   const [form, setForm] = useState({
     name: '',
     email: '',
     company: '',
-    services: ['Website / Full-Stack App'],
     description: '',
-    budget: '$1,000 | $3,000',
-    timeline: '1 | 3 Months',
+    budget: '',
+    timeline: '',
+    services: ['Website / Full-Stack App'],
+    stage: 'New Idea / Exploration',
+    ndaRequired: false,
     file: null as File | null,
-    honeypot: '', // anti-spam field
+    honeypot: '',
   });
 
-  // Helper to match service names from Services page to Contact form pills
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const [whatsappLink, setWhatsappLink] = useState<string>('');
+
+  const { submitLead, siteContent } = useApp();
+
   const mapServiceToContactOption = useCallback((rawName: string): string => {
     const lower = rawName.toLowerCase();
     if (lower.includes('dev') || lower.includes('web') || lower.includes('app') || lower.includes('engineer')) {
@@ -116,24 +135,20 @@ export const Contact: React.FC = () => {
 
     let mappedTimeline = '';
     if (timelineParam) {
-      if (timelineParam.toLowerCase().includes('urgent')) mappedTimeline = 'Urgent (Under 2 Weeks)';
-      else if (timelineParam.includes('1 – 3') || timelineParam.includes('1 | 3')) mappedTimeline = '1 | 3 Months';
-      else if (timelineParam.includes('3+')) mappedTimeline = '3+ Months / Ongoing Retainer';
+      if (timelineParam.toLowerCase().includes('urgent')) mappedTimeline = 'Urgent (Under 2 weeks)';
+      else if (timelineParam.includes('1 Month')) mappedTimeline = '1 Month';
+      else if (timelineParam.includes('1 – 3') || timelineParam.includes('1 | 3')) mappedTimeline = '1 – 3 Months';
+      else if (timelineParam.includes('3 – 6') || timelineParam.includes('3+')) mappedTimeline = '3 – 6 Months';
       else if (timelineParam.toLowerCase().includes('flexible')) mappedTimeline = 'Flexible';
     }
 
     if (projectParam || incomingServicesRaw.length > 0 || deliverablesList.length > 0 || stageParam) {
       setForm((prev) => {
         const summaryLines: string[] = [];
-        if (projectParam) {
-          summaryLines.push(`Referenced Case Study: "${projectParam}"`);
-        }
-        if (stageParam) {
-          summaryLines.push(`Project Stage: ${stageParam}`);
-        }
-        if (deliverablesList.length > 0) {
-          summaryLines.push(`Selected Deliverables: ${deliverablesList.join(', ')}`);
-        }
+        if (projectParam) summaryLines.push(`Referenced Case Study: "${projectParam}"`);
+        if (stageParam) summaryLines.push(`Project Stage: ${stageParam}`);
+        if (deliverablesList.length > 0) summaryLines.push(`Selected Deliverables: ${deliverablesList.join(', ')}`);
+
         const autoBrief =
           summaryLines.length > 0
             ? `${summaryLines.join('\n')}\n\nProject Goals & Context:\n`
@@ -149,58 +164,98 @@ export const Contact: React.FC = () => {
     }
   }, [projectParam, serviceParam, servicesFlowParam, deliverablesParam, stageParam, timelineParam, mapServiceToContactOption]);
 
-  const [errors, setErrors] = useState<Record<string, string>>({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
-
   const toggleService = (svc: string) => {
     setForm((prev) => {
       const exists = prev.services.includes(svc);
-      if (exists && prev.services.length === 1) return prev; // keep at least 1
-      const updated = exists
-        ? prev.services.filter((s) => s !== svc)
-        : [...prev.services, svc];
+      if (exists && prev.services.length === 1) return prev;
+      const updated = exists ? prev.services.filter((s) => s !== svc) : [...prev.services, svc];
       return { ...prev, services: updated };
     });
   };
 
-  const validate = () => {
+  const validateStep1 = () => {
     const errs: Record<string, string> = {};
-    if (!form.name.trim()) errs.name = 'Please provide your name or organization lead';
+    if (!form.name.trim()) errs.name = 'Please provide your full name';
     if (!form.email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
       errs.email = 'Please provide a valid work email address';
     }
-    if (!form.description.trim() || form.description.length < 20) {
-      errs.description = 'Please provide at least 20 characters describing your project goals';
+    if (!form.description.trim() || form.description.length < 10) {
+      errs.description = 'Please provide a brief description (at least 10 characters)';
     }
-    if (form.services.length === 0) {
-      errs.services = 'Please select at least one capability';
+    if (!form.budget || form.budget === 'Select a range') {
+      errs.budget = 'Please select a target budget range';
+    }
+    if (!form.timeline || form.timeline === 'Select a timeframe') {
+      errs.timeline = 'Please select a completion window';
     }
     setErrors(errs);
     return Object.keys(errs).length === 0;
   };
 
-  const { submitLead, siteContent } = useApp();
-  const [whatsappLink, setWhatsappLink] = useState<string>('');
+  const handleNextStep = () => {
+    if (step === 1) {
+      if (!validateStep1()) return;
+      setStep(2);
+    } else if (step === 2) {
+      if (form.services.length === 0) {
+        setErrors({ services: 'Please select at least one capability' });
+        return;
+      }
+      setErrors({});
+      setStep(3);
+    } else if (step === 3) {
+      setStep(4);
+    }
+  };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (form.honeypot) return; // silent bot rejection
-    if (!validate()) return;
+  const handlePrevStep = () => {
+    if (step > 1) {
+      setErrors({});
+      setStep(step - 1);
+    }
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 15 * 1024 * 1024) {
+        setErrors((prev) => ({ ...prev, file: 'File size exceeds 15MB limit' }));
+        return;
+      }
+      setErrors((prev) => {
+        const copy = { ...prev };
+        delete copy.file;
+        return copy;
+      });
+      setForm((prev) => ({ ...prev, file }));
+    }
+  };
+
+  const removeFile = () => {
+    setForm((prev) => ({ ...prev, file: null }));
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  };
+
+  const handleSubmitLead = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    if (form.honeypot) return;
+    if (!validateStep1()) {
+      setStep(1);
+      return;
+    }
 
     setIsSubmitting(true);
 
     try {
       const budgetMap: Record<string, number> = {
-        'Under $100': 100,
-        'Minimum under $100': 100,
-        '$100 | $500': 500,
-        '$500 | $1,000': 1000,
-        '$1,000 | $3,000': 3000,
-        '$3,000 | $7,500': 7500,
-        '$7,500+': 10000,
-        'Flexible / Not Sure': 5000,
+        'Under $1,000': 1000,
+        '$1,000 – $3,000': 3000,
+        '$3,000 – $7,500': 7500,
+        '$7,500 – $15,000': 15000,
+        '$15,000+': 25000,
+        'Flexible / Undecided': 5000,
       };
+
       const groupMap: Record<string, GroupId> = {
         'Website / Full-Stack App': 'tech',
         'UI/UX & Brand Identity': 'creative',
@@ -212,14 +267,14 @@ export const Contact: React.FC = () => {
       };
 
       const targetGroupId: GroupId = groupMap[form.services[0]] || 'tech';
-      const rawBudget = budgetMap[form.budget] || 1000;
+      const rawBudget = budgetMap[form.budget] || 3000;
 
       const newLeadData = {
         title: `${form.company || form.name} | ${form.services[0]}`,
         clientName: form.name,
         clientCompany: form.company || undefined,
         clientEmail: form.email,
-        brief: `${projectParam ? `[Referenced Case Study: ${projectParam}]\n\n` : ''}${form.description}\n\nServices: ${form.services.join(', ')}\nTimeline: ${form.timeline}\nBudget: ${form.budget}`,
+        brief: `${projectParam ? `[Referenced Case Study: ${projectParam}]\n\n` : ''}${form.description}\n\nServices: ${form.services.join(', ')}\nTimeline: ${form.timeline}\nBudget: ${form.budget}\nStage: ${form.stage}\nNDA Requested: ${form.ndaRequired ? 'Yes' : 'No'}${form.file ? `\nAttached: ${form.file.name}` : ''}`,
         budgetEstimate: rawBudget,
         status: 'new' as const,
         groupId: targetGroupId,
@@ -229,7 +284,6 @@ export const Contact: React.FC = () => {
 
       await submitLead(newLeadData);
 
-      // Dispatch automated EmailJS lead notification to digihust@gmail.com
       try {
         await notificationService.dispatchLeadEmail({
           name: form.name,
@@ -238,14 +292,13 @@ export const Contact: React.FC = () => {
           services: form.services,
           budget: form.budget,
           timeline: form.timeline,
-          description: `${projectParam ? `[Referenced Case Study: ${projectParam}]\n\n` : ''}${form.description}`
+          description: `${projectParam ? `[Referenced Case Study: ${projectParam}]\n\n` : ''}${form.description}\nStage: ${form.stage}`,
         });
       } catch (emailErr) {
         console.warn('Contact Form EmailJS dispatch warning:', emailErr);
       }
 
-      // WhatsApp deep-link
-      const phone = siteContent?.contactPhone || '923001234567';
+      const phone = siteContent?.contactPhone || '923226806396';
       const cleanPhone = phone.replace(/[^0-9]/g, '');
       const msg = encodeURIComponent(
         `*New DigiHust Project Request*\n\n` +
@@ -267,435 +320,639 @@ export const Contact: React.FC = () => {
     setSubmitted(true);
   };
 
-
   return (
-    <div className="pt-16 sm:pt-20 min-h-screen bg-[var(--bg-page)] text-[var(--text-body)]">
+    <div data-hero="true" className="min-h-screen bg-[#F4F8FA] dark:bg-[var(--bg-page)] text-[var(--text-body)] pt-24 sm:pt-28 pb-16 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
       <SEOHead
         title="Get a Quote & Start a Project | DigiHust"
         description="Submit your digital project scope for web development, UI/UX, AI automation, or cybersecurity. Receive a clear structured proposal within 24 hours."
-        schema={{
-          '@context': 'https://schema.org',
-          '@type': 'ContactPage',
-          name: 'Contact DigiHust',
-          description: 'Submit your digital project scope for web development, UI/UX, AI automation, or cybersecurity.',
-          url: 'https://www.digihust.tech/contact',
-          mainEntity: {
-            '@type': 'Organization',
-            name: 'DigiHust',
-            url: 'https://www.digihust.tech',
-            contactPoint: {
-              '@type': 'ContactPoint',
-              telephone: '+92-300-1234567',
-              contactType: 'customer service',
-              email: 'contact@digihust.tech',
-              availableLanguage: ['English', 'Urdu']
-            }
-          }
-        }}
       />
 
-      {/* ── HEADER INTRO ── */}
-      <section ref={formSectionRef} className="py-12 sm:py-16 px-6 lg:px-8 border-b border-[var(--border-subtle)] bg-[var(--bg-subtle)]">
-        <div className="max-w-4xl mx-auto text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4 }}
-          >
-            <p className="text-xs font-extrabold text-[var(--brand-teal)] uppercase tracking-widest mb-3">
-              Project Intake & Scoping
-            </p>
-            <h1 className="font-display font-extrabold text-3xl sm:text-4xl lg:text-5xl text-[var(--text-heading)] mb-4">
-              Let’s Scope Your Solution.
-            </h1>
-            <p className="text-base sm:text-lg text-[var(--text-body)] max-w-2xl mx-auto leading-relaxed">
-              Tell us what you want to build or solve. Our management team reviews your requirements and responds with a detailed scope and timeline proposal within 24 hours.
-            </p>
-          </motion.div>
-        </div>
-      </section>
+      {/* Decorative soft wave backdrop in bottom-right corner */}
+      <div className="absolute -bottom-16 -right-16 w-96 h-96 pointer-events-none opacity-40 dark:opacity-10 z-0">
+        <svg viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M400,200 Q300,150 250,250 T100,300 T0,400 L400,400 Z" fill="#D0EBF0" />
+          <path d="M400,120 Q280,180 200,280 T40,380 L400,400 Z" fill="#E2F4F7" opacity="0.6" />
+        </svg>
+      </div>
 
-      {/* ── MAIN CONTENT (GRID: INFO + FORM) ── */}
-      <section className="py-16 sm:py-24 px-6 lg:px-8 max-w-7xl mx-auto">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 lg:gap-16 items-start">
-          
-          {/* Left: Expectations, Process & Contact Info */}
-          <div className="space-y-8">
-            <div className="p-8 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] shadow-sm space-y-6">
-              <h3 className="font-display font-bold text-xl text-[var(--text-heading)]">What Happens Next?</h3>
-              <div className="space-y-4">
-                {[
-                  { step: '1', title: 'Requirements Review', desc: 'A Group Leader assesses technical specifications and capacity.' },
-                  { step: '2', title: 'Scoped Proposal', desc: 'You receive transparent milestone pricing and squad assembly plan.' },
-                  { step: '3', title: 'Kickoff Sprint', desc: 'Work begins with live staging previews and dedicated PM check-ins.' },
-                ].map((item) => (
-                  <div key={item.step} className="flex items-start space-x-3.5">
-                    <div className="w-7 h-7 rounded-xl bg-[var(--brand-teal-subtle)] text-[var(--brand-teal)] font-bold text-xs flex items-center justify-center flex-shrink-0 mt-0.5 border border-[var(--brand-teal)]/30">
-                      {item.step}
+      <div className="max-w-5xl mx-auto relative z-10">
+        <AnimatePresence mode="wait">
+          {submitted ? (
+            /* ── SUCCESS STATE CARD ── */
+            <motion.div
+              key="success"
+              initial={{ opacity: 0, scale: 0.96 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.96 }}
+              className="p-10 sm:p-14 rounded-[32px] bg-white dark:bg-[var(--bg-surface)] text-[var(--text-heading)] border border-[#E2ECEF] dark:border-[var(--border-subtle)] text-center shadow-[0_16px_50px_rgba(2,43,58,0.08)] space-y-6 max-w-2xl mx-auto"
+            >
+              <div className="w-20 h-20 rounded-3xl bg-[#E0F2F5] dark:bg-cyan-950/80 border-2 border-[#1F7A8C] dark:border-cyan-500 flex items-center justify-center mx-auto shadow-sm">
+                <CheckCircle2 className="w-10 h-10 text-[#1F7A8C] dark:text-cyan-400" />
+              </div>
+              <h2 className="font-display font-extrabold text-3xl sm:text-4xl text-[#022B3A] dark:text-white">
+                Proposal Request Received!
+              </h2>
+              <p className="text-[var(--text-body)] max-w-md mx-auto leading-relaxed text-sm sm:text-base">
+                Thank you, <strong className="text-[#022B3A] dark:text-white font-bold">{form.name}</strong>. Our management leads will review your requirements for{' '}
+                <span className="text-[#1F7A8C] dark:text-cyan-400 font-semibold">{form.services.join(', ')}</span> and reach out to{' '}
+                <strong className="text-[#022B3A] dark:text-white font-bold">{form.email}</strong> within 24 hours.
+              </p>
+
+              {whatsappLink && (
+                <div className="pt-2 space-y-3 max-w-md mx-auto">
+                  <a
+                    href={whatsappLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center justify-center space-x-2.5 w-full px-6 py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm shadow-md transition-all hover:scale-[1.01] cursor-pointer"
+                  >
+                    <MessageSquare className="w-5 h-5" />
+                    <span>Connect with Team on WhatsApp</span>
+                  </a>
+                  <p className="text-xs text-[var(--text-muted)]">
+                    Prefer immediate coordination? Forward your project brief directly to our team on WhatsApp.
+                  </p>
+                </div>
+              )}
+
+              <div className="pt-6 border-t border-[var(--border-subtle)]">
+                <button
+                  onClick={() => {
+                    setSubmitted(false);
+                    setStep(1);
+                    setForm({
+                      name: '',
+                      email: '',
+                      company: '',
+                      description: '',
+                      budget: '',
+                      timeline: '',
+                      services: ['Website / Full-Stack App'],
+                      stage: 'New Idea / Exploration',
+                      ndaRequired: false,
+                      file: null,
+                      honeypot: '',
+                    });
+                  }}
+                  className="text-xs font-bold text-[#1F7A8C] hover:underline"
+                >
+                  Submit Another Project Scope →
+                </button>
+              </div>
+            </motion.div>
+          ) : (
+            /* ── MAIN CARD CONTAINER (2 COLUMNS) ── */
+            <motion.div
+              key="main-card"
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.35 }}
+              className="rounded-[28px] sm:rounded-[32px] bg-white dark:bg-[var(--bg-surface)] border border-[#E2ECEF] dark:border-[var(--border-subtle)] shadow-[0_12px_45px_rgba(2,43,58,0.06)] p-4 sm:p-6 lg:p-7 relative z-10 mb-6"
+            >
+              {/* Anti-spam honeypot */}
+              <div className="hidden" aria-hidden="true">
+                <input
+                  type="text"
+                  name="website_hp"
+                  tabIndex={-1}
+                  autoComplete="off"
+                  value={form.honeypot}
+                  onChange={(e) => setForm({ ...form, honeypot: e.target.value })}
+                />
+              </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-stretch">
+                {/* ── LEFT COLUMN: ILLUSTRATION BANNER ── */}
+                <div className="lg:col-span-4 flex">
+                  <div className="w-full rounded-2xl sm:rounded-[22px] overflow-hidden bg-[#E8F5F6] dark:bg-[#032533] border border-[#D5E9EC] dark:border-[#0a3a4d] flex flex-col justify-between relative min-h-[380px] sm:min-h-[460px] lg:min-h-full">
+                    <img
+                      src={siteContent?.contactIllustrationUrl || (siteContent?.contact as any)?.illustrationUrl || "/contact-illustration.png"}
+                      alt="Let's build something great"
+                      className="w-full h-full object-cover object-center"
+                    />
+                  </div>
+                </div>
+
+                {/* ── RIGHT COLUMN: INTERACTIVE FORM ── */}
+                <div className="lg:col-span-8 flex flex-col justify-between py-1 sm:py-2">
+                  <div>
+                    {/* Step Indicator Badge */}
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="px-3 py-1 rounded-full text-xs font-bold text-[#1F7A8C] dark:text-cyan-400 bg-[#E0F2F5] dark:bg-cyan-950/80 border border-[#CEE9ED] dark:border-cyan-800/40 w-fit">
+                        {step} of 4
+                      </span>
+                      {step > 1 && (
+                        <button
+                          type="button"
+                          onClick={handlePrevStep}
+                          className="text-xs font-semibold text-[#64748B] hover:text-[#022B3A] dark:hover:text-white flex items-center gap-1 transition-colors"
+                        >
+                          <ArrowLeft className="w-3.5 h-3.5" />
+                          <span>Back</span>
+                        </button>
+                      )}
                     </div>
-                    <div>
-                      <h4 className="font-bold text-sm text-[var(--text-heading)]">{item.title}</h4>
-                      <p className="text-xs text-[var(--text-muted)] mt-0.5">{item.desc}</p>
+
+                    {/* Step 1: Tell us about yourself */}
+                    {step === 1 && (
+                      <motion.div
+                        initial={{ opacity: 0, x: 10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -10 }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        <h1 className="font-display font-extrabold text-2xl sm:text-3xl text-[#022B3A] dark:text-white mt-1 mb-1.5 tracking-tight">
+                          Tell us about yourself
+                        </h1>
+                        <p className="text-xs sm:text-sm text-[#64748B] dark:text-[var(--text-muted)] leading-relaxed mb-6">
+                          We'll get back to you with the right team and next steps — usually within 24 hours.
+                        </p>
+
+                        <div className="space-y-4">
+                          {/* Row 1: Full Name & Work Email Address */}
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                              <label className="block text-xs font-bold text-[#1E293B] dark:text-white mb-1.5">
+                                Full Name <span className="text-rose-500">*</span>
+                              </label>
+                              <div className="relative">
+                                <User className="w-4 h-4 text-[#94A3B8] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                                <input
+                                  type="text"
+                                  value={form.name}
+                                  onChange={(e) => {
+                                    setForm({ ...form, name: e.target.value });
+                                    if (errors.name) setErrors((prev) => ({ ...prev, name: '' }));
+                                  }}
+                                  placeholder="e.g. Sarah Jenkins"
+                                  className={`w-full pl-10 pr-3.5 py-2.5 rounded-xl border text-xs sm:text-sm text-[var(--text-heading)] bg-[#F8FAFC]/70 dark:bg-black/20 placeholder:text-[#94A3B8] focus:outline-none focus:border-[#1F7A8C] focus:ring-1 focus:ring-[#1F7A8C] transition-colors ${
+                                    errors.name ? 'border-rose-400 bg-rose-50/20' : 'border-[#E2ECEF] dark:border-[var(--border-subtle)]'
+                                  }`}
+                                />
+                              </div>
+                              {errors.name && <p className="text-[11px] text-rose-500 mt-1 font-medium">{errors.name}</p>}
+                            </div>
+
+                            <div>
+                              <label className="block text-xs font-bold text-[#1E293B] dark:text-white mb-1.5">
+                                Work Email Address <span className="text-rose-500">*</span>
+                              </label>
+                              <div className="relative">
+                                <Mail className="w-4 h-4 text-[#94A3B8] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                                <input
+                                  type="email"
+                                  value={form.email}
+                                  onChange={(e) => {
+                                    setForm({ ...form, email: e.target.value });
+                                    if (errors.email) setErrors((prev) => ({ ...prev, email: '' }));
+                                  }}
+                                  placeholder="you@company.com"
+                                  className={`w-full pl-10 pr-3.5 py-2.5 rounded-xl border text-xs sm:text-sm text-[var(--text-heading)] bg-[#F8FAFC]/70 dark:bg-black/20 placeholder:text-[#94A3B8] focus:outline-none focus:border-[#1F7A8C] focus:ring-1 focus:ring-[#1F7A8C] transition-colors ${
+                                    errors.email ? 'border-rose-400 bg-rose-50/20' : 'border-[#E2ECEF] dark:border-[var(--border-subtle)]'
+                                  }`}
+                                />
+                              </div>
+                              {errors.email && <p className="text-[11px] text-rose-500 mt-1 font-medium">{errors.email}</p>}
+                            </div>
+                          </div>
+
+                          {/* Row 2: Company / Organization Name */}
+                          <div>
+                            <label className="block text-xs font-bold text-[#1E293B] dark:text-white mb-1.5">
+                              Company / Organization Name <span className="text-[#94A3B8] font-normal">(optional)</span>
+                            </label>
+                            <div className="relative">
+                              <Building2 className="w-4 h-4 text-[#94A3B8] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                              <input
+                                type="text"
+                                value={form.company}
+                                onChange={(e) => setForm({ ...form, company: e.target.value })}
+                                placeholder="e.g. Acme Innovations Ltd."
+                                className="w-full pl-10 pr-3.5 py-2.5 rounded-xl border border-[#E2ECEF] dark:border-[var(--border-subtle)] text-xs sm:text-sm text-[var(--text-heading)] bg-[#F8FAFC]/70 dark:bg-black/20 placeholder:text-[#94A3B8] focus:outline-none focus:border-[#1F7A8C] focus:ring-1 focus:ring-[#1F7A8C] transition-colors"
+                              />
+                            </div>
+                          </div>
+
+                          {/* Row 3: Project Overview */}
+                          <div>
+                            <label className="block text-xs font-bold text-[#1E293B] dark:text-white mb-1.5">
+                              Project Overview <span className="text-rose-500">*</span>
+                            </label>
+                            <div className="relative">
+                              <FileText className="w-4 h-4 text-[#94A3B8] absolute left-3.5 top-3 pointer-events-none" />
+                              <textarea
+                                rows={3}
+                                maxLength={500}
+                                value={form.description}
+                                onChange={(e) => {
+                                  setForm({ ...form, description: e.target.value });
+                                  if (errors.description) setErrors((prev) => ({ ...prev, description: '' }));
+                                }}
+                                placeholder="Tell us what you are looking to build or solve. Include target audience, desired features, deadlines, or existing tech stack..."
+                                className={`w-full pl-10 pr-3.5 py-2.5 rounded-xl border text-xs sm:text-sm text-[var(--text-heading)] bg-[#F8FAFC]/70 dark:bg-black/20 placeholder:text-[#94A3B8] focus:outline-none focus:border-[#1F7A8C] focus:ring-1 focus:ring-[#1F7A8C] transition-colors resize-none ${
+                                  errors.description ? 'border-rose-400 bg-rose-50/20' : 'border-[#E2ECEF] dark:border-[var(--border-subtle)]'
+                                }`}
+                              />
+                            </div>
+                            <div className="flex items-center justify-between mt-1">
+                              {errors.description ? (
+                                <p className="text-[11px] text-rose-500 font-medium">{errors.description}</p>
+                              ) : <span />}
+                              <span className="text-[11px] font-mono text-[#94A3B8]">
+                                {form.description.length}/500
+                              </span>
+                            </div>
+                          </div>
+
+                          {/* Row 4: Budget & Timeline Dropdowns */}
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                              <label className="block text-xs font-bold text-[#1E293B] dark:text-white mb-1.5">
+                                Target Budget Range (USD) <span className="text-rose-500">*</span>
+                              </label>
+                              <div className="relative">
+                                <select
+                                  value={form.budget}
+                                  onChange={(e) => {
+                                    setForm({ ...form, budget: e.target.value });
+                                    if (errors.budget) setErrors((prev) => ({ ...prev, budget: '' }));
+                                  }}
+                                  className={`w-full appearance-none px-3.5 py-2.5 rounded-xl border text-xs sm:text-sm text-[var(--text-heading)] bg-[#F8FAFC]/70 dark:bg-black/20 focus:outline-none focus:border-[#1F7A8C] focus:ring-1 focus:ring-[#1F7A8C] transition-colors pr-9 ${
+                                    errors.budget ? 'border-rose-400' : 'border-[#E2ECEF] dark:border-[var(--border-subtle)]'
+                                  }`}
+                                >
+                                  {BUDGET_OPTIONS.map((opt) => (
+                                    <option key={opt} value={opt === 'Select a range' ? '' : opt} disabled={opt === 'Select a range'}>
+                                      {opt}
+                                    </option>
+                                  ))}
+                                </select>
+                                <ChevronDown className="w-4 h-4 text-[#94A3B8] absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                              </div>
+                              {errors.budget && <p className="text-[11px] text-rose-500 mt-1 font-medium">{errors.budget}</p>}
+                            </div>
+
+                            <div>
+                              <label className="block text-xs font-bold text-[#1E293B] dark:text-white mb-1.5">
+                                Target Completion Window <span className="text-rose-500">*</span>
+                              </label>
+                              <div className="relative">
+                                <select
+                                  value={form.timeline}
+                                  onChange={(e) => {
+                                    setForm({ ...form, timeline: e.target.value });
+                                    if (errors.timeline) setErrors((prev) => ({ ...prev, timeline: '' }));
+                                  }}
+                                  className={`w-full appearance-none px-3.5 py-2.5 rounded-xl border text-xs sm:text-sm text-[var(--text-heading)] bg-[#F8FAFC]/70 dark:bg-black/20 focus:outline-none focus:border-[#1F7A8C] focus:ring-1 focus:ring-[#1F7A8C] transition-colors pr-9 ${
+                                    errors.timeline ? 'border-rose-400' : 'border-[#E2ECEF] dark:border-[var(--border-subtle)]'
+                                  }`}
+                                >
+                                  {TIMELINE_OPTIONS.map((opt) => (
+                                    <option key={opt} value={opt === 'Select a timeframe' ? '' : opt} disabled={opt === 'Select a timeframe'}>
+                                      {opt}
+                                    </option>
+                                  ))}
+                                </select>
+                                <ChevronDown className="w-4 h-4 text-[#94A3B8] absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                              </div>
+                              {errors.timeline && <p className="text-[11px] text-rose-500 mt-1 font-medium">{errors.timeline}</p>}
+                            </div>
+                          </div>
+
+                          {/* Row 5: Attach a Brief / Document */}
+                          <div>
+                            <div className="flex items-center gap-2 mb-1">
+                              <span className="w-6 h-6 rounded-full bg-[#E0F2F5] dark:bg-cyan-950 text-[#1F7A8C] dark:text-cyan-400 flex items-center justify-center shrink-0">
+                                <Paperclip className="w-3.5 h-3.5" />
+                              </span>
+                              <span className="text-xs font-bold text-[#1E293B] dark:text-white">
+                                Attach a Brief / Document <span className="text-[#94A3B8] font-normal">(optional)</span>
+                              </span>
+                            </div>
+                            <p className="text-[11px] text-[#64748B] dark:text-[var(--text-muted)] ml-8 mb-2">
+                              Share any reference, wireframes, or files (PDF, ZIP, PNG, DOCX).
+                            </p>
+
+                            {form.file ? (
+                              <div className="flex items-center justify-between p-3 rounded-xl border border-[#D1E5E8] dark:border-cyan-800 bg-[#E8F5F6]/50 dark:bg-cyan-950/40">
+                                <div className="flex items-center gap-2.5 min-w-0">
+                                  <FileText className="w-4 h-4 text-[#1F7A8C] dark:text-cyan-400 shrink-0" />
+                                  <span className="text-xs font-semibold text-[#022B3A] dark:text-white truncate">
+                                    {form.file.name}
+                                  </span>
+                                  <span className="text-[10px] text-[#64748B] font-mono shrink-0">
+                                    ({(form.file.size / 1024 / 1024).toFixed(2)} MB)
+                                  </span>
+                                </div>
+                                <button
+                                  type="button"
+                                  onClick={removeFile}
+                                  className="p-1 hover:bg-black/5 dark:hover:bg-white/10 rounded-md text-[#64748B] hover:text-rose-500 transition-colors"
+                                >
+                                  <X className="w-3.5 h-3.5" />
+                                </button>
+                              </div>
+                            ) : (
+                              <div
+                                onClick={() => fileInputRef.current?.click()}
+                                className="border-2 border-dashed border-[#CBD5E1] dark:border-slate-700 hover:border-[#1F7A8C] dark:hover:border-cyan-500 rounded-2xl p-5 text-center transition-colors cursor-pointer bg-[#F8FAFC]/50 dark:bg-black/20 group"
+                              >
+                                <input
+                                  type="file"
+                                  ref={fileInputRef}
+                                  onChange={handleFileChange}
+                                  accept=".pdf,.zip,.png,.jpg,.jpeg,.docx"
+                                  className="hidden"
+                                />
+                                <UploadCloud className="w-7 h-7 text-[#1F7A8C] dark:text-cyan-400 mx-auto mb-1.5 group-hover:scale-105 transition-transform" />
+                                <p className="text-xs sm:text-sm font-semibold text-[#1E293B] dark:text-white">
+                                  Click to upload or drag & drop
+                                </p>
+                                <p className="text-[11px] text-[#94A3B8] mt-0.5">
+                                  PDF, ZIP, PNG, DOCX (Max 15MB)
+                                </p>
+                              </div>
+                            )}
+                            {errors.file && <p className="text-[11px] text-rose-500 mt-1 font-medium">{errors.file}</p>}
+                          </div>
+                        </div>
+                      </motion.div>
+                    )}
+
+                    {/* Step 2: Select Capabilities */}
+                    {step === 2 && (
+                      <motion.div
+                        initial={{ opacity: 0, x: 10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -10 }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        <h2 className="font-display font-extrabold text-2xl sm:text-3xl text-[#022B3A] dark:text-white mt-1 mb-1.5 tracking-tight">
+                          Select Squad Capabilities
+                        </h2>
+                        <p className="text-xs sm:text-sm text-[#64748B] dark:text-[var(--text-muted)] leading-relaxed mb-6">
+                          Choose the specialized disciplines and engineering services your solution needs.
+                        </p>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 mb-4">
+                          {SERVICES.map((s) => {
+                            const selected = form.services.includes(s);
+                            return (
+                              <button
+                                key={s}
+                                type="button"
+                                onClick={() => toggleService(s)}
+                                className={`p-3.5 rounded-xl border text-left flex items-center justify-between transition-all ${
+                                  selected
+                                    ? 'bg-[#E0F2F5] dark:bg-cyan-950/60 border-[#1F7A8C] dark:border-cyan-500 text-[#022B3A] dark:text-white shadow-xs'
+                                    : 'bg-[#F8FAFC]/70 dark:bg-black/20 border-[#E2ECEF] dark:border-[var(--border-subtle)] text-[#1E293B] dark:text-white/80 hover:border-[#1F7A8C]/50'
+                                }`}
+                              >
+                                <span className="text-xs sm:text-sm font-semibold">{s}</span>
+                                <div
+                                  className={`w-4 h-4 rounded-md border flex items-center justify-center transition-colors ${
+                                    selected
+                                      ? 'bg-[#1F7A8C] border-[#1F7A8C] text-white'
+                                      : 'border-[#CBD5E1] dark:border-slate-600'
+                                  }`}
+                                >
+                                  {selected && <CheckCircle2 className="w-3.5 h-3.5" />}
+                                </div>
+                              </button>
+                            );
+                          })}
+                        </div>
+                        {errors.services && <p className="text-xs text-rose-500 font-medium mb-3">{errors.services}</p>}
+                      </motion.div>
+                    )}
+
+                    {/* Step 3: Execution & Milestone Details */}
+                    {step === 3 && (
+                      <motion.div
+                        initial={{ opacity: 0, x: 10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -10 }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        <h2 className="font-display font-extrabold text-2xl sm:text-3xl text-[#022B3A] dark:text-white mt-1 mb-1.5 tracking-tight">
+                          Execution & Delivery Stage
+                        </h2>
+                        <p className="text-xs sm:text-sm text-[#64748B] dark:text-[var(--text-muted)] leading-relaxed mb-6">
+                          Specify your current product milestone and operational preferences.
+                        </p>
+
+                        <div className="space-y-4 mb-4">
+                          <div>
+                            <label className="block text-xs font-bold text-[#1E293B] dark:text-white mb-2">
+                              Current Project Stage
+                            </label>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                              {STAGE_OPTIONS.map((stg) => (
+                                <button
+                                  key={stg}
+                                  type="button"
+                                  onClick={() => setForm({ ...form, stage: stg })}
+                                  className={`p-3 rounded-xl border text-xs sm:text-sm font-medium text-left transition-all ${
+                                    form.stage === stg
+                                      ? 'bg-[#E0F2F5] dark:bg-cyan-950/60 border-[#1F7A8C] dark:border-cyan-500 text-[#022B3A] dark:text-white'
+                                      : 'bg-[#F8FAFC]/70 dark:bg-black/20 border-[#E2ECEF] dark:border-[var(--border-subtle)] text-[#64748B] dark:text-slate-300'
+                                  }`}
+                                >
+                                  {stg}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+
+                          <div className="pt-2">
+                            <label className="flex items-center gap-3 p-3.5 rounded-xl border border-[#E2ECEF] dark:border-[var(--border-subtle)] bg-[#F8FAFC]/70 dark:bg-black/20 cursor-pointer">
+                              <input
+                                type="checkbox"
+                                checked={form.ndaRequired}
+                                onChange={(e) => setForm({ ...form, ndaRequired: e.target.checked })}
+                                className="w-4 h-4 rounded text-[#1F7A8C] focus:ring-[#1F7A8C] border-gray-300"
+                              />
+                              <div className="text-xs">
+                                <span className="font-bold text-[#022B3A] dark:text-white">Mutual NDA Requested</span>
+                                <p className="text-[#64748B] dark:text-[var(--text-muted)] mt-0.5">
+                                  We provide a standard bilateral non-disclosure agreement prior to architectural discovery.
+                                </p>
+                              </div>
+                            </label>
+                          </div>
+                        </div>
+                      </motion.div>
+                    )}
+
+                    {/* Step 4: Review & Confirm */}
+                    {step === 4 && (
+                      <motion.div
+                        initial={{ opacity: 0, x: 10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -10 }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        <h2 className="font-display font-extrabold text-2xl sm:text-3xl text-[#022B3A] dark:text-white mt-1 mb-1.5 tracking-tight">
+                          Review Your Request
+                        </h2>
+                        <p className="text-xs sm:text-sm text-[#64748B] dark:text-[var(--text-muted)] leading-relaxed mb-6">
+                          Verify your requirements before dispatching to our engineering leads.
+                        </p>
+
+                        <div className="p-4 rounded-2xl bg-[#F8FAFC] dark:bg-black/25 border border-[#E2ECEF] dark:border-[var(--border-subtle)] space-y-3 text-xs mb-4">
+                          <div className="flex justify-between py-1 border-b border-[#E2ECEF] dark:border-slate-800">
+                            <span className="text-[#64748B]">Contact:</span>
+                            <span className="font-bold text-[#022B3A] dark:text-white">{form.name} ({form.email})</span>
+                          </div>
+                          {form.company && (
+                            <div className="flex justify-between py-1 border-b border-[#E2ECEF] dark:border-slate-800">
+                              <span className="text-[#64748B]">Company:</span>
+                              <span className="font-bold text-[#022B3A] dark:text-white">{form.company}</span>
+                            </div>
+                          )}
+                          <div className="flex justify-between py-1 border-b border-[#E2ECEF] dark:border-slate-800">
+                            <span className="text-[#64748B]">Services:</span>
+                            <span className="font-bold text-[#1F7A8C] dark:text-cyan-400">{form.services.join(', ')}</span>
+                          </div>
+                          <div className="flex justify-between py-1 border-b border-[#E2ECEF] dark:border-slate-800">
+                            <span className="text-[#64748B]">Budget / Window:</span>
+                            <span className="font-bold text-[#022B3A] dark:text-white">{form.budget} · {form.timeline}</span>
+                          </div>
+                          {form.file && (
+                            <div className="flex justify-between py-1 border-b border-[#E2ECEF] dark:border-slate-800">
+                              <span className="text-[#64748B]">Attachment:</span>
+                              <span className="font-bold text-[#022B3A] dark:text-white">{form.file.name}</span>
+                            </div>
+                          )}
+                          <div className="py-1">
+                            <span className="text-[#64748B] block mb-1">Overview:</span>
+                            <p className="text-[var(--text-body)] leading-relaxed line-clamp-3 bg-white dark:bg-black/30 p-2.5 rounded-lg border border-[#E2ECEF] dark:border-slate-800">
+                              {form.description}
+                            </p>
+                          </div>
+                        </div>
+                      </motion.div>
+                    )}
+                  </div>
+
+                  {/* ── ACTION FOOTER BUTTON ── */}
+                  <div className="flex items-center justify-between pt-5 mt-4 border-t border-[#E2ECEF] dark:border-[var(--border-subtle)]">
+                    <p className="text-[11px] text-[#64748B] dark:text-[var(--text-muted)] hidden sm:block">
+                      100% Milestone Guaranteed · Strict NDA Protected
+                    </p>
+
+                    <div className="ml-auto flex items-center gap-3">
+                      {step < 4 ? (
+                        <button
+                          type="button"
+                          onClick={handleNextStep}
+                          className="bg-[#024959] hover:bg-[#013540] text-white px-6 py-2.5 sm:py-3 rounded-xl font-bold text-xs sm:text-sm shadow-sm transition-all inline-flex items-center space-x-2 cursor-pointer"
+                        >
+                          <span>
+                            {step === 1
+                              ? 'Next: Project Details'
+                              : step === 2
+                              ? 'Next: Delivery Stage'
+                              : 'Next: Review Scope'}
+                          </span>
+                          <ArrowRight className="w-4 h-4" />
+                        </button>
+                      ) : (
+                        <button
+                          type="button"
+                          disabled={isSubmitting}
+                          onClick={() => handleSubmitLead()}
+                          className="bg-[#024959] hover:bg-[#013540] text-white px-7 py-3 rounded-xl font-bold text-xs sm:text-sm shadow-sm transition-all inline-flex items-center space-x-2 disabled:opacity-50 cursor-pointer"
+                        >
+                          <span>{isSubmitting ? 'Transmitting Scope...' : 'Submit Proposal Request'}</span>
+                          <ArrowRight className="w-4 h-4" />
+                        </button>
+                      )}
                     </div>
                   </div>
-                ))}
+                </div>
               </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* ── BOTTOM INFO CARD (REQUIREMENTS REVIEW, SCOPED PROPOSAL, KICKOFF SPRINT, DIRECT INQUIRIES) ── */}
+        <div className="rounded-[24px] sm:rounded-3xl bg-white dark:bg-[var(--bg-surface)] border border-[#E2ECEF] dark:border-[var(--border-subtle)] shadow-[0_10px_30px_rgba(2,43,58,0.04)] p-6 sm:p-7 relative z-10">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {/* 1. Requirements Review */}
+            <div className="space-y-1">
+              <div className="w-9 h-9 rounded-full bg-[#E0F2F5] dark:bg-cyan-950/80 text-[#1F7A8C] dark:text-cyan-400 flex items-center justify-center shrink-0 mb-3">
+                <FileText className="w-4 h-4" />
+              </div>
+              <h3 className="text-xs sm:text-sm font-bold text-[#022B3A] dark:text-white">
+                Requirements Review
+              </h3>
+              <p className="text-xs text-[#64748B] dark:text-[var(--text-muted)] leading-relaxed">
+                A Group Leader assesses technical specifications and capacity.
+              </p>
             </div>
 
-              {/* Direct Contact Card */}
-            <div className="p-8 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] shadow-sm space-y-4">
-              <h3 className="font-display font-bold text-lg text-[var(--text-heading)]">Direct Inquiries</h3>
-              <p className="text-xs text-[var(--text-muted)] leading-relaxed">
+            {/* 2. Scoped Proposal */}
+            <div className="space-y-1">
+              <div className="w-9 h-9 rounded-full bg-[#E0F2F5] dark:bg-cyan-950/80 text-[#1F7A8C] dark:text-cyan-400 flex items-center justify-center shrink-0 mb-3">
+                <Target className="w-4 h-4" />
+              </div>
+              <h3 className="text-xs sm:text-sm font-bold text-[#022B3A] dark:text-white">
+                Scoped Proposal
+              </h3>
+              <p className="text-xs text-[#64748B] dark:text-[var(--text-muted)] leading-relaxed">
+                You receive transparent milestone pricing and squad assembly plan.
+              </p>
+            </div>
+
+            {/* 3. Kickoff Sprint */}
+            <div className="space-y-1">
+              <div className="w-9 h-9 rounded-full bg-[#E0F2F5] dark:bg-cyan-950/80 text-[#1F7A8C] dark:text-cyan-400 flex items-center justify-center shrink-0 mb-3">
+                <Zap className="w-4 h-4" />
+              </div>
+              <h3 className="text-xs sm:text-sm font-bold text-[#022B3A] dark:text-white">
+                Kickoff Sprint
+              </h3>
+              <p className="text-xs text-[#64748B] dark:text-[var(--text-muted)] leading-relaxed">
+                Work begins with live staging previews and dedicated PM check-ins.
+              </p>
+            </div>
+
+            {/* 4. Direct Inquiries */}
+            <div className="space-y-1.5 sm:border-t-0 border-t border-[#E2ECEF] dark:border-slate-800 pt-4 sm:pt-0">
+              <div className="w-9 h-9 rounded-full bg-[#E0F2F5] dark:bg-cyan-950/80 text-[#1F7A8C] dark:text-cyan-400 flex items-center justify-center shrink-0 mb-2">
+                <Mail className="w-4 h-4" />
+              </div>
+              <h3 className="text-xs sm:text-sm font-bold text-[#022B3A] dark:text-white">
+                Direct Inquiries
+              </h3>
+              <p className="text-[11px] text-[#64748B] dark:text-[var(--text-muted)] leading-tight mb-2">
                 Prefer to email directly or have an RFP document ready?
               </p>
-              <div className="space-y-3 text-xs pt-1">
-                <div className="flex items-center space-x-3 text-[var(--text-body)]">
-                  <Mail className="w-4 h-4 text-[var(--brand-teal)]" />
-                  <a href={`mailto:${siteContent?.contact?.email || 'contact@digihust.com'}`} className="font-semibold text-[var(--text-heading)] hover:text-[var(--brand-teal)] transition-colors">
-                    {siteContent?.contact?.email || 'contact@digihust.com'}
-                  </a>
-                </div>
-                {siteContent?.contact?.phone && (
-                  <div className="flex items-center space-x-3 text-[var(--text-body)]">
-                    <Phone className="w-4 h-4 text-[var(--brand-teal)]" />
-                    <span>{siteContent.contact.phone}</span>
-                  </div>
-                )}
-                <div className="flex items-center space-x-3 text-[var(--text-body)]">
-                  <MapPin className="w-4 h-4 text-[var(--brand-teal)]" />
-                  <span>{siteContent?.contact?.address || 'Islamabad / Global Remote Squads'}</span>
+              <div className="space-y-1.5 text-xs">
+                <a
+                  href="mailto:digihust@gmail.com"
+                  className="flex items-center gap-1.5 text-[#1F7A8C] hover:underline font-medium"
+                >
+                  <Mail className="w-3.5 h-3.5 shrink-0 text-[#94A3B8]" />
+                  <span>digihust@gmail.com</span>
+                </a>
+                <a
+                  href="tel:+923226806396"
+                  className="flex items-center gap-1.5 text-[#64748B] dark:text-[var(--text-muted)] hover:text-[#1F7A8C] font-medium"
+                >
+                  <Phone className="w-3.5 h-3.5 shrink-0 text-[#94A3B8]" />
+                  <span>+92 322 6806396</span>
+                </a>
+                <div className="flex items-center gap-1.5 text-[#64748B] dark:text-[var(--text-muted)]">
+                  <MapPin className="w-3.5 h-3.5 shrink-0 text-[#94A3B8]" />
+                  <span>Islamabad, Pakistan</span>
                 </div>
               </div>
             </div>
           </div>
-
-          {/* Right: Intake Form with Animated States */}
-          <div className="lg:col-span-2">
-            <AnimatePresence mode="wait">
-              {submitted ? (
-                <motion.div
-                  key="success"
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.95 }}
-                  className="p-10 sm:p-14 rounded-3xl bg-[var(--bg-surface)] text-[var(--text-heading)] border border-[var(--border-subtle)] text-center shadow-xl space-y-6"
-                >
-                  <div className="w-20 h-20 rounded-3xl bg-[var(--brand-teal-subtle)] border-2 border-[var(--brand-teal)] flex items-center justify-center mx-auto shadow-sm">
-                    <CheckCircle2 className="w-10 h-10 text-[var(--brand-teal)]" />
-                  </div>
-                  <h2 className="font-display font-extrabold text-3xl sm:text-4xl text-[var(--text-heading)]">
-                    Proposal Request Received!
-                  </h2>
-                  <p className="text-[var(--text-body)] max-w-md mx-auto leading-relaxed text-sm sm:text-base">
-                    Thank you, <strong className="text-[var(--text-heading)] font-bold">{form.name}</strong>. Our management leads will review your requirements for{' '}
-                    <span className="text-[var(--brand-teal)] font-semibold">{form.services.join(', ')}</span> and reach out to{' '}
-                    <strong className="text-[var(--text-heading)] font-bold">{form.email}</strong> within 24 hours.
-                  </p>
-
-                  {whatsappLink && (
-                    <div className="pt-2 space-y-3 max-w-md mx-auto">
-                      <a
-                        href={whatsappLink}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center justify-center space-x-2.5 w-full px-6 py-4 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm shadow-xl transition-all hover:scale-[1.02] cursor-pointer"
-                      >
-                        <MessageSquare className="w-5 h-5" />
-                        <span>Send Brief on WhatsApp to CEO (+92 320 6806396)</span>
-                      </a>
-                      <p className="text-xs text-[var(--text-muted)]">
-                        Prefer instant response? Click above to forward your brief directly to our CEO on WhatsApp!
-                      </p>
-                    </div>
-                  )}
-
-                  <div className="pt-6 border-t border-[var(--border-subtle)]">
-                    <button
-                      onClick={() => {
-                        setSubmitted(false);
-                        setForm({
-                          name: '',
-                          email: '',
-                          company: '',
-                          services: ['Website / Full-Stack App'],
-                          description: '',
-                          budget: '$1,000 | $3,000',
-                          timeline: '1 Month',
-                          file: null,
-                          honeypot: '',
-                        });
-                      }}
-                      className="text-xs font-bold text-[var(--brand-teal)] hover:underline"
-                    >
-                      Submit Another Project Scope →
-                    </button>
-                  </div>
-                </motion.div>
-              ) : (
-                <motion.form
-                  key="form"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  onSubmit={handleSubmit}
-                  className="space-y-7 p-8 sm:p-10 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] shadow-sm"
-                >
-                  {/* Anti-spam honeypot (hidden from real users) */}
-                  <div className="hidden" aria-hidden="true">
-                    <label htmlFor="website_hp">Leave this field blank</label>
-                    <input
-                      id="website_hp"
-                      type="text"
-                      name="website_hp"
-                      tabIndex={-1}
-                      autoComplete="off"
-                      value={form.honeypot}
-                      onChange={(e) => setForm({ ...form, honeypot: e.target.value })}
-                    />
-                  </div>
-
-                  {/* Referenced Project Scope Banner */}
-                  {projectParam && (
-                    <motion.div
-                      initial={{ opacity: 0, y: -10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className="p-4 rounded-2xl bg-[var(--brand-teal-subtle)] border border-[var(--brand-teal)]/40 flex items-center justify-between gap-4"
-                    >
-                      <div className="flex items-center gap-3">
-                        <div>
-                          <p className="text-[10px] font-extrabold text-[var(--brand-teal)] uppercase tracking-wider">
-                            Referenced Project Scope
-                          </p>
-                          <p className="text-sm font-extrabold text-[var(--text-heading)]">
-                            {projectParam}
-                          </p>
-                        </div>
-                      </div>
-                      <span className="text-xs font-bold text-[var(--brand-teal)] bg-[var(--bg-surface)] px-3 py-1.5 rounded-lg border border-[var(--brand-teal)]/30 hidden sm:inline-block">
-                        Tailored Scope Attached
-                      </span>
-                    </motion.div>
-                  )}
-
-                  {/* Configured Service Flow Banner */}
-                  {(servicesFlowParam || deliverablesParam || stageParam) && (
-                    <motion.div
-                      initial={{ opacity: 0, y: -10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className="p-4 rounded-2xl satin-img-frame flex flex-col sm:flex-row sm:items-center justify-between gap-3"
-                    >
-                      <div>
-                        <p className="text-[10px] font-extrabold text-[var(--brand-teal)] uppercase tracking-wider mb-1">
-                          Configured Service Scope Attached
-                        </p>
-                        <p className="text-xs sm:text-sm font-bold text-[var(--text-heading)]">
-                          {servicesFlowParam || form.services.join(', ')}
-                          {stageParam ? ` · ${stageParam}` : ''}
-                        </p>
-                        {deliverablesParam && (
-                          <p className="text-xs text-[var(--text-muted)] mt-0.5">
-                            Deliverables: {deliverablesParam}
-                          </p>
-                        )}
-                      </div>
-                      <span className="text-xs font-bold text-[var(--brand-teal)] satin-pill px-3 py-1.5 rounded-xl shrink-0 self-start sm:self-center">
-                        Pre-Filled from Flow
-                      </span>
-                    </motion.div>
-                  )}
-
-                  {/* Name + Email */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                    <div>
-                      <label className="block text-xs font-extrabold text-[var(--text-heading)] uppercase tracking-widest mb-2">
-                        Your Full Name <span className="text-red-500">*</span>
-                      </label>
-                      <input
-                        type="text"
-                        value={form.name}
-                        onChange={(e) => setForm({ ...form, name: e.target.value })}
-                        className={`w-full px-4 py-3.5 rounded-xl border text-sm text-[var(--text-heading)] bg-[var(--bg-page)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-teal)]/40 focus:border-[var(--brand-teal)] transition-colors ${
-                          errors.name ? 'border-red-400' : 'border-[var(--border-subtle)]'
-                        }`}
-                        placeholder="e.g. Sarah Jenkins"
-                      />
-                      {errors.name && (
-                        <p className="text-xs text-red-500 font-semibold mt-1 flex items-center space-x-1">
-                          <AlertCircle className="w-3.5 h-3.5" />
-                          <span>{errors.name}</span>
-                        </p>
-                      )}
-                    </div>
-
-                    <div>
-                      <label className="block text-xs font-extrabold text-[var(--text-heading)] uppercase tracking-widest mb-2">
-                        Work Email Address <span className="text-red-500">*</span>
-                      </label>
-                      <input
-                        type="email"
-                        value={form.email}
-                        onChange={(e) => setForm({ ...form, email: e.target.value })}
-                        className={`w-full px-4 py-3.5 rounded-xl border text-sm text-[var(--text-heading)] bg-[var(--bg-page)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-teal)]/40 focus:border-[var(--brand-teal)] transition-colors ${
-                          errors.email ? 'border-red-400' : 'border-[var(--border-subtle)]'
-                        }`}
-                        placeholder="you@company.com"
-                      />
-                      {errors.email && (
-                        <p className="text-xs text-red-500 font-semibold mt-1 flex items-center space-x-1">
-                          <AlertCircle className="w-3.5 h-3.5" />
-                          <span>{errors.email}</span>
-                        </p>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Company */}
-                  <div>
-                    <label className="block text-xs font-extrabold text-[var(--text-heading)] uppercase tracking-widest mb-2">
-                      Company / Organization Name{' '}
-                      <span className="text-[var(--text-muted)] font-normal normal-case text-xs">(optional)</span>
-                    </label>
-                    <input
-                      type="text"
-                      value={form.company}
-                      onChange={(e) => setForm({ ...form, company: e.target.value })}
-                      className="w-full px-4 py-3.5 rounded-xl border border-[var(--border-subtle)] text-sm text-[var(--text-heading)] bg-[var(--bg-page)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-teal)]/40 focus:border-[var(--brand-teal)] transition-colors"
-                      placeholder="e.g. Acme Innovations Ltd."
-                    />
-                  </div>
-
-                  {/* Required Services (Multi-Select Pills) */}
-                  <div>
-                    <label className="block text-xs font-extrabold text-[var(--text-heading)] uppercase tracking-widest mb-3">
-                      Required Capabilities <span className="text-red-500">*</span>
-                    </label>
-                    <div className="flex flex-wrap gap-2">
-                      {SERVICES.map((s) => {
-                        const selected = form.services.includes(s);
-                        return (
-                          <motion.button
-                            key={s}
-                            type="button"
-                            onClick={() => toggleService(s)}
-                            whileTap={{ scale: 0.95 }}
-                            className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold border transition-all ${
-                              selected
-                                ? 'bg-[var(--brand-teal)] text-white border-[var(--brand-teal)] shadow-md'
-                                : 'bg-[var(--bg-page)] text-[var(--text-body)] border-[var(--border-subtle)] hover:border-[var(--brand-teal)]'
-                            }`}
-                          >
-                            {s}
-                          </motion.button>
-                        );
-                      })}
-                    </div>
-                    {errors.services && (
-                      <p className="text-xs text-red-500 font-semibold mt-2">{errors.services}</p>
-                    )}
-                  </div>
-
-                  {/* Description */}
-                  <div>
-                    <label className="block text-xs font-extrabold text-[var(--text-heading)] uppercase tracking-widest mb-2">
-                      Project Overview & Objectives <span className="text-red-500">*</span>
-                    </label>
-                    <textarea
-                      rows={5}
-                      value={form.description}
-                      onChange={(e) => setForm({ ...form, description: e.target.value })}
-                      className={`w-full px-4 py-3.5 rounded-xl border text-sm text-[var(--text-heading)] bg-[var(--bg-page)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-teal)]/40 focus:border-[var(--brand-teal)] transition-colors resize-none ${
-                        errors.description ? 'border-red-400' : 'border-[var(--border-subtle)]'
-                      }`}
-                      placeholder="Tell us what you are looking to build or solve. Include target audience, desired features, deadlines, or existing tech stack..."
-                    />
-                    {errors.description && (
-                      <p className="text-xs text-red-500 font-semibold mt-1 flex items-center space-x-1">
-                        <AlertCircle className="w-3.5 h-3.5" />
-                        <span>{errors.description}</span>
-                      </p>
-                    )}
-                  </div>
-
-                  {/* Budget & Timeline */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                    <div>
-                      <label className="block text-xs font-extrabold text-[var(--text-heading)] uppercase tracking-widest mb-2">
-                        Target Budget Range
-                      </label>
-                      <select
-                        value={form.budget}
-                        onChange={(e) => setForm({ ...form, budget: e.target.value })}
-                        className="w-full px-4 py-3.5 rounded-xl border border-[var(--border-subtle)] text-sm text-[var(--text-heading)] bg-[var(--bg-page)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-teal)]/40 focus:border-[var(--brand-teal)]"
-                      >
-                        {BUDGETS.map((b) => (
-                          <option key={b} value={b}>
-                            {b}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-
-                    <div>
-                      <label className="block text-xs font-extrabold text-[var(--text-heading)] uppercase tracking-widest mb-2">
-                        Target Completion Window
-                      </label>
-                      <select
-                        value={form.timeline}
-                        onChange={(e) => setForm({ ...form, timeline: e.target.value })}
-                        className="w-full px-4 py-3.5 rounded-xl border border-[var(--border-subtle)] text-sm text-[var(--text-heading)] bg-[var(--bg-page)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-teal)]/40 focus:border-[var(--brand-teal)]"
-                      >
-                        {TIMELINES.map((t) => (
-                          <option key={t} value={t}>
-                            {t}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
-
-                  {/* File Attachment */}
-                  <div>
-                    <label className="block text-xs font-extrabold text-[var(--text-heading)] uppercase tracking-widest mb-2">
-                      Attach Architecture / Brief Document{' '}
-                      <span className="text-[var(--text-muted)] font-normal normal-case text-xs">(PDF, ZIP, PNG, DOCX | Max 15MB)</span>
-                    </label>
-                    <label className="flex items-center space-x-3 px-4 py-3.5 rounded-xl border-2 border-dashed border-[var(--border-subtle)] hover:border-[var(--brand-teal)] cursor-pointer bg-[var(--bg-page)] transition-colors">
-                      <Paperclip className="w-4 h-4 text-[var(--text-muted)] flex-shrink-0" />
-                      <span className="text-xs sm:text-sm text-[var(--text-muted)] truncate">
-                        {form.file ? form.file.name : 'Click to select an attachment or drag here'}
-                      </span>
-                      <input
-                        type="file"
-                        className="hidden"
-                        accept=".pdf,.doc,.docx,.png,.jpg,.zip"
-                        onChange={(e) => setForm({ ...form, file: e.target.files?.[0] || null })}
-                      />
-                    </label>
-                  </div>
-
-                  {/* Submit Button */}
-                  <div className="pt-2">
-                    <motion.button
-                      type="submit"
-                      disabled={isSubmitting}
-                      whileHover={{ scale: 1.01 }}
-                      whileTap={{ scale: 0.98 }}
-                      className="w-full sm:w-auto flex items-center justify-center space-x-2.5 px-10 py-4 rounded-xl bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-white font-extrabold text-base shadow-md transition-all disabled:opacity-50"
-                    >
-                      <Send className="w-4 h-4" />
-                      <span>{isSubmitting ? 'Transmitting Scope...' : 'Submit Project Scope'}</span>
-                    </motion.button>
-                    <p className="text-xs text-[var(--text-muted)] mt-3 flex items-center space-x-1">
-                      <Clock className="w-3.5 h-3.5" />
-                      <span>Zero commitment required. Proposal returned in 24 hours.</span>
-                    </p>
-                  </div>
-                </motion.form>
-              )}
-            </AnimatePresence>
-          </div>
         </div>
-      </section>
+      </div>
     </div>
   );
 };

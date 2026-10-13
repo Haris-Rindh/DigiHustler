@@ -48,6 +48,23 @@ export const BLOG_POSTS: BlogPostItem[] = [
   },
 ];
 
+export const formatAuthor = (rawAuthor?: string): string => {
+  if (!rawAuthor || rawAuthor.trim() === '') return 'DigiHust Editorial';
+  const trimmed = rawAuthor.trim();
+  const lower = trimmed.toLowerCase();
+  if (
+    lower.includes('lead') ||
+    lower.includes('specialist') ||
+    lower.includes('architect') ||
+    lower.includes('engineer') ||
+    lower.includes('director') ||
+    lower.includes('editorial')
+  ) {
+    return 'DigiHust Editorial';
+  }
+  return `by ${trimmed}`;
+};
+
 export const Blog: React.FC = () => {
   const { siteContent } = useApp();
   const [activeCategory, setActiveCategory] = useState('All');
@@ -81,7 +98,7 @@ export const Blog: React.FC = () => {
       />
 
       {/* Header Banner */}
-      <section className="bg-[var(--bg-subtle)] py-16 sm:py-20 px-6 lg:px-8 border-b border-[var(--border-subtle)]">
+      <section data-hero="true" className="bg-[var(--bg-subtle)] py-16 sm:py-20 px-6 lg:px-8 border-b border-[var(--border-subtle)]">
         <div className="max-w-7xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 15 }}
@@ -141,9 +158,14 @@ export const Blog: React.FC = () => {
                   decoding="async"
                   className="aspect-video w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
                 />
-                <h3 className="line-clamp-2 min-h-[2.75rem] px-4 py-3 font-display text-base font-semibold leading-snug text-[var(--text-heading)] group-hover:text-[var(--brand-teal)] transition-colors">
-                  {post.title}
-                </h3>
+                <div className="p-4 pt-3">
+                  <h3 className="line-clamp-2 min-h-[2.75rem] font-display text-base font-semibold leading-snug text-[var(--text-heading)] group-hover:text-[var(--brand-teal)] transition-colors mb-2">
+                    {post.title}
+                  </h3>
+                  <p className="text-xs text-[var(--text-muted)] min-h-[1.25rem] font-sans flex items-center">
+                    {formatAuthor(post.author)}
+                  </p>
+                </div>
               </Link>
             ))}
           </div>

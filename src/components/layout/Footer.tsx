@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { ShieldCheck, Linkedin, Github, Facebook, Instagram, Twitter, Mail, AtSign } from 'lucide-react';
 import logoImg from '../../assets/logo.png';
+import { LogoBadge } from '../ui/LogoBadge';
 import { LAST_UPDATED, LAST_UPDATED_DISPLAY } from '../../config/siteConfig';
 
 interface SocialLink {
@@ -78,17 +79,8 @@ export const Footer: React.FC = () => {
           {/* Brand Column (Spans 2 columns) */}
           <div className="md:col-span-2 space-y-2">
             <div className="flex items-center gap-3 flex-wrap">
-              <Link to="/" className="inline-flex items-center space-x-2 group">
-                <img 
-                  src={logoImg} 
-                  alt="DigiHust Logo" 
-                  width={32}
-                  height={32}
-                  className="h-7 w-auto max-w-[36px] object-contain group-hover:scale-105 transition-transform duration-200 ease-out" 
-                />
-                <span className="font-display font-extrabold text-lg text-[var(--text-heading)] group-hover:text-[var(--brand-teal)] transition-colors duration-200">
-                  DigiHust
-                </span>
+              <Link to="/" className="inline-flex items-center group">
+                <LogoBadge />
               </Link>
               <span className="text-[10px] font-extrabold text-[var(--brand-teal)] uppercase tracking-widest border-l border-[var(--border-subtle)] pl-3">
                 Hustle. Create. Deliver.

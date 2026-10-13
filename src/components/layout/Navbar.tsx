@@ -9,6 +9,7 @@ import { useApp } from '../../context/AppContext';
 import logoImg from '../../assets/logo.png';
 
 import { PortalNavbar } from '../portal/PortalNavbar';
+import { LogoBadge } from '../ui/LogoBadge';
 
 export const Navbar: React.FC = () => {
   const location = useLocation();
@@ -66,20 +67,11 @@ export const Navbar: React.FC = () => {
       <nav className="max-w-7xl mx-auto px-6 lg:px-8 h-16 flex items-center justify-between" aria-label="Main Navigation">
 
         {/* Logo */}
-        <Link to="/" className="flex items-center space-x-2.5 group">
-          <motion.div
-            whileHover={{ scale: 1.05, rotate: 3 }}
-            whileTap={{ scale: 0.95 }}
-            className="w-9 h-9 rounded-xl overflow-hidden flex items-center justify-center shadow-md bg-white border border-[var(--border-subtle)] p-0.5"
-          >
-            <img src={logoImg} alt="DigiHust Logo" className="w-full h-full object-contain" />
-          </motion.div>
-          <span className="font-display font-extrabold text-xl tracking-tight text-[var(--text-heading)] group-hover:text-[var(--brand-teal)] transition-colors">
-            DigiHust
-          </span>
+        <Link to="/" className="flex items-center group">
+          <LogoBadge />
         </Link>
 
-        {/* Desktop Nav with Animated Pill */}
+        {/* Desktop Nav with Animated Pill and Hover Expanding Line */}
         <div className="hidden lg:flex items-center space-x-0.5 xl:space-x-1 relative">
           {navLinks.map((link) => {
             const active = isActive(link.href);
@@ -87,8 +79,8 @@ export const Navbar: React.FC = () => {
               <Link
                 key={link.href}
                 to={link.href}
-                className={`relative px-2.5 xl:px-4 py-2 rounded-xl text-xs xl:text-sm font-semibold transition-colors duration-200 whitespace-nowrap ${
-                  active ? 'text-[var(--brand-teal)] font-bold' : 'text-[var(--text-body)] hover:text-[var(--text-heading)]'
+                className={`relative group px-2.5 xl:px-4 py-2 rounded-xl text-xs xl:text-sm font-semibold transition-colors duration-200 whitespace-nowrap outline-none focus-visible:text-[#1F7A8C] ${
+                  active ? 'text-[#1F7A8C] font-bold' : 'text-[var(--text-body)] hover:text-[#1F7A8C]'
                 }`}
               >
                 {active && (
@@ -96,6 +88,12 @@ export const Navbar: React.FC = () => {
                     layoutId="activeNavTab"
                     className="absolute inset-0 bg-[var(--brand-teal-subtle)] border border-[var(--brand-teal)]/40 rounded-xl"
                     transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+                  />
+                )}
+                {!active && (
+                  <span
+                    aria-hidden="true"
+                    className="absolute left-1/2 -translate-x-1/2 bottom-0 w-3/4 h-[2px] bg-[#1F7A8C] origin-center scale-x-0 group-hover:scale-x-100 group-focus-visible:scale-x-100 transition-transform duration-200 ease-out motion-reduce:transition-none pointer-events-none rounded-full"
                   />
                 )}
                 <span className="relative z-10">{link.label}</span>
@@ -111,7 +109,7 @@ export const Navbar: React.FC = () => {
           <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
             <Link
               to="/contact"
-              className="flex items-center space-x-2 px-5 py-2.5 rounded-xl btn-brand-futuristic text-white text-sm font-bold shadow-md transition-all"
+              className="flex items-center space-x-2 px-5 py-2.5 rounded-xl bg-[#1F7A8C] hover:bg-[#14535F] active:bg-[#0F4049] text-white text-sm font-bold shadow-md transition-all border border-[#1F7A8C]/40"
             >
               <span>{t('btn_get_quote')}</span>
               <ArrowRight className="w-4 h-4" />
@@ -167,7 +165,7 @@ export const Navbar: React.FC = () => {
             <Link
               to="/contact"
               onClick={() => setMobileOpen(false)}
-              className="flex items-center justify-center space-x-2 px-4 py-3.5 rounded-xl btn-brand-futuristic text-white text-sm font-bold mt-3 shadow-md"
+              className="flex items-center justify-center space-x-2 px-4 py-3.5 rounded-xl bg-[#1F7A8C] hover:bg-[#14535F] active:bg-[#0F4049] text-white text-sm font-bold mt-3 shadow-md border border-[#1F7A8C]/40"
             >
               <span>{t('btn_get_quote')}</span>
               <ArrowRight className="w-4 h-4" />

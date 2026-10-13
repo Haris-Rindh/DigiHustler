@@ -249,62 +249,23 @@ routes.forEach((route) => {
 
   html = html.replace('</head>', `${headInjection}\n  </head>`);
 
-  // Inject semantic SSR fallback text inside #root so crawlers receive instant HTML content
+  // Inject 3D cube loader splash inside #root per Item 16 & 25a (eliminating raw unstyled text flash)
   const rootContent = `
     <div id="root">
-      <header role="banner" style="display:none">
-        <nav aria-label="Main Navigation">
-          <a href="/">DigiHust</a>
-          <a href="/services">Services</a>
-          <a href="/portfolio">Work</a>
-          <a href="/how-it-works">How It Works</a>
-          <a href="/about">About</a>
-          <a href="/team">Team</a>
-          <a href="/blog">Blog</a>
-          <a href="/contact">Contact</a>
-        </nav>
-      </header>
-      <main id="main-content" style="opacity:1">
-        <article>
-          <h1>${route.h1}</h1>
-          <p>${route.summary}</p>
-          ${route.path === '/' ? `
-          <section aria-label="Frequently Asked Questions">
-            <h2>Frequently Asked Questions</h2>
-            <p>Everything you need to know about our coordinated specialist squads, milestone guarantees, and project delivery.</p>
-            <div>
-              <details>
-                <summary>What does DigiHust do?</summary>
-                <p>DigiHust is a managed digital services company delivering end-to-end solutions across five core disciplines: Web Engineering, Creative &amp; UI/UX Design, AI &amp; Workflow Automation, Growth Marketing &amp; SEO, and Cybersecurity. Instead of leaving clients to coordinate disconnected contractors, we assemble dedicated specialist squads under unified technical leadership.</p>
-              </details>
-              <details>
-                <summary>How does DigiHust differ from hiring independent freelancers?</summary>
-                <p>Managing separate freelancers means multiple negotiations, misaligned schedules, blame-shifting, and unpredictable quality. DigiHust operates as a single accountable agency partner. You receive a dedicated point of contact, synchronized sprint milestones, unified delivery, and strict service-level agreements (SLAs) for the entire project lifecycle.</p>
-              </details>
-              <details>
-                <summary>How fast does a project proposal arrive?</summary>
-                <p>We review your project requirements and deliver a calibrated scope breakdown, architectural recommendation, and transparent milestone quote within 24 hours of your intake submission.</p>
-              </details>
-              <details>
-                <summary>Who does the work on client projects?</summary>
-                <p>All work is completed by verified domain specialists trained and vetted through Pakistan&#39;s Digiskill ecosystem and DigiHust&#39;s internal technical benchmarks. Each squad member is matched specifically to your technical stack, whether React, Next.js, Python AI pipelines, Figma design systems, or security auditing.</p>
-              </details>
-              <details>
-                <summary>How does DigiHust handle quality assurance?</summary>
-                <p>Every deliverable undergoes multi-stage internal review before reaching your team. Senior technical architects verify code quality, performance metrics, and security compliance to ensure all work meets production standards prior to milestone sign-off.</p>
-              </details>
-              <details>
-                <summary>What does the Quality &amp; Milestone Guarantee cover?</summary>
-                <p>We provide a 100% Quality &amp; Milestone Guarantee. Projects are divided into transparent staging sprints with agreed-upon acceptance criteria. Client feedback is integrated into each review, and you maintain complete visibility over deliverables before milestones are accepted.</p>
-              </details>
-              <details>
-                <summary>How do contracts, communication, and invoicing work?</summary>
-                <p>You work under a single legal contract and receive a single consolidated invoice, regardless of how many disciplines are involved in your build. One dedicated project manager handles communication, timeline tracking, and squad coordination from kickoff to final handover.</p>
-              </details>
-            </div>
-          </section>` : ''}
-        </article>
-      </main>
+      <div id="app-boot-splash" style="display:flex;min-height:100vh;align-items:center;justify-content:center;background:var(--bg-page,#022B3A);">
+        <div class="cube-loader-wrapper" role="status" aria-label="Loading DigiHust">
+          <div class="cube-loader">
+            <div class="cube-side cube-front"></div>
+            <div class="cube-side cube-back"></div>
+            <div class="cube-side cube-right"></div>
+            <div class="cube-side cube-left"></div>
+            <div class="cube-side cube-top"></div>
+            <div class="cube-side cube-bottom"></div>
+          </div>
+          <div class="cube-shadow"></div>
+          <span style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">Loading DigiHust...</span>
+        </div>
+      </div>
     </div>
   `;
 

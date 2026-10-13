@@ -28,7 +28,10 @@ import {
   X,
 } from 'lucide-react';
 import { SEOHead } from '../seo/SEOHead';
-import { InteractiveCanvas } from '../ui/InteractiveCanvas';
+import { HeroWaves } from '../ui/HeroWaves';
+import { ServiceCard } from '../ui/ServiceCard';
+import { ProjectCard } from '../ui/ProjectCard';
+import { LavaProposalButton } from '../ui/LavaProposalButton';
 import RadialOrbitalTimeline, { defaultServicesTimelineData } from '../ui/radial-orbital-timeline';
 import { useLanguage } from '../../context/LanguageContext';
 import { useApp } from '../../context/AppContext';
@@ -264,7 +267,9 @@ export const Home: React.FC = () => {
       }))
     : PROJECTS.slice(0, 3);
 
-  const testimonials = siteContent?.testimonials || [];
+  const testimonials = (siteContent?.testimonials && siteContent.testimonials.length > 0)
+    ? siteContent.testimonials
+    : TESTIMONIALS;
   const valueProps = siteContent?.valueProps || [];
   const SERVICE_PALETTE = ['#1F7A8C', '#8B5CF6', '#0284C7', '#D97706', '#E11D48', '#059669'];
   const servicesList = (siteContent?.services && siteContent.services.length > 0)
@@ -328,9 +333,9 @@ export const Home: React.FC = () => {
       />
 
       {/* ── SECTION 1: COMPACT FULL-VIEWPORT HERO (Responsive on all screen sizes) ── */}
-      <section className="relative lg:min-h-[calc(100dvh-4rem)] lg:max-h-[860px] flex flex-col justify-between px-4 sm:px-6 lg:px-8 border-b border-[var(--border-subtle)] overflow-hidden pt-20 sm:pt-22 lg:pt-16 pb-6 lg:pb-2 bg-[var(--bg-page)]">
-        {/* Interactive Canvas Background with high-clarity 3D particles */}
-        <InteractiveCanvas particleCount={50} className="absolute inset-0 pointer-events-none opacity-90" />
+      <section data-hero="true" className="relative lg:min-h-[calc(100dvh-4rem)] lg:max-h-[860px] flex flex-col justify-between px-4 sm:px-6 lg:px-8 border-b border-[var(--border-subtle)] overflow-hidden pt-24 sm:pt-26 lg:pt-20 pb-8 lg:pb-8 bg-[var(--bg-page)]">
+        {/* 3 Flowing SVG wave paths behind hero per Item 9 */}
+        <HeroWaves />
 
         {/* Ambient celestial glow for depth */}
         <div className="absolute top-1/3 left-1/3 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-br from-[var(--brand-teal)]/15 to-transparent rounded-full blur-3xl pointer-events-none" />
@@ -417,7 +422,6 @@ export const Home: React.FC = () => {
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.7, delay: 0.2 }}
-              data-cursor="orbit"
               className="lg:col-span-6 xl:col-span-5 relative flex flex-col items-center justify-center"
             >
               <div className="w-full relative rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] backdrop-blur-sm p-2 shadow-xl min-h-[280px] sm:min-h-[340px]">
@@ -508,125 +512,17 @@ export const Home: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {servicesList.map((svc, sIdx) => {
-              const hasImage = Boolean(svc.imageUrl && svc.imageUrl.trim() !== '');
-              return (
-                <motion.div
-                  key={svc.title}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  className="h-full"
-                >
-                  <div
-                    data-cursor="view"
-                    onPointerMove={!hasImage ? handleCardSpotlightMove : undefined}
-                    onPointerLeave={!hasImage ? handleCardSpotlightLeave : undefined}
-                    className={`group satin-card p-4 sm:p-5 flex flex-col justify-between h-full select-none overflow-hidden relative ${
-                      !hasImage ? 'hover:border-[var(--brand-teal)]/70 hover:shadow-xl' : 'hover:border-[var(--brand-teal)]/50'
-                    }`}
-                    style={{
-                      background: !hasImage
-                        ? `radial-gradient(400px circle at var(--mx, -999px) var(--my, -999px), ${svc.color}30, transparent 75%), var(--bg-surface)`
-                        : undefined,
-                    }}
-                  >
-                    {/* Generative Pattern & Accents for cards WITHOUT image */}
-                    {!hasImage && (
-                      <>
-                        <GenerativePattern
-                          variant={svc.patternVariant || ['dotted-grid', 'concentric-rings', 'flowing-waves', 'isometric-grid', 'diagonal-hatch', 'mesh-gradient'][sIdx % 6]}
-                          accent={svc.color}
-                          isHovered={false}
-                        />
-                        {/* Top Glow Accent Bar */}
-                        <div
-                          className="absolute top-0 left-6 right-6 h-[2px] opacity-40 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
-                          style={{
-                            background: `linear-gradient(90deg, transparent, ${svc.color}, transparent)`,
-                          }}
-                        />
-                        {/* Luxury Watermark Numeral */}
-                        <span className="absolute top-3 right-5 font-mono font-black text-5xl sm:text-6xl text-[var(--text-heading)]/[0.04] group-hover:text-[var(--brand-teal)]/[0.14] transition-colors duration-500 select-none pointer-events-none">
-                          {String(sIdx + 1).padStart(2, '0')}
-                        </span>
-                      </>
-                    )}
-
-                    <div className="relative z-[2]">
-                      {/* Services Card Image Banner or 3D Glass Icon Dock */}
-                      {hasImage ? (
-                        <div className="relative h-44 sm:h-48 md:h-52 lg:h-56 w-full satin-img-frame mb-3.5">
-                          <img
-                            src={svc.imageUrl}
-                            alt={svc.title}
-                            width={400}
-                            height={224}
-                            loading="lazy"
-                            decoding="async"
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                          />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/15 to-transparent pointer-events-none" />
-                          <div className="absolute top-3 left-3">
-                            <div
-                              className="w-8 h-8 rounded-lg flex items-center justify-center text-white shadow-sm border border-white/20 backdrop-blur-md"
-                              style={{ backgroundColor: svc.color }}
-                            >
-                              {svc.icon}
-                            </div>
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="relative mb-3.5 w-fit">
-                          <div
-                            className="absolute -inset-1 rounded-2xl blur-md opacity-25 group-hover:opacity-60 transition-opacity duration-300"
-                            style={{ backgroundColor: svc.color }}
-                          />
-                          <div
-                            className="relative w-11 h-11 rounded-2xl flex items-center justify-center text-white shadow-md border border-white/20 group-hover:scale-105 group-hover:rotate-1 transition-all duration-300"
-                            style={{ backgroundColor: svc.color }}
-                          >
-                            {svc.icon}
-                          </div>
-                        </div>
-                      )}
-
-                      <h3 className="font-display font-bold text-base sm:text-lg text-[var(--text-heading)] mb-1 group-hover:text-[var(--brand-teal)] transition-colors duration-200">
-                        <Link
-                          to="/services"
-                          className="after:absolute after:inset-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-teal)] rounded-2xl"
-                        >
-                          {svc.title}
-                        </Link>
-                      </h3>
-                      <p className="text-xs text-[var(--text-body)] leading-relaxed mb-3 line-clamp-2">{svc.description}</p>
-                    </div>
-
-                    <div className="relative z-[2]">
-                      <div className="flex flex-wrap gap-1.5 mb-3">
-                        {svc.tags.slice(0, 3).map((tTag) => (
-                          <span
-                            key={tTag}
-                            className={`text-[10px] sm:text-[11px] px-2 py-0.5 rounded-md font-medium flex items-center gap-1 ${
-                              hasImage ? 'satin-pill text-[var(--text-heading)]' : 'bg-[var(--bg-page)]/80 border border-[var(--border-subtle)] text-[var(--text-heading)] shadow-xs'
-                            }`}
-                          >
-                            {!hasImage && <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: svc.color }} />}
-                            <span>{tTag}</span>
-                          </span>
-                        ))}
-                      </div>
-                      <div className="pt-2.5 border-t border-[var(--border-subtle)] flex items-center justify-between text-xs font-bold text-[var(--brand-teal)]">
-                        <div className="inline-flex items-center space-x-1 group-hover:translate-x-1 transition-transform duration-200">
-                          <span>{t('services_explore')}</span>
-                          <ChevronRight className="w-3.5 h-3.5" />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </motion.div>
-              );
-            })}
+            {servicesList.map((svc) => (
+              <motion.div
+                key={svc.title}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                className="h-full"
+              >
+                <ServiceCard service={svc} />
+              </motion.div>
+            ))}
           </div>
         </div>
       </section>
@@ -845,176 +741,121 @@ export const Home: React.FC = () => {
                 initial={shouldReduceMotion ? { opacity: 1 } : { opacity: 0, y: 15 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                onClick={() => setSelectedProject(project)}
-                data-cursor="view"
-                className="group satin-card overflow-hidden cursor-pointer flex flex-col h-auto select-none"
+                className="h-full"
               >
-                {/* Satin Architectural Image Bezel Frame (Compact) */}
-                <div className="p-2.5 pb-0 flex-shrink-0">
-                  <div className="w-full aspect-[16/9] overflow-hidden relative satin-img-frame">
-                    <img
-                      src={project.img}
-                      alt={project.title}
-                      width={800}
-                      height={450}
-                      loading="lazy"
-                      decoding="async"
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
-                    
-                    {/* Floating Frosted Client Badge */}
-                    <div className="absolute top-2 left-2 px-2 py-0.5 rounded-full glass-pill text-[9px] sm:text-[10px] font-bold text-white shadow-sm flex items-center space-x-1.5">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                      <span>{project.client}</span>
-                    </div>
-
-                    {/* Floating Category Pill */}
-                    <div className="absolute top-2 right-2 px-2 py-0.5 rounded-lg bg-black/75 backdrop-blur-md text-[9px] font-mono font-bold text-white/90 border border-white/15 uppercase tracking-wider">
-                      {project.category}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Compact text area */}
-                <div className="p-3.5 sm:p-4 flex-1 flex flex-col relative z-[2]">
-                  <h3 className="font-display font-bold text-base text-[var(--text-heading)] leading-snug mb-1.5 line-clamp-2 group-hover:text-[var(--brand-teal)] transition-colors duration-200">
-                    {project.title}
-                  </h3>
-                  <p className="text-xs text-[var(--text-body)] leading-relaxed mb-2.5 line-clamp-2">
-                    {project.description}
-                  </p>
-                  <div className="flex flex-wrap gap-1.5 mb-1 mt-auto">
-                    {project.tags?.slice(0, 3).map((tTag) => (
-                      <span
-                        key={tTag}
-                        className="text-[10px] sm:text-[11px] px-2 py-0.5 rounded-md satin-pill text-[var(--text-heading)] font-medium"
-                      >
-                        {tTag}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Bottom-pinned footer row */}
-                <div className="mt-auto px-3.5 sm:px-4 py-2.5 border-t border-[var(--border-subtle)] flex items-center justify-between text-xs font-bold text-[var(--brand-teal)] relative z-[2]">
-                  <span className="flex items-center space-x-1.5">
-                    <span>Inspect Case Study</span>
-                    <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform duration-200" />
-                  </span>
-                  <a
-                    href={getProjectLiveUrl(project)}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    onClick={(e) => e.stopPropagation()}
-                    className="inline-flex items-center space-x-1 text-emerald-700 dark:text-emerald-400 hover:text-emerald-800 dark:hover:text-emerald-300 hover:underline font-bold px-2 py-0.5 rounded-md hover:bg-emerald-500/10 transition-colors"
-                  >
-                    <span>Live Demo</span>
-                    <ExternalLink className="w-3 h-3" />
-                  </a>
-                </div>
+                <ProjectCard
+                  project={project}
+                  onInspect={(p) => setSelectedProject(p as any)}
+                />
               </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ── SECTION 5: VERIFIED TESTIMONIALS ── */}
+      {/* ── SECTION 5: CLIENT FEEDBACK (Item 4 Redesign) ── */}
       <section className="py-24 px-6 lg:px-8 border-t border-[var(--border-subtle)] bg-[var(--bg-subtle)]">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16 max-w-2xl mx-auto">
-            <p className="text-xs font-extrabold text-[var(--brand-teal)] uppercase tracking-widest mb-3">{t('testimonials_tag')}</p>
-            <h2 className="font-display font-extrabold text-3xl sm:text-4xl text-[var(--text-heading)] mb-4">
-              {t('testimonials_heading')}
-            </h2>
+          <div className="text-center mb-20 max-w-2xl mx-auto">
+            <p className="text-xs font-extrabold text-[var(--brand-teal)] uppercase tracking-widest mb-3">
+              {t('testimonials_tag')}
+            </p>
+            <div className="inline-block relative">
+              <h2 className="font-display font-extrabold text-3xl sm:text-4xl text-[var(--text-heading)] mb-3">
+                {t('testimonials_heading')}
+              </h2>
+              <div className="w-16 h-[2px] bg-[var(--brand-teal)] mx-auto mb-4" />
+            </div>
             <p className="text-[var(--text-body)] text-sm">
               {t('testimonials_sub')}
             </p>
           </div>
 
-          {testimonials.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {testimonials.map((tItem) => (
-                <motion.div
-                  key={tItem.id || tItem.name}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  onPointerMove={handleCardSpotlightMove}
-                  onPointerLeave={handleCardSpotlightLeave}
-                  className="premium-card p-8 flex flex-col justify-between group overflow-hidden relative select-none"
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-10 pt-4 items-stretch">
+            {testimonials.slice(0, 3).map((tItem: any, idx: number) => {
+              const isMiddle = idx === 1;
+              const initials = (tItem.name || 'DH')
+                .split(' ')
+                .map((n: string) => n[0])
+                .join('')
+                .toUpperCase()
+                .slice(0, 2);
+
+              return (
+                <figure
+                  key={tItem.id || tItem.name || idx}
+                  className={`relative rounded-[20px] shadow-md p-7 pt-12 flex flex-col justify-between transition-all duration-200 hover:-translate-y-1 hover:shadow-xl select-none ${
+                    isMiddle
+                      ? 'bg-[#073547] text-white border border-white/10'
+                      : 'bg-[var(--bg-surface)] text-[var(--text-body)] border border-[var(--border-subtle)]'
+                  }`}
                 >
-                  {/* Elegant typographic quote glyph watermark */}
-                  <span className="absolute top-4 right-6 font-serif text-7xl text-[var(--brand-teal)]/[0.08] select-none pointer-events-none group-hover:text-[var(--brand-teal)]/[0.2] transition-colors duration-500 leading-none">
-                    &ldquo;
-                  </span>
-
-                  <div className="relative z-[2]">
-                    <div className="flex items-center space-x-1.5 text-amber-400 mb-5 px-3 py-1 rounded-full bg-amber-400/10 border border-amber-400/20 w-fit">
-                      {[...Array(tItem.rating || 5)].map((_, i) => (
-                        <Star key={i} className="w-3.5 h-3.5 fill-amber-400" />
-                      ))}
-                      <span className="text-[10px] font-mono font-bold text-amber-500 ml-1">5.0</span>
-                    </div>
-                    <p className="text-xs sm:text-[13px] text-[var(--text-body)] italic leading-relaxed mb-6">
-                      "{tItem.quote}"
-                    </p>
-                  </div>
-                  <div className="flex items-center space-x-3 pt-4 border-t border-[var(--border-subtle)] relative z-[2]">
-                    <img
-                      src={tItem.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(tItem.name)}&background=1F7A8C&color=fff`}
-                      alt={tItem.name}
-                      width={40}
-                      height={40}
-                      loading="lazy"
-                      decoding="async"
-                      className="w-10 h-10 rounded-full object-cover ring-2 ring-[var(--brand-teal)]/30 group-hover:ring-[var(--brand-teal)] transition-all"
-                    />
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-center space-x-1.5">
-                        <h4 className="font-bold text-xs sm:text-sm text-[var(--text-heading)] truncate">{tItem.name}</h4>
-                        <ShieldCheck className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0" />
+                  {/* Overlapping 72px Circular Avatar (-top-9) with 4px surface-colored ring */}
+                  <div className="absolute -top-9 left-7">
+                    {tItem.avatarUrl || tItem.avatar ? (
+                      <img
+                        src={tItem.avatarUrl || tItem.avatar}
+                        alt={tItem.name}
+                        width={72}
+                        height={72}
+                        loading="lazy"
+                        decoding="async"
+                        className={`w-[72px] h-[72px] rounded-full object-cover ring-4 ${
+                          isMiddle ? 'ring-[#073547]' : 'ring-[var(--bg-surface)]'
+                        } shadow-md`}
+                      />
+                    ) : (
+                      <div
+                        className={`w-[72px] h-[72px] rounded-full flex items-center justify-center font-display font-bold text-lg ring-4 ${
+                          isMiddle
+                            ? 'bg-[#1F7A8C] text-white ring-[#073547]'
+                            : 'bg-[#1F7A8C]/15 text-[#1F7A8C] ring-[var(--bg-surface)]'
+                        } shadow-md`}
+                      >
+                        {initials}
                       </div>
-                      <p className="text-[10px] sm:text-[11px] text-[var(--text-muted)] truncate">{tItem.role}, {tItem.company}</p>
-                    </div>
+                    )}
                   </div>
-                </motion.div>
-              ))}
-            </div>
-          ) : (
-            <div className="p-10 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] text-center space-y-3 max-w-xl mx-auto shadow-sm">
-              <Shield className="w-8 h-8 text-[var(--brand-teal)] mx-auto opacity-70" />
-              <h3 className="font-display font-bold text-lg text-[var(--text-heading)]">
-                100% Quality & Milestone Guarantee
-              </h3>
-              <p className="text-xs text-[var(--text-body)] leading-relaxed">
-                Every project sprint is reviewed and verified by senior architects before delivery. Real client testimonials will appear here once added through your CMS portal.
-              </p>
-            </div>
-          )}
-        </div>
-      </section>
 
-      {/* ── TRUST SIGNALS BAR ── */}
-      <section className="py-8 px-6 lg:px-8 border-t border-[var(--border-subtle)] bg-[var(--bg-surface)]">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 text-center">
-            <div className="flex flex-col items-center p-4 rounded-2xl bg-[var(--bg-subtle)] border border-[var(--border-subtle)]">
-              <span className="text-xs sm:text-sm font-bold text-[var(--text-heading)]">Single SLA</span>
-              <span className="text-[11px] text-[var(--text-muted)] mt-1">One Accountable Entity</span>
-            </div>
-            <div className="flex flex-col items-center p-4 rounded-2xl bg-[var(--bg-subtle)] border border-[var(--border-subtle)]">
-              <span className="text-xs sm:text-sm font-bold text-[var(--text-heading)]">Verified Specialists</span>
-              <span className="text-[11px] text-[var(--text-muted)] mt-1">Trained via Digiskill</span>
-            </div>
-            <div className="flex flex-col items-center p-4 rounded-2xl bg-[var(--bg-subtle)] border border-[var(--border-subtle)]">
-              <span className="text-xs sm:text-sm font-bold text-[var(--text-heading)]">Internal QA</span>
-              <span className="text-[11px] text-[var(--text-muted)] mt-1">Multi-Stage Code Audit</span>
-            </div>
-            <div className="flex flex-col items-center p-4 rounded-2xl bg-[var(--bg-subtle)] border border-[var(--border-subtle)]">
-              <span className="text-xs sm:text-sm font-bold text-[var(--text-heading)]">100% Guarantee</span>
-              <span className="text-[11px] text-[var(--text-muted)] mt-1">Quality & Milestones Backed</span>
-            </div>
+                  {/* Body with Accent Quote Glyph */}
+                  <div>
+                    {/* Brand Accent Quote Glyph in Outfit */}
+                    <div
+                      className={`font-display font-extrabold leading-none mb-3 select-none ${
+                        isMiddle
+                          ? 'text-cyan-300 text-5xl sm:text-6xl'
+                          : 'text-[var(--brand-teal)] text-4xl sm:text-5xl'
+                      }`}
+                      aria-hidden="true"
+                    >
+                      &ldquo;
+                    </div>
+
+                    <blockquote
+                      className={`font-sans text-[15px] sm:text-[16px] leading-[1.6] mb-6 ${
+                        isMiddle ? 'text-white/90' : 'text-[var(--text-body)]'
+                      }`}
+                    >
+                      &ldquo;{tItem.quote}&rdquo;
+                    </blockquote>
+                  </div>
+
+                  {/* Figcaption with semibold name and muted role */}
+                  <figcaption
+                    className={`pt-4 border-t ${
+                      isMiddle ? 'border-white/10' : 'border-[var(--border-subtle)]'
+                    }`}
+                  >
+                    <div className={`font-semibold text-sm ${isMiddle ? 'text-white' : 'text-[var(--text-heading)]'}`}>
+                      {tItem.name}
+                    </div>
+                    <div className={`text-xs ${isMiddle ? 'text-white/70' : 'text-[var(--text-muted)]'}`}>
+                      {tItem.role}{tItem.company ? `, ${tItem.company}` : ''}
+                    </div>
+                  </figcaption>
+                </figure>
+              );
+            })}
           </div>
         </div>
       </section>
@@ -1068,15 +909,9 @@ export const Home: React.FC = () => {
             <p className="text-lg text-[var(--text-body)] mb-10 max-w-xl mx-auto">
               {t('cta_sub')}
             </p>
-            <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }} className="inline-block">
-              <Link
-                to="/contact"
-                className="inline-flex items-center space-x-3 px-10 py-5 rounded-2xl bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-white font-extrabold text-lg shadow-xl transition-all"
-              >
-                <span>{t('btn_start_proposal')}</span>
-                <ArrowRight className="w-5 h-5" />
-              </Link>
-            </motion.div>
+            <div className="inline-block">
+              <LavaProposalButton label={t('btn_start_proposal')} />
+            </div>
           </motion.div>
         </div>
       </section>
@@ -1179,7 +1014,7 @@ export const Home: React.FC = () => {
                     href={getProjectLiveUrl(selectedProject)}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-full sm:w-auto flex items-center justify-center space-x-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-bold text-xs shadow-md transition-all hover:scale-105 active:scale-95 cursor-pointer"
+                    className="w-full sm:w-auto flex items-center justify-center space-x-2 px-5 py-2.5 rounded-xl bg-[#1F7A8C] hover:bg-[#1A6877] text-white font-bold text-xs shadow-md transition-all hover:scale-105 active:scale-95 cursor-pointer"
                   >
                     <ExternalLink className="w-3.5 h-3.5" />
                     <span>Live Demo</span>

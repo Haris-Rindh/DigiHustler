@@ -235,7 +235,6 @@ export const ServiceBentoCard: React.FC<ServiceBentoCardProps> = ({
         onMouseLeave={!hasImage ? handlePointerLeave : () => setIsHovered(false)}
         onFocus={() => setIsHovered(true)}
         onBlur={() => setIsHovered(false)}
-        data-cursor="view"
         className={`w-full h-full relative satin-card overflow-hidden flex flex-col justify-between group p-4 sm:p-5 select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-teal)] transition-all duration-300 ${
           !hasImage ? 'hover:border-[var(--brand-teal)]/70 hover:shadow-xl' : 'hover:border-[var(--brand-teal)]/50'
         }`}

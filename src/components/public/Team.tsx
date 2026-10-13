@@ -249,7 +249,7 @@ export const Team: React.FC = () => {
       />
 
       {/* Header Section */}
-      <section className="bg-[var(--bg-page)] py-20 px-6 lg:px-8 border-b border-[var(--border-subtle)]">
+      <section data-hero="true" className="bg-[var(--bg-page)] py-20 px-6 lg:px-8 border-b border-[var(--border-subtle)]">
         <div className="max-w-7xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 15 }}
@@ -339,82 +339,84 @@ export const Team: React.FC = () => {
                     }}
                     role="button"
                     tabIndex={0}
-                    data-cursor="view"
-                    onPointerMove={handleCardSpotlightMove}
-                    onPointerLeave={handleCardSpotlightLeave}
-                    className={`group premium-card p-6 flex flex-col justify-between cursor-pointer select-none overflow-hidden relative ${
+                    className={`group relative rounded-[24px] overflow-hidden bg-[#073547] text-white border flex flex-col justify-between cursor-pointer select-none transition-all duration-200 hover:-translate-y-1 hover:shadow-2xl ${
                       isPinned
-                        ? 'border-[var(--brand-teal)]/70 ring-2 ring-[var(--brand-teal)]/25 shadow-lg'
-                        : ''
+                        ? 'border-cyan-400/70 shadow-[0_12px_32px_rgba(31,122,140,0.3)] ring-1 ring-cyan-400/30'
+                        : 'border-white/10 hover:border-cyan-400/40 shadow-lg'
                     }`}
                   >
-                    <div className="relative z-[2]">
-                      {/* Pinned Badge */}
-                      {isPinned && (
-                        <div className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/30 text-[9px] font-extrabold uppercase tracking-wider mb-3">
-                          <Pin className="w-2.5 h-2.5 fill-amber-500" />
-                          <span>Pinned Member</span>
-                        </div>
-                      )}
+                    <div>
+                      {/* 50-55% Photo Fading into Surface Color (#073547) */}
+                      <div className="relative w-full aspect-[4/3] sm:h-52 overflow-hidden bg-[#022B3A]">
+                        <img
+                          src={member.img}
+                          alt={member.name}
+                          loading="lazy"
+                          decoding="async"
+                          className="w-full h-full object-cover pointer-events-none"
+                        />
+                        {/* Smooth bottom fade into card surface */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-[#073547] via-[#073547]/30 to-transparent pointer-events-none" />
 
-                      {/* Header */}
-                      <div className="flex items-start space-x-3.5 mb-4">
-                        <div className="relative flex-shrink-0">
-                          <img
-                            src={member.img}
-                            alt={member.name}
-                            className="w-14 h-14 rounded-2xl object-cover ring-2 ring-gray-100 dark:ring-gray-800 group-hover:ring-[var(--brand-teal)]/50 transition-all"
-                          />
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <h4 className="font-bold text-base text-[var(--text-heading)] leading-snug break-words group-hover:text-[var(--brand-teal)] transition-colors">
-                            {member.name}
-                          </h4>
-                          <p className={`text-xs font-bold mt-1 leading-normal break-words ${getCategoryStyles(member.category).text}`}>
-                            {member.role}
-                          </p>
-                        </div>
+                        {/* Pinned Member Badge */}
+                        {isPinned && (
+                          <div className="absolute top-3 left-3 inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full bg-amber-400/20 text-amber-300 border border-amber-400/30 text-[10px] font-sans font-bold uppercase tracking-wider backdrop-blur-md">
+                            <Pin className="w-2.5 h-2.5 fill-amber-300" />
+                            <span>Pinned</span>
+                          </div>
+                        )}
                       </div>
 
-                      {/* Bio */}
-                      <p className="text-xs sm:text-sm text-[var(--text-body)] leading-relaxed mb-4 line-clamp-3 sm:line-clamp-4">
-                        {member.bio}
-                      </p>
+                      {/* Card Body */}
+                      <div className="p-5 sm:p-6 pb-2">
+                        {/* Translucent Chips on Dark Surface */}
+                        <div className="flex flex-wrap items-center gap-1.5 mb-3">
+                          <span className="text-[11px] font-sans font-bold px-2.5 py-0.5 rounded-full bg-[#1F7A8C]/30 text-cyan-300 border border-cyan-400/20">
+                            {member.category}
+                          </span>
+                          {member.skills.slice(0, 2).map((s) => (
+                            <span
+                              key={s}
+                              className="text-[10px] font-sans font-medium px-2 py-0.5 rounded-md bg-white/[0.08] text-white/75 border border-white/10 truncate max-w-[120px]"
+                            >
+                              {s}
+                            </span>
+                          ))}
+                        </div>
 
-                      {/* Skills */}
-                      <div className="flex flex-wrap gap-1.5 mb-4">
-                        {member.skills.slice(0, 3).map((s) => (
-                          <span
-                            key={s}
-                            className="text-[10px] px-2 py-0.5 rounded-md bg-[var(--bg-subtle)] text-[var(--text-body)] border border-[var(--border-subtle)] font-medium truncate max-w-[140px] group-hover:border-[var(--brand-teal)]/20 transition-colors"
-                          >
-                            {s}
-                          </span>
-                        ))}
-                        {member.skills.length > 3 && (
-                          <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-[var(--bg-subtle)] text-[var(--text-muted)] border border-[var(--border-subtle)] font-semibold">
-                            +{member.skills.length - 3}
-                          </span>
-                        )}
+                        {/* Name in Outfit 600 (font-display font-semibold) */}
+                        <h4 className="font-display font-semibold text-[18px] text-white leading-snug group-hover:text-cyan-300 transition-colors">
+                          {member.name}
+                        </h4>
+
+                        {/* Designation / Role */}
+                        <p className="text-xs font-medium text-cyan-300/90 mt-1 mb-2.5">
+                          {member.role}
+                        </p>
+
+                        {/* Bio */}
+                        <p className="text-xs text-white/75 leading-relaxed line-clamp-3 mb-4">
+                          {member.bio}
+                        </p>
                       </div>
                     </div>
 
-                    {/* Footer */}
-                    <div className="pt-4 border-t border-[var(--border-subtle)] flex items-center justify-between mt-auto relative z-[2]">
-                      <span
-                        className="text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wide"
-                        style={{
-                          color: CAT_COLORS[member.category] || '#1a7a8c',
-                          backgroundColor: (CAT_COLORS[member.category] || '#1a7a8c') + '18',
-                        }}
-                      >
-                        {member.category}
+                    {/* Card Footer: Solid White Pill Button */}
+                    <div className="p-5 sm:p-6 pt-3 mt-auto border-t border-white/10 flex items-center justify-between">
+                      <span className="text-[11px] text-white/60 font-sans">
+                        {member.digiskillBatch}
                       </span>
-                      
-                      <div className="flex items-center space-x-1.5 text-xs font-semibold text-[var(--brand-teal)] group-hover:translate-x-1 transition-transform">
-                        <span className="text-[11px]">View Profile</span>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedMember(member);
+                        }}
+                        className="px-4 py-2 rounded-full bg-white text-[#022B3A] font-sans font-bold text-xs inline-flex items-center space-x-1.5 shadow-sm hover:bg-slate-100 active:scale-95 transition-all cursor-pointer"
+                      >
+                        <span>View Profile</span>
                         <ArrowRight className="w-3.5 h-3.5" />
-                      </div>
+                      </button>
                     </div>
                   </div>
                 );
@@ -460,7 +462,6 @@ export const Team: React.FC = () => {
                     }}
                     role="button"
                     tabIndex={0}
-                    data-cursor="view"
                     onPointerMove={handleCardSpotlightMove}
                     onPointerLeave={handleCardSpotlightLeave}
                     className={`group premium-card p-5 flex flex-col justify-between cursor-pointer select-none overflow-hidden relative ${

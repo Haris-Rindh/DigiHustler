@@ -12,7 +12,7 @@ import {
 } from 'lucide-react';
 import { SEOHead } from '../seo/SEOHead';
 import { useApp } from '../../context/AppContext';
-import { ServiceBentoCard } from '../ui/ServiceBentoCard';
+import { ServiceCard } from '../ui/ServiceCard';
 import { DEFAULT_SITE_CONTENT } from '../../services/mockData';
 import { SiteServiceItem } from '../../types';
 
@@ -142,7 +142,7 @@ export const Services: React.FC = () => {
       />
 
       {/* ── AUTO IMAGE SLIDER SHOWCASE (AT VERY START) ── */}
-      <section className="bg-[var(--bg-page)] pt-4 sm:pt-6 pb-8 px-4 sm:px-6 lg:px-8 border-b border-[var(--border-subtle)]">
+      <section data-hero="true" className="bg-[var(--bg-page)] pt-4 sm:pt-6 pb-8 px-4 sm:px-6 lg:px-8 border-b border-[var(--border-subtle)]">
         <div className="max-w-7xl mx-auto">
           <div className="relative w-full h-[360px] sm:h-[440px] md:h-[480px] lg:h-[520px] rounded-3xl overflow-hidden shadow-2xl border border-[var(--border-subtle)] bg-black/90 group select-none">
             {/* Background Slides with Framer Motion */}
@@ -304,90 +304,105 @@ export const Services: React.FC = () => {
             }}
             initial="hidden"
             animate="visible"
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-5 lg:gap-6"
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 lg:gap-6"
           >
             {filteredServices.map((svc, index) => (
-              <ServiceBentoCard
+              <ServiceCard
                 key={svc.id || svc.slug || index}
-                service={svc}
-                index={index}
-                isOpen={activeTileId === (svc.id || svc.slug)}
-                onToggle={() =>
-                  setActiveTileId((prev) =>
-                    prev === (svc.id || svc.slug) ? null : (svc.id || svc.slug)
-                  )
-                }
+                service={{
+                  title: svc.title,
+                  description: svc.description,
+                  summary: svc.tagline,
+                  tags: svc.features || svc.deliverables,
+                  icon: svc.icon,
+                  imageUrl: svc.imageUrl,
+                  linkTarget: svc.linkTarget || `/contact?service=${encodeURIComponent(svc.title)}`,
+                }}
               />
             ))}
           </motion.div>
         </div>
       </section>
 
-      {/* ── SECTION: SQUAD ORCHESTRATION ARCHITECTURE ── */}
+      {/* ── SECTION: SQUAD ORCHESTRATION ARCHITECTURE (Item 10b Clean Stepper) ── */}
       <section className="bg-[var(--bg-page)] py-16 sm:py-24 px-4 sm:px-6 lg:px-8 border-t border-[var(--border-subtle)] relative overflow-hidden">
         <div className="max-w-7xl mx-auto relative z-10">
-          <div className="text-center max-w-3xl mx-auto mb-12 sm:mb-16">
-            <span className="text-xs font-mono font-extrabold uppercase tracking-widest text-[var(--brand-teal)] mb-3 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[var(--brand-teal-subtle)] border border-[var(--brand-teal)]/30">
+          <div className="text-center max-w-3xl mx-auto mb-14 sm:mb-20">
+            <span className="text-xs font-sans font-extrabold uppercase tracking-widest text-[var(--brand-teal)] mb-3 inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[var(--brand-teal-subtle)] border border-[var(--brand-teal)]/30">
               <Zap className="w-3.5 h-3.5" />
               <span>CO-ORDINATED DELIVERY MODEL</span>
             </span>
             <h2 className="font-display font-extrabold text-3xl sm:text-4xl text-[var(--text-heading)] mt-2 mb-4">
               How One Managed Contract Powers Multiple Specialized Squads
             </h2>
-            <p className="text-sm sm:text-base text-[var(--text-body)] leading-relaxed">
+            <p className="font-sans text-sm sm:text-base text-[var(--text-body)] leading-relaxed">
               No freelancer chaos. No disconnected contractors. DigiHust delivers cross-functional squads under one accountable technical director.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
-            {[
-              {
-                title: 'Technical Scoping & Squad Assembly',
-                desc: 'We decompose your product requirements, assemble verified specialists from our roster, and create an immutable milestone roadmap.',
-                icon: <Cpu className="w-5 h-5 text-cyan-400" />,
-                tag: 'ARCHITECT AUDIT',
-              },
-              {
-                title: 'Parallel Sprint Execution',
-                desc: 'Frontend, backend, 3D design, and automation squads work concurrently with synchronized daily CI/CD staging builds.',
-                icon: <Layers className="w-5 h-5 text-purple-400" />,
-                tag: 'PARALLEL BUILDS',
-              },
-              {
-                title: 'Security Hardening & QA Audit',
-                desc: 'Every milestone undergoes OWASP vulnerability scanning, automated test suites, and cross-browser performance benchmarking.',
-                icon: <ShieldCheck className="w-5 h-5 text-emerald-400" />,
-                tag: 'ENTERPRISE QA',
-              },
-              {
-                title: 'Clean Handover & SLA Assurance',
-                desc: 'Full production deployment, complete source code & design system repository transfer, backed by our 30-day post-launch warranty.',
-                icon: <CheckCircle2 className="w-5 h-5 text-amber-400" />,
-                tag: '100% SLA BACKED',
-              },
-            ].map((p, idx) => (
-              <div
-                key={idx}
-                className="relative rounded-2xl p-6 bg-[var(--bg-surface)] border border-[var(--border-subtle)] hover:border-[var(--brand-teal)]/60 transition-all duration-300 shadow-md hover:shadow-xl flex flex-col justify-between group"
-              >
-                <div>
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="w-10 h-10 rounded-xl bg-[var(--bg-page)] border border-[var(--border-subtle)] flex items-center justify-center group-hover:scale-105 transition-transform">
-                      {p.icon}
+          {/* Clean 4-step Stepper with 40px numbered circle and 1px desktop connector line */}
+          <div className="relative">
+            {/* 1px Connector line between steps on desktop */}
+            <div
+              className="hidden lg:block absolute top-5 left-[12%] right-[12%] h-[1px] bg-[var(--border-subtle)] z-0"
+              aria-hidden="true"
+            />
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 relative z-10">
+              {[
+                {
+                  num: '01',
+                  title: 'Technical Scoping & Squad Assembly',
+                  desc: 'We decompose your product requirements, assemble verified specialists from our roster, and create an immutable milestone roadmap.',
+                  tag: 'Architect Audit',
+                },
+                {
+                  num: '02',
+                  title: 'Parallel Sprint Execution',
+                  desc: 'Frontend, backend, 3D design, and automation squads work concurrently with synchronized daily CI/CD staging builds.',
+                  tag: 'Parallel Builds',
+                },
+                {
+                  num: '03',
+                  title: 'Security Hardening & QA Audit',
+                  desc: 'Every milestone undergoes OWASP vulnerability scanning, automated test suites, and cross-browser performance benchmarking.',
+                  tag: 'Enterprise QA',
+                },
+                {
+                  num: '04',
+                  title: 'Clean Handover & SLA Assurance',
+                  desc: 'Full production deployment, complete source code & design system repository transfer, backed by our 30-day post-launch warranty.',
+                  tag: '100% SLA Backed',
+                },
+              ].map((p, idx) => (
+                <div
+                  key={idx}
+                  className="rounded-2xl p-6 bg-[var(--bg-surface)] border border-[var(--border-subtle)] hover:border-[var(--brand-teal)]/60 transition-all duration-200 shadow-sm hover:shadow-lg flex flex-col justify-between group"
+                >
+                  <div>
+                    {/* Header: 40px numbered circle + Tag */}
+                    <div className="flex items-center justify-between mb-5">
+                      <div className="w-10 h-10 rounded-full bg-[#1F7A8C] text-white font-display font-bold text-sm flex items-center justify-center shadow-md">
+                        {p.num}
+                      </div>
+                      <span className="text-[11px] font-sans font-semibold tracking-wide text-[var(--brand-teal)] bg-[var(--brand-teal-subtle)] px-2.5 py-0.5 rounded-full border border-[var(--brand-teal)]/30">
+                        {p.tag}
+                      </span>
                     </div>
-                    <span className="text-[10px] font-mono font-bold tracking-wider text-[var(--text-dim)] uppercase bg-[var(--bg-page)] px-2 py-0.5 rounded border border-[var(--border-subtle)]">
-                      {p.tag}
-                    </span>
+
+                    {/* Step Title in Outfit (font-display) */}
+                    <h3 className="font-display font-bold text-base sm:text-lg text-[var(--text-heading)] mb-2 group-hover:text-[var(--brand-teal)] transition-colors">
+                      {p.title}
+                    </h3>
+
+                    {/* Description in Plus Jakarta Sans (font-sans) */}
+                    <p className="font-sans text-xs sm:text-[13px] text-[var(--text-body)] leading-relaxed">
+                      {p.desc}
+                    </p>
                   </div>
-                  <h3 className="font-display font-bold text-base sm:text-lg text-[var(--text-heading)] mb-2">
-                    {p.title}
-                  </h3>
-                  <p className="text-xs text-[var(--text-body)] leading-relaxed">
-                    {p.desc}
-                  </p>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
       </section>

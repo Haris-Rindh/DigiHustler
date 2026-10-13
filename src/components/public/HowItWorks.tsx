@@ -1,9 +1,90 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowRight, CheckCircle2, ChevronDown, HelpCircle, ShieldCheck } from 'lucide-react';
+import {
+  ArrowRight,
+  CheckCircle2,
+  ChevronDown,
+  HelpCircle,
+  Code2,
+  Terminal,
+  Cloud,
+  Database,
+  Cpu,
+  Workflow,
+  Palette,
+  CheckSquare,
+  Shield,
+  BarChart3,
+  ShoppingBag,
+  Smartphone,
+  Wrench,
+} from 'lucide-react';
 import { SEOHead } from '../seo/SEOHead';
 import { useApp } from '../../context/AppContext';
+
+const TOOL_CATEGORIES = [
+  {
+    category: 'Web Frameworks',
+    icon: Code2,
+    tools: ['React', 'Next.js', 'Vue', 'Tailwind CSS', 'Vite'],
+  },
+  {
+    category: 'Languages',
+    icon: Terminal,
+    tools: ['TypeScript', 'JavaScript', 'Python', 'SQL', 'HTML5/CSS3'],
+  },
+  {
+    category: 'Cloud & Hosting',
+    icon: Cloud,
+    tools: ['AWS', 'Vercel', 'Docker', 'Supabase', 'Cloudflare'],
+  },
+  {
+    category: 'Databases',
+    icon: Database,
+    tools: ['PostgreSQL', 'MongoDB', 'Redis', 'Supabase DB', 'SQLite'],
+  },
+  {
+    category: 'AI & Machine Learning',
+    icon: Cpu,
+    tools: ['OpenAI API', 'Claude API', 'Custom LLMs', 'Hugging Face', 'LangChain'],
+  },
+  {
+    category: 'Automation & Integrations',
+    icon: Workflow,
+    tools: ['n8n', 'Zapier', 'Webhooks', 'REST APIs', 'Python Scripts'],
+  },
+  {
+    category: 'UI/UX & 3D Design',
+    icon: Palette,
+    tools: ['Figma', 'Cinema 4D', 'Blender', 'Adobe CC', 'Framer'],
+  },
+  {
+    category: 'Testing & QA',
+    icon: CheckSquare,
+    tools: ['Playwright', 'Jest', 'Vitest', 'Cypress', 'Lighthouse'],
+  },
+  {
+    category: 'Cybersecurity',
+    icon: Shield,
+    tools: ['OWASP Standards', 'Penetration Testing', 'SSL/TLS', 'Dependency Auditing'],
+  },
+  {
+    category: 'Analytics & BI',
+    icon: BarChart3,
+    tools: ['PowerBI', 'GA4', 'Mixpanel', 'Custom Dashboards'],
+  },
+  {
+    category: 'CMS & E-commerce',
+    icon: ShoppingBag,
+    tools: ['Headless CMS', 'WordPress', 'Shopify', 'Stripe'],
+  },
+  {
+    category: 'Mobile & Cross-Platform',
+    icon: Smartphone,
+    tools: ['React Native', 'Flutter', 'PWA'],
+  },
+];
 
 const STEPS = [
   {
@@ -102,7 +183,10 @@ export const HowItWorks: React.FC = () => {
       />
 
       {/* Header */}
-      <section className="bg-[var(--bg-page)] py-20 px-6 lg:px-8 border-b border-[var(--border-subtle)]">
+      <section
+        data-hero="true"
+        className="bg-[var(--bg-page)] py-20 px-6 lg:px-8 border-b border-[var(--border-subtle)]"
+      >
         <div className="max-w-7xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 15 }}
@@ -240,6 +324,57 @@ export const HowItWorks: React.FC = () => {
         </div>
       </section>
 
+      {/* Technologies & Tools Section */}
+      <section className="bg-[var(--bg-page)] py-20 px-6 lg:px-8 border-b border-[var(--border-subtle)]">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <p className="text-xs font-extrabold text-[var(--brand-teal)] uppercase tracking-widest mb-3 flex items-center justify-center space-x-1.5">
+              <Wrench className="w-4 h-4" />
+              <span>Full-Stack Arsenal</span>
+            </p>
+            <h2 className="font-display font-extrabold text-3xl sm:text-4xl text-[var(--text-heading)] mb-4">
+              Technologies & Tools
+            </h2>
+            <p className="text-[var(--text-body)] text-base max-w-2xl mx-auto leading-relaxed">
+              We leverage modern, industry-standard engineering stacks, frameworks, and workflows to build performant, secure, and production-scalable software.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {TOOL_CATEGORIES.map((cat) => {
+              const Icon = cat.icon;
+              return (
+                <div
+                  key={cat.category}
+                  className="rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-6 transition-all duration-200 hover:border-[var(--brand-teal)]/40 hover:-translate-y-1 hover:shadow-lg flex flex-col justify-between"
+                >
+                  <div>
+                    <div className="flex items-center space-x-3 mb-4">
+                      <div className="w-10 h-10 rounded-xl bg-[var(--brand-teal)]/10 text-[var(--brand-teal)] flex items-center justify-center flex-shrink-0">
+                        <Icon className="w-5 h-5" />
+                      </div>
+                      <h3 className="font-display font-bold text-base text-[var(--text-heading)]">
+                        {cat.category}
+                      </h3>
+                    </div>
+                    <div className="flex flex-wrap gap-2 pt-2">
+                      {cat.tools.map((t) => (
+                        <span
+                          key={t}
+                          className="px-2.5 py-1 text-xs rounded-lg bg-[var(--bg-page)] text-[var(--text-body)] border border-[var(--border-subtle)] font-medium"
+                        >
+                          {t}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
       {/* FAQ Section */}
       <section className="bg-[var(--bg-page)] py-20 px-6 lg:px-8">
         <div className="max-w-3xl mx-auto">
@@ -304,7 +439,7 @@ export const HowItWorks: React.FC = () => {
         </p>
         <Link
           to="/contact"
-          className="inline-flex items-center space-x-2 px-8 py-4 rounded-xl bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-white font-bold shadow-lg transition-all"
+          className="inline-flex items-center space-x-2 px-8 py-4 rounded-xl bg-[#1F7A8C] hover:bg-[#186473] text-white font-bold shadow-md hover:shadow-lg transition-all"
         >
           <span>Get a Quote</span>
           <ArrowRight className="w-4 h-4" />

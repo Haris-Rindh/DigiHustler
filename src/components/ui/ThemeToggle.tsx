@@ -1,7 +1,12 @@
 import React from 'react';
-import { motion } from 'framer-motion';
 import { Sun, Moon } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
+
+/* 
+ * Theme Toggle Switch Component
+ * Based on https://uiverse.io/lenin55/fast-chicken-43 (MIT License)
+ * Designed with a 44x24px track and 200ms smooth sliding knob
+ */
 
 interface ThemeToggleProps {
   className?: string;
@@ -11,71 +16,40 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({ className = '' }) => {
   const { theme, toggleTheme } = useTheme();
   const isDark = theme === 'dark';
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' || e.key === ' ') {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLButtonElement>) => {
+    if (e.key === ' ' || e.key === 'Enter') {
       e.preventDefault();
       toggleTheme();
     }
   };
 
   return (
-    <button
-      role="switch"
-      aria-checked={isDark}
-      aria-label={isDark ? 'Switch to light theme' : 'Switch to dark theme'}
-      title={isDark ? 'Switch to light theme' : 'Switch to dark theme'}
-      tabIndex={0}
-      onClick={toggleTheme}
-      onKeyDown={handleKeyDown}
-      className={`relative inline-flex items-center h-8 w-15 p-0.5 rounded-full border transition-colors cursor-pointer select-none focus:outline-none focus:ring-2 focus:ring-[var(--brand-teal)] ${
-        isDark
-          ? 'bg-[var(--bg-surface)] border-[var(--border-subtle)]'
-          : 'bg-[var(--bg-subtle)] border-[var(--border-subtle)]'
-      } ${className}`}
-    >
-      {/* Background Subtle Track Glows */}
-      <div className="absolute inset-0 flex items-center justify-between px-2 pointer-events-none overflow-hidden rounded-full">
-        {isDark ? (
-          <>
-            <span className="text-[8px] text-[var(--brand-teal)] ml-0.5 opacity-60">★</span>
-            <span className="text-[6px] text-cyan-300 mr-0.5 opacity-50">✦</span>
-          </>
-        ) : (
-          <>
-            <span className="w-1 h-1 rounded-full bg-[var(--brand-teal)]/30 ml-0.5" />
-            <span className="w-1.5 h-1.5 rounded-full bg-[var(--brand-teal)]/40 mr-0.5" />
-          </>
-        )}
-      </div>
-
-      {/* Spring Thumb */}
-      <motion.div
-        layout
-        transition={{
-          type: 'spring',
-          stiffness: 500,
-          damping: 30,
-        }}
-        className={`relative z-10 w-6 h-6 rounded-full flex items-center justify-center shadow-md transition-all ${
-          isDark
-            ? 'bg-[var(--brand-teal)] text-white ml-auto shadow-[0_0_10px_rgba(31,122,140,0.5)]'
-            : 'bg-white dark:bg-slate-900 text-[var(--brand-teal)] mr-auto border border-[var(--border-subtle)]'
+    <div className={`inline-flex items-center min-h-[44px] ${className}`}>
+      <button
+        type="button"
+        role="switch"
+        aria-checked={isDark}
+        aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+        title={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+        onClick={toggleTheme}
+        onKeyDown={handleKeyDown}
+        className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border border-transparent transition-colors duration-200 ease-in-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1F7A8C] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg-page)] ${
+          isDark ? 'bg-[#1F7A8C]' : 'bg-[#CBD5E1] dark:bg-slate-700'
         }`}
       >
-        <motion.div
-          key={theme}
-          initial={{ rotate: -90, scale: 0.6, opacity: 0 }}
-          animate={{ rotate: 0, scale: 1, opacity: 1 }}
-          exit={{ rotate: 90, scale: 0.6, opacity: 0 }}
-          transition={{ duration: 0.25 }}
+        <span className="sr-only">Toggle dark mode</span>
+        <span
+          className={`pointer-events-none inline-flex h-5 w-5 transform items-center justify-center rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out mt-0.5 ${
+            isDark ? 'translate-x-[22px]' : 'translate-x-0.5'
+          }`}
         >
           {isDark ? (
-            <Moon className="w-3.5 h-3.5 fill-white text-white" />
+            <Moon className="w-3 h-3 text-[#1F7A8C] fill-[#1F7A8C]" aria-hidden="true" />
           ) : (
-            <Sun className="w-3.5 h-3.5 text-[var(--brand-teal)] fill-[var(--brand-teal)]/20" />
+            <Sun className="w-3 h-3 text-amber-500 fill-amber-500" aria-hidden="true" />
           )}
-        </motion.div>
-      </motion.div>
-    </button>
+        </span>
+      </button>
+    </div>
   );
 };

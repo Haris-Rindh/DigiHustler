@@ -6,7 +6,6 @@ import { LanguageProvider } from './context/LanguageContext';
 import { Navbar } from './components/layout/Navbar';
 import { Footer } from './components/layout/Footer';
 import { OfflineBanner } from './components/ui/OfflineBanner';
-import { CustomCursor } from './components/ui/CustomCursor';
 import { ScrollProgress } from './components/ui/ScrollProgress';
 import { CookieConsent } from './components/ui/CookieConsent';
 import { PWAInstallPrompt } from './components/ui/PWAInstallPrompt';
@@ -88,7 +87,6 @@ export const App: React.FC = () => {
         <LanguageProvider>
           <Router>
             <ScrollToTop />
-            <CustomCursor />
             <ScrollProgress />
             <OfflineBanner />
             <CookieConsent />
