@@ -249,8 +249,10 @@ routes.forEach((route) => {
 
   html = html.replace('</head>', `${headInjection}\n  </head>`);
 
-  // Inject 3D cube loader splash inside #root per Item 16 & 25a (eliminating raw unstyled text flash)
-  const rootContent = `
+  // Ensure 3D cube loader splash inside #root per Item 16 & 25a (eliminating raw unstyled text flash)
+  // templateHtml from Vite build already contains #app-boot-splash inside #root. Only inject if missing.
+  if (!html.includes('id="app-boot-splash"')) {
+    const rootContent = `
     <div id="root">
       <div id="app-boot-splash" style="display:flex;min-height:100vh;align-items:center;justify-content:center;background:var(--bg-page,#022B3A);">
         <div class="cube-loader-wrapper" role="status" aria-label="Loading DigiHust">
@@ -266,10 +268,9 @@ routes.forEach((route) => {
           <span style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">Loading DigiHust...</span>
         </div>
       </div>
-    </div>
-  `;
-
-  html = html.replace(/<div id="root">[\s\S]*?<\/div>/, rootContent.trim());
+    </div>`;
+    html = html.replace(/<div id="root">\s*<\/div>/, rootContent.trim());
+  }
 
   // Save to dist/
   if (route.path === '/') {
