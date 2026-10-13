@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { 
   FileText, Image as ImageIcon, Check, RotateCcw, 
   Plus, Trash2, Eye, Layout, Star, Briefcase, Users, Layers, ExternalLink,
-  DollarSign, HelpCircle, Info, PhoneCall, ChevronRight, X, ShieldAlert, CheckCircle2
+  DollarSign, HelpCircle, Info, PhoneCall, ChevronRight, X, ShieldAlert, CheckCircle2,
+  Mail, Download, Upload, Loader2
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { 
@@ -12,6 +13,7 @@ import {
 import { DEFAULT_SITE_CONTENT } from '../../services/mockData';
 import { PERMISSIONS } from '../../lib/permissions';
 import { AVAILABLE_SERVICE_ICONS, getServiceIcon } from '../../lib/serviceIcons';
+import { dbService } from '../../lib/dbService';
 
 const SERVICE_PATTERN_OPTIONS = [
   { id: 'dotted-grid', label: 'Dotted Grid' },
@@ -45,7 +47,7 @@ export const SiteContentManager: React.FC = () => {
   } = useApp();
 
   const [activeTab, setActiveTab] = useState<
-    'hero' | 'valueProps' | 'caseStudies' | 'testimonials' | 'services' | 'packages' | 'team' | 'blog' | 'faqs' | 'about' | 'contact' | 'images' | 'careers'
+    'hero' | 'valueProps' | 'caseStudies' | 'testimonials' | 'services' | 'packages' | 'team' | 'blog' | 'faqs' | 'about' | 'contact' | 'images' | 'careers' | 'newsletter'
   >('hero');
 
   const [savedFeedback, setSavedFeedback] = useState<string | null>(null);
@@ -58,6 +60,22 @@ export const SiteContentManager: React.FC = () => {
   const [contactDraft, setContactDraft] = useState(safeContent.contact || DEFAULT_SITE_CONTENT.contact);
   const [careersDraft, setCareersDraft] = useState(safeContent.careers || { noPositionsMessage: "We're always looking for exceptional talent, but we don't have any open positions right now. Check back soon!", openPositions: [] });
   const [customImagesDraft, setCustomImagesDraft] = useState(safeContent.customImages || {});
+
+  // Newsletter & Illustration state
+  const [newsletterSubscribers, setNewsletterSubscribers] = useState<Array<{ id: string; email: string; created_at: string }>>([]);
+  const [isNewsletterLoading, setIsNewsletterLoading] = useState(false);
+  const [newsletterSearch, setNewsletterSearch] = useState('');
+  const [isUploadingIllustration, setIsUploadingIllustration] = useState(false);
+
+  useEffect(() => {
+    if (activeTab === 'newsletter') {
+      setIsNewsletterLoading(true);
+      dbService.fetchNewsletterSubscribers().then((data) => {
+        setNewsletterSubscribers(data);
+        setIsNewsletterLoading(false);
+      });
+    }
+  }, [activeTab]);
 
   // Keep drafts synchronized with latest cloud state
   useEffect(() => {
@@ -173,7 +191,49 @@ export const SiteContentManager: React.FC = () => {
   const handleSaveContact = (e: React.FormEvent) => {
     e.preventDefault();
     updateSiteContent('contact', contactDraft);
+    if ((contactDraft as any).illustrationUrl) {
+      updateSiteContent('contactIllustrationUrl' as any, (contactDraft as any).illustrationUrl);
+    }
     triggerSaved('Contact information and social links updated live!');
+  };
+
+  const handleExportNewsletterCsv = () => {
+    if (newsletterSubscribers.length === 0) {
+      showToast('No subscribers to export.', 'info');
+      return;
+    }
+    const header = 'ID,Email,Subscribed Date\n';
+    const rows = newsletterSubscribers.map((s) => `"${s.id}","${s.email}","${s.created_at}"`).join('\n');
+    const blob = new Blob([header + rows], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    link.setAttribute('download', `digihust_newsletter_subscribers_${new Date().toISOString().split('T')[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    showToast('Subscribers exported to CSV successfully.', 'success');
+  };
+
+  const handleIllustrationUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setIsUploadingIllustration(true);
+    try {
+      const publicUrl = await dbService.uploadSiteAsset(file, 'contact');
+      if (publicUrl) {
+        setContactDraft((prev) => ({ ...prev, illustrationUrl: publicUrl } as any));
+        updateSiteContent('contactIllustrationUrl' as any, publicUrl);
+        updateSiteContent('contact', { ...contactDraft, illustrationUrl: publicUrl } as any);
+        showToast('Contact illustration uploaded to Supabase Storage!', 'success');
+      } else {
+        showToast('Failed to upload image to storage.', 'error');
+      }
+    } catch {
+      showToast('Error uploading image.', 'error');
+    } finally {
+      setIsUploadingIllustration(false);
+    }
   };
 
   const handleSaveCareers = (e: React.FormEvent) => {
@@ -476,6 +536,7 @@ export const SiteContentManager: React.FC = () => {
           { id: 'about' as const,       label: '7. Company Story',    icon: <Info className="w-3.5 h-3.5" />,       status: 'live',     tip: 'Mission, vision, and company story shown on /about page' },
           { id: 'contact' as const,     label: '8. Contact Info',     icon: <PhoneCall className="w-3.5 h-3.5" />,  status: 'live',     tip: 'Email, phone, and address shown on the /contact page sidebar' },
           { id: 'careers' as const,     label: '9. Careers',          icon: <Briefcase className="w-3.5 h-3.5" />,  status: 'live',     tip: 'Manage open positions and messaging on /careers' },
+          { id: 'newsletter' as const,  label: '10. Newsletter',      icon: <Mail className="w-3.5 h-3.5" />,       status: 'live',     tip: 'View newsletter subscribers and export to CSV' },
         ].map((tab) => (
           <button
             key={tab.id}
@@ -2354,7 +2415,7 @@ export const SiteContentManager: React.FC = () => {
         <form onSubmit={handleSaveContact} className="p-6 sm:p-8 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] space-y-6 shadow-xl">
           <div className="flex items-center justify-between pb-4 border-b border-[var(--border-subtle)]">
             <h3 className="font-display font-extrabold text-lg text-[var(--text-heading)]">Global Contact Information & Social Handles</h3>
-            <button type="submit" className="px-5 py-2 rounded-xl bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-white text-xs font-bold shadow-md cursor-pointer">
+            <button type="submit" className="px-5 py-2 rounded-xl bg-[#1F7A8C] hover:bg-[#186473] text-white text-xs font-bold shadow-md cursor-pointer transition-colors">
               Save Contact Details
             </button>
           </div>
@@ -2396,7 +2457,7 @@ export const SiteContentManager: React.FC = () => {
                 type="url"
                 value={contactDraft.calendlyUrl}
                 onChange={(e) => setContactDraft({ ...contactDraft, calendlyUrl: e.target.value })}
-                className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs font-mono"
+                className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs"
               />
             </div>
             <div>
@@ -2405,7 +2466,7 @@ export const SiteContentManager: React.FC = () => {
                 type="url"
                 value={contactDraft.linkedin}
                 onChange={(e) => setContactDraft({ ...contactDraft, linkedin: e.target.value })}
-                className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs font-mono"
+                className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs"
               />
             </div>
             <div>
@@ -2414,8 +2475,54 @@ export const SiteContentManager: React.FC = () => {
                 type="url"
                 value={contactDraft.github}
                 onChange={(e) => setContactDraft({ ...contactDraft, github: e.target.value })}
-                className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs font-mono"
+                className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs"
               />
+            </div>
+          </div>
+
+          {/* Contact Side Illustration Section */}
+          <div className="pt-4 border-t border-[var(--border-subtle)] space-y-4">
+            <h4 className="font-display font-bold text-sm text-[var(--text-heading)]">Contact Page Sidebar Illustration</h4>
+            <p className="text-xs text-[var(--text-muted)]">
+              Upload an illustration for the left side of the /contact page or provide a public URL. Uploaded images are stored permanently in Supabase Storage.
+            </p>
+            <div className="flex flex-col sm:flex-row items-center gap-6">
+              <div className="w-40 h-40 rounded-2xl bg-[var(--bg-page)] border border-[var(--border-subtle)] overflow-hidden flex items-center justify-center p-2 flex-shrink-0">
+                <img
+                  src={(contactDraft as any).illustrationUrl || safeContent.contactIllustrationUrl || '/contact-illustration.png'}
+                  alt="Contact illustration preview"
+                  className="w-full h-full object-contain"
+                />
+              </div>
+              <div className="space-y-3 flex-1 w-full">
+                <div>
+                  <label className="block text-xs font-bold uppercase text-[var(--text-muted)] mb-1">Illustration URL</label>
+                  <input
+                    type="url"
+                    value={(contactDraft as any).illustrationUrl || ''}
+                    placeholder="/contact-illustration.png or https://..."
+                    onChange={(e) => setContactDraft({ ...contactDraft, illustrationUrl: e.target.value } as any)}
+                    className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs"
+                  />
+                </div>
+                <div>
+                  <label className="inline-flex items-center space-x-2 px-4 py-2 rounded-xl bg-[var(--bg-page)] hover:bg-[var(--bg-subtle)] border border-[var(--border-subtle)] text-xs font-bold text-[var(--text-heading)] cursor-pointer transition-colors">
+                    {isUploadingIllustration ? (
+                      <Loader2 className="w-3.5 h-3.5 animate-spin text-[var(--brand-teal)]" />
+                    ) : (
+                      <Upload className="w-3.5 h-3.5 text-[var(--brand-teal)]" />
+                    )}
+                    <span>{isUploadingIllustration ? 'Uploading...' : 'Upload Image to Supabase'}</span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleIllustrationUpload}
+                      disabled={isUploadingIllustration}
+                      className="hidden"
+                    />
+                  </label>
+                </div>
+              </div>
             </div>
           </div>
         </form>
@@ -2579,6 +2686,82 @@ export const SiteContentManager: React.FC = () => {
               ))}
             </div>
           </form>
+        </div>
+      )}
+
+      {/* ── TAB 10: NEWSLETTER SUBSCRIBERS ── */}
+      {activeTab === 'newsletter' && (
+        <div className="p-6 sm:p-8 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] space-y-6 shadow-xl">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[var(--border-subtle)]">
+            <div>
+              <div className="flex items-center space-x-2">
+                <h3 className="font-display font-extrabold text-lg text-[var(--text-heading)]">Newsletter Subscribers</h3>
+                <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#1F7A8C]/15 text-[#1F7A8C]">
+                  {newsletterSubscribers.length} total
+                </span>
+              </div>
+              <p className="text-xs text-[var(--text-muted)] mt-1">
+                Captured via the website footer newsletter form and synced with Supabase.
+              </p>
+            </div>
+            <div className="flex items-center space-x-3">
+              <button
+                type="button"
+                onClick={handleExportNewsletterCsv}
+                disabled={newsletterSubscribers.length === 0}
+                className="px-4 py-2 rounded-xl bg-[#1F7A8C] hover:bg-[#186473] text-white text-xs font-bold shadow-md flex items-center space-x-2 transition-colors disabled:opacity-50 cursor-pointer"
+              >
+                <Download className="w-3.5 h-3.5" />
+                <span>Export CSV</span>
+              </button>
+            </div>
+          </div>
+
+          <div className="flex items-center justify-between gap-4">
+            <input
+              type="text"
+              placeholder="Filter by email address..."
+              value={newsletterSearch}
+              onChange={(e) => setNewsletterSearch(e.target.value)}
+              className="max-w-md w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3.5 py-2 text-xs text-[var(--text-heading)] placeholder-[var(--text-dim)] focus:outline-none focus:border-[#1F7A8C]"
+            />
+          </div>
+
+          {isNewsletterLoading ? (
+            <div className="py-12 flex items-center justify-center space-x-2 text-xs text-[var(--text-muted)]">
+              <Loader2 className="w-4 h-4 animate-spin text-[var(--brand-teal)]" />
+              <span>Loading subscribers from database...</span>
+            </div>
+          ) : newsletterSubscribers.length === 0 ? (
+            <div className="py-12 text-center text-xs text-[var(--text-muted)] border border-dashed border-[var(--border-subtle)] rounded-2xl">
+              No newsletter subscribers yet. Submissions from the website footer will appear here.
+            </div>
+          ) : (
+            <div className="overflow-x-auto border border-[var(--border-subtle)] rounded-2xl">
+              <table className="w-full text-left text-xs">
+                <thead className="bg-[var(--bg-page)] text-[var(--text-muted)] uppercase tracking-wider border-b border-[var(--border-subtle)]">
+                  <tr>
+                    <th className="py-3 px-4 w-16">#</th>
+                    <th className="py-3 px-4">Email Address</th>
+                    <th className="py-3 px-4">Subscribed Date</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-[var(--border-subtle)]">
+                  {newsletterSubscribers
+                    .filter((s) => s.email.toLowerCase().includes(newsletterSearch.toLowerCase()))
+                    .map((sub, i) => (
+                      <tr key={sub.id || i} className="hover:bg-[var(--bg-subtle)] transition-colors">
+                        <td className="py-3 px-4 text-[var(--text-dim)]">{i + 1}</td>
+                        <td className="py-3 px-4 font-semibold text-[var(--text-heading)]">{sub.email}</td>
+                        <td className="py-3 px-4 text-[var(--text-muted)]">
+                          {new Date(sub.created_at).toLocaleString()}
+                        </td>
+                      </tr>
+                    ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
       )}
 

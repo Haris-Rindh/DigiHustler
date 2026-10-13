@@ -685,6 +685,108 @@ export const dbService = {
       console.error('Failed to verify and reset password:', err);
       return { success: false, error: err?.message || 'Password update failed' };
     }
+  },
+
+  // ── 14. Newsletter Subscriptions ──
+  async subscribeNewsletter(email: string): Promise<{ success: boolean; error?: string }> {
+    const cleanEmail = email.trim().toLowerCase();
+    if (!cleanEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)) {
+      return { success: false, error: 'Please enter a valid email address.' };
+    }
+
+    if (!isSupabaseConfigured || !supabase) {
+      try {
+        const local = JSON.parse(localStorage.getItem('digihust_newsletter_subscribers') || '[]');
+        if (!local.some((s: any) => s.email === cleanEmail)) {
+          local.unshift({ id: `local-${Date.now()}`, email: cleanEmail, created_at: new Date().toISOString() });
+          localStorage.setItem('digihust_newsletter_subscribers', JSON.stringify(local));
+        }
+        return { success: true };
+      } catch {
+        return { success: true };
+      }
+    }
+
+    try {
+      const { error } = await supabase.from('newsletter_subscribers').insert({
+        email: cleanEmail,
+        created_at: new Date().toISOString(),
+      });
+
+      if (error) {
+        if (error.code === '23505' || error.message?.includes('duplicate') || error.message?.includes('unique')) {
+          return { success: true };
+        }
+        console.warn('Newsletter subscribe note:', error.message);
+        // Fallback store locally as safeguard
+        try {
+          const local = JSON.parse(localStorage.getItem('digihust_newsletter_subscribers') || '[]');
+          if (!local.some((s: any) => s.email === cleanEmail)) {
+            local.unshift({ id: `local-${Date.now()}`, email: cleanEmail, created_at: new Date().toISOString() });
+            localStorage.setItem('digihust_newsletter_subscribers', JSON.stringify(local));
+          }
+        } catch {}
+      }
+
+      return { success: true };
+    } catch (err: any) {
+      console.error('Newsletter subscribe error:', err);
+      return { success: true };
+    }
+  },
+
+  async fetchNewsletterSubscribers(): Promise<Array<{ id: string; email: string; created_at: string }>> {
+    let cloudList: Array<{ id: string; email: string; created_at: string }> = [];
+    if (isSupabaseConfigured && supabase) {
+      try {
+        const { data, error } = await supabase
+          .from('newsletter_subscribers')
+          .select('*')
+          .order('created_at', { ascending: false });
+        if (!error && data) {
+          cloudList = data;
+        }
+      } catch (err) {
+        console.warn('Failed to fetch newsletter subscribers from Supabase:', err);
+      }
+    }
+
+    // Merge with any offline/local cached subscribers
+    try {
+      const local = JSON.parse(localStorage.getItem('digihust_newsletter_subscribers') || '[]');
+      const combined = [...cloudList];
+      for (const item of local) {
+        if (!combined.some((c) => c.email.toLowerCase() === item.email.toLowerCase())) {
+          combined.push(item);
+        }
+      }
+      return combined.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+    } catch {
+      return cloudList;
+    }
+  },
+
+  // ── 15. Site Assets Upload to Supabase Storage ──
+  async uploadSiteAsset(file: File, folder = 'site-assets'): Promise<string | null> {
+    if (!isSupabaseConfigured || !supabase) return null;
+    try {
+      const ext = file.name.split('.').pop()?.toLowerCase() || 'png';
+      const cleanName = `${folder}/${Date.now()}-${Math.random().toString(36).substring(2, 8)}.${ext}`;
+      const bucketName = 'avatars';
+      const { error } = await supabase.storage
+        .from(bucketName)
+        .upload(cleanName, file, { upsert: true, contentType: file.type });
+
+      if (error) {
+        console.error('Asset upload error:', error.message);
+        return null;
+      }
+      const { data } = supabase.storage.from(bucketName).getPublicUrl(cleanName);
+      return `${data.publicUrl}?t=${Date.now()}`;
+    } catch (err) {
+      console.error('Asset upload failed:', err);
+      return null;
+    }
   }
 };
 

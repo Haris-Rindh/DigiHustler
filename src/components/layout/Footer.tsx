@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ShieldCheck, Linkedin, Github, Facebook, Instagram, Twitter, Mail, AtSign } from 'lucide-react';
+import { ShieldCheck, Linkedin, Github, Facebook, Instagram, Twitter, Mail, AtSign, ArrowRight, CheckCircle2 } from 'lucide-react';
 import logoImg from '../../assets/logo.png';
 import { LogoBadge } from '../ui/LogoBadge';
 import { LAST_UPDATED, LAST_UPDATED_DISPLAY } from '../../config/siteConfig';
+import { dbService } from '../../lib/dbService';
 
 interface SocialLink {
   label: string;
@@ -65,6 +66,101 @@ const SOCIAL_LINKS: SocialLink[] = [
   },
 ];
 
+const NewsletterForm: React.FC = () => {
+  const [email, setEmail] = useState('');
+  const [honeypot, setHoneypot] = useState('');
+  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [errorMessage, setErrorMessage] = useState('');
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (honeypot) return;
+    if (!email || !email.includes('@')) {
+      setStatus('error');
+      setErrorMessage('Please enter a valid email address.');
+      return;
+    }
+
+    setStatus('loading');
+    setErrorMessage('');
+
+    try {
+      const res = await dbService.subscribeNewsletter(email);
+      if (res.success) {
+        setStatus('success');
+        setEmail('');
+      } else {
+        setStatus('error');
+        setErrorMessage(res.error || 'Failed to subscribe. Please try again.');
+      }
+    } catch {
+      setStatus('error');
+      setErrorMessage('An unexpected error occurred.');
+    }
+  };
+
+  return (
+    <div className="space-y-2">
+      <h3 className="text-[11px] font-extrabold text-[var(--text-heading)] uppercase tracking-widest">
+        Newsletter
+      </h3>
+      <p className="text-xs text-[var(--text-muted)] leading-relaxed">
+        Engineering playbooks, case studies, and digital insights. Zero spam.
+      </p>
+      {status === 'success' ? (
+        <div className="flex items-center space-x-2 text-xs text-emerald-600 dark:text-emerald-400 font-semibold py-2">
+          <CheckCircle2 className="w-4 h-4 flex-shrink-0" />
+          <span>You're subscribed! Thank you.</span>
+        </div>
+      ) : (
+        <form onSubmit={handleSubmit} className="space-y-2 pt-1">
+          <div className="hidden" aria-hidden="true">
+            <input
+              type="text"
+              name="hp_email_catch"
+              value={honeypot}
+              onChange={(e) => setHoneypot(e.target.value)}
+              tabIndex={-1}
+              autoComplete="off"
+            />
+          </div>
+          <div className="flex flex-col sm:flex-row gap-2">
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                if (status === 'error') setStatus('idle');
+              }}
+              placeholder="Enter your email"
+              required
+              aria-label="Email address for newsletter"
+              className="flex-1 px-3 py-2 text-xs rounded-xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] text-[var(--text-heading)] placeholder-[var(--text-dim)] focus:outline-none focus:border-[#1F7A8C]"
+            />
+            <button
+              type="submit"
+              disabled={status === 'loading'}
+              className="px-4 py-2 text-xs font-bold rounded-xl bg-[#1F7A8C] hover:bg-[#186473] text-white transition-colors duration-180 flex items-center justify-center space-x-1.5 shadow-sm disabled:opacity-50 cursor-pointer"
+            >
+              {status === 'loading' ? (
+                <span>Subscribing...</span>
+              ) : (
+                <>
+                  <span>Subscribe</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </>
+              )}
+            </button>
+          </div>
+          {status === 'error' && (
+            <p className="text-[11px] text-rose-500 font-medium">{errorMessage}</p>
+          )}
+        </form>
+      )}
+    </div>
+  );
+};
+
 export const Footer: React.FC = () => {
   return (
     <footer className="bg-[var(--bg-page)] border-t border-[var(--border-subtle)] pt-8 pb-5 px-6 lg:px-8 relative overflow-hidden" aria-label="Site Footer">
@@ -73,11 +169,11 @@ export const Footer: React.FC = () => {
 
       <div className="max-w-7xl mx-auto">
 
-        {/* Top Grid (Compact 4-column layout) */}
-        <div className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-4 gap-6 pb-6 border-b border-[var(--border-subtle)]">
+        {/* Top Grid (Responsive 4-column layout) */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8 pb-6 border-b border-[var(--border-subtle)]">
 
-          {/* Brand Column (Spans 2 columns) */}
-          <div className="md:col-span-2 space-y-2">
+          {/* Brand Column */}
+          <div className="lg:col-span-4 space-y-2">
             <div className="flex items-center gap-3 flex-wrap">
               <Link to="/" className="inline-flex items-center group">
                 <LogoBadge />
@@ -93,7 +189,7 @@ export const Footer: React.FC = () => {
               Founded by <Link to="/team" className="text-[var(--text-heading)] hover:text-[var(--brand-teal)] font-bold transition-colors underline underline-offset-2">Mahad Abbas</Link> & <Link to="/team" className="text-[var(--text-heading)] hover:text-[var(--brand-teal)] font-bold transition-colors underline underline-offset-2">Muhammad Haseeb</Link>.
             </p>
             
-            {/* Social Vector Icons (Clean, No Hover Glow) */}
+            {/* Social Vector Icons */}
             <div className="flex flex-wrap gap-2 pt-1.5">
               {SOCIAL_LINKS.map((s) => {
                 const IconComponent = s.icon;
@@ -119,7 +215,7 @@ export const Footer: React.FC = () => {
           </div>
 
           {/* Capabilities */}
-          <div className="space-y-2">
+          <div className="lg:col-span-2 space-y-2">
             <h3 className="text-[11px] font-extrabold text-[var(--text-heading)] uppercase tracking-widest">Capabilities</h3>
             <ul className="grid grid-cols-2 md:grid-cols-1 gap-x-4 gap-y-1 text-xs text-[var(--text-muted)]">
               {[
@@ -143,9 +239,9 @@ export const Footer: React.FC = () => {
           </div>
 
           {/* Navigation */}
-          <div className="space-y-2">
+          <div className="lg:col-span-2 space-y-2">
             <h3 className="text-[11px] font-extrabold text-[var(--text-heading)] uppercase tracking-widest">Company</h3>
-            <ul className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs text-[var(--text-muted)]">
+            <ul className="grid grid-cols-2 md:grid-cols-1 gap-x-4 gap-y-1 text-xs text-[var(--text-muted)]">
               {[
                 { label: 'Selected Work', href: '/portfolio' },
                 { label: 'How We Work', href: '/how-it-works' },
@@ -166,6 +262,11 @@ export const Footer: React.FC = () => {
                 </li>
               ))}
             </ul>
+          </div>
+
+          {/* Newsletter Column */}
+          <div className="lg:col-span-4 space-y-2">
+            <NewsletterForm />
           </div>
 
         </div>

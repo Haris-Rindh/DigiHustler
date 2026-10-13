@@ -10,7 +10,7 @@ export const Groups: React.FC = () => {
     <div className="max-w-7xl mx-auto px-4 lg:px-8 py-12 space-y-12">
       
       {/* Header */}
-      <div className="text-center space-y-3 max-w-2xl mx-auto">
+      <div data-hero="true" className="text-center space-y-3 max-w-2xl mx-auto">
         <span className="text-[10px] font-bold px-3 py-1 rounded-full bg-cyan-500/10 text-cyan-700 dark:text-cyan-400 border border-cyan-500/20 uppercase tracking-widest">
           Organizational Flowchart
         </span>

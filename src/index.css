@@ -290,7 +290,7 @@ h1, h2, h3, h4, h5, h6 {
     color: #022B3A !important;
   }
 
-  header, footer, .fixed, nav, button, [data-cursor], .scroll-cue {
+  header, footer, .fixed, nav, button, .scroll-cue {
     display: none !important;
   }
 

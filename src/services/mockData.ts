@@ -796,7 +796,7 @@ export const DEFAULT_SITE_CONTENT: SiteContent = {
       shortDescription: 'Intelligent automation pipelines, autonomous agent workflows, and executive analytics dashboards that drive operational speed.',
       features: ['Automated ETL Pipelines', 'AI Customer Bots', 'Executive Dashboards', 'n8n Workflow Automations'],
       color: '#1F7A8C',
-      icon: 'sparkles',
+      icon: 'cpu',
       imageUrl: 'https://images.unsplash.com/photo-1677442136019-21780efad99a?auto=format&fit=crop&w=1200&q=80',
       size: 'small',
       patternVariant: 'mesh-gradient',
