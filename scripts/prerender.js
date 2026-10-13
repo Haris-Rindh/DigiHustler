@@ -249,44 +249,63 @@ routes.forEach((route) => {
 
   html = html.replace('</head>', `${headInjection}\n  </head>`);
 
-  // Ensure 3D isometric boxes loader splash inside #root per Uiverse.io by Nawsome
-  // templateHtml from Vite build already contains #app-boot-splash inside #root. Only inject if missing.
+  // Ensure 3D isometric boxes loader splash per Uiverse.io by Nawsome
+  // templateHtml from Vite build already contains #app-boot-splash outside #root. Only inject if missing.
   if (!html.includes('id="app-boot-splash"')) {
     const rootContent = `
-    <div id="root">
-      <div id="app-boot-splash" style="display:flex;min-height:100vh;align-items:center;justify-content:center;background:var(--bg-page,#022B3A);">
-        <div class="boxes-loader-wrapper" role="status" aria-label="Loading DigiHust">
-          <!-- From Uiverse.io by Nawsome -->
-          <div class="boxes">
-            <div class="box">
-              <div></div>
-              <div></div>
-              <div></div>
-              <div></div>
-            </div>
-            <div class="box">
-              <div></div>
-              <div></div>
-              <div></div>
-              <div></div>
-            </div>
-            <div class="box">
-              <div></div>
-              <div></div>
-              <div></div>
-              <div></div>
-            </div>
-            <div class="box">
-              <div></div>
-              <div></div>
-              <div></div>
-              <div></div>
-            </div>
+    <!-- Seamless Full-Bleed Boot Splash Overlay -->
+    <div id="app-boot-splash" role="status" aria-label="Loading DigiHust">
+      <div class="boxes-loader-wrapper">
+        <!-- Ambient Lighting Stage -->
+        <div class="boxes-ambient-stage" aria-hidden="true"></div>
+
+        <!-- From Uiverse.io by Nawsome -->
+        <div class="boxes" style="position:relative;z-index:10;">
+          <div class="box">
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
           </div>
-          <span style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">Loading DigiHust...</span>
+          <div class="box">
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+          </div>
+          <div class="box">
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+          </div>
+          <div class="box">
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+          </div>
         </div>
+
+        <!-- Brand Title -->
+        <div style="margin-top:48px;display:flex;flex-direction:column;align-items:center;text-align:center;position:relative;z-index:10;">
+          <span style="font-family:'Outfit',sans-serif;font-weight:800;font-size:22px;letter-spacing:-0.02em;color:var(--loader-text);">
+            Digi<span style="color:var(--loader-accent);">Hust</span>
+          </span>
+          <p style="font-family:'Plus Jakarta Sans',sans-serif;font-size:11px;font-weight:700;color:var(--loader-accent);letter-spacing:0.25em;text-transform:uppercase;margin-top:4px;">
+            Loading Experience
+          </p>
+        </div>
+
+        <!-- Progress Track -->
+        <div class="loader-progress-track" aria-hidden="true" style="position:relative;z-index:10;">
+          <div class="loader-progress-bar"></div>
+        </div>
+
+        <span style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">Loading DigiHust...</span>
       </div>
-    </div>`;
+    </div>
+    <div id="root"></div>`;
     html = html.replace(/<div id="root">\s*<\/div>/, rootContent.trim());
   }
 

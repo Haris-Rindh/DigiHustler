@@ -10,6 +10,7 @@ import { ScrollProgress } from './components/ui/ScrollProgress';
 import { CookieConsent } from './components/ui/CookieConsent';
 import { PWAInstallPrompt } from './components/ui/PWAInstallPrompt';
 import { FloatingCTA } from './components/ui/FloatingCTA';
+import { GlobalLoaderOverlay } from './components/ui/GlobalLoaderOverlay';
 
 // Public pages
 import { Home } from './components/public/Home';
@@ -88,6 +89,7 @@ export const App: React.FC = () => {
           <Router>
             <ScrollToTop />
             <ScrollProgress />
+            <GlobalLoaderOverlay />
             <OfflineBanner />
             <CookieConsent />
             <PWAInstallPrompt />
