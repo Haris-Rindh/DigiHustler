@@ -18,6 +18,7 @@ import { ApplicantWorkflowQueue } from '../dashboard/PeopleManagement/ApplicantW
 import { SquadMatrixView } from '../dashboard/PeopleManagement/SquadMatrixView';
 import { PeopleAnalyticsView } from '../dashboard/PeopleManagement/PeopleAnalyticsView';
 import { QuickInviteModal } from '../dashboard/PeopleManagement/QuickInviteModal';
+import { BoxesLoader } from '../ui/BoxesLoader';
 
 export const PortalDashboard: React.FC = () => {
   const { 
@@ -38,8 +39,9 @@ export const PortalDashboard: React.FC = () => {
 
   if (!currentUser) {
     return (
-      <div className="max-w-7xl mx-auto px-4 py-16 text-center">
-        <p className="text-xs text-[var(--text-muted)]">Loading workspace...</p>
+      <div className="max-w-7xl mx-auto px-4 py-24 flex flex-col items-center justify-center text-center">
+        <BoxesLoader size={32} />
+        <p className="text-xs font-semibold text-[var(--text-muted)] mt-4">Loading workspace...</p>
       </div>
     );
   }

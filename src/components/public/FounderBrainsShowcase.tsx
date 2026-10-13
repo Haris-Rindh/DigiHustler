@@ -52,8 +52,8 @@ export const FounderBrainsShowcase: React.FC<FounderBrainsShowcaseProps> = ({
         <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-[#D7F2EB] dark:bg-cyan-950/80 border border-[#9BD8CB] dark:border-cyan-500/40 text-[11px] font-extrabold text-[#158376] dark:text-cyan-300 uppercase tracking-widest mb-2.5">
           <span>Executive Leadership</span>
         </div>
-        <h2 className="font-display font-extrabold text-3xl sm:text-4xl md:text-5xl text-[#111827] dark:text-white tracking-tight">
-          Meet the Brains Behind{' '}
+        <h2 className="font-display font-bold text-3xl sm:text-4xl md:text-5xl text-[#111827] dark:text-white tracking-tight">
+          The Founder's Desk Of{' '}
           <span className="text-[#158376] dark:text-[var(--brand-teal)]">DigiHust</span>
         </h2>
         <p className="text-sm sm:text-base text-[var(--text-muted)] max-w-xl mx-auto mt-2">

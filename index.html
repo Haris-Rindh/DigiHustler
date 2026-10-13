@@ -40,70 +40,136 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Mrs+Saint+Delafield&family=Outfit:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Sora:wght@700&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
 
-    <!-- Inlined Critical Cube Loader CSS (<2KB) per Item 16 -->
-    <style id="critical-cube-loader-css">
-      :root {
-        --cube-size: 40px;
-        --cube-face-front: #1F7A8C;
-        --cube-face-back: #14535F;
-        --cube-face-right: #22A0B4;
-        --cube-face-left: #166270;
-        --cube-face-top: #34B3C7;
-        --cube-face-bottom: #0D3B45;
-        --cube-shadow: rgba(2, 43, 58, 0.25);
-      }
-      .dark, [data-theme="dark"] {
-        --cube-shadow: rgba(0, 0, 0, 0.45);
-      }
-      .cube-loader-wrapper {
+    <!-- Inlined Critical Boxes Loader CSS (<2KB) from Uiverse.io by Nawsome -->
+    <style id="critical-boxes-loader-css">
+      .boxes-loader-wrapper {
         display: flex;
-        flex-direction: column;
         align-items: center;
         justify-content: center;
+        min-height: 120px;
         position: relative;
-        width: 80px;
-        height: 80px;
       }
-      .cube-loader {
-        width: var(--cube-size);
-        height: var(--cube-size);
+      .boxes {
+        --size: 32px;
+        --duration: 800ms;
+        height: calc(var(--size) * 2);
+        width: calc(var(--size) * 3);
+        position: relative;
         transform-style: preserve-3d;
-        transform: rotateX(-24deg) rotateY(45deg);
-        animation: cubeSpin 3.6s ease-in-out infinite;
+        transform-origin: 50% 50%;
+        margin-top: calc(var(--size) * 1.5 * -1);
+        transform: rotateX(60deg) rotateZ(45deg) rotateY(0deg) translateZ(0px);
       }
-      .cube-side {
+      .boxes .box {
+        width: var(--size);
+        height: var(--size);
+        top: 0;
+        left: 0;
+        position: absolute;
+        transform-style: preserve-3d;
+      }
+      .boxes .box:nth-child(1) {
+        transform: translate(100%, 0);
+        -webkit-animation: box1 var(--duration) linear infinite;
+        animation: box1 var(--duration) linear infinite;
+      }
+      .boxes .box:nth-child(2) {
+        transform: translate(0, 100%);
+        -webkit-animation: box2 var(--duration) linear infinite;
+        animation: box2 var(--duration) linear infinite;
+      }
+      .boxes .box:nth-child(3) {
+        transform: translate(100%, 100%);
+        -webkit-animation: box3 var(--duration) linear infinite;
+        animation: box3 var(--duration) linear infinite;
+      }
+      .boxes .box:nth-child(4) {
+        transform: translate(200%, 0);
+        -webkit-animation: box4 var(--duration) linear infinite;
+        animation: box4 var(--duration) linear infinite;
+      }
+      .boxes .box > div {
+        --background: #5C8DF6;
+        --top: auto;
+        --right: auto;
+        --bottom: auto;
+        --left: auto;
+        --translateZ: calc(var(--size) / 2);
+        --rotateY: 0deg;
+        --rotateX: 0deg;
         position: absolute;
         width: 100%;
         height: 100%;
-        border: 1px solid rgba(255, 255, 255, 0.15);
+        background: var(--background);
+        top: var(--top);
+        right: var(--right);
+        bottom: var(--bottom);
+        left: var(--left);
+        transform: rotateY(var(--rotateY)) rotateX(var(--rotateX)) translateZ(var(--translateZ));
       }
-      .cube-front  { transform: translateZ(calc(var(--cube-size) / 2)); background: var(--cube-face-front); }
-      .cube-back   { transform: rotateY(180deg) translateZ(calc(var(--cube-size) / 2)); background: var(--cube-face-back); }
-      .cube-right  { transform: rotateY(90deg) translateZ(calc(var(--cube-size) / 2)); background: var(--cube-face-right); }
-      .cube-left   { transform: rotateY(-90deg) translateZ(calc(var(--cube-size) / 2)); background: var(--cube-face-left); }
-      .cube-top    { transform: rotateX(90deg) translateZ(calc(var(--cube-size) / 2)); background: var(--cube-face-top); }
-      .cube-bottom { transform: rotateX(-90deg) translateZ(calc(var(--cube-size) / 2)); background: var(--cube-face-bottom); }
-      .cube-shadow {
-        width: calc(var(--cube-size) * 1.1);
-        height: 12px;
-        background: var(--cube-shadow);
-        border-radius: 50%;
-        margin-top: 24px;
-        filter: blur(4px);
-        animation: shadowScale 3.6s ease-in-out infinite;
+      .boxes .box > div:nth-child(1) {
+        --top: 0;
+        --left: 0;
       }
-      @keyframes cubeSpin {
-        0% { transform: translateY(0px) rotateX(-24deg) rotateY(45deg); }
-        50% { transform: translateY(-12px) rotateX(-24deg) rotateY(405deg); }
-        100% { transform: translateY(0px) rotateX(-24deg) rotateY(765deg); }
+      .boxes .box > div:nth-child(2) {
+        --background: #145af2;
+        --right: 0;
+        --rotateY: 90deg;
       }
-      @keyframes shadowScale {
-        0%, 100% { transform: scale(1); opacity: 0.8; }
-        50% { transform: scale(0.7); opacity: 0.4; }
+      .boxes .box > div:nth-child(3) {
+        --background: #447cf5;
+        --rotateX: -90deg;
+      }
+      .boxes .box > div:nth-child(4) {
+        --background: #DBE3F4;
+        --top: 0;
+        --left: 0;
+        --translateZ: calc(var(--size) * 3 * -1);
+      }
+      .dark .boxes .box > div:nth-child(4),
+      [data-theme="dark"] .boxes .box > div:nth-child(4) {
+        --background: rgba(219, 227, 244, 0.25);
+      }
+      @-webkit-keyframes box1 {
+        0%, 50% { transform: translate(100%, 0); }
+        100% { transform: translate(200%, 0); }
+      }
+      @keyframes box1 {
+        0%, 50% { transform: translate(100%, 0); }
+        100% { transform: translate(200%, 0); }
+      }
+      @-webkit-keyframes box2 {
+        0% { transform: translate(0, 100%); }
+        50% { transform: translate(0, 0); }
+        100% { transform: translate(100%, 0); }
+      }
+      @keyframes box2 {
+        0% { transform: translate(0, 100%); }
+        50% { transform: translate(0, 0); }
+        100% { transform: translate(100%, 0); }
+      }
+      @-webkit-keyframes box3 {
+        0%, 50% { transform: translate(100%, 100%); }
+        100% { transform: translate(0, 100%); }
+      }
+      @keyframes box3 {
+        0%, 50% { transform: translate(100%, 100%); }
+        100% { transform: translate(0, 100%); }
+      }
+      @-webkit-keyframes box4 {
+        0% { transform: translate(200%, 0); }
+        50% { transform: translate(200%, 100%); }
+        100% { transform: translate(100%, 100%); }
+      }
+      @keyframes box4 {
+        0% { transform: translate(200%, 0); }
+        50% { transform: translate(200%, 100%); }
+        100% { transform: translate(100%, 100%); }
       }
       @media (prefers-reduced-motion: reduce) {
-        .cube-loader, .cube-shadow {
+        .boxes .box {
           animation: none !important;
+          -webkit-animation: none !important;
         }
       }
     </style>
@@ -111,16 +177,34 @@
   <body class="bg-[var(--bg-page)] text-[var(--text-body)] min-h-screen font-sans antialiased selection:bg-[var(--brand-teal)] selection:text-white">
     <div id="root">
       <div id="app-boot-splash" style="display:flex;min-height:100vh;align-items:center;justify-content:center;background:var(--bg-page,#022B3A);">
-        <div class="cube-loader-wrapper" role="status" aria-label="Loading DigiHust">
-          <div class="cube-loader">
-            <div class="cube-side cube-front"></div>
-            <div class="cube-side cube-back"></div>
-            <div class="cube-side cube-right"></div>
-            <div class="cube-side cube-left"></div>
-            <div class="cube-side cube-top"></div>
-            <div class="cube-side cube-bottom"></div>
+        <div class="boxes-loader-wrapper" role="status" aria-label="Loading DigiHust">
+          <!-- From Uiverse.io by Nawsome --> 
+          <div class="boxes">
+            <div class="box">
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+            </div>
+            <div class="box">
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+            </div>
+            <div class="box">
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+            </div>
+            <div class="box">
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+            </div>
           </div>
-          <div class="cube-shadow"></div>
           <span style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">Loading DigiHust...</span>
         </div>
       </div>

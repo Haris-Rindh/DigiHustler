@@ -249,22 +249,40 @@ routes.forEach((route) => {
 
   html = html.replace('</head>', `${headInjection}\n  </head>`);
 
-  // Ensure 3D cube loader splash inside #root per Item 16 & 25a (eliminating raw unstyled text flash)
+  // Ensure 3D isometric boxes loader splash inside #root per Uiverse.io by Nawsome
   // templateHtml from Vite build already contains #app-boot-splash inside #root. Only inject if missing.
   if (!html.includes('id="app-boot-splash"')) {
     const rootContent = `
     <div id="root">
       <div id="app-boot-splash" style="display:flex;min-height:100vh;align-items:center;justify-content:center;background:var(--bg-page,#022B3A);">
-        <div class="cube-loader-wrapper" role="status" aria-label="Loading DigiHust">
-          <div class="cube-loader">
-            <div class="cube-side cube-front"></div>
-            <div class="cube-side cube-back"></div>
-            <div class="cube-side cube-right"></div>
-            <div class="cube-side cube-left"></div>
-            <div class="cube-side cube-top"></div>
-            <div class="cube-side cube-bottom"></div>
+        <div class="boxes-loader-wrapper" role="status" aria-label="Loading DigiHust">
+          <!-- From Uiverse.io by Nawsome -->
+          <div class="boxes">
+            <div class="box">
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+            </div>
+            <div class="box">
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+            </div>
+            <div class="box">
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+            </div>
+            <div class="box">
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+            </div>
           </div>
-          <div class="cube-shadow"></div>
           <span style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">Loading DigiHust...</span>
         </div>
       </div>

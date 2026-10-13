@@ -28,8 +28,11 @@ import { notificationService } from '../../lib/notificationService';
 
 const SERVICES = [
   'Website / Full-Stack App',
-  'UI/UX & Brand Identity',
+  'UI/UX Design & Wireframing',
+  'Graphic Design & Brand Identity',
   'AI & Workflow Automation',
+  'Lead Generation & Funnel Building',
+  'Video Editing & Motion Graphics',
   'Digital Marketing & SEO',
   'Cybersecurity Audit',
   'BI & Data Intelligence',
@@ -336,6 +339,25 @@ export const Contact: React.FC = () => {
       </div>
 
       <div className="max-w-5xl mx-auto relative z-10">
+        {/* ── HEADING BEFORE THE FORM ── */}
+        <motion.div
+          initial={{ opacity: 0, y: 14 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+          className="mb-8 sm:mb-10 text-center sm:text-left"
+        >
+          <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full text-xs font-extrabold uppercase tracking-widest text-[#1F7A8C] dark:text-cyan-400 bg-[#E0F2F5] dark:bg-cyan-950/80 border border-[#CEE9ED] dark:border-cyan-800/40 mb-3.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#1F7A8C] dark:bg-cyan-400 animate-pulse" />
+            <span>Project Intake & Scoping</span>
+          </div>
+          <h1 className="font-display font-extrabold text-3xl sm:text-4xl lg:text-5xl text-[#022B3A] dark:text-white tracking-tight mb-3">
+            Let&apos;s Build Something Great.
+          </h1>
+          <p className="text-sm sm:text-base text-[#64748B] dark:text-[var(--text-muted)] max-w-2xl leading-relaxed">
+            Share your goals, timeline, and requirements. Our engineering and creative leads review every intake and provide a transparent milestone proposal within 24 hours.
+          </p>
+        </motion.div>
+
         <AnimatePresence mode="wait">
           {submitted ? (
             /* ── SUCCESS STATE CARD ── */
@@ -470,9 +492,9 @@ export const Contact: React.FC = () => {
                         exit={{ opacity: 0, x: -10 }}
                         transition={{ duration: 0.2 }}
                       >
-                        <h1 className="font-display font-extrabold text-2xl sm:text-3xl text-[#022B3A] dark:text-white mt-1 mb-1.5 tracking-tight">
+                        <h2 className="font-display font-extrabold text-2xl sm:text-3xl text-[#022B3A] dark:text-white mt-1 mb-1.5 tracking-tight">
                           Tell us about yourself
-                        </h1>
+                        </h2>
                         <p className="text-xs sm:text-sm text-[#64748B] dark:text-[var(--text-muted)] leading-relaxed mb-6">
                           We'll get back to you with the right team and next steps — usually within 24 hours.
                         </p>
