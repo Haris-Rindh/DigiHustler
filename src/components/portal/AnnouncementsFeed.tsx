@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { 
   Bell, Plus, Shield, MessageSquare, Megaphone, Trash2, Calendar, 
   User, Check, X, Bold, Italic, List, Heading, Code, AlertTriangle, 
-  Info, Sparkles, CheckCircle2 
+  Info, CheckCircle2 
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { Announcement, AnnouncementScope, GroupId } from '../../types';

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
-import { ArrowRight, Sparkles, X, CheckCircle2, Layers, ExternalLink } from 'lucide-react';
+import { ArrowRight, X, CheckCircle2, Layers, ExternalLink } from 'lucide-react';
 import { SEOHead } from '../seo/SEOHead';
 import { useApp } from '../../context/AppContext';
 import { handleCardSpotlightMove, handleCardSpotlightLeave } from '../../lib/cardSpotlight';
@@ -252,14 +252,12 @@ export const Work: React.FC = () => {
                     exit={{ opacity: 0, scale: 0.95 }}
                     transition={{ duration: 0.2 }}
                     onClick={() => setSelectedProject(project)}
-                    onPointerMove={handleCardSpotlightMove}
-                    onPointerLeave={handleCardSpotlightLeave}
                     data-cursor="view"
-                    className="group premium-card overflow-hidden cursor-pointer flex flex-col h-auto select-none"
+                    className="group satin-card overflow-hidden cursor-pointer flex flex-col h-auto select-none"
                   >
-                    {/* Nested gallery hardware frame (luxury bezel + subtle inset) */}
-                    <div className="p-2.5 sm:p-3 pb-0 flex-shrink-0">
-                      <div className="w-full aspect-[16/10] overflow-hidden bg-[var(--bg-subtle)] relative premium-card-nested-img">
+                    {/* Satin Architectural Image Bezel Frame (Compact) */}
+                    <div className="p-2.5 pb-0 flex-shrink-0">
+                      <div className="w-full aspect-[16/9] overflow-hidden relative satin-img-frame">
                         <img
                           src={project.img}
                           alt={project.title}
@@ -268,36 +266,31 @@ export const Work: React.FC = () => {
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
 
                         {/* Floating Frosted Client Badge */}
-                        <div className="absolute top-2.5 left-2.5 px-2.5 py-1 rounded-full glass-pill text-[10px] font-bold text-white shadow-sm flex items-center space-x-1.5">
+                        <div className="absolute top-2 left-2 px-2 py-0.5 rounded-full glass-pill text-[9px] sm:text-[10px] font-bold text-white shadow-sm flex items-center space-x-1.5">
                           <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
                           <span>{project.client}</span>
                         </div>
 
                         {/* Floating Category Pill */}
-                        <div className="absolute top-2.5 right-2.5 px-2 py-0.5 rounded-md bg-black/65 backdrop-blur-md text-[9px] font-mono font-bold text-white/90 border border-white/10 uppercase tracking-wider">
+                        <div className="absolute top-2 right-2 px-2 py-0.5 rounded-lg bg-black/75 backdrop-blur-md text-[9px] font-mono font-bold text-white/90 border border-white/15 uppercase tracking-wider">
                           {project.category}
                         </div>
                       </div>
                     </div>
 
-                    {/* Refined padding text area */}
-                    <div className="p-4 sm:p-5 flex-1 flex flex-col relative z-[2]">
-                      <div className="mb-2">
-                        <span className="inline-block px-2.5 py-0.5 rounded-md bg-[var(--brand-teal-subtle)] text-[var(--brand-teal)] border border-[var(--brand-teal)]/30 text-[11px] font-extrabold uppercase tracking-wider">
-                          {project.category}
-                        </span>
-                      </div>
-                      <h2 className="font-display font-bold text-base sm:text-[1.125rem] text-[var(--text-heading)] leading-[1.3] mb-2 line-clamp-2 min-h-[2.6rem] group-hover:text-[var(--brand-teal)] transition-colors duration-200">
+                    {/* Compact text area */}
+                    <div className="p-3.5 sm:p-4 flex-1 flex flex-col relative z-[2]">
+                      <h2 className="font-display font-bold text-base text-[var(--text-heading)] leading-snug mb-1.5 line-clamp-2 group-hover:text-[var(--brand-teal)] transition-colors duration-200">
                         {project.title}
                       </h2>
-                      <p className="text-xs sm:text-[13px] text-[var(--text-body)] leading-relaxed mb-3 line-clamp-2 min-h-[2.4rem]">
+                      <p className="text-xs text-[var(--text-body)] leading-relaxed mb-2.5 line-clamp-2">
                         {project.description}
                       </p>
-                      <div className="flex flex-wrap gap-1.5 mb-2">
-                        {project.tags?.slice(0, 4).map((t) => (
+                      <div className="flex flex-wrap gap-1.5 mb-1 mt-auto">
+                        {project.tags?.slice(0, 3).map((t) => (
                           <span
                             key={t}
-                            className="text-[11px] sm:text-xs px-2.5 py-0.5 rounded-md bg-[var(--bg-subtle)] text-[var(--text-heading)] border border-[var(--border-subtle)] font-medium group-hover:border-[var(--brand-teal)]/20 transition-colors"
+                            className="text-[10px] sm:text-[11px] px-2 py-0.5 rounded-md satin-pill text-[var(--text-heading)] font-medium"
                           >
                             {t}
                           </span>
@@ -306,10 +299,10 @@ export const Work: React.FC = () => {
                     </div>
 
                     {/* Bottom-pinned footer row */}
-                    <div className="mt-auto px-4 sm:px-5 py-3 border-t border-[var(--border-subtle)] flex items-center justify-between text-xs sm:text-[13px] font-bold text-[var(--brand-teal)] relative z-[2]">
+                    <div className="mt-auto px-3.5 sm:px-4 py-2.5 border-t border-[var(--border-subtle)] flex items-center justify-between text-xs font-bold text-[var(--brand-teal)] relative z-[2]">
                       <span className="flex items-center space-x-1.5">
                         <span>Inspect Case Study</span>
-                        <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1.5 transition-transform duration-200" />
+                        <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform duration-200" />
                       </span>
                       {project.projectUrl && (
                         <a
@@ -320,7 +313,7 @@ export const Work: React.FC = () => {
                           className="inline-flex items-center space-x-1 text-emerald-700 dark:text-emerald-400 hover:text-emerald-800 dark:hover:text-emerald-300 hover:underline font-bold px-2 py-0.5 rounded-md hover:bg-emerald-500/10 transition-colors"
                         >
                           <span>Live Demo</span>
-                          <ExternalLink className="w-3.5 h-3.5" />
+                          <ExternalLink className="w-3 h-3" />
                         </a>
                       )}
                     </div>
@@ -387,6 +380,10 @@ export const Work: React.FC = () => {
                 <img
                   src={selectedProject.img}
                   alt={selectedProject.title}
+                  width={800}
+                  height={450}
+                  loading="lazy"
+                  decoding="async"
                   className="w-full h-full object-cover"
                 />
               </div>
@@ -404,7 +401,6 @@ export const Work: React.FC = () => {
 
                 <div>
                   <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--brand-teal)] mb-2 flex items-center space-x-1.5">
-                    <Sparkles className="w-4 h-4" />
                     <span>The DigiHust Solution</span>
                   </h4>
                   <p className="text-[var(--text-body)] leading-relaxed bg-[var(--bg-page)] p-4 rounded-xl border border-[var(--border-subtle)]">

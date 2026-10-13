@@ -60,8 +60,8 @@ export const TRANSLATIONS: Record<LanguageCode, Record<string, string>> = {
     // Model Advantage
     model_tag: 'The Model Advantage',
     model_heading: 'A Managed Digital Company — Not a Random Freelancer Roll.',
-    model_p1: 'Directly managing five independent freelancers means five separate negotiations, misaligned timelines, blame-shifting, and inconsistent quality.',
-    model_p2: 'With DigiHust, you engage one professional entity. We architect the scope, assign verified specialists to their respective domains, and guarantee delivery under a single service-level agreement.',
+    model_p1: 'Managing five freelancers means five negotiations, clashing timelines, blame-shifting and inconsistent quality.',
+    model_p2: 'With DigiHust, you engage one professional entity. We architect the scope and assign verified specialists to each domain. Every milestone is guaranteed under a single service-level agreement.',
     model_bullet_1: 'Single contract, single invoice, single accountable point of contact',
     model_bullet_2: 'Domain specialists matched to your precise tech stack',
     model_bullet_3: 'Rigorous internal QA before any deliverable touches your hands',

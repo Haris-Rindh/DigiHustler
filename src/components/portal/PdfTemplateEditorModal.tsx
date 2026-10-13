@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { 
   FileUp, Sliders, Eye, Download, Check, X, QrCode, 
-  Layers, Sparkles, AlertCircle, FileText, Image as ImageIcon 
+  Layers, AlertCircle, FileText, Image as ImageIcon 
 } from 'lucide-react';
 import { CertificateTemplate, PdfTemplateConfig } from '../../types';
 import { stampCustomPdfTemplate, downloadPdfFile } from '../../lib/pdfTemplateEngine';

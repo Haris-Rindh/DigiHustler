@@ -49,12 +49,39 @@ export const BlogPost: React.FC = () => {
         tags: ['Web Engineering', 'SEO', 'AI Crawlers', 'Next.js', 'Vite'],
       };
 
+  const articleSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: post.title,
+    description: post.excerpt,
+    image: post.image,
+    author: {
+      '@type': 'Person',
+      name: post.author,
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: 'DigiHust',
+      logo: {
+        '@type': 'ImageObject',
+        url: 'https://www.digihust.tech/logo.png',
+      },
+    },
+    datePublished: '2026-08-10T00:00:00+00:00',
+    dateModified: '2026-10-12T00:00:00+00:00',
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': `https://www.digihust.tech/blog/${post.slug}`,
+    },
+  };
+
   return (
     <div className="pt-20 lg:pt-24 min-h-screen bg-[var(--bg-page)] text-[var(--text-body)]">
       <SEOHead
         title={`${post.title} | DigiHust Insights`}
         description={post.excerpt}
-        ogImage={post.imageUrl || undefined}
+        ogImage={post.image || undefined}
+        schema={articleSchema}
       />
 
       {/* Hero Header */}
@@ -86,10 +113,14 @@ export const BlogPost: React.FC = () => {
               </div>
             </div>
 
-            <div className="flex items-center space-x-4 text-[var(--text-muted)]">
+            <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-[var(--text-muted)]">
               <span className="flex items-center gap-1.5">
                 <Calendar className="w-3.5 h-3.5 text-[var(--brand-teal)]" />
-                <span>{post.date}</span>
+                <span>Published: {post.date}</span>
+              </span>
+              <span>·</span>
+              <span className="flex items-center gap-1.5">
+                <span>Updated: October 12, 2026</span>
               </span>
               <span>·</span>
               <span className="flex items-center gap-1.5">
@@ -105,7 +136,7 @@ export const BlogPost: React.FC = () => {
       <article className="bg-[var(--bg-page)] py-16 px-6 lg:px-8">
         <div className="max-w-4xl mx-auto space-y-8 text-[var(--text-body)] leading-relaxed text-base sm:text-lg">
           <div className="aspect-video rounded-3xl overflow-hidden mb-10 border border-[var(--border-subtle)] shadow-xl bg-[var(--bg-subtle)]">
-            <img src={post.image} alt={post.title} className="w-full h-full object-cover" />
+            <img src={post.image} alt={post.title} width={800} height={450} decoding="async" className="w-full h-full object-cover" />
           </div>
 
           <p className="text-xl font-medium text-[var(--text-heading)] leading-relaxed border-l-4 border-[var(--brand-teal)] pl-6 italic bg-[var(--bg-surface)] py-4 rounded-r-2xl border border-y-[var(--border-subtle)] border-r-[var(--border-subtle)]">

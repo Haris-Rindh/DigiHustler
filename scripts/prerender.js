@@ -18,7 +18,7 @@ const routes = [
   {
     path: '/',
     title: 'DigiHust — Digital Services Handled by Specialized Talent',
-    description: 'One company. Coordinated specialized talent. DigiHust delivers web engineering, design systems, AI automations, and cybersecurity under one managed roof.',
+    description: 'One company, coordinated specialist talent. DigiHust delivers web engineering, design systems, AI automation and cybersecurity under one roof.',
     h1: 'Your Digital Work. Handled by Skilled People.',
     summary: 'From custom web development and UI/UX design to AI automations, growth marketing, and cybersecurity — DigiHust unites verified specialists into unified project squads.',
   },
@@ -113,6 +113,13 @@ const routes = [
     h1: 'Terms of Service',
     summary: 'Contractual terms governing project sprints, 100% intellectual property transfer upon milestone settlement, and post-launch warranties.',
   },
+  {
+    path: '/editorial-policy',
+    title: 'Editorial Policy & Publishing Standards — DigiHust',
+    description: 'Our editorial principles, author attribution standards, fact-checking methodology, and correction process for DigiHust technical insights.',
+    h1: 'Editorial Policy',
+    summary: 'Editorial principles, named domain author attribution, fact-checking methodology, and transparent technical correction procedures.',
+  },
   // Case Studies
   {
     path: '/portfolio/real-estate-marketplace-portal',
@@ -204,6 +211,11 @@ routes.forEach((route) => {
     <meta property="og:url" content="${canonicalUrl}" />
     <meta property="og:type" content="${route.ogType || 'website'}" />
     <meta property="og:site_name" content="DigiHust" />
+    <meta property="og:image" content="${baseUrl}/og-image.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="DigiHust - Digital Services Handled by Specialized Talent" />
+    <meta name="twitter:image" content="${baseUrl}/og-image.jpg" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="${route.title}" />
     
@@ -213,14 +225,26 @@ routes.forEach((route) => {
       '@type': 'ProfessionalService',
       name: 'DigiHust',
       url: baseUrl,
-      logo: `${baseUrl}/favicon.svg`,
-      image: `${baseUrl}/assets/slideshow 1-BsO_jRxb.avif`,
+      logo: `${baseUrl}/logo.png`,
+      image: `${baseUrl}/og-image.jpg`,
       description: route.description,
       address: {
         '@type': 'PostalAddress',
         addressCountry: 'PK'
-      }
-    })}</script>
+      },
+      founder: [
+        {
+          '@type': 'Person',
+          name: 'Mahad Abbas',
+          jobTitle: 'Founder & CEO'
+        },
+        {
+          '@type': 'Person',
+          name: 'Muhammad Haseeb',
+          jobTitle: 'Co-Founder'
+        }
+      ]
+    })}</script>${route.path === '/' ? `\n    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What does DigiHust do?", "acceptedAnswer": {"@type": "Answer", "text": "DigiHust is a managed digital services company delivering end-to-end solutions across five core disciplines: Web Engineering, Creative & UI/UX Design, AI & Workflow Automation, Growth Marketing & SEO, and Cybersecurity. Instead of leaving clients to coordinate disconnected contractors, we assemble dedicated specialist squads under unified technical leadership."}}, {"@type": "Question", "name": "How does DigiHust differ from hiring independent freelancers?", "acceptedAnswer": {"@type": "Answer", "text": "Managing separate freelancers means multiple negotiations, misaligned schedules, blame-shifting, and unpredictable quality. DigiHust operates as a single accountable agency partner. You receive a dedicated point of contact, synchronized sprint milestones, unified delivery, and strict service-level agreements (SLAs) for the entire project lifecycle."}}, {"@type": "Question", "name": "How fast does a project proposal arrive?", "acceptedAnswer": {"@type": "Answer", "text": "We review your project requirements and deliver a calibrated scope breakdown, architectural recommendation, and transparent milestone quote within 24 hours of your intake submission."}}, {"@type": "Question", "name": "Who does the work on client projects?", "acceptedAnswer": {"@type": "Answer", "text": "All work is completed by verified domain specialists trained and vetted through Pakistan's Digiskill ecosystem and DigiHust's internal technical benchmarks. Each squad member is matched specifically to your technical stack, whether React, Next.js, Python AI pipelines, Figma design systems, or security auditing."}}, {"@type": "Question", "name": "How does DigiHust handle quality assurance?", "acceptedAnswer": {"@type": "Answer", "text": "Every deliverable undergoes multi-stage internal review before reaching your team. Senior technical architects verify code quality, performance metrics, and security compliance to ensure all work meets production standards prior to milestone sign-off."}}, {"@type": "Question", "name": "What does the Quality & Milestone Guarantee cover?", "acceptedAnswer": {"@type": "Answer", "text": "We provide a 100% Quality & Milestone Guarantee. Projects are divided into transparent staging sprints with agreed-upon acceptance criteria. Client feedback is integrated into each review, and you maintain complete visibility over deliverables before milestones are accepted."}}, {"@type": "Question", "name": "How do contracts, communication, and invoicing work?", "acceptedAnswer": {"@type": "Answer", "text": "You work under a single legal contract and receive a single consolidated invoice, regardless of how many disciplines are involved in your build. One dedicated project manager handles communication, timeline tracking, and squad coordination from kickoff to final handover."}}]}</script>` : ''}
   `;
 
   html = html.replace('</head>', `${headInjection}\n  </head>`);
@@ -244,12 +268,47 @@ routes.forEach((route) => {
         <article>
           <h1>${route.h1}</h1>
           <p>${route.summary}</p>
+          ${route.path === '/' ? `
+          <section aria-label="Frequently Asked Questions">
+            <h2>Frequently Asked Questions</h2>
+            <p>Everything you need to know about our coordinated specialist squads, milestone guarantees, and project delivery.</p>
+            <div>
+              <details>
+                <summary>What does DigiHust do?</summary>
+                <p>DigiHust is a managed digital services company delivering end-to-end solutions across five core disciplines: Web Engineering, Creative &amp; UI/UX Design, AI &amp; Workflow Automation, Growth Marketing &amp; SEO, and Cybersecurity. Instead of leaving clients to coordinate disconnected contractors, we assemble dedicated specialist squads under unified technical leadership.</p>
+              </details>
+              <details>
+                <summary>How does DigiHust differ from hiring independent freelancers?</summary>
+                <p>Managing separate freelancers means multiple negotiations, misaligned schedules, blame-shifting, and unpredictable quality. DigiHust operates as a single accountable agency partner. You receive a dedicated point of contact, synchronized sprint milestones, unified delivery, and strict service-level agreements (SLAs) for the entire project lifecycle.</p>
+              </details>
+              <details>
+                <summary>How fast does a project proposal arrive?</summary>
+                <p>We review your project requirements and deliver a calibrated scope breakdown, architectural recommendation, and transparent milestone quote within 24 hours of your intake submission.</p>
+              </details>
+              <details>
+                <summary>Who does the work on client projects?</summary>
+                <p>All work is completed by verified domain specialists trained and vetted through Pakistan&#39;s Digiskill ecosystem and DigiHust&#39;s internal technical benchmarks. Each squad member is matched specifically to your technical stack, whether React, Next.js, Python AI pipelines, Figma design systems, or security auditing.</p>
+              </details>
+              <details>
+                <summary>How does DigiHust handle quality assurance?</summary>
+                <p>Every deliverable undergoes multi-stage internal review before reaching your team. Senior technical architects verify code quality, performance metrics, and security compliance to ensure all work meets production standards prior to milestone sign-off.</p>
+              </details>
+              <details>
+                <summary>What does the Quality &amp; Milestone Guarantee cover?</summary>
+                <p>We provide a 100% Quality &amp; Milestone Guarantee. Projects are divided into transparent staging sprints with agreed-upon acceptance criteria. Client feedback is integrated into each review, and you maintain complete visibility over deliverables before milestones are accepted.</p>
+              </details>
+              <details>
+                <summary>How do contracts, communication, and invoicing work?</summary>
+                <p>You work under a single legal contract and receive a single consolidated invoice, regardless of how many disciplines are involved in your build. One dedicated project manager handles communication, timeline tracking, and squad coordination from kickoff to final handover.</p>
+              </details>
+            </div>
+          </section>` : ''}
         </article>
       </main>
     </div>
   `;
 
-  html = html.replace('<div id="root"></div>', rootContent);
+  html = html.replace(/<div id="root">[\s\S]*?<\/div>/, rootContent.trim());
 
   // Save to dist/
   if (route.path === '/') {

@@ -1,11 +1,9 @@
-import React from 'react';
 import {
   Terminal,
   Code2,
   Code,
   Layers,
   Palette,
-  Sparkles,
   Cpu,
   Film,
   Clapperboard,
@@ -25,7 +23,6 @@ export const AVAILABLE_SERVICE_ICONS = [
   { id: 'code', label: 'Code Bracket (Development)' },
   { id: 'layers', label: 'Layers (UI/UX Systems)' },
   { id: 'palette', label: 'Palette (Brand Design)' },
-  { id: 'sparkles', label: 'Sparkles (AI & Innovation)' },
   { id: 'cpu', label: 'CPU / Brain (AI Engineering)' },
   { id: 'film', label: 'Film / Video (Video Editing)' },
   { id: 'clapperboard', label: 'Clapperboard (Motion Graphics)' },
@@ -39,13 +36,12 @@ export const AVAILABLE_SERVICE_ICONS = [
 
 /**
  * Resolves a service icon string key into its respective Lucide icon component.
- * Fallback is ALWAYS a neutral icon (Sparkles), NEVER the Code icon.
- * In development mode, console.warn is invoked for unknown keys.
+ * Fallback returns null to avoid injecting unmatched icons.
  */
 export const getServiceIcon = (
   iconKey?: string,
   className: string = 'w-5 h-5'
-): React.ReactElement => {
+): React.ReactElement | null => {
   const normalized = (iconKey || '').toLowerCase().trim();
 
   switch (normalized) {
@@ -69,9 +65,7 @@ export const getServiceIcon = (
     case 'creative':
       return <Palette className={className} />;
 
-    // 3. AI Workflows & Business Intelligence -> sparkles / brain / workflow
-    case 'sparkles':
-      return <Sparkles className={className} />;
+    // 3. AI Workflows & Business Intelligence -> brain / cpu / workflow
     case 'brain':
     case 'cpu':
     case 'ai':
@@ -111,14 +105,9 @@ export const getServiceIcon = (
     case 'bi':
       return <Database className={className} />;
 
-    // Fallback: Neutral icon (Sparkles), never the Code icon
+    // Fallback: No icon
     default: {
-      if (iconKey && import.meta.env.DEV) {
-        console.warn(
-          `[serviceIcons] Unknown icon key: "${iconKey}". Falling back to neutral Sparkles icon.`
-        );
-      }
-      return <Sparkles className={className} />;
+      return null;
     }
   }
 };

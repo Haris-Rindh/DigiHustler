@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { 
   Shield, LayoutDashboard, Briefcase, Users, Award, DollarSign, Bell, Settings, 
-  LogOut, ChevronDown, Sparkles, Menu, X, Key, Check, AlertCircle,
+  LogOut, ChevronDown, Menu, X, Key, Check, AlertCircle,
   Layers, ExternalLink, Eye, EyeOff, User, Upload, Camera, RefreshCw, Trash2 
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
@@ -170,7 +170,7 @@ export const PortalNavbar: React.FC = () => {
     { 
       label: 'Site CMS', 
       href: '/portal/cms', 
-      icon: <Sparkles className="w-4 h-4 text-cyan-400" />, 
+      icon: null, 
       description: 'Public page copywriting & SEO manager',
       show: PERMISSIONS.canEditWebsiteContent(currentTier, currentUser) 
     },

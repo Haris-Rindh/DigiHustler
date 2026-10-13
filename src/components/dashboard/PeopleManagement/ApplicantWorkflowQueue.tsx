@@ -11,7 +11,6 @@ import {
   BookOpen,
   Filter,
   MessageSquare,
-  Sparkles,
 } from 'lucide-react';
 import { useApp } from '../../../context/AppContext';
 import { Applicant, GroupId, UserRole } from '../../../types';

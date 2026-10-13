@@ -1,44 +1,20 @@
 # DigiHust
 
-> Digital Services Handled by Specialized Talent. One Company. One Point of Contact.
+> Managed digital services company delivering coordinated specialist squads across web engineering, design systems, AI automations, and cybersecurity under one accountable roof.
 
-DigiHust is a modern digital agency and talent-powered solution company headquartered in Pakistan. Instead of requiring clients to hire and coordinate isolated freelancers, DigiHust provides single-contract, fully managed delivery across specialized multi-disciplinary teams sourced and verified through Digiskill.
-
-## Core Capabilities
-- **Web & Full-Stack Development**: Custom web applications, React, Next.js, Node.js, API architecture, PostgreSQL, PostGIS, and cloud deployments.
-- **Creative & UI/UX Design**: Brand identity systems, design systems, Figma UI/UX prototyping, vector graphics, motion design, and 3D animations.
-- **AI & Workflow Automation**: Custom OpenAI / LLM integrations, autonomous customer bots, workflow automations (n8n, Zapier, Make), and intelligent data extractors.
-- **Digital Marketing & Growth**: Technical SEO audits & execution, PPC advertising (Google Ads, Meta Ads), content marketing, and B2B cold outreach strategies.
-- **Cybersecurity & Cloud**: Web application penetration testing, vulnerability assessments, OWASP compliance, and security policy architecture.
-- **Business Intelligence & Data**: PowerBI dashboard development, ETL pipelines, SQL reporting, and administrative digital assistance.
-
-## Selected Case Studies & Proven Results
-- **Real-Estate Marketplace Portal**: https://digihust.com/work/real-estate-marketplace-portal (780ms load times, +140% conversion growth)
-- **Automotive EV Brand Launch**: https://digihust.com/work/automotive-brand-identity (2.4M launch impressions, full 3D motion suite)
-- **Hospital Executive BI Suite**: https://digihust.com/work/hospital-bi-dashboard (12+ hours saved/week, automated ETL)
-- **FinTech High-Throughput Trading Console**: https://digihust.com/work/saas-fintech-trading-console (60 FPS under load, -40% order error rate)
-- **Autonomous Logistics Customer Bot**: https://digihust.com/work/ai-logistics-customer-bot (78% autonomous resolution, < 6s response time)
-- **Luxury Goods E-Commerce**: https://digihust.com/work/ecommerce-luxury-brand ($280K in 30 days, -28% dropoff)
-
-## Knowledge & Insights Hub
-- Knowledge Base: https://digihust.com/blog
-- Next.js Architecture for AI Crawlers: https://digihust.com/blog/how-to-architect-nextjs-for-ai-crawlers
-- Enterprise Workflow Automations (n8n vs Python): https://digihust.com/blog/demystifying-ai-automations-n8n-vs-custom-python
-- OWASP Security Checklist for Startups: https://digihust.com/blog/owasp-top-10-web-security-checklist-for-startups
-
-## Operating Model
-1. **Intake & Scope**: Client provides project brief via `/contact` or proposal intake.
-2. **Team Assembly**: DigiHust management matches verified domain specialists to the exact project requirements.
-3. **Execution**: Transparent iterative sprint execution with structured milestone reviews and QA.
-4. **Delivery**: Production deployment, comprehensive documentation handover, and post-launch support.
-
-## Key Links
-- Primary Website: https://digihust.com/
-- Services Breakdown: https://digihust.com/services
-- Selected Case Studies: https://digihust.com/work
-- Process & Methodology: https://digihust.com/how-it-works
-- Company Story & Vision: https://digihust.com/about
-- Team & Domain Leads: https://digihust.com/team
-- Get a Scoped Quote: https://digihust.com/contact
-- Privacy Policy: https://digihust.com/privacy
-- Terms of Service: https://digihust.com/terms
+## Key pages
+- https://www.digihust.tech/ : Homepage — Overview of core disciplines, coordinated delivery architecture, case studies, and FAQ
+- https://www.digihust.tech/services : Services & Capabilities — Full spectrum of technical and creative disciplines
+- https://www.digihust.tech/services/saas-mvp-development : SaaS & Web App Engineering — Dedicated React, Next.js, and Node.js squads
+- https://www.digihust.tech/services/ai-workflow-automation : AI Workflow Automation — Custom LLM agents, n8n pipelines, and intelligent workflows
+- https://www.digihust.tech/services/brand-identity-design-system : Brand Identity & UI/UX Design — Design systems, Figma tokens, and 3D motion
+- https://www.digihust.tech/portfolio : Case Studies & Portfolio — Selected client deliveries across engineering, data, and design
+- https://www.digihust.tech/how-it-works : Methodology — 4-step delivery process with strict milestone SLAs
+- https://www.digihust.tech/about : About DigiHust — Origin within the Digiskill ecosystem, mission, and company model
+- https://www.digihust.tech/team : Team & Specialists — Domain leads, software engineers, and founders Mahad Abbas and Muhammad Haseeb
+- https://www.digihust.tech/blog : Insights Hub — Technical architecture deep dives, AI automation frameworks, and security checklists
+- https://www.digihust.tech/contact : Contact & Scope Intake — Transparent milestone quotes and 24-hour proposal turnaround
+- https://www.digihust.tech/careers : Careers — Opportunities for verified specialists to join technical squads
+- https://www.digihust.tech/editorial-policy : Editorial Policy — Publishing standards, author attribution, and correction procedures
+- https://www.digihust.tech/privacy : Privacy Policy — Client intellectual property protection and confidentiality
+- https://www.digihust.tech/terms : Terms of Service — Milestone contracts, 100% IP transfer, and warranties

@@ -13,38 +13,38 @@ interface ServiceBentoCardProps {
 }
 
 // ── SQUAD DOMAIN METRICS & THEMES ──────────────────────────────────────────
-const SQUAD_THEMES: Record<string, { accent: string; glow: string; label: string; roster: string; defaultTech: string[] }> = {
+export const SQUAD_THEMES: Record<string, { accent: string; glow: string; label: string; roster: string; defaultTech: string[] }> = {
   tech: {
-    accent: '#00E5FF',
-    glow: 'rgba(0, 229, 255, 0.25)',
+    accent: '#00B4D8',
+    glow: 'rgba(0, 180, 216, 0.25)',
     label: 'ENGINEERING SQUAD',
     roster: '1 Principal Architect · 2 Full-Stack Engineers · 1 DevOps Lead',
     defaultTech: ['React & Next.js', 'Enterprise APIs', 'PostgreSQL', 'Docker Cloud'],
   },
   creative: {
-    accent: '#C084FC',
-    glow: 'rgba(192, 132, 252, 0.25)',
+    accent: '#A855F7',
+    glow: 'rgba(168, 85, 247, 0.25)',
     label: 'CREATIVE & 3D SQUAD',
     roster: '1 Creative Director · 2 Design System Artists · 1 UI/UX Lead',
     defaultTech: ['Figma Design Systems', '3D Motion Assets', 'Cinema 4D', 'Component Kits'],
   },
   data: {
-    accent: '#34D399',
-    glow: 'rgba(52, 211, 153, 0.25)',
+    accent: '#10B981',
+    glow: 'rgba(16, 185, 129, 0.25)',
     label: 'AI & AUTOMATION SQUAD',
     roster: '1 AI Solutions Architect · 2 Python / Automation Engineers',
     defaultTech: ['Custom LLM Agents', 'Python ETL', 'n8n Automations', 'PowerBI Dashboards'],
   },
   growth: {
-    accent: '#FBBF24',
-    glow: 'rgba(251, 191, 36, 0.25)',
+    accent: '#F59E0B',
+    glow: 'rgba(245, 158, 11, 0.25)',
     label: 'GROWTH & SEO SQUAD',
     roster: '1 Growth Strategist · 2 Technical SEO Specialists',
     defaultTech: ['Technical SEO Audits', 'Google & Meta Ads', 'High-Intent Funnels', 'Analytics'],
   },
   cybersecurity: {
-    accent: '#FB7185',
-    glow: 'rgba(251, 113, 133, 0.25)',
+    accent: '#F43F5E',
+    glow: 'rgba(244, 63, 94, 0.25)',
     label: 'SECURITY & AUDITING SQUAD',
     roster: '1 Lead Security Researcher · 1 OWASP Penetration Tester',
     defaultTech: ['Penetration Testing', 'OWASP Hardening', 'Vulnerability Audits', 'SOC2 Prep'],
@@ -52,13 +52,14 @@ const SQUAD_THEMES: Record<string, { accent: string; glow: string; label: string
 };
 
 // ── GENERATIVE SVG CIRCUITRY PATTERNS ────────────────────────────────────────
-const GenerativePattern: React.FC<{ variant?: string; accent: string; isHovered: boolean }> = ({
+export const GenerativePattern: React.FC<{ variant?: string; accent: string; isHovered: boolean }> = ({
   variant,
   accent,
   isHovered,
 }) => {
   const shouldReduceMotion = useReducedMotion();
   const v = variant || 'dotted-grid';
+  const cleanId = accent.replace(/[^a-zA-Z0-9]/g, '');
 
   const baseStyle: React.CSSProperties = {
     transition: shouldReduceMotion ? 'none' : 'transform 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
@@ -89,17 +90,39 @@ const GenerativePattern: React.FC<{ variant?: string; accent: string; isHovered:
         </div>
       );
 
+    case 'diagonal-hatch':
+      return (
+        <div style={baseStyle} className="absolute inset-0 pointer-events-none opacity-20">
+          <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <pattern id={`bento-hatch-${cleanId}`} width="16" height="16" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
+                <line x1="0" y1="0" x2="0" y2="16" stroke={accent} strokeWidth="1" />
+              </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill={`url(#bento-hatch-${cleanId})`} />
+          </svg>
+        </div>
+      );
+
+    case 'mesh-gradient':
+      return (
+        <div style={baseStyle} className="absolute inset-0 pointer-events-none opacity-25 overflow-hidden">
+          <div className="absolute top-1/4 right-1/4 w-44 h-44 rounded-full blur-2xl" style={{ backgroundColor: `${accent}40` }} />
+          <div className="absolute -bottom-10 -left-10 w-48 h-48 rounded-full bg-[#022B3A]/40 blur-3xl" />
+        </div>
+      );
+
     case 'isometric-grid':
       return (
         <div style={baseStyle} className="absolute inset-0 pointer-events-none opacity-20">
           <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
             <defs>
-              <pattern id={`bento-iso-${accent}`} width="30" height="52" patternUnits="userSpaceOnUse">
+              <pattern id={`bento-iso-${cleanId}`} width="30" height="52" patternUnits="userSpaceOnUse">
                 <path d="M15,0 L30,8.6 L30,26 L15,34.6 L0,26 L0,8.6 Z" fill="none" stroke={accent} strokeWidth="0.8" />
                 <path d="M15,34.6 L15,52" fill="none" stroke={accent} strokeWidth="0.8" />
               </pattern>
             </defs>
-            <rect width="100%" height="100%" fill={`url(#bento-iso-${accent})`} />
+            <rect width="100%" height="100%" fill={`url(#bento-iso-${cleanId})`} />
           </svg>
         </div>
       );
@@ -110,11 +133,11 @@ const GenerativePattern: React.FC<{ variant?: string; accent: string; isHovered:
         <div style={baseStyle} className="absolute inset-0 pointer-events-none opacity-30">
           <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
             <defs>
-              <pattern id={`bento-dots-${accent}`} width="20" height="20" patternUnits="userSpaceOnUse">
+              <pattern id={`bento-dots-${cleanId}`} width="20" height="20" patternUnits="userSpaceOnUse">
                 <circle cx="2" cy="2" r="1.2" fill={accent} />
               </pattern>
             </defs>
-            <rect width="100%" height="100%" fill={`url(#bento-dots-${accent})`} />
+            <rect width="100%" height="100%" fill={`url(#bento-dots-${cleanId})`} />
           </svg>
         </div>
       );
@@ -130,20 +153,6 @@ export const ServiceBentoCard: React.FC<ServiceBentoCardProps> = ({
   const cardRef = useRef<HTMLDivElement>(null);
   const [isHovered, setIsHovered] = useState(false);
   const shouldReduceMotion = useReducedMotion();
-
-  // Determine Squad Domain Theme
-  const themeKey = (service.groupId || '').toLowerCase();
-  const theme = SQUAD_THEMES[themeKey] || {
-    accent: '#22A0B4',
-    glow: 'rgba(34, 160, 180, 0.25)',
-    label: 'SPECIALIZED SQUAD',
-    roster: '1 Squad Director · 2 Domain Specialists · 1 QA Lead',
-    defaultTech: ['Specialized Architecture', 'Enterprise Code', 'Production Ready'],
-  };
-
-  const visibleTech = (service.features && service.features.length > 0)
-    ? service.features
-    : theme.defaultTech;
 
   // Mouse Spotlight Tracker
   const handlePointerMove = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
@@ -168,6 +177,22 @@ export const ServiceBentoCard: React.FC<ServiceBentoCardProps> = ({
     }
   }, []);
 
+  // Determine Squad Domain Theme
+  const themeKey = (service.groupId || '').toLowerCase();
+  const theme = SQUAD_THEMES[themeKey] || {
+    accent: service.color || '#1F7A8C',
+    glow: service.color ? `${service.color}40` : 'rgba(31, 122, 140, 0.25)',
+    label: 'SPECIALIZED SQUAD',
+    roster: '1 Squad Director · 2 Domain Specialists · 1 QA Lead',
+    defaultTech: ['Specialized Architecture', 'Enterprise Code', 'Production Ready'],
+  };
+
+  const visibleTech =
+    service.features && service.features.length > 0
+      ? service.features
+      : theme.defaultTech;
+
+  // Formatted numeral: 01, 02, 03...
   const numeral = String(index + 1).padStart(2, '0');
 
   // Bento Col Span sizing
@@ -181,7 +206,9 @@ export const ServiceBentoCard: React.FC<ServiceBentoCardProps> = ({
 
   const targetLink =
     service.linkTarget ||
-    `/contact?service=${encodeURIComponent(service.slug || service.id)}`;
+    `/contact?services=${encodeURIComponent(service.title)}`;
+
+  const hasImage = Boolean(service.imageUrl && service.imageUrl.trim() !== '');
 
   return (
     <motion.div
@@ -203,219 +230,194 @@ export const ServiceBentoCard: React.FC<ServiceBentoCardProps> = ({
         tabIndex={0}
         role="region"
         aria-label={`${service.title} capabilities`}
-        onPointerMove={handlePointerMove}
+        onPointerMove={!hasImage ? handlePointerMove : undefined}
         onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={handlePointerLeave}
+        onMouseLeave={!hasImage ? handlePointerLeave : () => setIsHovered(false)}
         onFocus={() => setIsHovered(true)}
-        onBlur={(e) => {
-          if (!cardRef.current?.contains(e.relatedTarget as Node)) {
-            setIsHovered(false);
-          }
-        }}
+        onBlur={() => setIsHovered(false)}
         data-cursor="view"
-        className="w-full h-full relative rounded-3xl border border-[var(--border-subtle)] hover:border-[var(--brand-teal)]/70 bg-[var(--bg-surface)] backdrop-blur-xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden flex flex-col justify-between group p-6 sm:p-7 select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-teal)]"
+        className={`w-full h-full relative satin-card overflow-hidden flex flex-col justify-between group p-4 sm:p-5 select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-teal)] transition-all duration-300 ${
+          !hasImage ? 'hover:border-[var(--brand-teal)]/70 hover:shadow-xl' : 'hover:border-[var(--brand-teal)]/50'
+        }`}
         style={{
-          background: `radial-gradient(420px circle at var(--mx, -999px) var(--my, -999px), ${theme.glow}, transparent 75%), var(--bg-surface)`,
+          background:
+            !hasImage && isHovered
+              ? `radial-gradient(420px circle at var(--mx, -999px) var(--my, -999px), ${theme.glow}, transparent 75%), var(--bg-surface)`
+              : undefined,
         }}
       >
-        {/* ── CARD VISUAL HERO / IMAGE BANNER ── */}
-        {service.imageUrl ? (
-          <div className="relative h-44 sm:h-48 md:h-52 w-full rounded-2xl overflow-hidden mb-4 group/img z-10 border border-[var(--border-subtle)] bg-black/25 shadow-md">
-            <img
-              src={service.imageUrl}
-              alt={service.title}
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
-              loading="lazy"
-            />
-            {/* Cinematic contrast gradient */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-black/15 pointer-events-none" />
+        <div>
+          {/* ── CARD VISUAL HERO / IMAGE BANNER OR GENERATIVE PATTERNS ── */}
+          {hasImage ? (
+            <div className="relative h-44 sm:h-48 md:h-52 lg:h-56 w-full satin-img-frame mb-3.5 group/img z-10">
+              <img
+                src={service.imageUrl}
+                alt={service.title}
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
+                loading="lazy"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-black/10 pointer-events-none" />
 
-            {/* Badges on Image */}
-            <div className="absolute top-3 left-3 right-3 flex items-center justify-between z-10">
-              <span
-                className="text-[10px] sm:text-[11px] font-mono font-black tracking-wider uppercase px-2.5 py-1 rounded-md backdrop-blur-md border shadow-sm"
-                style={{
-                  borderColor: `${theme.accent}60`,
-                  backgroundColor: 'rgba(2, 43, 58, 0.85)',
-                  color: theme.accent,
-                }}
-              >
-                // {theme.label}
-              </span>
-
-              {/* Glowing Icon Hub floating on Image */}
-              <div
-                className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl flex items-center justify-center transition-all duration-300 shadow-md group-hover:scale-105 backdrop-blur-md"
-                style={{
-                  backgroundColor: 'rgba(2, 43, 58, 0.85)',
-                  border: `1.5px solid ${theme.accent}80`,
-                  boxShadow: isHovered ? `0 0 20px -2px ${theme.accent}80` : 'none',
-                  color: theme.accent,
-                }}
-              >
-                {getServiceIcon(service.icon, 'w-5 h-5 stroke-[2.2]')}
-              </div>
-            </div>
-
-            {/* Live SLA Badge on Bottom-Left of Image */}
-            <div className="absolute bottom-3 left-3 z-10">
-              <span className="inline-flex items-center gap-1.5 text-[10px] font-mono font-bold text-emerald-400 bg-black/75 backdrop-blur-md border border-emerald-400/30 px-2.5 py-1 rounded-full shadow-sm">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_6px_#34D399]" />
-                <span>SLA GUARANTEED</span>
-              </span>
-            </div>
-          </div>
-        ) : (
-          <>
-            {/* Generative Circuitry/Grid Backdrop Fallback */}
-            <GenerativePattern variant={service.patternVariant} accent={theme.accent} isHovered={isHovered} />
-
-            {/* Top Glow Accent Bar */}
-            <div
-              className="absolute top-0 left-6 right-6 h-[2px] opacity-40 group-hover:opacity-100 transition-opacity duration-300"
-              style={{
-                background: `linear-gradient(90deg, transparent, ${theme.accent}, transparent)`,
-              }}
-            />
-
-            {/* ── CARD HEADER: Squad Monospace Code + SLA Indicator + Glowing Icon Hub ── */}
-            <div className="relative z-10 flex items-center justify-between gap-4 mb-4">
-              <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
-                {/* Squad Category Badge */}
-                <span
-                  className="text-[10px] sm:text-[11px] font-mono font-black tracking-wider uppercase px-2.5 py-1 rounded-md border"
-                  style={{
-                    borderColor: `${theme.accent}40`,
-                    backgroundColor: `${theme.accent}12`,
-                    color: theme.accent,
-                  }}
-                >
+              {/* Floating Badges on Image */}
+              <div className="absolute top-3 left-3 right-3 flex items-center justify-between z-10">
+                <span className="text-[10px] font-mono font-bold tracking-wider uppercase px-2 py-0.5 rounded-md backdrop-blur-md border border-white/20 text-white bg-black/60">
                   // {theme.label}
                 </span>
 
-                {/* Live SLA Badge */}
-                <span className="inline-flex items-center gap-1.5 text-[10px] font-mono font-bold text-emerald-400 bg-emerald-400/10 border border-emerald-400/30 px-2 py-0.5 rounded-full">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_6px_#34D399]" />
-                  <span>SLA GUARANTEED</span>
-                </span>
-              </div>
-
-              {/* Futuristic Glowing Icon Hub */}
-              <div
-                className="w-12 h-12 rounded-2xl flex items-center justify-center transition-all duration-300 shadow-md group-hover:scale-105"
-                style={{
-                  backgroundColor: 'var(--bg-page)',
-                  border: `1.5px solid ${theme.accent}60`,
-                  boxShadow: isHovered ? `0 0 20px -2px ${theme.accent}60` : 'none',
-                  color: theme.accent,
-                }}
-              >
-                {getServiceIcon(service.icon, 'w-6 h-6 stroke-[2.2]')}
+                {getServiceIcon(service.icon) && (
+                  <div className="w-8 h-8 rounded-lg flex items-center justify-center transition-transform duration-200 shadow-sm group-hover:scale-105 backdrop-blur-md bg-black/70 border border-white/20 text-white">
+                    {getServiceIcon(service.icon, 'w-4 h-4 stroke-[2.2]')}
+                  </div>
+                )}
               </div>
             </div>
-          </>
-        )}
+          ) : (
+            <>
+              {/* Generative Circuitry/Grid Backdrop Fallback */}
+              <GenerativePattern variant={service.patternVariant} accent={theme.accent} isHovered={isHovered} />
 
-        {/* ── CARD BODY: Numeral, Headline, Tagline & Description ── */}
-        <div className="relative z-10 flex-1 flex flex-col justify-center my-2">
-          <div className="flex items-baseline gap-3 mb-1">
-            <span
-              className="font-display font-black text-3xl sm:text-4xl tracking-tighter transition-colors select-none"
-              style={{
-                WebkitTextStroke: `1.5px ${theme.accent}80`,
-                color: 'transparent',
-              }}
-            >
-              {numeral}
-            </span>
-            <h3 className="font-display font-black text-xl sm:text-2xl text-[var(--text-heading)] leading-tight">
-              {service.title}
-            </h3>
-          </div>
+              {/* Top Glow Accent Bar */}
+              <div
+                className="absolute top-0 left-6 right-6 h-[2px] opacity-40 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+                style={{
+                  background: `linear-gradient(90deg, transparent, ${theme.accent}, transparent)`,
+                }}
+              />
 
-          {/* Tagline */}
-          <p className="text-xs font-mono font-semibold tracking-wide text-[var(--brand-teal)] mb-2.5">
-            {service.tagline}
-          </p>
+              {/* ── CARD HEADER: Squad Code + SLA Indicator + Glowing Icon Hub ── */}
+              <div className="relative z-10 flex items-center justify-between gap-3 mb-3">
+                <div className="flex items-center gap-2 flex-wrap">
+                  {/* Squad Category Badge with accent colors */}
+                  <span
+                    className="text-[10px] font-mono font-black tracking-wider uppercase px-2.5 py-1 rounded-md border"
+                    style={{
+                      borderColor: `${theme.accent}40`,
+                      backgroundColor: `${theme.accent}12`,
+                      color: theme.accent,
+                    }}
+                  >
+                    // {theme.label}
+                  </span>
 
-          {/* Description */}
-          <p className="text-xs sm:text-sm text-[var(--text-body)] leading-relaxed mb-4 line-clamp-2">
-            {service.description}
-          </p>
+                  {/* Live SLA Badge */}
+                  <span className="inline-flex items-center gap-1.5 text-[10px] font-mono font-bold text-emerald-400 bg-emerald-400/10 border border-emerald-400/30 px-2 py-0.5 rounded-full">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_6px_#34D399]" />
+                    <span>SLA GUARANTEED</span>
+                  </span>
+                </div>
 
-          {/* ── DIRECTLY VISIBLE TECH STACK & DELIVERABLE CHIPS ── */}
-          <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mb-4">
-            {visibleTech.slice(0, 4).map((tech, i) => (
-              <span
-                key={i}
-                className="text-[10px] sm:text-[11px] font-mono font-medium px-2.5 py-1 rounded-lg bg-[var(--bg-page)]/80 border border-[var(--border-subtle)] text-[var(--text-heading)] shadow-sm flex items-center gap-1"
-              >
-                <span className="w-1 h-1 rounded-full" style={{ backgroundColor: theme.accent }} />
-                <span>{tech}</span>
-              </span>
-            ))}
+                {/* Glowing Icon Hub */}
+                <div
+                  className="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl flex items-center justify-center transition-all duration-300 shadow-md group-hover:scale-105"
+                  style={{
+                    backgroundColor: 'var(--bg-page)',
+                    border: `1.5px solid ${theme.accent}60`,
+                    boxShadow: isHovered ? `0 0 18px -2px ${theme.accent}75` : 'none',
+                    color: theme.accent,
+                  }}
+                >
+                  {getServiceIcon(service.icon, 'w-5 h-5 stroke-[2.2]')}
+                </div>
+              </div>
+            </>
+          )}
+
+          {/* ── CARD ESSENTIALS: Title, Tagline, Description & Tags ── */}
+          <div className="relative z-10">
+            {hasImage ? (
+              <h3 className="font-display font-bold text-base sm:text-lg text-[var(--text-heading)] leading-snug mb-1.5 group-hover:text-[var(--brand-teal)] transition-colors">
+                {service.title}
+              </h3>
+            ) : (
+              <div className="flex items-baseline gap-2.5 mb-1.5">
+                <span
+                  className="font-display font-black text-2xl sm:text-3xl tracking-tighter transition-colors select-none"
+                  style={{
+                    WebkitTextStroke: `1.5px ${theme.accent}80`,
+                    color: 'transparent',
+                  }}
+                >
+                  {numeral}
+                </span>
+                <h3 className="font-display font-bold text-base sm:text-lg text-[var(--text-heading)] leading-snug group-hover:text-[var(--brand-teal)] transition-colors">
+                  {service.title}
+                </h3>
+              </div>
+            )}
+
+            {/* Tagline if card without image */}
+            {!hasImage && service.tagline && (
+              <p className="text-[11px] font-mono font-semibold tracking-wide mb-1.5" style={{ color: theme.accent }}>
+                {service.tagline}
+              </p>
+            )}
+
+            {/* Essential 2-line summary */}
+            <p className="text-xs text-[var(--text-body)] leading-relaxed mb-3 line-clamp-2">
+              {service.description || service.tagline}
+            </p>
+
+            {/* Key Deliverable Tags (Top 3 essentials) */}
+            <div className="flex flex-wrap items-center gap-1.5 mb-3">
+              {visibleTech.slice(0, 3).map((tech, i) => (
+                <span
+                  key={i}
+                  className={`text-[10px] font-mono font-medium px-2 py-0.5 rounded-md text-[var(--text-heading)] flex items-center gap-1 ${
+                    hasImage ? 'satin-pill' : 'bg-[var(--bg-page)]/80 border border-[var(--border-subtle)] shadow-xs'
+                  }`}
+                >
+                  <span className="w-1 h-1 rounded-full shrink-0" style={{ backgroundColor: theme.accent }} />
+                  <span>{tech}</span>
+                </span>
+              ))}
+            </div>
           </div>
         </div>
 
-        {/* ── EXPANDABLE QUICK-SPECS DRAWER ── */}
+        {/* ── EXPANDABLE QUICK-SPECS DRAWER (Revealed on-demand) ── */}
         <AnimatePresence>
           {isOpen && (
             <motion.div
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.25, ease: 'easeInOut' }}
-              className="relative z-10 pt-3 pb-3 border-t border-[var(--border-subtle)] overflow-hidden"
+              transition={{ duration: 0.2, ease: 'easeInOut' }}
+              className="relative z-10 py-2.5 mb-2.5 border-t border-[var(--border-subtle)] overflow-hidden"
             >
-              <div className="space-y-2 text-xs text-[var(--text-body)]">
-                <div className="flex items-center gap-2">
-                  <Zap className="w-3.5 h-3.5 text-cyan-400" />
-                  <span className="font-mono font-bold text-[var(--text-heading)]">Dedicated Roster:</span>
-                  <span>{theme.roster}</span>
+              <div className="space-y-1.5 text-xs text-[var(--text-body)]">
+                <div className="flex items-center gap-1.5">
+                  <Zap className="w-3.5 h-3.5 text-cyan-500 shrink-0" />
+                  <span className="font-mono font-bold text-[var(--text-heading)]">Squad:</span>
+                  <span className="truncate">{theme.roster}</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-                  <span className="font-mono font-bold text-[var(--text-heading)]">SLA Turnaround:</span>
-                  <span>14–21 Day Sprint Deployments · Zero Runaway Scope</span>
-                </div>
-                <div className="pt-1">
-                  <p className="font-mono text-[10px] uppercase font-bold text-[var(--text-dim)] mb-1">
-                    Deliverables Included:
-                  </p>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
-                    {visibleTech.map((item, idx) => (
-                      <div key={idx} className="flex items-center gap-1.5 text-[11px]">
-                        <CheckCircle2 className="w-3 h-3 text-emerald-400 shrink-0" />
-                        <span className="truncate">{item}</span>
-                      </div>
-                    ))}
-                  </div>
+                <div className="flex items-center gap-1.5">
+                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+                  <span className="font-mono font-bold text-[var(--text-heading)]">Delivery:</span>
+                  <span className="truncate">Sprint milestones · 100% IP ownership</span>
                 </div>
               </div>
             </motion.div>
           )}
         </AnimatePresence>
 
-        {/* ── CARD FOOTER ACTIONS ── */}
-        <div className="relative z-10 pt-3 border-t border-[var(--border-subtle)] flex items-center justify-between gap-3">
-          {/* Primary Action Button */}
+        {/* ── COMPACT FOOTER ACTIONS ── */}
+        <div className="relative z-10 pt-2.5 border-t border-[var(--border-subtle)] flex items-center justify-between gap-2 mt-auto">
           <Link
             to={targetLink}
-            className="inline-flex items-center space-x-2 px-4 py-2 rounded-xl btn-brand-futuristic text-white text-xs font-bold shadow-md transition-all group/btn"
+            className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-lg btn-brand-futuristic text-white text-[11px] font-bold transition-all group/btn"
           >
             <span>SCOPE SQUAD</span>
-            <ArrowRight className="w-3.5 h-3.5 group-hover/btn:translate-x-0.5 transition-transform" />
+            <ArrowRight className="w-3 h-3 group-hover/btn:translate-x-0.5 transition-transform" />
           </Link>
 
-          {/* Quick Specs Toggle Button */}
           <button
             type="button"
             onClick={onToggle}
-            className="inline-flex items-center space-x-1.5 text-[11px] font-mono font-bold text-[var(--text-dim)] hover:text-[var(--text-heading)] px-2.5 py-1.5 rounded-lg hover:bg-[var(--bg-subtle)] transition-colors cursor-pointer"
+            className="inline-flex items-center space-x-1 text-[10px] font-mono font-bold text-[var(--text-muted)] hover:text-[var(--text-heading)] px-2 py-1 rounded hover:bg-[var(--bg-subtle)] transition-colors cursor-pointer"
           >
-            <span>{isOpen ? 'COLLAPSE' : 'SPECS & ROSTER'}</span>
+            <span>{isOpen ? 'COLLAPSE' : 'SPECS'}</span>
             <ChevronDown
-              className={`w-3.5 h-3.5 transition-transform duration-200 ${
+              className={`w-3 h-3 transition-transform duration-200 ${
                 isOpen ? 'rotate-180' : ''
               }`}
             />

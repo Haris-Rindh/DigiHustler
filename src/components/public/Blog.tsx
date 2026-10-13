@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowRight, Clock, User, Calendar, BookOpen, Sparkles } from 'lucide-react';
 import { SEOHead } from '../seo/SEOHead';
 import { useApp } from '../../context/AppContext';
 
@@ -127,62 +126,24 @@ export const Blog: React.FC = () => {
       <section className="bg-[var(--bg-page)] py-16 px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredPosts.map((post) => (
+            {filteredPosts.map((post, index) => (
               <Link
                 key={post.slug}
                 to={`/blog/${post.slug}`}
-                data-cursor="view"
-                className="group border border-[var(--border-subtle)] rounded-2xl overflow-hidden bg-[var(--bg-surface)] hover:shadow-xl hover:border-[var(--brand-teal)] transition-all duration-200 ease-out hover:-translate-y-1.5 flex flex-col justify-between cursor-pointer select-none block"
+                className="group block overflow-hidden rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] transition-transform duration-200 hover:-translate-y-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-teal)] hover:border-[var(--brand-teal)] shadow-sm hover:shadow-lg"
               >
-                <div>
-                  <div className="aspect-video overflow-hidden bg-[var(--bg-subtle)] relative">
-                    <img
-                      src={post.image}
-                      alt={post.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200 ease-out"
-                    />
-                    <div className="absolute top-3 left-3 px-2.5 py-1 rounded-md bg-[var(--bg-page)]/90 backdrop-blur-sm text-[10px] font-bold text-[var(--brand-teal)] border border-[var(--border-subtle)]">
-                      {post.category}
-                    </div>
-                  </div>
-
-                  <div className="p-6">
-                    <div className="flex items-center space-x-4 text-xs text-[var(--text-muted)] mb-3">
-                      <span className="flex items-center space-x-1">
-                        <Calendar className="w-3.5 h-3.5" />
-                        <span>{post.date}</span>
-                      </span>
-                      <span>·</span>
-                      <span className="flex items-center space-x-1">
-                        <Clock className="w-3.5 h-3.5" />
-                        <span>{post.readTime}</span>
-                      </span>
-                    </div>
-
-                    <h2 className="font-display font-bold text-xl text-[var(--text-heading)] mb-3 group-hover:text-[var(--brand-teal)] transition-colors duration-150 leading-snug">
-                      {post.title}
-                    </h2>
-
-                    <p className="text-sm text-[var(--text-body)] leading-relaxed mb-6">
-                      {post.excerpt}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="px-6 pb-6 pt-0 border-t border-[var(--border-subtle)] flex items-center justify-between">
-                  <div className="flex items-center space-x-2 pt-4">
-                    <div className="w-6 h-6 rounded-full bg-[var(--brand-teal-subtle)] text-[var(--brand-teal)] border border-[var(--brand-teal)]/30 flex items-center justify-center font-bold text-[10px]">
-                      {post.author.charAt(0)}
-                    </div>
-                    <span className="text-xs font-semibold text-[var(--text-heading)]">{post.author}</span>
-                  </div>
-                  <div
-                    className="inline-flex items-center space-x-1 text-xs font-bold text-[var(--brand-teal)] pt-4 group-hover:translate-x-1 transition-transform duration-150"
-                  >
-                    <span>Read Guide</span>
-                    <ArrowRight className="w-3.5 h-3.5" />
-                  </div>
-                </div>
+                <img
+                  src={post.image}
+                  alt={post.title}
+                  width={800}
+                  height={450}
+                  loading={index < 3 ? 'eager' : 'lazy'}
+                  decoding="async"
+                  className="aspect-video w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+                />
+                <h3 className="line-clamp-2 min-h-[2.75rem] px-4 py-3 font-display text-base font-semibold leading-snug text-[var(--text-heading)] group-hover:text-[var(--brand-teal)] transition-colors">
+                  {post.title}
+                </h3>
               </Link>
             ))}
           </div>

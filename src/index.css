@@ -178,13 +178,11 @@ h1, h2, h3, h4, h5, h6 {
 .breeze-card-hover:hover,
 .glass-card:hover {
   border-color: rgba(31, 122, 140, 0.5);
-  box-shadow: 0 16px 36px -8px rgba(2, 43, 58, 0.18),
-              0 0 20px -2px rgba(31, 122, 140, 0.18),
-              inset 0 1px 0 0 rgba(255, 255, 255, 0.12);
+  box-shadow: 0 12px 28px -8px rgba(2, 43, 58, 0.16);
   transform: translateY(-4px);
 }
 
-/* Modern Futuristic Primary CTA Button */
+/* Primary CTA Button (No Hover Glow) */
 .btn-brand-primary,
 .matte-btn-primary,
 .breeze-btn-primary,
@@ -194,36 +192,15 @@ h1, h2, h3, h4, h5, h6 {
   color: #FFFFFF !important;
   font-weight: 700;
   border-radius: 0.85rem;
-  border: 1px solid rgba(56, 189, 248, 0.4);
-  box-shadow: 0 4px 16px -2px rgba(2, 43, 58, 0.4),
-              0 0 12px -2px rgba(34, 160, 180, 0.35),
-              inset 0 1px 0 0 rgba(255, 255, 255, 0.28);
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  box-shadow: 0 4px 12px -2px rgba(2, 43, 58, 0.35),
+              inset 0 1px 0 0 rgba(255, 255, 255, 0.22);
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+              background 0.25s ease,
+              border-color 0.25s ease,
+              box-shadow 0.25s ease;
   overflow: hidden;
-  will-change: transform, box-shadow;
-}
-
-.btn-brand-primary::before,
-.matte-btn-primary::before,
-.breeze-btn-primary::before,
-.btn-brand-futuristic::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 60%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.25), transparent);
-  transform: skewX(-22deg);
-  transition: left 0.65s ease;
-  pointer-events: none;
-}
-
-.btn-brand-primary:hover::before,
-.matte-btn-primary:hover::before,
-.breeze-btn-primary:hover::before,
-.btn-brand-futuristic:hover::before {
-  left: 180%;
+  will-change: transform;
 }
 
 .btn-brand-primary:hover,
@@ -231,12 +208,10 @@ h1, h2, h3, h4, h5, h6 {
 .breeze-btn-primary:hover,
 .btn-brand-futuristic:hover {
   background: linear-gradient(135deg, #2492a7 0%, #1a7486 50%, #105260 100%);
-  border-color: rgba(52, 211, 153, 0.75);
-  box-shadow: 0 10px 28px -4px rgba(2, 43, 58, 0.5),
-              0 0 24px 2px rgba(52, 211, 153, 0.45),
-              0 0 12px 1px rgba(34, 160, 180, 0.4),
-              inset 0 1px 0 0 rgba(255, 255, 255, 0.45);
-  transform: translateY(-2px) scale(1.02);
+  border-color: rgba(56, 189, 248, 0.55);
+  box-shadow: 0 8px 20px -4px rgba(2, 43, 58, 0.42),
+              inset 0 1px 0 0 rgba(255, 255, 255, 0.28);
+  transform: translateY(-2px);
 }
 
 .btn-brand-primary:active,
@@ -349,51 +324,105 @@ h1, h2, h3, h4, h5, h6 {
   }
 }
 
-/* ── BOLD, PREMIUM, BUTTERY CARD DESIGN SYSTEM ── */
-.premium-card {
+/* ── MODERN SATIN TACTILE CARD DESIGN SYSTEM (APPLE / LINEAR PRECISION DEPTH) ── */
+.satin-card,
+.premium-card,
+.clay-work-card,
+.clay-service-card {
   position: relative;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%), var(--bg-surface);
-  border: 1px solid var(--border-subtle);
   border-radius: 1.5rem;
-  box-shadow: 0 4px 20px -2px rgba(2, 43, 58, 0.1), inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
-  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
-              box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1),
-              border-color 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  box-shadow:
+    0 1px 2px rgba(2, 43, 58, 0.04),
+    0 8px 24px -4px rgba(2, 43, 58, 0.08),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.95);
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.22s ease;
   will-change: transform;
 }
 
-.premium-card::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  background: radial-gradient(550px circle at var(--mouse-x, -999px) var(--mouse-y, -999px), rgba(31, 122, 140, 0.2), transparent 65%);
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.35s ease;
-  z-index: 0;
+.satin-card:hover,
+.premium-card:hover,
+.clay-work-card:hover,
+.clay-service-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--border-hover);
+  box-shadow:
+    0 3px 6px rgba(2, 43, 58, 0.05),
+    0 16px 32px -6px rgba(2, 43, 58, 0.14),
+    inset 0 1px 0 0 rgba(255, 255, 255, 1);
 }
 
-.premium-card:hover::before {
-  opacity: 1;
+.dark .satin-card,
+.dark .premium-card,
+.dark .clay-work-card,
+.dark .clay-service-card {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.025) 0%, rgba(255, 255, 255, 0) 100%), var(--bg-surface);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.3),
+    0 12px 28px -4px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.12);
 }
 
-.premium-card:hover {
-  transform: translateY(-6px);
-  border-color: rgba(31, 122, 140, 0.65);
-  box-shadow: 0 24px 48px -12px rgba(2, 43, 58, 0.35),
-              0 0 30px -4px rgba(31, 122, 140, 0.28),
-              inset 0 1px 0 0 rgba(255, 255, 255, 0.2);
+.dark .satin-card:hover,
+.dark .premium-card:hover,
+.dark .clay-work-card:hover,
+.dark .clay-service-card:hover {
+  border-color: rgba(31, 122, 140, 0.5);
+  box-shadow:
+    0 4px 8px rgba(0, 0, 0, 0.35),
+    0 20px 40px -8px rgba(0, 0, 0, 0.6),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.16);
 }
 
-.dark .premium-card {
-  box-shadow: 0 6px 24px -2px rgba(0, 0, 0, 0.35), inset 0 1px 0 0 rgba(255, 255, 255, 0.08);
+/* Satin Architectural Image Bezel */
+.satin-img-frame,
+.clay-inset-well {
+  position: relative;
+  border-radius: 1.125rem;
+  overflow: hidden;
+  background: var(--bg-subtle);
+  border: 1px solid var(--border-subtle);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.06);
 }
 
-.dark .premium-card:hover {
-  box-shadow: 0 24px 48px -12px rgba(0, 0, 0, 0.7),
-              0 0 35px -4px rgba(31, 122, 140, 0.35),
-              inset 0 1px 0 0 rgba(255, 255, 255, 0.18);
+.dark .satin-img-frame,
+.dark .clay-inset-well {
+  background: #021e29;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.4);
+}
+
+/* Satin Precision Micro-Pill */
+.satin-pill,
+.clay-pill {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 0.625rem;
+  background: var(--bg-subtle);
+  border: 1px solid var(--border-subtle);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), inset 0 1px 0 0 rgba(255, 255, 255, 0.6);
+  transition: border-color 0.18s ease, background-color 0.18s ease;
+}
+
+.satin-pill:hover,
+.clay-pill:hover {
+  border-color: var(--brand-teal);
+}
+
+.dark .satin-pill,
+.dark .clay-pill {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25), inset 0 1px 0 0 rgba(255, 255, 255, 0.08);
+}
+
+.dark .satin-pill:hover,
+.dark .clay-pill:hover {
+  border-color: rgba(31, 122, 140, 0.6);
 }
 
 .glass-pill {

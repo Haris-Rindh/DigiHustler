@@ -8,7 +8,6 @@ import {
   Clock,
   Shield,
   MessageSquare,
-  Sparkles,
   Paperclip,
   Check,
   Mail,
@@ -23,52 +22,6 @@ import { useApp } from '../../context/AppContext';
 import { GroupId } from '../../types';
 import { notificationService } from '../../lib/notificationService';
 
-// Import Slideshow Images
-import slide1 from '../../assets/slideshow 1.avif';
-import slide2 from '../../assets/slideshow 2.jpg';
-import slide3 from '../../assets/slideshow 3.jpg';
-import slide4 from '../../assets/slideshow 4.jpg';
-import slide5 from '../../assets/slideshow 5.jpg';
-import slide6 from '../../assets/slideshow 6.jpg';
-
-const CONTACT_SLIDESHOW = [
-  {
-    image: slide1,
-    badge: 'Custom Engineering',
-    title: 'Transform Concepts Into High-Scale Digital Products',
-    tagline: 'Full-stack web applications, SaaS architectures, and cloud deployments.',
-  },
-  {
-    image: slide2,
-    badge: 'Brand & Experience',
-    title: 'Visual Identity & Interactive UX Built for Conversion',
-    tagline: 'Distinctive design systems, Figma interactive prototypes, and 3D visual assets.',
-  },
-  {
-    image: slide3,
-    badge: 'AI & Automation',
-    title: 'Deploy Intelligent Bots & Workflow Automations',
-    tagline: 'Custom OpenAI models, n8n automated pipelines, and intelligent customer agents.',
-  },
-  {
-    image: slide4,
-    badge: 'Growth Engine',
-    title: 'Accelerate Traffic with Data-Driven SEO & PPC',
-    tagline: 'Technical audits, high-ROI search campaigns, and targeted B2B lead generation.',
-  },
-  {
-    image: slide5,
-    badge: 'Infrastructure Security',
-    title: 'Secure Infrastructure with Proactive Penetration Audits',
-    tagline: 'OWASP vulnerability assessments, cloud server hardening, and compliance advisory.',
-  },
-  {
-    image: slide6,
-    badge: 'Business Intelligence',
-    title: 'Automate Executive Dashboards & Dynamic SQL Analytics',
-    tagline: 'PowerBI reporting suites, data modeling, and custom virtual support.',
-  },
-];
 
 const SERVICES = [
   'Website / Full-Stack App',
@@ -99,32 +52,16 @@ const TIMELINES = [
 ];
 
 export const Contact: React.FC = () => {
-  // ── AUTO SLIDER STATE ──
-  const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
   const formSectionRef = useRef<HTMLDivElement>(null);
 
-  const nextSlide = useCallback(() => {
-    setCurrentSlideIndex((prev) => (prev + 1) % CONTACT_SLIDESHOW.length);
-  }, []);
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      nextSlide();
-    }, 4000); // changes every 4 seconds
-
-    return () => clearInterval(interval);
-  }, [nextSlide]);
-
-  const scrollToForm = () => {
-    if (formSectionRef.current) {
-      formSectionRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-  };
-
-  const currentSlide = CONTACT_SLIDESHOW[currentSlideIndex];
   const [searchParams] = useSearchParams();
   const projectParam = searchParams.get('project');
   const serviceParam = searchParams.get('service');
+  const servicesFlowParam = searchParams.get('services');
+  const deliverablesParam = searchParams.get('deliverables');
+  const stageParam = searchParams.get('stage');
+  const timelineParam = searchParams.get('timeline');
 
   const [form, setForm] = useState({
     name: '',
@@ -132,21 +69,85 @@ export const Contact: React.FC = () => {
     company: '',
     services: ['Website / Full-Stack App'],
     description: '',
-    budget: 'Minimum under $100',
-    timeline: '1 Month',
+    budget: '$1,000 | $3,000',
+    timeline: '1 | 3 Months',
     file: null as File | null,
     honeypot: '', // anti-spam field
   });
 
-  useEffect(() => {
-    if (projectParam) {
-      setForm((prev) => ({
-        ...prev,
-        description: prev.description ? prev.description : `I am interested in building a solution similar to "${projectParam}". My requirements: `,
-        services: serviceParam ? [serviceParam] : prev.services,
-      }));
+  // Helper to match service names from Services page to Contact form pills
+  const mapServiceToContactOption = useCallback((rawName: string): string => {
+    const lower = rawName.toLowerCase();
+    if (lower.includes('dev') || lower.includes('web') || lower.includes('app') || lower.includes('engineer')) {
+      return 'Website / Full-Stack App';
     }
-  }, [projectParam, serviceParam]);
+    if (lower.includes('ui') || lower.includes('ux') || lower.includes('creative') || lower.includes('design') || lower.includes('brand')) {
+      return 'UI/UX & Brand Identity';
+    }
+    if (lower.includes('ai') || lower.includes('auto')) {
+      return 'AI & Workflow Automation';
+    }
+    if (lower.includes('market') || lower.includes('seo') || lower.includes('growth')) {
+      return 'Digital Marketing & SEO';
+    }
+    if (lower.includes('cyber') || lower.includes('sec')) {
+      return 'Cybersecurity Audit';
+    }
+    if (lower.includes('data') || lower.includes('bi') || lower.includes('analytic')) {
+      return 'BI & Data Intelligence';
+    }
+    return rawName;
+  }, []);
+
+  useEffect(() => {
+    const incomingServicesRaw = servicesFlowParam
+      ? servicesFlowParam.split(',').map((s) => s.trim()).filter(Boolean)
+      : serviceParam
+      ? [serviceParam]
+      : [];
+
+    const mappedServices = Array.from(
+      new Set(incomingServicesRaw.map(mapServiceToContactOption))
+    ).filter((s) => SERVICES.includes(s));
+
+    const deliverablesList = deliverablesParam
+      ? deliverablesParam.split(',').map((d) => d.trim()).filter(Boolean)
+      : [];
+
+    let mappedTimeline = '';
+    if (timelineParam) {
+      if (timelineParam.toLowerCase().includes('urgent')) mappedTimeline = 'Urgent (Under 2 Weeks)';
+      else if (timelineParam.includes('1 – 3') || timelineParam.includes('1 | 3')) mappedTimeline = '1 | 3 Months';
+      else if (timelineParam.includes('3+')) mappedTimeline = '3+ Months / Ongoing Retainer';
+      else if (timelineParam.toLowerCase().includes('flexible')) mappedTimeline = 'Flexible';
+    }
+
+    if (projectParam || incomingServicesRaw.length > 0 || deliverablesList.length > 0 || stageParam) {
+      setForm((prev) => {
+        const summaryLines: string[] = [];
+        if (projectParam) {
+          summaryLines.push(`Referenced Case Study: "${projectParam}"`);
+        }
+        if (stageParam) {
+          summaryLines.push(`Project Stage: ${stageParam}`);
+        }
+        if (deliverablesList.length > 0) {
+          summaryLines.push(`Selected Deliverables: ${deliverablesList.join(', ')}`);
+        }
+        const autoBrief =
+          summaryLines.length > 0
+            ? `${summaryLines.join('\n')}\n\nProject Goals & Context:\n`
+            : prev.description;
+
+        return {
+          ...prev,
+          services: mappedServices.length > 0 ? mappedServices : prev.services,
+          timeline: mappedTimeline || prev.timeline,
+          description: prev.description ? prev.description : autoBrief,
+        };
+      });
+    }
+  }, [projectParam, serviceParam, servicesFlowParam, deliverablesParam, stageParam, timelineParam, mapServiceToContactOption]);
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -191,6 +192,7 @@ export const Contact: React.FC = () => {
 
     try {
       const budgetMap: Record<string, number> = {
+        'Under $100': 100,
         'Minimum under $100': 100,
         '$100 | $500': 500,
         '$500 | $1,000': 1000,
@@ -210,7 +212,7 @@ export const Contact: React.FC = () => {
       };
 
       const targetGroupId: GroupId = groupMap[form.services[0]] || 'tech';
-      const rawBudget = budgetMap[form.budget] || 100;
+      const rawBudget = budgetMap[form.budget] || 1000;
 
       const newLeadData = {
         title: `${form.company || form.name} | ${form.services[0]}`,
@@ -291,118 +293,6 @@ export const Contact: React.FC = () => {
           }
         }}
       />
-
-      {/* ── AUTO IMAGE SLIDER SHOWCASE (AT VERY START) ── */}
-      <section className="bg-[var(--bg-page)] pt-4 sm:pt-6 pb-8 px-4 sm:px-6 lg:px-8 border-b border-[var(--border-subtle)]">
-        <div className="max-w-7xl mx-auto">
-          
-          <div
-            className="relative w-full h-[320px] sm:h-[400px] md:h-[450px] lg:h-[480px] rounded-3xl overflow-hidden shadow-2xl border border-[var(--border-subtle)] bg-black/90 group select-none"
-          >
-            {/* Background Slides with Framer Motion */}
-            <AnimatePresence initial={false} mode="wait">
-              <motion.div
-                key={currentSlideIndex}
-                initial={{ opacity: 0, scale: 1.05 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.98 }}
-                transition={{ duration: 0.7, ease: [0.32, 0.72, 0, 1] }}
-                className="absolute inset-0 w-full h-full"
-              >
-                <img
-                  src={currentSlide.image}
-                  alt={currentSlide.title}
-                  className="w-full h-full object-cover object-center"
-                  loading={currentSlideIndex === 0 ? 'eager' : 'lazy'}
-                />
-                
-                {/* Lightened, Luminous Scrim Gradients for Maximum Image Clarity */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-black/10" />
-                <div className="absolute inset-0 bg-gradient-to-r from-black/55 via-black/20 to-transparent" />
-              </motion.div>
-            </AnimatePresence>
-
-            {/* Slide Content Overlay */}
-            <div className="absolute inset-0 p-6 sm:p-10 md:p-14 flex flex-col justify-between z-10">
-              
-              {/* Top Tag & Slide Counter */}
-              <div className="flex items-center justify-between">
-                <motion.div
-                  key={`badge-${currentSlideIndex}`}
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.4 }}
-                  className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-black/40 backdrop-blur-md border border-white/20 text-white text-xs font-bold shadow-lg"
-                >
-                  <Sparkles className="w-3.5 h-3.5 text-cyan-300 drop-shadow" />
-                  <span className="tracking-wide uppercase text-[11px] font-black text-white drop-shadow-md">
-                    {currentSlide.badge}
-                  </span>
-                </motion.div>
-
-                {/* Progress Indicators / Counter */}
-                <div className="flex items-center space-x-2 px-3 py-1 rounded-full bg-black/40 backdrop-blur-md border border-white/10 text-white/90 text-xs font-mono font-bold">
-                  <span className="text-cyan-300">0{currentSlideIndex + 1}</span>
-                  <span className="opacity-40">/</span>
-                  <span>0{CONTACT_SLIDESHOW.length}</span>
-                </div>
-              </div>
-
-              {/* Bottom Main Titles & Actions */}
-              <div className="max-w-3xl space-y-3 sm:space-y-4">
-                <motion.div
-                  key={`text-${currentSlideIndex}`}
-                  initial={{ opacity: 0, y: 15 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.45, delay: 0.1 }}
-                  className="space-y-2 sm:space-y-3"
-                >
-                  <h2 className="font-display font-black text-2xl sm:text-4xl md:text-5xl text-white tracking-tight leading-tight sm:leading-none drop-shadow-md">
-                    {currentSlide.title}
-                  </h2>
-                  <p className="text-xs sm:text-sm md:text-base text-white/85 line-clamp-2 sm:line-clamp-none font-medium leading-relaxed drop-shadow">
-                    {currentSlide.tagline}
-                  </p>
-                </motion.div>
-
-                {/* Interactive Action to Scroll to Form */}
-                <motion.div
-                  key={`cta-${currentSlideIndex}`}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.4, delay: 0.2 }}
-                  className="pt-1 sm:pt-2"
-                >
-                  <button
-                    onClick={scrollToForm}
-                    className="inline-flex items-center space-x-2 px-5 py-2.5 sm:px-6 sm:py-3 rounded-xl bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-white text-xs sm:text-sm font-bold shadow-lg transition-all cursor-pointer hover:scale-105 active:scale-95"
-                  >
-                    <span>Start Your Project Intake</span>
-                    <ChevronDown className="w-4 h-4" />
-                  </button>
-                </motion.div>
-              </div>
-
-            </div>
-
-            {/* Bottom Progress Bar Indicator (Purely Automatic) */}
-            <div className="absolute bottom-4 sm:bottom-6 right-6 sm:right-10 flex items-center space-x-1.5 sm:space-x-2 z-20 pointer-events-none">
-              {CONTACT_SLIDESHOW.map((_, idx) => (
-                <div
-                  key={idx}
-                  className={`h-1.5 sm:h-2 rounded-full transition-all duration-500 ${
-                    idx === currentSlideIndex
-                      ? 'w-6 sm:w-8 bg-[var(--brand-teal)] shadow-md shadow-[var(--brand-teal)]/50'
-                      : 'w-2 bg-white/30'
-                  }`}
-                />
-              ))}
-            </div>
-
-          </div>
-
-        </div>
-      </section>
 
       {/* ── HEADER INTRO ── */}
       <section ref={formSectionRef} className="py-12 sm:py-16 px-6 lg:px-8 border-b border-[var(--border-subtle)] bg-[var(--bg-subtle)]">
@@ -572,9 +462,6 @@ export const Contact: React.FC = () => {
                       className="p-4 rounded-2xl bg-[var(--brand-teal-subtle)] border border-[var(--brand-teal)]/40 flex items-center justify-between gap-4"
                     >
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-[var(--brand-teal)] text-white flex items-center justify-center font-bold flex-shrink-0 shadow-sm">
-                          <Sparkles className="w-5 h-5" />
-                        </div>
                         <div>
                           <p className="text-[10px] font-extrabold text-[var(--brand-teal)] uppercase tracking-wider">
                             Referenced Project Scope
@@ -586,6 +473,33 @@ export const Contact: React.FC = () => {
                       </div>
                       <span className="text-xs font-bold text-[var(--brand-teal)] bg-[var(--bg-surface)] px-3 py-1.5 rounded-lg border border-[var(--brand-teal)]/30 hidden sm:inline-block">
                         Tailored Scope Attached
+                      </span>
+                    </motion.div>
+                  )}
+
+                  {/* Configured Service Flow Banner */}
+                  {(servicesFlowParam || deliverablesParam || stageParam) && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="p-4 rounded-2xl satin-img-frame flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+                    >
+                      <div>
+                        <p className="text-[10px] font-extrabold text-[var(--brand-teal)] uppercase tracking-wider mb-1">
+                          Configured Service Scope Attached
+                        </p>
+                        <p className="text-xs sm:text-sm font-bold text-[var(--text-heading)]">
+                          {servicesFlowParam || form.services.join(', ')}
+                          {stageParam ? ` · ${stageParam}` : ''}
+                        </p>
+                        {deliverablesParam && (
+                          <p className="text-xs text-[var(--text-muted)] mt-0.5">
+                            Deliverables: {deliverablesParam}
+                          </p>
+                        )}
+                      </div>
+                      <span className="text-xs font-bold text-[var(--brand-teal)] satin-pill px-3 py-1.5 rounded-xl shrink-0 self-start sm:self-center">
+                        Pre-Filled from Flow
                       </span>
                     </motion.div>
                   )}

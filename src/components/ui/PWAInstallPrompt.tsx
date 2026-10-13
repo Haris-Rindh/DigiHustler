@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Download, X, Sparkles } from 'lucide-react';
+import { Download, X } from 'lucide-react';
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
@@ -64,7 +64,6 @@ export const PWAInstallPrompt: React.FC = () => {
           <div>
             <h4 className="font-bold text-xs text-[var(--text-heading)] flex items-center gap-1">
               <span>Install DigiHust App</span>
-              <Sparkles className="w-3 h-3 text-amber-400" />
             </h4>
             <p className="text-[11px] text-[var(--text-body)]">Fast, offline-ready desktop & mobile portal</p>
           </div>

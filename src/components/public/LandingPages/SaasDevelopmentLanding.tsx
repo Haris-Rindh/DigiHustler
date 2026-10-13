@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { 
   Code, CheckCircle2, ArrowRight, ShieldCheck, Zap, Server, Database, 
-  Layers, Lock, Sparkles, Terminal, Globe, Award 
+  Layers, Lock, Terminal, Globe, Award 
 } from 'lucide-react';
 import { SEOHead } from '../../seo/SEOHead';
 
@@ -40,7 +40,6 @@ export const SaasDevelopmentLanding: React.FC = () => {
             animate={{ opacity: 1, y: 0 }}
             className="inline-flex items-center space-x-2 px-4 py-1.5 rounded-full bg-[var(--brand-teal-subtle)] border border-[var(--brand-teal)]/40 text-[var(--brand-teal)] text-xs font-bold uppercase tracking-wider"
           >
-            <Sparkles className="w-3.5 h-3.5" />
             <span>Dedicated Tech Squads for Startups & Scale-ups</span>
           </motion.div>
 

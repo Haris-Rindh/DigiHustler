@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Users, Mail, Shield, Send, CheckCircle2, AlertCircle, Plus, 
-  FileSpreadsheet, Sparkles, Filter, Search, UserCheck, Key, Lock, 
+  FileSpreadsheet, Filter, Search, UserCheck, Key, Lock, 
   ShieldCheck, Settings, UserPlus, Ban, Check, X, Award, Printer, Eye,
   Pin, PinOff, Crown
 } from 'lucide-react';

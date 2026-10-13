@@ -7,7 +7,6 @@ import {
   Calendar,
   Building2,
   Layers,
-  Sparkles,
   Zap,
   ShieldCheck,
   Code2,
@@ -244,7 +243,6 @@ export const CaseStudyDetail: React.FC = () => {
                   <span>{study.timeline}</span>
                 </span>
                 <span className="flex items-center gap-1.5 bg-[var(--brand-teal-subtle)] text-[var(--text-heading)] px-3 py-1.5 rounded-lg border border-[var(--brand-teal)]/40 font-bold">
-                  <Sparkles className="w-4 h-4 text-[var(--color-status-warning)]" />
                   <span>{study.statHighlight}</span>
                 </span>
                 {study.projectUrl && (

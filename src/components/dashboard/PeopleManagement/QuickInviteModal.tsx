@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, UserPlus, Shield, Sparkles, Mail, User as UserIcon, Phone, Briefcase, DollarSign } from 'lucide-react';
+import { X, UserPlus, Shield, Mail, User as UserIcon, Phone, Briefcase, DollarSign } from 'lucide-react';
 import { useApp } from '../../../context/AppContext';
 import { GroupId, UserRole, UserStatus } from '../../../types';
 

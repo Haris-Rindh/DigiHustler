@@ -1,24 +1,24 @@
 import React from 'react';
 
-/**
- * High-performance mouse spotlight tracker for buttery card illumination.
- * Throttles coordinate updates to animation frames and respects coarse touch devices.
- */
 export const handleCardSpotlightMove = (e: React.PointerEvent<HTMLElement>) => {
-  if (typeof window !== 'undefined' && window.matchMedia('(pointer: coarse)').matches) return;
-  const target = e.currentTarget;
+  if (window.matchMedia('(pointer: coarse)').matches) return;
+  const currentTarget = e.currentTarget;
   requestAnimationFrame(() => {
-    if (!target) return;
-    const rect = target.getBoundingClientRect();
+    if (!currentTarget) return;
+    const rect = currentTarget.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
-    target.style.setProperty('--mouse-x', `${x}px`);
-    target.style.setProperty('--mouse-y', `${y}px`);
+    currentTarget.style.setProperty('--mx', `${x}px`);
+    currentTarget.style.setProperty('--my', `${y}px`);
   });
 };
 
 export const handleCardSpotlightLeave = (e: React.PointerEvent<HTMLElement>) => {
-  const target = e.currentTarget;
-  target.style.setProperty('--mouse-x', '-999px');
-  target.style.setProperty('--mouse-y', '-999px');
+  const currentTarget = e.currentTarget;
+  if (currentTarget) {
+    currentTarget.style.setProperty('--mx', '-999px');
+    currentTarget.style.setProperty('--my', '-999px');
+  }
 };
+
+

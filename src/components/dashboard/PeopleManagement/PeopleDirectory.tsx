@@ -15,7 +15,6 @@ import {
   Mail,
   Phone,
   AlertCircle,
-  Sparkles,
   Trash2,
   Pin,
   PinOff,

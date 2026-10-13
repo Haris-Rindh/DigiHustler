@@ -404,26 +404,6 @@ export const FloatingCTA: React.FC = () => {
             transform: rotate(360deg);
           }
         }
-        @keyframes orbitBeaconBreath {
-          0%, 100% {
-            transform: scale(0.96);
-            opacity: 0.35;
-          }
-          50% {
-            transform: scale(1.18);
-            opacity: 0.7;
-          }
-        }
-        @keyframes orbitLivePing {
-          0% {
-            transform: scale(0.95);
-            opacity: 0.8;
-          }
-          70%, 100% {
-            transform: scale(2.2);
-            opacity: 0;
-          }
-        }
       `}</style>
 
       <AnimatePresence>
@@ -468,7 +448,7 @@ export const FloatingCTA: React.FC = () => {
                   exit={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, scale: 0.88, y: 10 }}
                   transition={{ duration: shouldReduceMotion ? 0.15 : 0.26, ease: [0.16, 1, 0.3, 1] }}
                   style={{ background: 'rgba(2, 43, 58, 0.98)' }}
-                  className="w-[300px] sm:w-[324px] p-5 rounded-3xl backdrop-blur-2xl border border-cyan-400/50 shadow-[0_20px_50px_rgba(0,0,0,0.7),0_0_30px_rgba(34,160,180,0.35)] text-white origin-bottom-left select-none relative overflow-hidden"
+                  className="w-[300px] sm:w-[324px] p-5 rounded-3xl backdrop-blur-2xl border border-cyan-400/50 shadow-[0_12px_32px_rgba(0,0,0,0.35)] text-white origin-bottom-left select-none relative overflow-hidden"
                 >
                   {/* Subtle Scanline / Tech grid overlay */}
                   <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(34,160,180,0.18),transparent_60%)] pointer-events-none" />
@@ -496,7 +476,7 @@ export const FloatingCTA: React.FC = () => {
                       Have a project in mind?
                     </h3>
                     <p className="text-xs text-cyan-100/75 mt-1 leading-relaxed">
-                      Connect with our engineering & design squads for a calibrated scope breakdown.
+                      Talk to our engineers and designers. We review your scope and send a structured proposal within 24 hours.
                     </p>
                   </div>
 
@@ -549,17 +529,6 @@ export const FloatingCTA: React.FC = () => {
                     )}
                   </AnimatePresence>
 
-                  {/* Ambient Futuristic Glow Aura */}
-                  {!shouldReduceMotion && (
-                    <div
-                      style={{
-                        animation: 'orbitBeaconBreath 3s ease-in-out infinite',
-                        animationPlayState: isAnimationPaused ? 'paused' : 'running',
-                      }}
-                      className="absolute inset-[-4px] md:inset-[-6px] rounded-2xl bg-cyan-500/25 blur-lg pointer-events-none -z-10"
-                    />
-                  )}
-
                   {/* Modern Futuristic Cyber Capsule Button */}
                   <motion.button
                     ref={orbRef}
@@ -582,14 +551,8 @@ export const FloatingCTA: React.FC = () => {
                     style={{
                       background: 'linear-gradient(135deg, rgba(2, 43, 58, 0.96) 0%, rgba(7, 53, 71, 0.94) 100%)',
                     }}
-                    className="relative px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-2xl border border-cyan-400/40 hover:border-emerald-400/80 backdrop-blur-2xl flex items-center gap-2.5 sm:gap-3 text-white z-20 cursor-pointer shadow-[0_12px_32px_rgba(2,43,58,0.7),0_0_20px_rgba(34,160,180,0.3)] hover:shadow-[0_16px_40px_rgba(2,43,58,0.8),0_0_28px_rgba(52,211,153,0.45)] transition-all duration-300 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400"
+                    className="relative px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-2xl border border-cyan-400/40 hover:border-emerald-400/80 backdrop-blur-2xl flex items-center gap-2.5 sm:gap-3 text-white z-20 cursor-pointer shadow-[0_4px_12px_rgba(0,0,0,0.25)] transition-colors duration-300 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400"
                   >
-                    {/* Animated Cyber Edge Runner */}
-                    <div className="absolute inset-0 rounded-2xl overflow-hidden pointer-events-none">
-                      <div className="absolute top-0 left-0 right-0 h-[1.5px] bg-gradient-to-r from-transparent via-cyan-400 to-transparent opacity-75 group-hover:opacity-100" />
-                    </div>
-
-                    {/* Live Telemetry Beacon Dot */}
                     {/* Orbit Attention Indicator */}
 <span className="relative flex h-5 w-5 shrink-0 items-center justify-center" aria-hidden="true">
   {/* Ripple: fires once every 4s */}

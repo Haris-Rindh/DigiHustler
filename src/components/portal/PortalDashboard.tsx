@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { 
   Users, Briefcase, Award, Bell, CheckCircle2, 
   ArrowRight, Shield, Layers, TrendingUp, Clock, PlusCircle, 
-  CheckSquare, FileText, Lock, Key, AlertCircle, Sparkles, UserCheck, UserPlus,
+  CheckSquare, FileText, Lock, Key, AlertCircle, UserCheck, UserPlus,
   Mail, MessageSquare, ExternalLink, Calendar, Check, Download
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';

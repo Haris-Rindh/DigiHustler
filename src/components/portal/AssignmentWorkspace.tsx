@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Briefcase, CheckCircle2, Clock, Plus, FileText, Send, User, Check, 
   AlertCircle, Shield, ExternalLink, MessageSquare, ChevronRight, Lock, 
-  Calendar, Layers, Paperclip, CheckSquare, Sparkles, Trash2 
+  Calendar, Layers, Paperclip, CheckSquare, Trash2 
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { emailService } from '../../lib/emailService';

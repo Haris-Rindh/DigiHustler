@@ -9,7 +9,6 @@ import {
   Shield,
   UserPlus,
   RefreshCw,
-  Sparkles,
 } from 'lucide-react';
 import { useApp } from '../../../context/AppContext';
 import { User } from '../../../types';

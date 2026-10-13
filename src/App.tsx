@@ -27,6 +27,7 @@ import { Apply } from './components/public/Apply';
 import { Careers } from './components/public/Careers';
 import { PrivacyPolicy } from './components/public/PrivacyPolicy';
 import { TermsOfService } from './components/public/TermsOfService';
+import { EditorialPolicy } from './components/public/EditorialPolicy';
 import { CertificateVerification } from './components/public/CertificateVerification';
 import { SaasDevelopmentLanding } from './components/public/LandingPages/SaasDevelopmentLanding';
 import { AiAutomationLanding } from './components/public/LandingPages/AiAutomationLanding';
@@ -70,8 +71,9 @@ const PageContainer: React.FC<{ children: React.ReactNode }> = ({ children }) =>
 
   return (
     <div className="flex flex-col min-h-screen bg-[var(--bg-page)] text-[var(--text-body)] selection:bg-[var(--brand-teal)] selection:text-white">
+      <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[10000] focus:rounded-lg focus:bg-[#022B3A] focus:px-4 focus:py-2 focus:text-white">Skip to main content</a>
       <Navbar />
-      <main className="flex-1">
+      <main id="main-content" tabIndex={-1} className="flex-1 outline-none">
         {children}
       </main>
       {!hideFooter && <Footer />}
@@ -111,6 +113,7 @@ export const App: React.FC = () => {
                 <Route path="/careers" element={<Careers />} />
                 <Route path="/privacy" element={<PrivacyPolicy />} />
                 <Route path="/terms" element={<TermsOfService />} />
+                <Route path="/editorial-policy" element={<EditorialPolicy />} />
 
                 {/* ── High-Intent International SEO Landing Pages ── */}
                 <Route path="/services/saas-mvp-development" element={<SaasDevelopmentLanding />} />

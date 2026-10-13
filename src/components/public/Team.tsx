@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowRight, CheckCircle2, ShieldCheck, Sparkles, X, UserCheck, Star, Pin, Award } from 'lucide-react';
+import { ArrowRight, CheckCircle2, ShieldCheck, X, UserCheck, Star, Pin, Award } from 'lucide-react';
 import { SEOHead } from '../seo/SEOHead';
 import { useApp } from '../../context/AppContext';
 import { realtimeSync } from '../../lib/realtimeSync';
@@ -348,12 +348,6 @@ export const Team: React.FC = () => {
                         : ''
                     }`}
                   >
-                    {/* Ambient Category-Colored Halo */}
-                    <div
-                      className="absolute top-0 right-0 w-32 h-32 rounded-full blur-3xl opacity-15 pointer-events-none group-hover:opacity-35 transition-opacity duration-300"
-                      style={{ backgroundColor: getCategoryStyles(member.category).glow }}
-                    />
-
                     <div className="relative z-[2]">
                       {/* Pinned Badge */}
                       {isPinned && (
@@ -437,7 +431,6 @@ export const Team: React.FC = () => {
             <div className="mb-10 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
               <div>
                 <p className="text-xs font-extrabold text-amber-500 uppercase tracking-widest mb-1.5 flex items-center space-x-1.5">
-                  <Sparkles className="w-3.5 h-3.5" />
                   <span>DigiSkills Ecosystem</span>
                 </p>
                 <h3 className="font-display font-extrabold text-2xl sm:text-3xl text-[var(--text-heading)]">
@@ -476,9 +469,6 @@ export const Team: React.FC = () => {
                         : ''
                     }`}
                   >
-                    {/* Ambient Amber Halo */}
-                    <div className="absolute top-0 right-0 w-28 h-28 rounded-full blur-3xl opacity-15 pointer-events-none group-hover:opacity-35 transition-opacity duration-300 bg-amber-400" />
-
                     <div className="relative z-[2]">
                       {/* Pinned Badge */}
                       {isPinned && (

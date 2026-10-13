@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { 
-  FileText, Image as ImageIcon, Sparkles, Check, RotateCcw, 
+  FileText, Image as ImageIcon, Check, RotateCcw, 
   Plus, Trash2, Eye, Layout, Star, Briefcase, Users, Layers, ExternalLink,
   DollarSign, HelpCircle, Info, PhoneCall, ChevronRight, X, ShieldAlert, CheckCircle2
 } from 'lucide-react';
@@ -467,7 +467,7 @@ export const SiteContentManager: React.FC = () => {
       {/* Tabs */}
       <div className="flex items-center space-x-1.5 border-b border-[var(--border-subtle)] pb-2 overflow-x-auto">
         {[
-          { id: 'hero' as const,        label: '1. Hero Section',     icon: <Sparkles className="w-3.5 h-3.5" />,    status: 'live',     tip: 'Controls the main headline, subtext, badge, and stat tokens on the homepage' },
+          { id: 'hero' as const,        label: '1. Hero Section',     icon: null,                                     status: 'live',     tip: 'Controls the main headline, subtext, badge, and stat tokens on the homepage' },
           { id: 'services' as const,    label: '2. Services',         icon: <Layers className="w-3.5 h-3.5" />,     status: 'live',     tip: 'The capability cards shown on homepage and /services page' },
           { id: 'caseStudies' as const, label: '3. Case Studies',     icon: <Briefcase className="w-3.5 h-3.5" />,  status: 'live',     tip: 'Work/Portfolio section on homepage and /work page' },
           { id: 'testimonials' as const,label: '4. Testimonials',     icon: <Star className="w-3.5 h-3.5" />,       status: 'live',     tip: 'Client reviews shown on homepage' },

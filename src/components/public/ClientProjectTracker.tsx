@@ -3,7 +3,7 @@ import { useParams, useSearchParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { 
   ShieldCheck, CheckCircle2, Clock, FileCheck, ArrowRight, 
-  Download, MessageSquare, ExternalLink, Sparkles, Building, 
+  Download, MessageSquare, ExternalLink, Building, 
   Layers, Lock, AlertCircle, HelpCircle
 } from 'lucide-react';
 import { SEOHead } from '../seo/SEOHead';

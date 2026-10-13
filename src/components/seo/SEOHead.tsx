@@ -11,8 +11,8 @@ export interface SEOProps {
 }
 
 const DEFAULT_TITLE = 'DigiHust | Digital Services Handled by Specialized Talent';
-const DEFAULT_DESC = 'DigiHust delivers web development, design, AI & automation, digital marketing, and cybersecurity through verified specialized teams under one professional brand.';
-const DEFAULT_IMAGE = 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1200&q=80';
+const DEFAULT_DESC = 'One company, coordinated specialist talent. DigiHust delivers web engineering, design systems, AI automation and cybersecurity under one roof.';
+const DEFAULT_IMAGE = 'https://www.digihust.tech/og-image.jpg';
 
 export const SEOHead: React.FC<SEOProps> = ({
   title = DEFAULT_TITLE,
@@ -86,7 +86,7 @@ export const SEOHead: React.FC<SEOProps> = ({
       '@type': 'ProfessionalService',
       name: 'DigiHust',
       url: currentOrigin || 'https://www.digihust.tech',
-      logo: `${currentOrigin || 'https://www.digihust.tech'}/favicon.svg`,
+      logo: `${currentOrigin || 'https://www.digihust.tech'}/logo.png`,
       image: ogImage,
       description: description,
       address: {
@@ -103,6 +103,18 @@ export const SEOHead: React.FC<SEOProps> = ({
       sameAs: [
         'https://linkedin.com/company/digihust',
         'https://github.com/Haris-Rindh/DigiHustler',
+      ],
+      founder: [
+        {
+          '@type': 'Person',
+          name: 'Mahad Abbas',
+          jobTitle: 'Founder & CEO',
+        },
+        {
+          '@type': 'Person',
+          name: 'Muhammad Haseeb',
+          jobTitle: 'Co-Founder',
+        },
       ],
     };
 

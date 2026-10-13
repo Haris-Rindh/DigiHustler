@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Briefcase, ArrowRight, Sparkles } from 'lucide-react';
+import { Briefcase, ArrowRight } from 'lucide-react';
 import { SEOHead } from '../seo/SEOHead';
 import { useApp } from '../../context/AppContext';
 
@@ -28,7 +28,6 @@ export const Careers: React.FC = () => {
             animate={{ opacity: 1, y: 0 }}
             className="inline-flex items-center space-x-2 px-4 py-1.5 rounded-full bg-[var(--brand-teal-subtle)] border border-[var(--brand-teal)]/40 text-[var(--brand-teal)] text-xs font-bold uppercase tracking-wider mx-auto"
           >
-            <Sparkles className="w-3.5 h-3.5" />
             <span>Join Our Mission</span>
           </motion.div>
 

@@ -199,7 +199,6 @@ export const About: React.FC = () => {
               viewport={{ once: true }}
               className="bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-3xl p-8 relative overflow-hidden group hover:border-[var(--brand-teal)] transition-colors"
             >
-              <div className="absolute top-0 right-0 w-32 h-32 bg-[var(--brand-teal)] rounded-full blur-[80px] opacity-10 group-hover:opacity-20 transition-opacity pointer-events-none" />
               <div className="w-16 h-16 rounded-2xl bg-[var(--brand-teal-subtle)] flex items-center justify-center text-[var(--brand-teal)] font-display font-black text-2xl mb-6">M</div>
               <h3 className="font-display font-black text-2xl text-[var(--text-heading)] mb-1">Mahad Abbas</h3>
               <p className="text-xs font-bold text-[var(--brand-teal)] uppercase tracking-wider mb-4">Founder & CEO</p>
@@ -216,7 +215,6 @@ export const About: React.FC = () => {
               transition={{ delay: 0.1 }}
               className="bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-3xl p-8 relative overflow-hidden group hover:border-[var(--brand-teal)] transition-colors"
             >
-              <div className="absolute top-0 right-0 w-32 h-32 bg-[var(--brand-teal)] rounded-full blur-[80px] opacity-10 group-hover:opacity-20 transition-opacity pointer-events-none" />
               <div className="w-16 h-16 rounded-2xl bg-[var(--brand-teal-subtle)] flex items-center justify-center text-[var(--brand-teal)] font-display font-black text-2xl mb-6">H</div>
               <h3 className="font-display font-black text-2xl text-[var(--text-heading)] mb-1">Muhammad Haseeb</h3>
               <p className="text-xs font-bold text-[var(--brand-teal)] uppercase tracking-wider mb-4">Co-Founder</p>

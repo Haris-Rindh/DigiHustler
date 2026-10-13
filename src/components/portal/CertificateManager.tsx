@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import { 
   Award, Plus, CheckCircle2, AlertTriangle, ExternalLink, 
   FileText, Search, Check, X, Eye, EyeOff,
-  Trash2, Edit3, Lock, Unlock, Download, Link2, Sparkles, Filter,
+  Trash2, Edit3, Lock, Unlock, Download, Link2, Filter,
   UploadCloud, FileCheck, Loader2
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';

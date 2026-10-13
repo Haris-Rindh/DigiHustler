@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { 
   Cpu, CheckCircle2, ArrowRight, Zap, Bot, Network, 
-  Workflow, FileText, Database, Sparkles, LineChart 
+  Workflow, FileText, Database, LineChart 
 } from 'lucide-react';
 import { SEOHead } from '../../seo/SEOHead';
 
@@ -40,7 +40,6 @@ export const AiAutomationLanding: React.FC = () => {
             animate={{ opacity: 1, y: 0 }}
             className="inline-flex items-center space-x-2 px-4 py-1.5 rounded-full bg-[var(--brand-teal-subtle)] border border-[var(--brand-teal)]/40 text-[var(--brand-teal)] text-xs font-bold uppercase tracking-wider"
           >
-            <Sparkles className="w-3.5 h-3.5" />
             <span>Autonomous AI Systems & Workflow Orchestration</span>
           </motion.div>
 
