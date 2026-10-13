@@ -41,6 +41,7 @@ interface AppContextType {
   // Real Auth Actions (Production Authenticator)
   loginWithMemberId: (memberIdOrEmail: string, password?: string) => { success: boolean; error?: string };
   logout: () => void;
+  switchRole: (userId: string) => void;
   changePassword: (newPassword: string) => { success: boolean; error?: string };
   requestPasswordReset: (emailOrMemberId: string) => Promise<{ success: boolean; message: string; email?: string }>;
   completePasswordResetWithOtp: (email: string, otp: string, newPassword: string) => Promise<{ success: boolean; error?: string }>;
@@ -591,6 +592,14 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const logout = () => {
     setIsAuthenticated(false);
     localStorage.setItem(`${LOCAL_STORAGE_KEY}_is_authenticated`, JSON.stringify(false));
+  };
+
+  const switchRole = (userId: string) => {
+    const target = users.find(u => u.id === userId);
+    if (target) {
+      setCurrentUser(target);
+      localStorage.setItem(`${LOCAL_STORAGE_KEY}_current_user`, JSON.stringify(target));
+    }
   };
 
   const changePassword = (newPassword: string): { success: boolean; error?: string } => {
@@ -2122,6 +2131,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         // Auth
         loginWithMemberId,
         logout,
+        switchRole,
         changePassword,
         requestPasswordReset,
         completePasswordResetWithOtp,

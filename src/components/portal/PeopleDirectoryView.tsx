@@ -3,7 +3,7 @@ import {
   Users, Mail, Shield, Send, CheckCircle2, AlertCircle, Plus, 
   FileSpreadsheet, Filter, Search, UserCheck, Key, Lock, 
   ShieldCheck, Settings, UserPlus, Ban, Check, X, Award, Printer, Eye,
-  Pin, PinOff, Crown
+  Pin, PinOff, Crown, Download
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { User as UserType, UserRoleTier, GroupId, Certificate } from '../../types';

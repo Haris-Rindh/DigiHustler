@@ -11,23 +11,26 @@ interface SplitConfigurationViewProps {
 export const SplitConfigurationView: React.FC<SplitConfigurationViewProps> = ({ onSelectUser }) => {
   const { settings, users, updateGlobalSettings, setUserSplitOverride } = useApp();
 
-  const [mgmtPct, setMgmtPct] = useState(settings.defaultManagementPct);
-  const [ldrPct, setLdrPct] = useState(settings.defaultLeaderPct);
-  const [flPct, setFlPct] = useState(settings.defaultFreelancerPct);
-  const [lgPct, setLgPct] = useState(settings.defaultLeadGenPct);
+  const [mgmtPct, setMgmtPct] = useState(settings.defaultManagementSplitPct ?? settings.defaultManagementPct ?? 30);
+  const [ldrPct, setLdrPct] = useState(settings.defaultLeaderSplitPct ?? settings.defaultLeaderPct ?? 20);
+  const [flPct, setFlPct] = useState(settings.defaultFreelancerSplitPct ?? settings.defaultFreelancerPct ?? 50);
+  const [lgPct, setLgPct] = useState(settings.defaultLeadGenPct ?? 10);
   const [savedSuccess, setSavedSuccess] = useState(false);
 
   const usersWithOverrides = users.filter((u) => u.splitOverride !== undefined);
 
   const handleSaveGlobal = (e: React.FormEvent) => {
     e.preventDefault();
-    if (Math.abs(mgmtPct + ldrPct + flPct | 100) > 0.1) {
+    if (Math.abs(mgmtPct + ldrPct + flPct - 100) > 0.1) {
       alert('Global default Management, Leader, and Freelancer splits must sum to 100%.');
       return;
     }
 
     updateGlobalSettings({
       ...settings,
+      defaultManagementSplitPct: mgmtPct,
+      defaultLeaderSplitPct: ldrPct,
+      defaultFreelancerSplitPct: flPct,
       defaultManagementPct: mgmtPct,
       defaultLeaderPct: ldrPct,
       defaultFreelancerPct: flPct,

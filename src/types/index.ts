@@ -1,6 +1,6 @@
-export type UserRole = 'management' | 'group_leader' | 'freelancer' | 'intern';
+export type UserRole = 'management' | 'group_leader' | 'freelancer' | 'intern' | 'member';
 
-export type UserRoleTier = 'ceo' | 'manager' | 'group_leader' | 'member' | 'intern';
+export type UserRoleTier = 'ceo' | 'manager' | 'group_leader' | 'member' | 'intern' | 'specialist';
 
 export type GroupId = 'tech' | 'creative' | 'data' | 'growth';
 
@@ -122,7 +122,7 @@ export interface ProjectAssignment {
   freelancerName: string;
   roleTitle: string;
   sharePct: number;
-  assignedAt: string;
+  assignedAt?: string;
 }
 
 export interface Deliverable {
@@ -212,6 +212,9 @@ export interface GlobalAdminSettings {
   defaultManagementSplitPct: number;
   defaultLeaderSplitPct: number;
   defaultFreelancerSplitPct: number;
+  defaultManagementPct?: number;
+  defaultLeaderPct?: number;
+  defaultFreelancerPct?: number;
   autoApproveLeads: boolean;
   payoutHoldDays: number;
   allowIndependentLeadGen: boolean;
@@ -372,6 +375,7 @@ export interface Announcement {
   postedByName?: string;
   postedByRole?: UserRoleTier;
   postedAt: string;
+  createdAt?: string;
   expiresAt?: string;
 }
 
@@ -463,6 +467,7 @@ export interface SiteTeamMember {
   id: string;
   name: string;
   role: string;
+  roleTier?: string;
   squad: string;
   bio: string;
   avatarUrl: string;

@@ -183,7 +183,7 @@ export const AnnouncementsFeed: React.FC = () => {
                     </span>
                     <span className="text-[11px] text-[var(--text-muted)] flex items-center gap-1">
                       <Calendar className="w-3 h-3" />
-                      <span>{new Date(ann.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                      <span>{new Date(ann.createdAt || ann.postedAt || Date.now()).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
                     </span>
                   </div>
 
@@ -208,7 +208,7 @@ export const AnnouncementsFeed: React.FC = () => {
                 </h3>
 
                 <div className="bg-[var(--bg-page)] p-4 rounded-2xl border border-[var(--border-subtle)] mb-4">
-                  {renderRichBody(ann.body)}
+                  {renderRichBody(ann.body || ann.content || '')}
                 </div>
 
                 <div className="flex items-center space-x-2 text-[11px] text-[var(--text-muted)] pt-2 border-t border-[var(--border-subtle)]">

@@ -91,7 +91,7 @@ export const PortalDashboard: React.FC = () => {
           />
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <span className="text-xs font-mono font-bold text-[var(--brand-teal)] bg-[var(--brand-teal-subtle)] px-2.5 py-0.5 rounded-full border border-[var(--border-subtle)]">
+              <span className="text-xs font-semibold text-[var(--brand-teal)] bg-[var(--brand-teal-subtle)] px-2.5 py-0.5 rounded-full border border-[var(--border-subtle)]">
                 {currentUser.memberId || 'DGH2600001'}
               </span>
               <span className="text-xs uppercase font-extrabold text-[var(--text-muted)]">
@@ -383,7 +383,7 @@ export const PortalDashboard: React.FC = () => {
 
             {/* Metric 2: Active Sprints */}
             <div 
-              onClick={() => setStaffTab('my_projects')}
+              onClick={() => setStaffTab('my_sprints')}
               className="p-6 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] hover:border-[var(--brand-teal)] shadow-md hover:shadow-xl hover:-translate-y-1.5 transition-all duration-200 ease-out cursor-pointer select-none group"
             >
               <div className="flex items-center justify-between text-[var(--text-muted)] mb-2">
