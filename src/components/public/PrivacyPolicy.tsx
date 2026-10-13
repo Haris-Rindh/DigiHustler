@@ -13,7 +13,7 @@ export const PrivacyPolicy: React.FC = () => {
         canonical="https://www.digihust.tech/privacy"
       />
 
-      <section className="bg-[var(--bg-surface)] py-20 px-6 lg:px-8 border-b border-[var(--border-subtle)] relative overflow-hidden">
+      <section data-hero="true" className="bg-[var(--bg-surface)] py-20 px-6 lg:px-8 border-b border-[var(--border-subtle)] relative overflow-hidden">
         <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-[var(--brand-teal)] to-transparent opacity-20" />
         <div className="max-w-4xl mx-auto relative z-10">
           <Link to="/" className="inline-flex items-center space-x-2 text-sm font-semibold text-[var(--text-muted)] hover:text-[var(--brand-teal)] transition-colors mb-10">
@@ -29,7 +29,7 @@ export const PrivacyPolicy: React.FC = () => {
               <p className="text-[var(--brand-teal)] font-bold mt-2 uppercase tracking-widest text-xs">Data Protection & Confidentiality</p>
             </div>
           </div>
-          <p className="text-[var(--text-muted)] text-sm font-mono bg-[var(--bg-page)] inline-block px-3 py-1 rounded-md border border-[var(--border-subtle)]">Last updated: October 2026</p>
+          <p className="text-[var(--text-muted)] text-sm font-medium bg-[var(--bg-page)] inline-block px-3 py-1 rounded-md border border-[var(--border-subtle)]">Last updated: October 2026</p>
         </div>
       </section>
 

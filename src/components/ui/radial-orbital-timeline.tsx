@@ -422,7 +422,7 @@ export default function RadialOrbitalTimeline({
                         >
                           {item.category.toUpperCase()}
                         </Badge>
-                        <span className="text-[9px] font-mono text-[var(--text-muted)]">
+                        <span className="text-[9px] font-semibold text-[var(--text-muted)]">
                           {item.date}
                         </span>
                       </div>
@@ -440,7 +440,7 @@ export default function RadialOrbitalTimeline({
                             <Zap size={10} className="mr-1" style={{ color: iconColor }} />
                             Squad Capability Level
                           </span>
-                          <span className="font-mono text-[var(--text-heading)]">{item.energy}%</span>
+                          <span className="font-semibold text-[var(--text-heading)]">{item.energy}%</span>
                         </div>
                         <div className="w-full h-1 bg-[var(--bg-subtle)] rounded-full overflow-hidden border border-[var(--border-subtle)]">
                           <div

@@ -558,7 +558,7 @@ export const Contact: React.FC = () => {
                               {errors.description ? (
                                 <p className="text-[11px] text-rose-500 font-medium">{errors.description}</p>
                               ) : <span />}
-                              <span className="text-[11px] font-mono text-[#94A3B8]">
+                              <span className="text-[11px] text-[#94A3B8] font-medium">
                                 {form.description.length}/500
                               </span>
                             </div>
@@ -640,7 +640,7 @@ export const Contact: React.FC = () => {
                                   <span className="text-xs font-semibold text-[#022B3A] dark:text-white truncate">
                                     {form.file.name}
                                   </span>
-                                  <span className="text-[10px] text-[#64748B] font-mono shrink-0">
+                                  <span className="text-[10px] text-[#64748B] font-medium shrink-0">
                                     ({(form.file.size / 1024 / 1024).toFixed(2)} MB)
                                   </span>
                                 </div>

@@ -11,7 +11,7 @@ export const EditorialPolicy: React.FC = () => {
         description="Our editorial principles, author attribution standards, fact-checking methodology, and correction process for DigiHust technical insights."
       />
 
-      <section className="bg-[var(--bg-subtle)] py-16 sm:py-20 px-6 lg:px-8 border-b border-[var(--border-subtle)]">
+      <section data-hero="true" className="bg-[var(--bg-subtle)] py-16 sm:py-20 px-6 lg:px-8 border-b border-[var(--border-subtle)]">
         <div className="max-w-4xl mx-auto">
           <p className="text-xs font-extrabold text-[var(--brand-teal)] uppercase tracking-widest mb-3">
             Publishing Standards & Ethics

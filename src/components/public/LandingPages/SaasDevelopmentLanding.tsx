@@ -196,7 +196,7 @@ export const SaasDevelopmentLanding: React.FC = () => {
                 <div className="space-y-4">
                   <div>
                     <h3 className="font-display font-extrabold text-2xl text-[var(--text-heading)] group-hover:text-[var(--brand-teal)] transition-colors duration-150">{pkg.title}</h3>
-                    <p className="text-xs font-mono text-[var(--brand-teal)] font-bold mt-1">{pkg.timeline}</p>
+                    <p className="text-xs text-[var(--brand-teal)] font-semibold mt-1">{pkg.timeline}</p>
                   </div>
                   <p className="text-xs text-[var(--text-body)] leading-relaxed">{pkg.desc}</p>
                   <ul className="space-y-2.5 pt-2 border-t border-[var(--border-subtle)]">

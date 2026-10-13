@@ -504,7 +504,7 @@ export const SiteContentManager: React.FC = () => {
             <Check className="w-4 h-4" />
             <span>{savedFeedback}</span>
           </span>
-          <span className="text-[10px] uppercase font-mono">Live In Storage</span>
+          <span className="text-[10px] uppercase">Live In Storage</span>
         </div>
       )}
 
@@ -584,7 +584,7 @@ export const SiteContentManager: React.FC = () => {
                 type="url"
                 value={heroDraft.heroImage}
                 onChange={(e) => setHeroDraft({ ...heroDraft, heroImage: e.target.value })}
-                className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3.5 py-2.5 text-xs text-[var(--text-heading)] focus:border-[var(--brand-teal)] focus:outline-none font-mono"
+                className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3.5 py-2.5 text-xs text-[var(--text-heading)] focus:border-[var(--brand-teal)] focus:outline-none"
               />
             </div>
           </div>
@@ -805,7 +805,7 @@ export const SiteContentManager: React.FC = () => {
                           <div>
                             <h4 className="font-bold text-sm text-[var(--text-heading)] flex items-center gap-2">
                               <span>{service.title}</span>
-                              <span className="text-[10px] px-2 py-0.5 rounded-full bg-[var(--brand-teal)]/10 text-[var(--brand-teal)] font-mono font-bold">
+                              <span className="text-[10px] px-2 py-0.5 rounded-full bg-[var(--brand-teal)]/10 text-[var(--brand-teal)] font-bold">
                                 #{service.order || 1}
                               </span>
                             </h4>
@@ -813,7 +813,7 @@ export const SiteContentManager: React.FC = () => {
                               <span className="text-[9px] uppercase px-1.5 py-0.5 rounded bg-[var(--bg-subtle)] text-[var(--text-muted)] font-semibold">
                                 {service.size || 'small'}
                               </span>
-                              <span className="text-[9px] uppercase px-1.5 py-0.5 rounded bg-[var(--bg-subtle)] text-[var(--text-muted)] font-mono">
+                              <span className="text-[9px] uppercase px-1.5 py-0.5 rounded bg-[var(--bg-subtle)] text-[var(--text-muted)]">
                                 {service.patternVariant || 'dotted-grid'}
                               </span>
                             </div>
@@ -862,7 +862,7 @@ export const SiteContentManager: React.FC = () => {
                             onChange={(e) =>
                               updateItemInSiteContent('services', service.id, { slug: e.target.value })
                             }
-                            className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs font-mono text-[var(--text-heading)]"
+                            className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs text-[var(--text-heading)]"
                           />
                         </div>
 
@@ -880,7 +880,7 @@ export const SiteContentManager: React.FC = () => {
                                 order: Number(e.target.value),
                               })
                             }
-                            className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs font-mono text-[var(--text-heading)]"
+                            className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs text-[var(--text-heading)]"
                           />
                         </div>
 
@@ -973,7 +973,7 @@ export const SiteContentManager: React.FC = () => {
                             onChange={(e) =>
                               updateItemInSiteContent('services', service.id, { linkTarget: e.target.value })
                             }
-                            className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs font-mono text-[var(--text-heading)]"
+                            className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs text-[var(--text-heading)]"
                           />
                         </div>
                       </div>
@@ -1008,7 +1008,7 @@ export const SiteContentManager: React.FC = () => {
                                 }}
                               />
                             ) : (
-                              <div className="w-full h-full flex items-center justify-center text-[10px] font-mono text-[var(--text-muted)] text-center p-1">
+                              <div className="w-full h-full flex items-center justify-center text-[10px] text-[var(--text-muted)] text-center p-1">
                                 No Image
                               </div>
                             )}
@@ -1024,7 +1024,7 @@ export const SiteContentManager: React.FC = () => {
                                 onChange={(e) =>
                                   updateItemInSiteContent('services', service.id, { imageUrl: e.target.value })
                                 }
-                                className="flex-1 bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-1.5 text-xs text-[var(--text-heading)] font-mono"
+                                className="flex-1 bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-1.5 text-xs text-[var(--text-heading)]"
                               />
                               <label className="px-3 py-1.5 rounded-xl bg-[var(--bg-page)] border border-[var(--border-subtle)] hover:border-[var(--brand-teal)] text-[var(--text-heading)] text-xs font-bold cursor-pointer whitespace-nowrap flex items-center gap-1">
                                 <span>Upload</span>
@@ -1050,7 +1050,7 @@ export const SiteContentManager: React.FC = () => {
 
                             {/* Preset Buttons */}
                             <div className="flex flex-wrap items-center gap-1">
-                              <span className="text-[10px] text-[var(--text-muted)] font-mono mr-1">Presets:</span>
+                              <span className="text-[10px] text-[var(--text-muted)] mr-1">Presets:</span>
                               {CURATED_SERVICE_IMAGE_PRESETS.map((preset) => (
                                 <button
                                   key={preset.label}
@@ -1075,7 +1075,7 @@ export const SiteContentManager: React.FC = () => {
                             Hover Short Description (Max ~160 chars)
                           </label>
                           <span
-                            className={`text-[10px] font-mono font-semibold ${
+                            className={`text-[10px] font-semibold ${
                               descLength > 160 ? 'text-amber-400' : 'text-[var(--text-dim)]'
                             }`}
                           >
@@ -1157,7 +1157,7 @@ export const SiteContentManager: React.FC = () => {
                         value={newService.slug || ''}
                         onChange={(e) => setNewService({ ...newService, slug: e.target.value })}
                         placeholder="e.g. web-mobile-engineering"
-                        className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs font-mono text-[var(--text-heading)]"
+                        className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs text-[var(--text-heading)]"
                       />
                     </div>
 
@@ -1171,7 +1171,7 @@ export const SiteContentManager: React.FC = () => {
                         max="20"
                         value={newService.order || 1}
                         onChange={(e) => setNewService({ ...newService, order: Number(e.target.value) })}
-                        className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs font-mono text-[var(--text-heading)]"
+                        className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs text-[var(--text-heading)]"
                       />
                     </div>
 
@@ -1272,7 +1272,7 @@ export const SiteContentManager: React.FC = () => {
                             }}
                           />
                         ) : (
-                          <div className="w-full h-full flex items-center justify-center text-[10px] font-mono text-[var(--text-muted)] text-center p-1">
+                          <div className="w-full h-full flex items-center justify-center text-[10px] text-[var(--text-muted)] text-center p-1">
                             No Image
                           </div>
                         )}
@@ -1286,7 +1286,7 @@ export const SiteContentManager: React.FC = () => {
                             value={newService.imageUrl || ''}
                             placeholder="Image URL (https://images.unsplash.com/... or /assets/...)"
                             onChange={(e) => setNewService({ ...newService, imageUrl: e.target.value })}
-                            className="flex-1 bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-1.5 text-xs text-[var(--text-heading)] font-mono"
+                            className="flex-1 bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-1.5 text-xs text-[var(--text-heading)]"
                           />
                           <label className="px-3 py-1.5 rounded-xl bg-[var(--bg-page)] border border-[var(--border-subtle)] hover:border-[var(--brand-teal)] text-[var(--text-heading)] text-xs font-bold cursor-pointer whitespace-nowrap flex items-center gap-1">
                             <span>Upload</span>
@@ -1312,7 +1312,7 @@ export const SiteContentManager: React.FC = () => {
 
                         {/* Preset Buttons */}
                         <div className="flex flex-wrap items-center gap-1">
-                          <span className="text-[10px] text-[var(--text-muted)] font-mono mr-1">Presets:</span>
+                          <span className="text-[10px] text-[var(--text-muted)] mr-1">Presets:</span>
                           {CURATED_SERVICE_IMAGE_PRESETS.map((preset) => (
                             <button
                               key={preset.label}
@@ -1333,7 +1333,7 @@ export const SiteContentManager: React.FC = () => {
                       <label className="block text-xs font-bold uppercase text-[var(--text-muted)]">
                         Short Description (Hover preview, max ~160 chars)
                       </label>
-                      <span className="text-[10px] font-mono text-[var(--text-dim)]">
+                      <span className="text-[10px] text-[var(--text-dim)]">
                         {(newService.shortDescription || '').length} / 160 chars
                       </span>
                     </div>
@@ -1400,7 +1400,7 @@ export const SiteContentManager: React.FC = () => {
                 <div className="flex items-center justify-between pb-3 border-b border-[var(--border-subtle)]">
                   <div className="flex items-center space-x-2">
                     <span className="font-bold text-xs uppercase text-[var(--brand-teal)]">{cs.slug}</span>
-                    <span className="text-[10px] font-mono text-[var(--text-muted)]">ID: {cs.id}</span>
+                    <span className="text-[10px] text-[var(--text-muted)]">ID: {cs.id}</span>
                   </div>
                   <button
                     onClick={() => {
@@ -1481,7 +1481,7 @@ export const SiteContentManager: React.FC = () => {
                       type="url"
                       value={cs.imageUrl}
                       onChange={(e) => updateItemInSiteContent('caseStudies', cs.id, { imageUrl: e.target.value })}
-                      className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs text-[var(--text-heading)] font-mono"
+                      className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs text-[var(--text-heading)]"
                     />
                   </div>
                 </div>
@@ -1525,7 +1525,7 @@ export const SiteContentManager: React.FC = () => {
                       required
                       value={newCaseStudy.slug}
                       onChange={(e) => setNewCaseStudy({ ...newCaseStudy, slug: e.target.value })}
-                      className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs font-mono"
+                      className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs"
                     />
                   </div>
                 </div>
@@ -1567,7 +1567,7 @@ export const SiteContentManager: React.FC = () => {
                     value={newCaseStudy.imageUrl}
                     onChange={(e) => setNewCaseStudy({ ...newCaseStudy, imageUrl: e.target.value })}
                     placeholder="https://images.unsplash.com/..."
-                    className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs font-mono"
+                    className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs"
                   />
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -1685,7 +1685,7 @@ export const SiteContentManager: React.FC = () => {
                       type="url"
                       value={t.avatarUrl}
                       onChange={(e) => updateItemInSiteContent('testimonials', t.id, { avatarUrl: e.target.value })}
-                      className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs font-mono text-[var(--text-heading)]"
+                      className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs text-[var(--text-heading)]"
                     />
                   </div>
                 </div>
@@ -1764,7 +1764,7 @@ export const SiteContentManager: React.FC = () => {
                     value={newTestimonial.avatarUrl}
                     onChange={(e) => setNewTestimonial({ ...newTestimonial, avatarUrl: e.target.value })}
                     placeholder="https://images.unsplash.com/..."
-                    className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs font-mono text-[var(--text-heading)]"
+                    className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs text-[var(--text-heading)]"
                   />
                 </div>
                 <div>
@@ -1898,7 +1898,7 @@ export const SiteContentManager: React.FC = () => {
                       type="url"
                       value={member.avatarUrl}
                       onChange={(e) => updateItemInSiteContent('teamMembers', member.id, { avatarUrl: e.target.value })}
-                      className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs font-mono text-[var(--text-heading)]"
+                      className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs text-[var(--text-heading)]"
                     />
                   </div>
                 </div>
@@ -1963,7 +1963,7 @@ export const SiteContentManager: React.FC = () => {
                       value={newTeam.avatarUrl}
                       onChange={(e) => setNewTeam({ ...newTeam, avatarUrl: e.target.value })}
                       placeholder="https://images.unsplash.com/..."
-                      className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs font-mono text-[var(--text-heading)]"
+                      className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs text-[var(--text-heading)]"
                     />
                   </div>
                 </div>
@@ -2024,7 +2024,7 @@ export const SiteContentManager: React.FC = () => {
                       <span className="text-[10px] font-bold uppercase px-2.5 py-0.5 rounded-full bg-[var(--brand-teal-subtle)] text-[var(--brand-teal)] border border-[var(--border-subtle)]">
                         {post.category}
                       </span>
-                      <span className="font-mono text-xs text-[var(--text-muted)]">/{post.slug}</span>
+                      <span className="text-xs text-[var(--text-muted)]">/{post.slug}</span>
                       <span className="text-[10px] text-[var(--text-muted)]">· {post.readTime}</span>
                     </div>
                     <div className="flex items-center space-x-2">
@@ -2105,7 +2105,7 @@ export const SiteContentManager: React.FC = () => {
                             type="url"
                             value={post.imageUrl}
                             onChange={(e) => updateItemInSiteContent('blogPosts', post.id, { imageUrl: e.target.value })}
-                            className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs font-mono text-[var(--text-heading)]"
+                            className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs text-[var(--text-heading)]"
                           />
                         </div>
                       </div>
@@ -2127,7 +2127,7 @@ export const SiteContentManager: React.FC = () => {
                           onChange={(e) => updateItemInSiteContent('blogPosts', post.id, { content: e.target.value })}
                           rows={5}
                           placeholder="Write article content using markdown (e.g. ## Heading 2, ### Heading 3, | Bullet item)..."
-                          className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl p-3 text-xs font-mono text-[var(--text-body)] leading-relaxed"
+                          className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl p-3 text-xs text-[var(--text-body)] leading-relaxed"
                         />
                       </div>
                     </div>
@@ -2176,7 +2176,7 @@ export const SiteContentManager: React.FC = () => {
                       value={newBlog.slug}
                       onChange={(e) => setNewBlog({ ...newBlog, slug: e.target.value })}
                       placeholder="e.g. building-resilient-microservices"
-                      className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3.5 py-2.5 text-xs font-mono text-[var(--text-heading)]"
+                      className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3.5 py-2.5 text-xs text-[var(--text-heading)]"
                     />
                   </div>
                 </div>
@@ -2226,7 +2226,7 @@ export const SiteContentManager: React.FC = () => {
                     value={newBlog.imageUrl}
                     onChange={(e) => setNewBlog({ ...newBlog, imageUrl: e.target.value })}
                     placeholder="https://images.unsplash.com/..."
-                    className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3.5 py-2.5 text-xs font-mono text-[var(--text-heading)]"
+                    className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3.5 py-2.5 text-xs text-[var(--text-heading)]"
                   />
                   {newBlog.imageUrl && (
                     <div className="mt-2 aspect-[21/9] max-h-36 rounded-xl overflow-hidden border border-[var(--border-subtle)]">
@@ -2257,7 +2257,7 @@ export const SiteContentManager: React.FC = () => {
                     value={newBlog.content}
                     onChange={(e) => setNewBlog({ ...newBlog, content: e.target.value })}
                     placeholder={`### Introduction\nExplain the context here...\n\n### Architectural Approach\nDetail the solution...\n\n- Key Point 1\n- Key Point 2\n\n### Conclusion\nFinal wrap up...`}
-                    className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl p-3 text-xs font-mono text-[var(--text-heading)] leading-relaxed"
+                    className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl p-3 text-xs text-[var(--text-heading)] leading-relaxed"
                   />
                 </div>
 
@@ -2628,7 +2628,7 @@ export const SiteContentManager: React.FC = () => {
                   placeholder="Slot Key (e.g. founderSignature)"
                   value={newImageKey}
                   onChange={(e) => setNewImageKey(e.target.value)}
-                  className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs font-mono"
+                  className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs"
                 />
               </div>
               <div className="sm:col-span-2 flex gap-2">
@@ -2637,7 +2637,7 @@ export const SiteContentManager: React.FC = () => {
                   placeholder="Image URL (https://images.unsplash.com/...)"
                   value={newImageUrl}
                   onChange={(e) => setNewImageUrl(e.target.value)}
-                  className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs font-mono"
+                  className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs"
                 />
                 <button
                   type="submit"
@@ -2680,7 +2680,7 @@ export const SiteContentManager: React.FC = () => {
                     type="url"
                     value={url}
                     onChange={(e) => setCustomImagesDraft({ ...customImagesDraft, [key]: e.target.value })}
-                    className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs text-[var(--text-heading)] font-mono"
+                    className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs text-[var(--text-heading)]"
                   />
                 </div>
               ))}

@@ -259,7 +259,7 @@ export const ServiceBentoCard: React.FC<ServiceBentoCardProps> = ({
 
               {/* Floating Badges on Image */}
               <div className="absolute top-3 left-3 right-3 flex items-center justify-between z-10">
-                <span className="text-[10px] font-mono font-bold tracking-wider uppercase px-2 py-0.5 rounded-md backdrop-blur-md border border-white/20 text-white bg-black/60">
+                <span className="text-[10px] font-bold tracking-wider uppercase px-2 py-0.5 rounded-md backdrop-blur-md border border-white/20 text-white bg-black/60">
                   // {theme.label}
                 </span>
 
@@ -288,7 +288,7 @@ export const ServiceBentoCard: React.FC<ServiceBentoCardProps> = ({
                 <div className="flex items-center gap-2 flex-wrap">
                   {/* Squad Category Badge with accent colors */}
                   <span
-                    className="text-[10px] font-mono font-black tracking-wider uppercase px-2.5 py-1 rounded-md border"
+                    className="text-[10px] font-black tracking-wider uppercase px-2.5 py-1 rounded-md border"
                     style={{
                       borderColor: `${theme.accent}40`,
                       backgroundColor: `${theme.accent}12`,
@@ -299,7 +299,7 @@ export const ServiceBentoCard: React.FC<ServiceBentoCardProps> = ({
                   </span>
 
                   {/* Live SLA Badge */}
-                  <span className="inline-flex items-center gap-1.5 text-[10px] font-mono font-bold text-emerald-400 bg-emerald-400/10 border border-emerald-400/30 px-2 py-0.5 rounded-full">
+                  <span className="inline-flex items-center gap-1.5 text-[10px] font-bold text-emerald-400 bg-emerald-400/10 border border-emerald-400/30 px-2 py-0.5 rounded-full">
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_6px_#34D399]" />
                     <span>SLA GUARANTEED</span>
                   </span>
@@ -346,7 +346,7 @@ export const ServiceBentoCard: React.FC<ServiceBentoCardProps> = ({
 
             {/* Tagline if card without image */}
             {!hasImage && service.tagline && (
-              <p className="text-[11px] font-mono font-semibold tracking-wide mb-1.5" style={{ color: theme.accent }}>
+              <p className="text-[11px] font-semibold tracking-wide mb-1.5" style={{ color: theme.accent }}>
                 {service.tagline}
               </p>
             )}
@@ -361,7 +361,7 @@ export const ServiceBentoCard: React.FC<ServiceBentoCardProps> = ({
               {visibleTech.slice(0, 3).map((tech, i) => (
                 <span
                   key={i}
-                  className={`text-[10px] font-mono font-medium px-2 py-0.5 rounded-md text-[var(--text-heading)] flex items-center gap-1 ${
+                  className={`text-[10px] font-medium px-2 py-0.5 rounded-md text-[var(--text-heading)] flex items-center gap-1 ${
                     hasImage ? 'satin-pill' : 'bg-[var(--bg-page)]/80 border border-[var(--border-subtle)] shadow-xs'
                   }`}
                 >
@@ -386,12 +386,12 @@ export const ServiceBentoCard: React.FC<ServiceBentoCardProps> = ({
               <div className="space-y-1.5 text-xs text-[var(--text-body)]">
                 <div className="flex items-center gap-1.5">
                   <Zap className="w-3.5 h-3.5 text-cyan-500 shrink-0" />
-                  <span className="font-mono font-bold text-[var(--text-heading)]">Squad:</span>
+                  <span className="font-bold text-[var(--text-heading)]">Squad:</span>
                   <span className="truncate">{theme.roster}</span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <ShieldCheck className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
-                  <span className="font-mono font-bold text-[var(--text-heading)]">Delivery:</span>
+                  <span className="font-bold text-[var(--text-heading)]">Delivery:</span>
                   <span className="truncate">Sprint milestones · 100% IP ownership</span>
                 </div>
               </div>
@@ -412,7 +412,7 @@ export const ServiceBentoCard: React.FC<ServiceBentoCardProps> = ({
           <button
             type="button"
             onClick={onToggle}
-            className="inline-flex items-center space-x-1 text-[10px] font-mono font-bold text-[var(--text-muted)] hover:text-[var(--text-heading)] px-2 py-1 rounded hover:bg-[var(--bg-subtle)] transition-colors cursor-pointer"
+            className="inline-flex items-center space-x-1 text-[10px] font-bold text-[var(--text-muted)] hover:text-[var(--text-heading)] px-2 py-1 rounded hover:bg-[var(--bg-subtle)] transition-colors cursor-pointer"
           >
             <span>{isOpen ? 'COLLAPSE' : 'SPECS'}</span>
             <ChevronDown
