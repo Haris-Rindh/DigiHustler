@@ -158,7 +158,7 @@ export const ClientProjectTracker: React.FC = () => {
                 <span className="w-2 h-2 rounded-full bg-[var(--brand-teal)] animate-pulse" />
                 <span>Stage: {STAGE_ORDER[activeStageIdx]?.label}</span>
               </span>
-              <span className="text-[11px] font-mono text-[var(--text-muted)]">
+              <span className="text-[11px] text-[var(--text-muted)] font-medium">
                 Project Code: {displayProject.id}
               </span>
             </div>
@@ -168,7 +168,7 @@ export const ClientProjectTracker: React.FC = () => {
           <div className="space-y-2">
             <div className="flex justify-between items-center text-xs font-bold">
               <span className="text-[var(--text-heading)]">Sprint Delivery Completion</span>
-              <span className="text-[var(--brand-teal)] font-mono text-sm font-extrabold">{activePercent}%</span>
+              <span className="text-[var(--brand-teal)] text-sm font-extrabold">{activePercent}%</span>
             </div>
             <div className="w-full h-3 bg-[var(--bg-subtle)] rounded-full overflow-hidden border border-[var(--border-subtle)]">
               <motion.div
@@ -229,7 +229,7 @@ export const ClientProjectTracker: React.FC = () => {
                     Project Deliverables & Handover Assets
                   </h2>
                 </div>
-                <span className="text-xs font-mono text-[var(--brand-teal)] font-bold">
+                <span className="text-xs text-[var(--brand-teal)] font-bold">
                   {displayProject.deliverables?.length || 0} Assets
                 </span>
               </div>

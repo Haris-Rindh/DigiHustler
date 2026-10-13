@@ -36,7 +36,7 @@ class RealtimeSyncEngine {
         }
       } else {
         // Fallback for legacy browsers without BroadcastChannel
-        window.addEventListener('storage', (e) => {
+        (window as any).addEventListener('storage', (e: StorageEvent) => {
           if (e.key && e.newValue) {
             if (e.key.includes('users')) {
               try {

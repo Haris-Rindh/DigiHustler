@@ -26,7 +26,7 @@ export async function generateQrPngDataUrl(url: string): Promise<string> {
 }
 
 export function downloadPdfFile(pdfBytes: Uint8Array, filename: string) {
-  const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+  const blob = new Blob([pdfBytes as any], { type: 'application/pdf' });
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
   link.href = url;
@@ -38,7 +38,7 @@ export function downloadPdfFile(pdfBytes: Uint8Array, filename: string) {
 }
 
 export function previewPdfInNewTab(pdfBytes: Uint8Array) {
-  const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+  const blob = new Blob([pdfBytes as any], { type: 'application/pdf' });
   const url = URL.createObjectURL(blob);
   window.open(url, '_blank');
 }
@@ -173,40 +173,40 @@ export async function generateBuiltInCertificatePdf(
 
     // 1. Top-Left Angled Corner Triangle Graphics
     // Outer cyan triangle
-    page.drawPolygon([
+    (page as any).drawPolygon([
       { x: 0, y: height },
       { x: 130, y: height },
       { x: 0, y: height - 130 }
     ], { color: brandCyan });
 
     // Middle teal triangle
-    page.drawPolygon([
+    (page as any).drawPolygon([
       { x: 0, y: height },
       { x: 100, y: height },
       { x: 0, y: height - 100 }
     ], { color: brandTeal });
 
     // Inner navy triangle
-    page.drawPolygon([
+    (page as any).drawPolygon([
       { x: 0, y: height },
       { x: 70, y: height },
       { x: 0, y: height - 70 }
     ], { color: brandNavy });
 
     // 2. Bottom-Right Angled Corner Triangle Graphics
-    page.drawPolygon([
+    (page as any).drawPolygon([
       { x: width, y: 0 },
       { x: width - 130, y: 0 },
       { x: width, y: 130 }
     ], { color: brandCyan });
 
-    page.drawPolygon([
+    (page as any).drawPolygon([
       { x: width, y: 0 },
       { x: width - 100, y: 0 },
       { x: width, y: 100 }
     ], { color: brandTeal });
 
-    page.drawPolygon([
+    (page as any).drawPolygon([
       { x: width, y: 0 },
       { x: width - 70, y: 0 },
       { x: width, y: 70 }

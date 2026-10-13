@@ -19,7 +19,7 @@ export const notificationService = {
       (lead.companyName ? `*Company:* ${lead.companyName}\n` : '') +
       `*Budget:* ${lead.budgetRange}\n` +
       `*Timeline:* ${lead.timeline}\n` +
-      `*Domain:* ${lead.targetGroupId.toUpperCase()}\n\n` +
+      `*Domain:* ${(lead.targetGroupId || lead.suggestedGroupId || 'tech').toUpperCase()}\n\n` +
       `*Scope:* ${lead.scopeDescription}\n\n` +
       `_Action: Respond within 1-2 hours for high ticket conversion._`;
 
@@ -95,9 +95,9 @@ export const notificationService = {
       formData.append('Client Email', leadData.email);
       formData.append('Company', leadData.company || 'Not Specified');
       formData.append('Services Required', Array.isArray(leadData.services) ? leadData.services.join(', ') : leadData.services);
-      formData.append('Budget Range', leadData.budget);
-      formData.append('Target Timeline', leadData.timeline);
-      formData.append('Project Scope & Description', leadData.description);
+      formData.append('Budget Range', leadData.budget || '');
+      formData.append('Target Timeline', leadData.timeline || '');
+      formData.append('Project Scope & Description', leadData.description || '');
       formData.append('Submitted At', new Date().toLocaleString());
 
       const res = await fetch('https://formsubmit.co/ajax/digihust@gmail.com', {

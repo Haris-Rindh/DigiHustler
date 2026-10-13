@@ -528,7 +528,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   useEffect(() => {
     if (!currentUser) return;
 
-    let timeoutId;
+    let timeoutId: any;
     const resetTimer = () => {
       clearTimeout(timeoutId);
       // 30 minutes = 30 * 60 * 1000 = 1800000 ms

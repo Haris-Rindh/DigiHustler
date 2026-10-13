@@ -313,7 +313,7 @@ export const Services: React.FC = () => {
                   title: svc.title,
                   description: svc.description,
                   summary: svc.tagline,
-                  tags: svc.features || svc.deliverables,
+                  tags: svc.features || (svc as any).deliverables || [],
                   icon: svc.icon,
                   imageUrl: svc.imageUrl,
                   linkTarget: svc.linkTarget || `/contact?service=${encodeURIComponent(svc.title)}`,

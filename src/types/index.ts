@@ -88,7 +88,9 @@ export type PipelineStage =
   | 'assigned' 
   | 'in_progress' 
   | 'completed' 
-  | 'paid';
+  | 'paid'
+  | 'lead'
+  | 'review';
 
 export interface Lead {
   id: string;
@@ -100,9 +102,19 @@ export interface Lead {
   submittedByUserName: string;
   brief: string;
   budgetEstimate: number;
-  suggestedGroupId: GroupId;
+  suggestedGroupId?: GroupId;
+  groupId?: GroupId;
+  rating?: number;
+  assignedSpecialistIds?: string[];
   status: PipelineStage;
   createdAt: string;
+  // Compatibility aliases
+  email?: string;
+  companyName?: string;
+  budgetRange?: string;
+  timeline?: string;
+  targetGroupId?: GroupId;
+  scopeDescription?: string;
 }
 
 export interface ProjectAssignment {
@@ -186,7 +198,9 @@ export interface Applicant {
   specialties: string[];
   portfolioUrl?: string;
   digiskillId?: string;
+  digiskillCourse?: string;
   yearsOfExperience?: number;
+  experienceYears?: number | string;
   bio: string;
   appliedAt: string;
   status: 'pending' | 'under_review' | 'approved' | 'rejected' | 'more_info_requested';
@@ -481,6 +495,10 @@ export interface SiteContactContent {
   linkedin?: string;
   github?: string;
   twitter?: string;
+  facebook?: string;
+  instagram?: string;
+  illustrationUrl?: string;
+  formImageUrl?: string;
 }
 
 export interface SiteBlogPost {
@@ -512,6 +530,8 @@ export interface SiteCareersContent {
 
 export interface SiteContent {
   howItWorksVideoUrl?: string;
+  contactIllustrationUrl?: string;
+  contactPhone?: string;
   hero: SiteHeroContent;
   valueProps: SiteValueProp[];
   caseStudies: SiteCaseStudy[];
@@ -528,7 +548,6 @@ export interface SiteContent {
   careers?: SiteCareersContent;
   // Pinned member IDs in exact order — stored in cloud for cross-device sync
   pinnedMemberIds?: string[];
-  howItWorksVideoUrl?: string;
 }
 
 // ── SECURITY & PERMISSION AUDIT LOG TYPES ────────────────────────────────────

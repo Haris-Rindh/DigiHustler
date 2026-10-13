@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Shield, ArrowLeft, Lock, Eye, Server, RefreshCw } from 'lucide-react';
+import { Shield, ArrowLeft, Lock, Eye, Server, RefreshCw, Mail } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { SEOHead } from '../seo/SEOHead';
 

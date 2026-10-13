@@ -426,9 +426,18 @@ export const Contact: React.FC = () => {
                 <div className="lg:col-span-4 flex">
                   <div className="w-full rounded-2xl sm:rounded-[22px] overflow-hidden bg-[#E8F5F6] dark:bg-[#032533] border border-[#D5E9EC] dark:border-[#0a3a4d] flex flex-col justify-between relative min-h-[380px] sm:min-h-[460px] lg:min-h-full">
                     <img
-                      src={siteContent?.contactIllustrationUrl || (siteContent?.contact as any)?.illustrationUrl || "/contact-illustration.png"}
+                      src={
+                        siteContent?.contactIllustrationUrl ||
+                        siteContent?.contact?.illustrationUrl ||
+                        siteContent?.contact?.formImageUrl ||
+                        siteContent?.customImages?.contactFormImage ||
+                        "/contact-illustration.png"
+                      }
                       alt="Let's build something great"
                       className="w-full h-full object-cover object-center"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src = '/contact-illustration.png';
+                      }}
                     />
                   </div>
                 </div>

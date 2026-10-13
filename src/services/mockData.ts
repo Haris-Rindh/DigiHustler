@@ -86,7 +86,7 @@ export const INITIAL_USERS: User[] = [
     "phone": "+923176497197",
     "avatarUrl": "https://ptvchzbzokyumeizsuge.supabase.co/storage/v1/object/public/avatars/usr-1788119130873.png?t=1788253088287",
     "role": "freelancer",
-    "roleTier": "freelancer",
+    "roleTier": "member",
     "isCeoMaster": false,
     "groupId": "creative",
     "title": "Graphic Designer",
@@ -930,11 +930,15 @@ export const DEFAULT_SITE_CONTENT: SiteContent = {
     linkedin: 'https://www.linkedin.com/company/digihust/',
     github: 'https://github.com/digihust',
     facebook: 'https://www.facebook.com/share/p/1EubKwa3Ce/',
-    twitter: 'https://twitter.com/digihust'
+    twitter: 'https://twitter.com/digihust',
+    illustrationUrl: '/contact-illustration.png',
+    formImageUrl: '/contact-illustration.png'
   },
+  contactIllustrationUrl: '/contact-illustration.png',
   customImages: {
     heroImage: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=800&q=80',
-    aboutImage: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=800&q=80'
+    aboutImage: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=800&q=80',
+    contactFormImage: '/contact-illustration.png'
   },
   certificateTemplates: [
     {

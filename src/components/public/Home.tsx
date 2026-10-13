@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { motion, AnimatePresence, useInView, useReducedMotion } from 'framer-motion';
+import { motion, AnimatePresence, useInView, useReducedMotion, type Variants } from 'framer-motion';
 import {
   ArrowRight,
   Code,
@@ -187,7 +187,7 @@ const HOME_FAQ_ITEMS = [
   },
 ];
 
-const containerVariants = {
+const containerVariants: Variants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
@@ -198,7 +198,7 @@ const containerVariants = {
   },
 };
 
-const itemVariants = {
+const itemVariants: Variants = {
   hidden: { opacity: 0, y: 20 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: 'easeOut' } },
 };
@@ -212,7 +212,7 @@ export const Home: React.FC = () => {
   const isModelInView = useInView(modelDiagramRef, { once: true, amount: 0.2 });
   const shouldReduceMotion = useReducedMotion();
 
-  const diagramContainerVariants = {
+  const diagramContainerVariants: Variants = {
     hidden: { opacity: shouldReduceMotion ? 1 : 0 },
     visible: {
       opacity: 1,
@@ -223,7 +223,7 @@ export const Home: React.FC = () => {
     },
   };
 
-  const diagramNodeVariants = {
+  const diagramNodeVariants: Variants = {
     hidden: {
       opacity: shouldReduceMotion ? 1 : 0,
       y: shouldReduceMotion ? 0 : 12,
@@ -233,12 +233,12 @@ export const Home: React.FC = () => {
       y: 0,
       transition: {
         duration: shouldReduceMotion ? 0 : 0.35,
-        ease: [0.16, 1, 0.3, 1],
+        ease: 'easeOut',
       },
     },
   };
 
-  const squadGroupVariants = {
+  const squadGroupVariants: Variants = {
     hidden: { opacity: shouldReduceMotion ? 1 : 0 },
     visible: {
       opacity: 1,

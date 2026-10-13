@@ -14,6 +14,7 @@ import { DEFAULT_SITE_CONTENT } from '../../services/mockData';
 import { PERMISSIONS } from '../../lib/permissions';
 import { AVAILABLE_SERVICE_ICONS, getServiceIcon } from '../../lib/serviceIcons';
 import { dbService } from '../../lib/dbService';
+import { compressAvatarFile } from '../../lib/utils';
 
 const SERVICE_PATTERN_OPTIONS = [
   { id: 'dotted-grid', label: 'Dotted Grid' },
@@ -191,10 +192,17 @@ export const SiteContentManager: React.FC = () => {
   const handleSaveContact = (e: React.FormEvent) => {
     e.preventDefault();
     updateSiteContent('contact', contactDraft);
-    if ((contactDraft as any).illustrationUrl) {
-      updateSiteContent('contactIllustrationUrl' as any, (contactDraft as any).illustrationUrl);
+    const illUrl = (contactDraft as any).illustrationUrl || (contactDraft as any).formImageUrl;
+    if (illUrl) {
+      updateSiteContent('contactIllustrationUrl' as any, illUrl);
+      const updatedCustomImages = {
+        ...customImagesDraft,
+        contactFormImage: illUrl,
+      };
+      setCustomImagesDraft(updatedCustomImages);
+      updateSiteContent('customImages', updatedCustomImages);
     }
-    triggerSaved('Contact information and social links updated live!');
+    triggerSaved('Contact information and illustration updated live!');
   };
 
   const handleExportNewsletterCsv = () => {
@@ -220,19 +228,43 @@ export const SiteContentManager: React.FC = () => {
     if (!file) return;
     setIsUploadingIllustration(true);
     try {
-      const publicUrl = await dbService.uploadSiteAsset(file, 'contact');
-      if (publicUrl) {
-        setContactDraft((prev) => ({ ...prev, illustrationUrl: publicUrl } as any));
-        updateSiteContent('contactIllustrationUrl' as any, publicUrl);
-        updateSiteContent('contact', { ...contactDraft, illustrationUrl: publicUrl } as any);
-        showToast('Contact illustration uploaded to Supabase Storage!', 'success');
-      } else {
-        showToast('Failed to upload image to storage.', 'error');
+      let finalUrl: string | null = null;
+      try {
+        finalUrl = await dbService.uploadSiteAsset(file, 'contact');
+      } catch (uploadErr) {
+        console.warn('Storage upload error, falling back to local compression:', uploadErr);
       }
-    } catch {
+
+      if (!finalUrl) {
+        // Fallback to client-side compressed base64 data URL
+        finalUrl = await compressAvatarFile(file, 900, 0.85);
+      }
+
+      if (finalUrl) {
+        const updatedContact = {
+          ...contactDraft,
+          illustrationUrl: finalUrl,
+          formImageUrl: finalUrl,
+        };
+        setContactDraft(updatedContact);
+        updateSiteContent('contact', updatedContact);
+        updateSiteContent('contactIllustrationUrl' as any, finalUrl);
+        const updatedCustomImages = {
+          ...customImagesDraft,
+          contactFormImage: finalUrl,
+        };
+        setCustomImagesDraft(updatedCustomImages);
+        updateSiteContent('customImages', updatedCustomImages);
+        showToast('Contact form illustration uploaded and saved live!', 'success');
+      } else {
+        showToast('Failed to process image file.', 'error');
+      }
+    } catch (err) {
+      console.error('Illustration upload error:', err);
       showToast('Error uploading image.', 'error');
     } finally {
       setIsUploadingIllustration(false);
+      e.target.value = '';
     }
   };
 
@@ -2481,38 +2513,97 @@ export const SiteContentManager: React.FC = () => {
           </div>
 
           {/* Contact Side Illustration Section */}
-          <div className="pt-4 border-t border-[var(--border-subtle)] space-y-4">
-            <h4 className="font-display font-bold text-sm text-[var(--text-heading)]">Contact Page Sidebar Illustration</h4>
-            <p className="text-xs text-[var(--text-muted)]">
-              Upload an illustration for the left side of the /contact page or provide a public URL. Uploaded images are stored permanently in Supabase Storage.
-            </p>
-            <div className="flex flex-col sm:flex-row items-center gap-6">
-              <div className="w-40 h-40 rounded-2xl bg-[var(--bg-page)] border border-[var(--border-subtle)] overflow-hidden flex items-center justify-center p-2 flex-shrink-0">
-                <img
-                  src={(contactDraft as any).illustrationUrl || safeContent.contactIllustrationUrl || '/contact-illustration.png'}
-                  alt="Contact illustration preview"
-                  className="w-full h-full object-contain"
-                />
+          <div className="pt-6 border-t border-[var(--border-subtle)] space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+              <div>
+                <h4 className="font-display font-bold text-sm text-[var(--text-heading)]">
+                  Contact Form Left Side Illustration / Image
+                </h4>
+                <p className="text-xs text-[var(--text-muted)] mt-0.5">
+                  Upload an image for the left side of the /contact page form or provide an image URL. Automatically synced live.
+                </p>
               </div>
-              <div className="space-y-3 flex-1 w-full">
+              {(((contactDraft as any).illustrationUrl && (contactDraft as any).illustrationUrl !== '/contact-illustration.png') ||
+                ((contactDraft as any).formImageUrl && (contactDraft as any).formImageUrl !== '/contact-illustration.png')) && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    const updated = {
+                      ...contactDraft,
+                      illustrationUrl: '/contact-illustration.png',
+                      formImageUrl: '/contact-illustration.png',
+                    };
+                    setContactDraft(updated);
+                    updateSiteContent('contact', updated);
+                    updateSiteContent('contactIllustrationUrl' as any, '/contact-illustration.png');
+                    const updatedCustomImages = {
+                      ...customImagesDraft,
+                      contactFormImage: '/contact-illustration.png',
+                    };
+                    setCustomImagesDraft(updatedCustomImages);
+                    updateSiteContent('customImages', updatedCustomImages);
+                    showToast('Reset to default contact illustration.', 'info');
+                  }}
+                  className="text-xs font-semibold text-[var(--text-muted)] hover:text-rose-500 transition-colors flex items-center gap-1 cursor-pointer self-start sm:self-auto"
+                >
+                  <RotateCcw className="w-3.5 h-3.5" />
+                  <span>Reset to Default</span>
+                </button>
+              )}
+            </div>
+
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6 p-4 rounded-2xl bg-[var(--bg-subtle)] border border-[var(--border-subtle)]">
+              {/* Visual Preview */}
+              <div className="w-36 h-48 sm:w-40 sm:h-52 rounded-2xl bg-[#E8F5F6] dark:bg-[#032533] border border-[#D5E9EC] dark:border-[#0a3a4d] overflow-hidden flex items-center justify-center p-2 shrink-0 shadow-sm relative group">
+                <img
+                  src={
+                    (contactDraft as any).illustrationUrl ||
+                    (contactDraft as any).formImageUrl ||
+                    safeContent.contactIllustrationUrl ||
+                    safeContent.customImages?.contactFormImage ||
+                    '/contact-illustration.png'
+                  }
+                  alt="Contact illustration preview"
+                  className="w-full h-full object-cover rounded-xl"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src = '/contact-illustration.png';
+                  }}
+                />
+                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center rounded-2xl pointer-events-none">
+                  <span className="text-[10px] font-bold text-white px-2 py-1 rounded bg-black/60">Live Preview</span>
+                </div>
+              </div>
+
+              {/* Controls */}
+              <div className="space-y-4 flex-1 w-full">
                 <div>
-                  <label className="block text-xs font-bold uppercase text-[var(--text-muted)] mb-1">Illustration URL</label>
+                  <label className="block text-xs font-bold uppercase text-[var(--text-muted)] mb-1.5">
+                    Illustration Image URL
+                  </label>
                   <input
-                    type="url"
-                    value={(contactDraft as any).illustrationUrl || ''}
-                    placeholder="/contact-illustration.png or https://..."
-                    onChange={(e) => setContactDraft({ ...contactDraft, illustrationUrl: e.target.value } as any)}
-                    className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs"
+                    type="text"
+                    value={(contactDraft as any).illustrationUrl || (contactDraft as any).formImageUrl || ''}
+                    placeholder="/contact-illustration.png or https://images.unsplash.com/..."
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      setContactDraft({
+                        ...contactDraft,
+                        illustrationUrl: val,
+                        formImageUrl: val,
+                      } as any);
+                    }}
+                    className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3.5 py-2 text-xs text-[var(--text-heading)] font-mono"
                   />
                 </div>
-                <div>
-                  <label className="inline-flex items-center space-x-2 px-4 py-2 rounded-xl bg-[var(--bg-page)] hover:bg-[var(--bg-subtle)] border border-[var(--border-subtle)] text-xs font-bold text-[var(--text-heading)] cursor-pointer transition-colors">
+
+                <div className="flex flex-wrap items-center gap-3">
+                  <label className="inline-flex items-center space-x-2 px-4 py-2.5 rounded-xl bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-white text-xs font-bold shadow-md cursor-pointer transition-all active:scale-95">
                     {isUploadingIllustration ? (
-                      <Loader2 className="w-3.5 h-3.5 animate-spin text-[var(--brand-teal)]" />
+                      <Loader2 className="w-4 h-4 animate-spin" />
                     ) : (
-                      <Upload className="w-3.5 h-3.5 text-[var(--brand-teal)]" />
+                      <Upload className="w-4 h-4" />
                     )}
-                    <span>{isUploadingIllustration ? 'Uploading...' : 'Upload Image to Supabase'}</span>
+                    <span>{isUploadingIllustration ? 'Uploading & Optimizing...' : 'Upload Image'}</span>
                     <input
                       type="file"
                       accept="image/*"
@@ -2521,6 +2612,10 @@ export const SiteContentManager: React.FC = () => {
                       className="hidden"
                     />
                   </label>
+
+                  <span className="text-xs text-[var(--text-muted)]">
+                    Supports PNG, JPG, WebP, SVG. Stored in Cloud Storage with automatic compression.
+                  </span>
                 </div>
               </div>
             </div>

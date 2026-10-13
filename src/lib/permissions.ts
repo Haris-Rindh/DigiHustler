@@ -76,10 +76,10 @@ export function canAccessPortalRoute(tier: UserRoleTier, route: string, user?: U
     return PERMISSIONS.canEditWebsiteContent(tier, user);
   }
   if (route.startsWith('/portal/settings')) {
-    return tier === 'ceo';
+    return false;
   }
   if (route.startsWith('/portal/certificates')) {
-    return tier === 'ceo' || tier === 'manager';
+    return tier === 'manager';
   }
   if (route.startsWith('/portal/roster')) {
     return tier !== 'member';

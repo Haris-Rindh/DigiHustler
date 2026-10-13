@@ -259,7 +259,7 @@ export const CertificateVerification: React.FC = () => {
                 <h2 className="font-display font-black text-3xl sm:text-4xl text-[var(--text-heading)] mb-2">
                   {certificate.memberName}
                 </h2>
-                <p className="text-sm font-mono text-[var(--brand-teal)] font-bold">
+                <p className="text-sm text-[var(--brand-teal)] font-bold">
                   Member ID: {certificate.memberDghId}
                 </p>
               </div>
@@ -313,7 +313,7 @@ export const CertificateVerification: React.FC = () => {
                       bgColor="#FFFFFF"
                     />
                   </div>
-                  <div className="text-[10px] text-[var(--text-muted)] font-mono">
+                  <div className="text-[10px] text-[var(--text-muted)] font-medium">
                     <span className="block text-[var(--text-heading)] font-bold">DIGITAL AUDIT TOKEN</span>
                     <span className="block truncate max-w-[180px]">{certificate.id}</span>
                     <span className="text-emerald-400 font-bold">✓ Unique Scannable Token Verified</span>
@@ -339,7 +339,7 @@ export const CertificateVerification: React.FC = () => {
             DigiHust Digital Verification Engine · Every generated certificate has a unique cryptographically linked QR token.
           </p>
           <p className="text-[11px] opacity-75">
-            For authentication queries, contact <span className="font-mono text-[var(--brand-teal)]">{certificate.contactEmail || 'verify@digihust.com'}</span>
+            For authentication queries, contact <span className="text-[var(--brand-teal)] font-semibold">{certificate.contactEmail || 'verify@digihust.com'}</span>
           </p>
         </div>
 

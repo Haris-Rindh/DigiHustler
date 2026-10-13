@@ -145,7 +145,7 @@ export const CertificatePrintView: React.FC<CertificatePrintViewProps> = ({
               <p className="text-slate-600 font-medium text-xs mt-0.5">
                 {isOfferLetter ? `Internship Duration: ${duration}` : `Duration: ${duration}`}
               </p>
-              <p className="font-mono text-[11px] text-[#1F7A8C] font-semibold mt-1">
+              <p className="text-[11px] text-[#1F7A8C] font-semibold mt-1">
                 Member ID: {memberDghId}
               </p>
             </div>
@@ -220,7 +220,7 @@ export const CertificatePrintView: React.FC<CertificatePrintViewProps> = ({
                     bgColor="#FFFFFF"
                   />
                 </div>
-                <div className="text-[10px] font-mono leading-tight">
+                <div className="text-[10px] leading-tight">
                   <span className="font-bold text-[#022B3A] block">DIGITAL AUDIT QR</span>
                   <span className="text-slate-500 block truncate max-w-[130px]">{certId}</span>
                   <span className="text-emerald-600 font-bold block mt-0.5">✓ Scan to Verify Online</span>
