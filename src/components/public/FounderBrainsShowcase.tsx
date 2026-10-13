@@ -45,24 +45,24 @@ export const FounderBrainsShowcase: React.FC<FounderBrainsShowcaseProps> = ({
     <section
       ref={containerRef}
       data-hero={dataHero ? 'true' : undefined}
-      className="bg-[#F4F9F8] dark:bg-[#031E28] pt-12 sm:pt-16 md:pt-20 pb-10 sm:pb-14 px-4 sm:px-6 lg:px-8 border-b border-[#9BD8CB]/40 dark:border-cyan-900/40 relative overflow-hidden select-none transition-colors duration-300"
+      className="bg-[#F4F9F8] dark:bg-[#031E28] pt-8 sm:pt-10 md:pt-12 pb-8 sm:pb-10 px-4 sm:px-6 lg:px-8 border-b border-[#9BD8CB]/40 dark:border-cyan-900/40 relative overflow-hidden select-none transition-colors duration-300"
     >
       {/* ── SECTION HEADING (Prominent Executive Header) ── */}
-      <div className="max-w-4xl mx-auto text-center mb-8 sm:mb-12 px-4">
-        <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-[#D7F2EB] dark:bg-cyan-950/80 border border-[#9BD8CB] dark:border-cyan-500/40 text-[11px] font-extrabold text-[#158376] dark:text-cyan-300 uppercase tracking-widest mb-3">
+      <div className="max-w-4xl mx-auto text-center mb-3 sm:mb-4 md:mb-5 px-4">
+        <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-[#D7F2EB] dark:bg-cyan-950/80 border border-[#9BD8CB] dark:border-cyan-500/40 text-[11px] font-extrabold text-[#158376] dark:text-cyan-300 uppercase tracking-widest mb-2.5">
           <span>Executive Leadership</span>
         </div>
         <h2 className="font-display font-extrabold text-3xl sm:text-4xl md:text-5xl text-[#111827] dark:text-white tracking-tight">
           Meet the Brains Behind{' '}
           <span className="text-[#158376] dark:text-[var(--brand-teal)]">DigiHust</span>
         </h2>
-        <p className="text-sm sm:text-base text-[var(--text-muted)] max-w-xl mx-auto mt-2.5">
+        <p className="text-sm sm:text-base text-[var(--text-muted)] max-w-xl mx-auto mt-2">
           Directing engineering vision, product strategy, and digital delivery.
         </p>
       </div>
 
       {/* ── DESKTOP & TABLET STAGE (>= 768px) ── */}
-      <div className="hidden md:flex relative max-w-6xl mx-auto items-end justify-center min-h-[440px] lg:min-h-[480px] px-2 sm:px-4">
+      <div className="hidden md:flex relative max-w-6xl mx-auto items-end justify-center min-h-[400px] lg:min-h-[440px] px-2 sm:px-4">
         {/* Soft Mint Semicircle (Circle Cut in Half) Backdrop - Light Mode */}
         <div
           className="absolute left-1/2 -translate-x-1/2 bottom-0 w-[420px] md:w-[480px] lg:w-[540px] h-[210px] md:h-[240px] lg:h-[270px] rounded-t-full rounded-b-none pointer-events-none z-0 transition-colors duration-300 border-t border-x border-b-0 border-[#9BD8CB]/80 shadow-[0_-12px_45px_rgba(188,231,222,0.55)]"
@@ -94,7 +94,7 @@ export const FounderBrainsShowcase: React.FC<FounderBrainsShowcaseProps> = ({
             initial={shouldReduceMotion ? { opacity: 1, x: 0 } : { opacity: 0, x: -20 }}
             animate={isEntered || shouldReduceMotion ? { opacity: 1, x: 0 } : { opacity: 0, x: -20 }}
             transition={{ duration: 0.6, delay: shouldReduceMotion ? 0 : 0.15, ease: 'easeOut' }}
-            className={`w-[190px] md:w-[210px] lg:w-[240px] shrink-0 self-start mt-2 md:mt-4 lg:mt-6 rounded-2xl bg-white/95 dark:bg-[#073547] border border-[#9BD8CB]/70 dark:border-cyan-400/30 shadow-[0_12px_28px_rgba(21,131,118,0.08)] dark:shadow-[0_12px_28px_rgba(0,0,0,0.5)] p-4 lg:p-5 text-left transition-all duration-300 hover:shadow-xl hover:-translate-y-1 ${
+            className={`w-[190px] md:w-[210px] lg:w-[240px] shrink-0 self-start mt-4 md:mt-6 lg:mt-8 rounded-2xl bg-white/95 dark:bg-[#073547] border border-[#9BD8CB]/70 dark:border-cyan-400/30 shadow-[0_12px_28px_rgba(21,131,118,0.08)] dark:shadow-[0_12px_28px_rgba(0,0,0,0.5)] p-4 lg:p-5 text-left transition-all duration-300 hover:shadow-xl hover:-translate-y-1 ${
               onSelectMahad ? 'cursor-pointer group' : ''
             }`}
             title={onSelectMahad ? 'Click to view Mahad Abbas credentials' : undefined}
@@ -110,12 +110,12 @@ export const FounderBrainsShowcase: React.FC<FounderBrainsShowcaseProps> = ({
             </p>
           </motion.div>
 
-          {/* 2. CENTER PHOTO: FOUNDERS DUO (Lifted towards upside, emerging from semicircle) */}
-          <div className="relative shrink-0 flex items-end justify-center self-end -translate-y-6 md:-translate-y-8 lg:-translate-y-10">
+          {/* 2. CENTER PHOTO: FOUNDERS DUO (Complete image, close to heading) */}
+          <div className="relative shrink-0 flex items-end justify-center self-end">
             <motion.img
               src={foundersDuoImg}
               alt="Mahad Abbas and Muhammad Haseeb - DigiHust Executive Leadership"
-              className="w-[300px] md:w-[350px] lg:w-[400px] h-auto object-contain object-bottom select-none drop-shadow-md pointer-events-none"
+              className="w-[320px] md:w-[380px] lg:w-[430px] h-auto object-contain object-bottom select-none drop-shadow-md pointer-events-none"
               loading="eager"
               decoding="async"
               initial={shouldReduceMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 16 }}
@@ -168,7 +168,7 @@ export const FounderBrainsShowcase: React.FC<FounderBrainsShowcaseProps> = ({
             initial={shouldReduceMotion ? { opacity: 1, x: 0 } : { opacity: 0, x: 20 }}
             animate={isEntered || shouldReduceMotion ? { opacity: 1, x: 0 } : { opacity: 0, x: 20 }}
             transition={{ duration: 0.6, delay: shouldReduceMotion ? 0 : 0.25, ease: 'easeOut' }}
-            className={`w-[190px] md:w-[210px] lg:w-[240px] shrink-0 self-start mt-2 md:mt-4 lg:mt-6 rounded-2xl bg-white/95 dark:bg-[#073547] border border-[#9BD8CB]/70 dark:border-cyan-400/30 shadow-[0_12px_28px_rgba(21,131,118,0.08)] dark:shadow-[0_12px_28px_rgba(0,0,0,0.5)] p-4 lg:p-5 text-left transition-all duration-300 hover:shadow-xl hover:-translate-y-1 ${
+            className={`w-[190px] md:w-[210px] lg:w-[240px] shrink-0 self-start mt-4 md:mt-6 lg:mt-8 rounded-2xl bg-white/95 dark:bg-[#073547] border border-[#9BD8CB]/70 dark:border-cyan-400/30 shadow-[0_12px_28px_rgba(21,131,118,0.08)] dark:shadow-[0_12px_28px_rgba(0,0,0,0.5)] p-4 lg:p-5 text-left transition-all duration-300 hover:shadow-xl hover:-translate-y-1 ${
               onSelectHaseeb ? 'cursor-pointer group' : ''
             }`}
             title={onSelectHaseeb ? 'Click to view Muhammad Haseeb credentials' : undefined}
@@ -189,7 +189,7 @@ export const FounderBrainsShowcase: React.FC<FounderBrainsShowcaseProps> = ({
       {/* ── MOBILE RESPONSIVE LAYOUT (< 768px) ── */}
       <div className="md:hidden flex flex-col items-center">
         {/* Photo Stage with Prominent Semicircle (Circle Cut in Half) */}
-        <div className="relative w-full max-w-[320px] aspect-[4/3] flex items-end justify-center mb-6 -translate-y-2 sm:-translate-y-3">
+        <div className="relative w-full max-w-[320px] aspect-[1024/934] flex items-end justify-center mb-4">
           {/* Mint Semicircle Backdrop - Mobile */}
           <div
             className="absolute left-1/2 bottom-0 -translate-x-1/2 w-[280px] sm:w-[320px] h-[140px] sm:h-[160px] rounded-t-full rounded-b-none pointer-events-none z-0 border-t border-x border-b-0 border-[#9BD8CB]/80 shadow-[0_-10px_35px_rgba(188,231,222,0.5)]"
@@ -202,7 +202,7 @@ export const FounderBrainsShowcase: React.FC<FounderBrainsShowcaseProps> = ({
           <img
             src={foundersDuoImg}
             alt="Mahad Abbas and Muhammad Haseeb"
-            className="w-[240px] sm:w-[270px] h-auto object-contain object-bottom select-none drop-shadow-sm pointer-events-none z-10"
+            className="w-[260px] sm:w-[290px] h-auto object-contain object-bottom select-none drop-shadow-sm pointer-events-none z-10"
             loading="eager"
             decoding="async"
           />
