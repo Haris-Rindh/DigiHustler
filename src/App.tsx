@@ -32,6 +32,9 @@ import { CertificateVerification } from './components/public/CertificateVerifica
 import { SaasDevelopmentLanding } from './components/public/LandingPages/SaasDevelopmentLanding';
 import { AiAutomationLanding } from './components/public/LandingPages/AiAutomationLanding';
 import { DesignSystemLanding } from './components/public/LandingPages/DesignSystemLanding';
+import { DigitalMarketingLanding } from './components/public/LandingPages/DigitalMarketingLanding';
+import { CybersecurityLanding } from './components/public/LandingPages/CybersecurityLanding';
+import { DataIntelligenceLanding } from './components/public/LandingPages/DataIntelligenceLanding';
 import { ClientProjectTracker } from './components/public/ClientProjectTracker';
 
 // Portal & Tiered Management System
@@ -115,10 +118,18 @@ export const App: React.FC = () => {
                 <Route path="/terms" element={<TermsOfService />} />
                 <Route path="/editorial-policy" element={<EditorialPolicy />} />
 
-                {/* ── High-Intent International SEO Landing Pages ── */}
+                {/* ── High-Intent Dedicated Service & Capability Landing Pages ── */}
                 <Route path="/services/saas-mvp-development" element={<SaasDevelopmentLanding />} />
+                <Route path="/services/web-development" element={<Navigate to="/services/saas-mvp-development" replace />} />
                 <Route path="/services/ai-workflow-automation" element={<AiAutomationLanding />} />
                 <Route path="/services/brand-identity-design-system" element={<DesignSystemLanding />} />
+                <Route path="/services/creative-design" element={<Navigate to="/services/brand-identity-design-system" replace />} />
+                <Route path="/services/digital-marketing-seo" element={<DigitalMarketingLanding />} />
+                <Route path="/services/digital-marketing" element={<Navigate to="/services/digital-marketing-seo" replace />} />
+                <Route path="/services/cybersecurity-audit" element={<CybersecurityLanding />} />
+                <Route path="/services/cybersecurity" element={<Navigate to="/services/cybersecurity-audit" replace />} />
+                <Route path="/services/data-intelligence-analytics" element={<DataIntelligenceLanding />} />
+                <Route path="/services/data-intelligence" element={<Navigate to="/services/data-intelligence-analytics" replace />} />
 
                 {/* ── Private Client Live Project Tracker ── */}
                 <Route path="/project/track/:trackingToken" element={<ClientProjectTracker />} />

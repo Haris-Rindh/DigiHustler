@@ -51,6 +51,27 @@ const routes = [
     summary: 'Complete typography & vector logo guidelines, comprehensive Figma component token libraries, and 3D motion trailers.',
   },
   {
+    path: '/services/digital-marketing-seo',
+    title: 'Growth Marketing & Technical SEO Services | DigiHust',
+    description: 'Drive high-intent organic traffic, scale paid ad conversions, and dominate search rankings. Dedicated growth marketing and technical SEO squads with managed milestone SLAs.',
+    h1: 'Accelerate Revenue & Acquisition With High-Performance Marketing & SEO.',
+    summary: 'Technical SEO audits, Core Web Vitals optimization, programmatic content acquisition, and high-ROAS paid media buying.',
+  },
+  {
+    path: '/services/cybersecurity-audit',
+    title: 'Cybersecurity Audits & Penetration Testing | DigiHust',
+    description: 'Protect your web applications, APIs, and cloud infrastructure with offensive penetration testing, OWASP vulnerability assessments, and cloud security hardening.',
+    h1: 'Fortify Your Digital Assets With Rigorous Audits & Penetration Testing.',
+    summary: 'Black-box and white-box web app penetration testing, OWASP Top 10 auditing, cloud infrastructure hardening, and signed clean audit certificates.',
+  },
+  {
+    path: '/services/data-intelligence-analytics',
+    title: 'Business Intelligence, ETL & Executive Dashboards | DigiHust',
+    description: 'Transform raw databases into real-time business intelligence with custom Python ETL pipelines, SQL warehouses, and interactive PowerBI and Tableau executive dashboards.',
+    h1: 'Transform Disparate Data Into Actionable Executive Intelligence.',
+    summary: 'Automated Python ETL data pipelines, centralized SQL data warehouses, and interactive PowerBI executive analytics suites.',
+  },
+  {
     path: '/portfolio',
     title: 'Our Work & Case Studies — DigiHust',
     description: 'Explore DigiHust portfolio of delivered projects across full-stack development, brand identity systems, AI automation, and business intelligence.',

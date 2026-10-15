@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, ChevronRight, TrendingUp } from 'lucide-react';
 import { getServiceIcon } from '../../lib/serviceIcons';
+import { getServiceDedicatedRoute } from '../../lib/serviceRoutes';
 import slide1 from '../../assets/slideshow 1.avif';
 
 export interface ServiceCardData {
@@ -58,13 +59,8 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
     ? service.tags 
     : ['Production Ready', 'Milestone SLAs'];
 
-  let targetLink = service.linkTarget || `/contact?service=${encodeURIComponent(service.title)}`;
-  if (targetLink === '/services' || targetLink === '/services/') {
-    const slug = service.slug || service.id;
-    if (slug) {
-      targetLink = `/services#${slug}`;
-    }
-  }
+  // Resolve specific and dedicated service landing page
+  const targetLink = getServiceDedicatedRoute(service);
   const descriptionText = service.description || service.summary || service.tagline || '';
 
   return (

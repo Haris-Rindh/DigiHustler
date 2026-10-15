@@ -20,11 +20,13 @@ import {
   MessageSquare,
   AlertCircle,
   ExternalLink,
+  Loader2,
 } from 'lucide-react';
 import { SEOHead } from '../seo/SEOHead';
 import { useApp } from '../../context/AppContext';
 import { GroupId } from '../../types';
 import { notificationService } from '../../lib/notificationService';
+import { dbService } from '../../lib/dbService';
 
 const SERVICES = [
   'Website / Full-Stack App',
@@ -39,15 +41,136 @@ const SERVICES = [
   'Other Custom Scope',
 ];
 
-const BUDGET_OPTIONS = [
-  'Select a range',
-  'Under $1,000',
-  '$1,000 – $3,000',
-  '$3,000 – $7,500',
-  '$7,500 – $15,000',
-  '$15,000+',
-  'Flexible / Undecided',
-];
+export interface CurrencyConfig {
+  code: string;
+  symbol: string;
+  name: string;
+  ranges: string[];
+  approxUsdMultiplier: number;
+}
+
+export const CURRENCY_CONFIGS: Record<string, CurrencyConfig> = {
+  USD: {
+    code: 'USD',
+    symbol: '$',
+    name: 'USD ($)',
+    ranges: [
+      'Select a range',
+      'Under $1,000',
+      '$1,000 – $3,000',
+      '$3,000 – $7,500',
+      '$7,500 – $15,000',
+      '$15,000+',
+      'Flexible / Undecided',
+    ],
+    approxUsdMultiplier: 1,
+  },
+  PKR: {
+    code: 'PKR',
+    symbol: 'PKR',
+    name: 'PKR (Rs)',
+    ranges: [
+      'Select a range',
+      'Under PKR 150,000',
+      'PKR 150,000 – PKR 500,000',
+      'PKR 500,000 – PKR 1,500,000',
+      'PKR 1,500,000 – PKR 3,000,000',
+      'PKR 3,000,000+',
+      'Flexible / Undecided',
+    ],
+    approxUsdMultiplier: 0.0036,
+  },
+  EUR: {
+    code: 'EUR',
+    symbol: '€',
+    name: 'EUR (€)',
+    ranges: [
+      'Select a range',
+      'Under €1,000',
+      '€1,000 – €3,000',
+      '€3,000 – €7,500',
+      '€7,500 – €15,000',
+      '€15,000+',
+      'Flexible / Undecided',
+    ],
+    approxUsdMultiplier: 1.08,
+  },
+  GBP: {
+    code: 'GBP',
+    symbol: '£',
+    name: 'GBP (£)',
+    ranges: [
+      'Select a range',
+      'Under £800',
+      '£800 – £2,500',
+      '£2,500 – £6,000',
+      '£6,000 – £12,000',
+      '£12,000+',
+      'Flexible / Undecided',
+    ],
+    approxUsdMultiplier: 1.28,
+  },
+  AED: {
+    code: 'AED',
+    symbol: 'AED',
+    name: 'AED (AED)',
+    ranges: [
+      'Select a range',
+      'Under AED 3,500',
+      'AED 3,500 – AED 10,000',
+      'AED 10,000 – AED 25,000',
+      'AED 25,000 – AED 50,000',
+      'AED 50,000+',
+      'Flexible / Undecided',
+    ],
+    approxUsdMultiplier: 0.27,
+  },
+  SAR: {
+    code: 'SAR',
+    symbol: 'SAR',
+    name: 'SAR (SAR)',
+    ranges: [
+      'Select a range',
+      'Under SAR 3,500',
+      'SAR 3,500 – SAR 10,000',
+      'SAR 10,000 – SAR 25,000',
+      'SAR 25,000 – SAR 50,000',
+      'SAR 50,000+',
+      'Flexible / Undecided',
+    ],
+    approxUsdMultiplier: 0.27,
+  },
+  CAD: {
+    code: 'CAD',
+    symbol: 'C$',
+    name: 'CAD (C$)',
+    ranges: [
+      'Select a range',
+      'Under C$1,500',
+      'C$1,500 – C$4,000',
+      'C$4,000 – C$10,000',
+      'C$10,000 – C$20,000',
+      'C$20,000+',
+      'Flexible / Undecided',
+    ],
+    approxUsdMultiplier: 0.73,
+  },
+  AUD: {
+    code: 'AUD',
+    symbol: 'A$',
+    name: 'AUD (A$)',
+    ranges: [
+      'Select a range',
+      'Under A$1,500',
+      'A$1,500 – A$4,500',
+      'A$4,500 – A$11,000',
+      'A$11,000 – A$22,000',
+      'A$22,000+',
+      'Flexible / Undecided',
+    ],
+    approxUsdMultiplier: 0.65,
+  },
+};
 
 const TIMELINE_OPTIONS = [
   'Select a timeframe',
@@ -64,6 +187,129 @@ const STAGE_OPTIONS = [
   'Existing MVP Needing Scale',
   'Enterprise System Migration',
 ];
+
+const DISPOSABLE_EMAIL_DOMAINS = new Set([
+  'mailinator.com',
+  'tempmail.com',
+  '10minutemail.com',
+  'guerrillamail.com',
+  'throwawaymail.com',
+  'yopmail.com',
+  'trashmail.com',
+  'sharklasers.com',
+  'dispostable.com',
+  'getairmail.com',
+  'mohmal.com',
+  'fakeinbox.com',
+  'temp-mail.org',
+  'tempail.com',
+  'burnermail.io',
+]);
+
+export const validateFullName = (name: string): { isValid: boolean; error?: string } => {
+  const trimmed = name.trim();
+  if (!trimmed) {
+    return { isValid: false, error: 'Please enter your full name' };
+  }
+  if (/\d/.test(trimmed)) {
+    return { isValid: false, error: 'Name cannot contain numbers. Only letters are allowed.' };
+  }
+  // Standard letters (including Latin accented characters like José, Müller), spaces, apostrophes and hyphens
+  if (!/^[a-zA-Z\u00C0-\u024F\s'-]+$/.test(trimmed)) {
+    return { isValid: false, error: 'Name cannot contain symbols or special characters.' };
+  }
+  if (trimmed.length < 2) {
+    return { isValid: false, error: 'Name must be at least 2 letters' };
+  }
+  if (trimmed.length > 60) {
+    return { isValid: false, error: 'Name cannot exceed 60 characters' };
+  }
+  return { isValid: true };
+};
+
+export const validateEmailFormat = (email: string): { isValid: boolean; error?: string; domain?: string } => {
+  const trimmed = email.trim();
+  if (!trimmed) {
+    return { isValid: false, error: 'Please provide your work email address' };
+  }
+  // RFC compliant email format validation
+  const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+$/;
+  if (!emailRegex.test(trimmed)) {
+    return { isValid: false, error: 'Please enter a valid work email (e.g. name@company.com)' };
+  }
+
+  const parts = trimmed.split('@');
+  if (parts.length !== 2) {
+    return { isValid: false, error: 'Invalid email address structure' };
+  }
+
+  const domain = parts[1].toLowerCase().trim();
+  if (!domain.includes('.') || domain.endsWith('.')) {
+    return { isValid: false, error: 'Email domain must have a valid extension (e.g. .com, .org)' };
+  }
+
+  if (DISPOSABLE_EMAIL_DOMAINS.has(domain)) {
+    return { isValid: false, error: 'Disposable or temporary email addresses are not accepted.' };
+  }
+
+  return { isValid: true, domain };
+};
+
+export const verifyEmailDomainDns = async (domain: string): Promise<{ exists: boolean; message?: string }> => {
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 3500);
+
+    const mxRes = await fetch(`https://dns.google/resolve?name=${encodeURIComponent(domain)}&type=MX`, {
+      signal: controller.signal,
+      headers: { Accept: 'application/dns-json' },
+    });
+    clearTimeout(timeout);
+
+    if (mxRes.ok) {
+      const data = await mxRes.json();
+      if (data.Status === 3) {
+        return {
+          exists: false,
+          message: `The email domain "@${domain}" does not exist. Please check your spelling.`,
+        };
+      }
+      if (data.Status === 0 && Array.isArray(data.Answer) && data.Answer.length > 0) {
+        return { exists: true };
+      }
+    }
+
+    // Fallback: Check root A record
+    const aController = new AbortController();
+    const aTimeout = setTimeout(() => aController.abort(), 3000);
+    const aRes = await fetch(`https://dns.google/resolve?name=${encodeURIComponent(domain)}&type=A`, {
+      signal: aController.signal,
+      headers: { Accept: 'application/dns-json' },
+    });
+    clearTimeout(aTimeout);
+
+    if (aRes.ok) {
+      const aData = await aRes.json();
+      if (aData.Status === 3) {
+        return {
+          exists: false,
+          message: `The email domain "@${domain}" does not exist. Please check your spelling.`,
+        };
+      }
+      if (aData.Status === 0 && Array.isArray(aData.Answer) && aData.Answer.length > 0) {
+        return { exists: true };
+      }
+    }
+
+    return {
+      exists: false,
+      message: `The domain "@${domain}" has no active mail server. Please provide a working email.`,
+    };
+  } catch (err) {
+    console.warn('Email domain check warning:', err);
+    return { exists: true };
+  }
+};
 
 export const Contact: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -96,7 +342,26 @@ export const Contact: React.FC = () => {
   const [submitted, setSubmitted] = useState(false);
   const [whatsappLink, setWhatsappLink] = useState<string>('');
 
+  const [selectedCurrency, setSelectedCurrency] = useState<string>('USD');
+  const [budgetMode, setBudgetMode] = useState<'range' | 'custom'>('range');
+  const [customBudgetAmount, setCustomBudgetAmount] = useState<string>('');
+  const [isValidatingEmail, setIsValidatingEmail] = useState<boolean>(false);
+
   const { submitLead, siteContent } = useApp();
+
+  const resolvedContactIllustration = (() => {
+    const custom = siteContent?.customImages?.contactFormImage;
+    const cIllustration = siteContent?.contact?.illustrationUrl;
+    const cFormImg = siteContent?.contact?.formImageUrl;
+    const directIllustration = siteContent?.contactIllustrationUrl;
+
+    for (const candidate of [custom, cIllustration, cFormImg, directIllustration]) {
+      if (candidate && typeof candidate === 'string' && candidate.trim() !== '' && candidate !== '/contact-illustration.png') {
+        return candidate;
+      }
+    }
+    return custom || cIllustration || cFormImg || directIllustration || '/contact-illustration.png';
+  })();
 
   const mapServiceToContactOption = useCallback((rawName: string): string => {
     const lower = rawName.toLowerCase();
@@ -176,28 +441,70 @@ export const Contact: React.FC = () => {
     });
   };
 
-  const validateStep1 = () => {
-    const errs: Record<string, string> = {};
-    if (!form.name.trim()) errs.name = 'Please provide your full name';
-    if (!form.email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
-      errs.email = 'Please provide a valid work email address';
+  const getEffectiveBudget = useCallback(() => {
+    if (budgetMode === 'custom') {
+      return customBudgetAmount.trim() ? `${selectedCurrency} ${customBudgetAmount.trim()}` : '';
     }
+    return form.budget;
+  }, [budgetMode, customBudgetAmount, selectedCurrency, form.budget]);
+
+  const validateStep1Sync = (): { isValid: boolean; domain?: string } => {
+    const errs: Record<string, string> = {};
+
+    // 1. Strict Name Validation: Only letters and spaces (reject numbers and symbols)
+    const nameCheck = validateFullName(form.name);
+    if (!nameCheck.isValid) {
+      errs.name = nameCheck.error!;
+    }
+
+    // 2. Strict Email Validation: RFC syntax and disposable domain block
+    const emailCheck = validateEmailFormat(form.email);
+    if (!emailCheck.isValid) {
+      errs.email = emailCheck.error!;
+    }
+
     if (!form.description.trim() || form.description.length < 10) {
       errs.description = 'Please provide a brief description (at least 10 characters)';
     }
-    if (!form.budget || form.budget === 'Select a range') {
-      errs.budget = 'Please select a target budget range';
+
+    if (budgetMode === 'range') {
+      if (!form.budget || form.budget === 'Select a range') {
+        errs.budget = 'Please select a target budget range';
+      }
+    } else {
+      if (!customBudgetAmount.trim()) {
+        errs.budget = 'Please specify your target budget amount';
+      }
     }
+
     if (!form.timeline || form.timeline === 'Select a timeframe') {
       errs.timeline = 'Please select a completion window';
     }
+
     setErrors(errs);
-    return Object.keys(errs).length === 0;
+    return { isValid: Object.keys(errs).length === 0, domain: emailCheck.domain };
   };
 
-  const handleNextStep = () => {
+  const handleNextStep = async () => {
     if (step === 1) {
-      if (!validateStep1()) return;
+      const { isValid, domain } = validateStep1Sync();
+      if (!isValid) return;
+
+      // 3. Email Existence / DNS MX verification
+      if (domain) {
+        setIsValidatingEmail(true);
+        const dnsCheck = await verifyEmailDomainDns(domain);
+        setIsValidatingEmail(false);
+        if (!dnsCheck.exists) {
+          setErrors((prev) => ({
+            ...prev,
+            email: dnsCheck.message || 'This email domain does not exist. Please check your spelling.',
+          }));
+          return;
+        }
+      }
+
+      setErrors({});
       setStep(2);
     } else if (step === 2) {
       if (form.services.length === 0) {
@@ -242,27 +549,54 @@ export const Contact: React.FC = () => {
   const handleSubmitLead = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     if (form.honeypot) return;
-    if (!validateStep1()) {
+
+    const { isValid, domain } = validateStep1Sync();
+    if (!isValid) {
       setStep(1);
       return;
     }
 
     setIsSubmitting(true);
 
+    if (domain) {
+      const dnsCheck = await verifyEmailDomainDns(domain);
+      if (!dnsCheck.exists) {
+        setIsSubmitting(false);
+        setErrors((prev) => ({
+          ...prev,
+          email: dnsCheck.message || 'This email domain does not exist. Please check your spelling.',
+        }));
+        setStep(1);
+        return;
+      }
+    }
+
     try {
-      const budgetMap: Record<string, number> = {
-        'Under $1,000': 1000,
-        '$1,000 – $3,000': 3000,
-        '$3,000 – $7,500': 7500,
-        '$7,500 – $15,000': 15000,
-        '$15,000+': 25000,
-        'Flexible / Undecided': 5000,
-      };
+      // 1. Upload attached document to Supabase Storage if present
+      let uploadedAttachmentUrl = '';
+      let uploadedAttachmentName = '';
+
+      if (form.file) {
+        try {
+          const uploadRes = await dbService.uploadLeadAttachment(form.file);
+          if (uploadRes?.url) {
+            uploadedAttachmentUrl = uploadRes.url;
+            uploadedAttachmentName = uploadRes.name;
+          }
+        } catch (uploadErr) {
+          console.warn('Lead file upload warning:', uploadErr);
+        }
+      }
+
+      const effectiveBudget = getEffectiveBudget();
 
       const groupMap: Record<string, GroupId> = {
         'Website / Full-Stack App': 'tech',
-        'UI/UX & Brand Identity': 'creative',
+        'UI/UX Design & Wireframing': 'creative',
+        'Graphic Design & Brand Identity': 'creative',
         'AI & Workflow Automation': 'data',
+        'Lead Generation & Funnel Building': 'growth',
+        'Video Editing & Motion Graphics': 'creative',
         'Digital Marketing & SEO': 'growth',
         'Cybersecurity Audit': 'tech',
         'BI & Data Intelligence': 'data',
@@ -270,15 +604,35 @@ export const Contact: React.FC = () => {
       };
 
       const targetGroupId: GroupId = groupMap[form.services[0]] || 'tech';
-      const rawBudget = budgetMap[form.budget] || 3000;
+      const currConfig = CURRENCY_CONFIGS[selectedCurrency] || CURRENCY_CONFIGS.USD;
+      let rawBudget = 3000;
+      if (budgetMode === 'custom') {
+        const parsed = parseFloat(customBudgetAmount.replace(/[^0-9.]/g, '')) || 3000;
+        rawBudget = Math.round(parsed * currConfig.approxUsdMultiplier);
+      } else {
+        const budgetMap: Record<string, number> = {
+          'Under $1,000': 1000,
+          '$1,000 – $3,000': 3000,
+          '$3,000 – $7,500': 7500,
+          '$7,500 – $15,000': 15000,
+          '$15,000+': 25000,
+          'Flexible / Undecided': 5000,
+        };
+        rawBudget = budgetMap[form.budget] || 3000;
+      }
 
       const newLeadData = {
         title: `${form.company || form.name} | ${form.services[0]}`,
         clientName: form.name,
         clientCompany: form.company || undefined,
         clientEmail: form.email,
-        brief: `${projectParam ? `[Referenced Case Study: ${projectParam}]\n\n` : ''}${form.description}\n\nServices: ${form.services.join(', ')}\nTimeline: ${form.timeline}\nBudget: ${form.budget}\nStage: ${form.stage}\nNDA Requested: ${form.ndaRequired ? 'Yes' : 'No'}${form.file ? `\nAttached: ${form.file.name}` : ''}`,
+        brief: `${projectParam ? `[Referenced Case Study: ${projectParam}]\n\n` : ''}${form.description}\n\nServices: ${form.services.join(', ')}\nTimeline: ${form.timeline}\nBudget: ${effectiveBudget} (${selectedCurrency})\nStage: ${form.stage}\nNDA Requested: ${form.ndaRequired ? 'Yes' : 'No'}${uploadedAttachmentUrl ? `\nAttached Document: ${uploadedAttachmentName} (${uploadedAttachmentUrl})` : form.file ? `\nAttached: ${form.file.name}` : ''}`,
         budgetEstimate: rawBudget,
+        budgetRange: effectiveBudget,
+        timeline: form.timeline,
+        currency: selectedCurrency,
+        attachmentUrl: uploadedAttachmentUrl,
+        attachmentName: uploadedAttachmentName || form.file?.name,
         status: 'new' as const,
         groupId: targetGroupId,
         assignedSpecialistIds: [],
@@ -287,32 +641,56 @@ export const Contact: React.FC = () => {
 
       await submitLead(newLeadData);
 
+      // 2. Dispatch detailed lead alert to management (digihust@gmail.com)
       try {
         await notificationService.dispatchLeadEmail({
           name: form.name,
           email: form.email,
           company: form.company,
           services: form.services,
-          budget: form.budget,
+          currency: selectedCurrency,
+          budget: effectiveBudget,
           timeline: form.timeline,
           description: `${projectParam ? `[Referenced Case Study: ${projectParam}]\n\n` : ''}${form.description}\nStage: ${form.stage}`,
+          attachmentName: uploadedAttachmentName || form.file?.name,
+          attachmentUrl: uploadedAttachmentUrl,
         });
       } catch (emailErr) {
         console.warn('Contact Form EmailJS dispatch warning:', emailErr);
       }
 
+      // 3. Dispatch confirmation email to client
+      try {
+        await notificationService.dispatchClientConfirmationEmail({
+          name: form.name,
+          email: form.email,
+          company: form.company,
+          services: form.services,
+          currency: selectedCurrency,
+          budget: effectiveBudget,
+          timeline: form.timeline,
+          description: form.description,
+          attachmentName: uploadedAttachmentName || form.file?.name,
+          attachmentUrl: uploadedAttachmentUrl,
+        });
+      } catch (clientEmailErr) {
+        console.warn('Client confirmation email dispatch warning:', clientEmailErr);
+      }
+
+      // 4. WhatsApp instant reply link
       const phone = siteContent?.contactPhone || '923226806396';
       const cleanPhone = phone.replace(/[^0-9]/g, '');
       const msg = encodeURIComponent(
-        `*New DigiHust Project Request*\n\n` +
+        `*🚨 New DigiHust Client Intake*\n\n` +
         (projectParam ? `*Referenced Project:* ${projectParam}\n` : '') +
-        `*Name:* ${form.name}\n` +
+        `*Client:* ${form.name}\n` +
         `*Email:* ${form.email}\n` +
         `*Company:* ${form.company || 'Not Specified'}\n` +
         `*Services:* ${form.services.join(', ')}\n` +
-        `*Budget:* ${form.budget}\n` +
-        `*Timeline:* ${form.timeline}\n\n` +
-        `*Project Brief:* ${form.description}`
+        `*Budget:* ${effectiveBudget} (${selectedCurrency})\n` +
+        `*Timeline:* ${form.timeline}\n` +
+        (uploadedAttachmentUrl ? `*Document:* ${uploadedAttachmentName} (${uploadedAttachmentUrl})\n` : '') +
+        `\n*Project Overview:*\n${form.description}`
       );
       setWhatsappLink(`https://wa.me/${cleanPhone}?text=${msg}`);
     } catch (err) {
@@ -375,9 +753,9 @@ export const Contact: React.FC = () => {
                 Proposal Request Received!
               </h2>
               <p className="text-[var(--text-body)] max-w-md mx-auto leading-relaxed text-sm sm:text-base">
-                Thank you, <strong className="text-[#022B3A] dark:text-white font-bold">{form.name}</strong>. Our management leads will review your requirements for{' '}
-                <span className="text-[#1F7A8C] dark:text-cyan-400 font-semibold">{form.services.join(', ')}</span> and reach out to{' '}
-                <strong className="text-[#022B3A] dark:text-white font-bold">{form.email}</strong> within 24 hours.
+                Thank you, <strong className="text-[#022B3A] dark:text-white font-bold">{form.name}</strong>. A confirmation email has been dispatched to{' '}
+                <strong className="text-[#022B3A] dark:text-white font-bold">{form.email}</strong>. Our management and engineering leads will review your requirements for{' '}
+                <span className="text-[#1F7A8C] dark:text-cyan-400 font-semibold">{form.services.join(', ')}</span> and reach back out within 24 hours.
               </p>
 
               {whatsappLink && (
@@ -415,6 +793,9 @@ export const Contact: React.FC = () => {
                       file: null,
                       honeypot: '',
                     });
+                    setSelectedCurrency('USD');
+                    setBudgetMode('range');
+                    setCustomBudgetAmount('');
                   }}
                   className="text-xs font-bold text-[#1F7A8C] hover:underline"
                 >
@@ -448,13 +829,7 @@ export const Contact: React.FC = () => {
                 <div className="lg:col-span-4 flex">
                   <div className="w-full rounded-2xl sm:rounded-[22px] overflow-hidden bg-[#E8F5F6] dark:bg-[#032533] border border-[#D5E9EC] dark:border-[#0a3a4d] flex flex-col justify-between relative min-h-[380px] sm:min-h-[460px] lg:min-h-full">
                     <img
-                      src={
-                        siteContent?.contactIllustrationUrl ||
-                        siteContent?.contact?.illustrationUrl ||
-                        siteContent?.contact?.formImageUrl ||
-                        siteContent?.customImages?.contactFormImage ||
-                        "/contact-illustration.png"
-                      }
+                      src={resolvedContactIllustration}
                       alt="Let's build something great"
                       className="w-full h-full object-cover object-center"
                       onError={(e) => {
@@ -512,8 +887,19 @@ export const Contact: React.FC = () => {
                                   type="text"
                                   value={form.name}
                                   onChange={(e) => {
-                                    setForm({ ...form, name: e.target.value });
-                                    if (errors.name) setErrors((prev) => ({ ...prev, name: '' }));
+                                    const val = e.target.value;
+                                    setForm({ ...form, name: val });
+                                    if (/\d/.test(val)) {
+                                      setErrors((prev) => ({ ...prev, name: 'Name cannot contain numbers. Only letters are allowed.' }));
+                                    } else if (val && !/^[a-zA-Z\u00C0-\u024F\s'-]*$/.test(val)) {
+                                      setErrors((prev) => ({ ...prev, name: 'Name cannot contain symbols or special characters.' }));
+                                    } else if (errors.name) {
+                                      setErrors((prev) => {
+                                        const copy = { ...prev };
+                                        delete copy.name;
+                                        return copy;
+                                      });
+                                    }
                                   }}
                                   placeholder="e.g. Sarah Jenkins"
                                   className={`w-full pl-10 pr-3.5 py-2.5 rounded-xl border text-xs sm:text-sm text-[var(--text-heading)] bg-[#F8FAFC]/70 dark:bg-black/20 placeholder:text-[#94A3B8] focus:outline-none focus:border-[#1F7A8C] focus:ring-1 focus:ring-[#1F7A8C] transition-colors ${
@@ -525,9 +911,16 @@ export const Contact: React.FC = () => {
                             </div>
 
                             <div>
-                              <label className="block text-xs font-bold text-[#1E293B] dark:text-white mb-1.5">
-                                Work Email Address <span className="text-rose-500">*</span>
-                              </label>
+                              <div className="flex items-center justify-between mb-1.5">
+                                <label className="block text-xs font-bold text-[#1E293B] dark:text-white">
+                                  Work Email Address <span className="text-rose-500">*</span>
+                                </label>
+                                {isValidatingEmail && (
+                                  <span className="text-[10px] text-[#1F7A8C] dark:text-cyan-400 font-semibold flex items-center gap-1">
+                                    <Loader2 className="w-3 h-3 animate-spin" /> Verifying domain...
+                                  </span>
+                                )}
+                              </div>
                               <div className="relative">
                                 <Mail className="w-4 h-4 text-[#94A3B8] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
                                 <input
@@ -535,7 +928,13 @@ export const Contact: React.FC = () => {
                                   value={form.email}
                                   onChange={(e) => {
                                     setForm({ ...form, email: e.target.value });
-                                    if (errors.email) setErrors((prev) => ({ ...prev, email: '' }));
+                                    if (errors.email) {
+                                      setErrors((prev) => {
+                                        const copy = { ...prev };
+                                        delete copy.email;
+                                        return copy;
+                                      });
+                                    }
                                   }}
                                   placeholder="you@company.com"
                                   className={`w-full pl-10 pr-3.5 py-2.5 rounded-xl border text-xs sm:text-sm text-[var(--text-heading)] bg-[#F8FAFC]/70 dark:bg-black/20 placeholder:text-[#94A3B8] focus:outline-none focus:border-[#1F7A8C] focus:ring-1 focus:ring-[#1F7A8C] transition-colors ${
@@ -598,27 +997,103 @@ export const Contact: React.FC = () => {
                           {/* Row 4: Budget & Timeline Dropdowns */}
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
-                              <label className="block text-xs font-bold text-[#1E293B] dark:text-white mb-1.5">
-                                Target Budget Range (USD) <span className="text-rose-500">*</span>
-                              </label>
-                              <div className="relative">
-                                <select
-                                  value={form.budget}
-                                  onChange={(e) => {
-                                    setForm({ ...form, budget: e.target.value });
-                                    if (errors.budget) setErrors((prev) => ({ ...prev, budget: '' }));
-                                  }}
-                                  className={`w-full appearance-none px-3.5 py-2.5 rounded-xl border text-xs sm:text-sm text-[var(--text-heading)] bg-[#F8FAFC]/70 dark:bg-black/20 focus:outline-none focus:border-[#1F7A8C] focus:ring-1 focus:ring-[#1F7A8C] transition-colors pr-9 ${
-                                    errors.budget ? 'border-rose-400' : 'border-[#E2ECEF] dark:border-[var(--border-subtle)]'
-                                  }`}
-                                >
-                                  {BUDGET_OPTIONS.map((opt) => (
-                                    <option key={opt} value={opt === 'Select a range' ? '' : opt} disabled={opt === 'Select a range'}>
-                                      {opt}
-                                    </option>
-                                  ))}
-                                </select>
-                                <ChevronDown className="w-4 h-4 text-[#94A3B8] absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                              <div className="flex items-center justify-between mb-1.5">
+                                <label className="block text-xs font-bold text-[#1E293B] dark:text-white">
+                                  Target Budget <span className="text-rose-500">*</span>
+                                </label>
+                                <div className="inline-flex rounded-lg bg-[#EAEFF2] dark:bg-black/40 p-0.5 text-[10px] font-bold">
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      setBudgetMode('range');
+                                      if (errors.budget) setErrors((prev) => { const copy = { ...prev }; delete copy.budget; return copy; });
+                                    }}
+                                    className={`px-2 py-0.5 rounded-md transition-all cursor-pointer ${
+                                      budgetMode === 'range'
+                                        ? 'bg-white dark:bg-[#024959] text-[#022B3A] dark:text-white shadow-xs'
+                                        : 'text-[#64748B] hover:text-[#022B3A] dark:hover:text-white'
+                                    }`}
+                                  >
+                                    Range
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      setBudgetMode('custom');
+                                      if (errors.budget) setErrors((prev) => { const copy = { ...prev }; delete copy.budget; return copy; });
+                                    }}
+                                    className={`px-2 py-0.5 rounded-md transition-all cursor-pointer ${
+                                      budgetMode === 'custom'
+                                        ? 'bg-white dark:bg-[#024959] text-[#022B3A] dark:text-white shadow-xs'
+                                        : 'text-[#64748B] hover:text-[#022B3A] dark:hover:text-white'
+                                    }`}
+                                  >
+                                    Custom
+                                  </button>
+                                </div>
+                              </div>
+
+                              <div className="flex gap-2">
+                                {/* Currency Selector */}
+                                <div className="relative w-28 sm:w-32 shrink-0">
+                                  <select
+                                    value={selectedCurrency}
+                                    onChange={(e) => {
+                                      const newCurr = e.target.value;
+                                      setSelectedCurrency(newCurr);
+                                      setForm((prev) => ({ ...prev, budget: '' }));
+                                      if (errors.budget) setErrors((prev) => { const copy = { ...prev }; delete copy.budget; return copy; });
+                                    }}
+                                    className="w-full appearance-none pl-2.5 pr-7 py-2.5 rounded-xl border border-[#E2ECEF] dark:border-[var(--border-subtle)] text-xs sm:text-sm font-semibold text-[var(--text-heading)] bg-[#F8FAFC]/70 dark:bg-black/20 focus:outline-none focus:border-[#1F7A8C] focus:ring-1 focus:ring-[#1F7A8C] transition-colors"
+                                  >
+                                    {Object.values(CURRENCY_CONFIGS).map((c) => (
+                                      <option key={c.code} value={c.code}>
+                                        {c.name}
+                                      </option>
+                                    ))}
+                                  </select>
+                                  <ChevronDown className="w-3.5 h-3.5 text-[#94A3B8] absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" />
+                                </div>
+
+                                {/* Range Select OR Custom Budget Input */}
+                                <div className="relative flex-1 min-w-0">
+                                  {budgetMode === 'range' ? (
+                                    <>
+                                      <select
+                                        value={form.budget}
+                                        onChange={(e) => {
+                                          setForm({ ...form, budget: e.target.value });
+                                          if (errors.budget) setErrors((prev) => { const copy = { ...prev }; delete copy.budget; return copy; });
+                                        }}
+                                        className={`w-full appearance-none px-3 py-2.5 rounded-xl border text-xs sm:text-sm text-[var(--text-heading)] bg-[#F8FAFC]/70 dark:bg-black/20 focus:outline-none focus:border-[#1F7A8C] focus:ring-1 focus:ring-[#1F7A8C] transition-colors pr-7 truncate ${
+                                          errors.budget ? 'border-rose-400' : 'border-[#E2ECEF] dark:border-[var(--border-subtle)]'
+                                        }`}
+                                      >
+                                        {(CURRENCY_CONFIGS[selectedCurrency] || CURRENCY_CONFIGS.USD).ranges.map((opt) => (
+                                          <option key={opt} value={opt === 'Select a range' ? '' : opt} disabled={opt === 'Select a range'}>
+                                            {opt}
+                                          </option>
+                                        ))}
+                                      </select>
+                                      <ChevronDown className="w-3.5 h-3.5 text-[#94A3B8] absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                                    </>
+                                  ) : (
+                                    <input
+                                      type="text"
+                                      value={customBudgetAmount}
+                                      onChange={(e) => {
+                                        const val = e.target.value.replace(/[^0-9.,]/g, '');
+                                        setCustomBudgetAmount(val);
+                                        setForm((prev) => ({ ...prev, budget: val ? `${selectedCurrency} ${val}` : '' }));
+                                        if (errors.budget) setErrors((prev) => { const copy = { ...prev }; delete copy.budget; return copy; });
+                                      }}
+                                      placeholder={`e.g. ${selectedCurrency === 'PKR' ? '500,000' : selectedCurrency === 'EUR' ? '3,500' : '5,000'}`}
+                                      className={`w-full px-3 py-2.5 rounded-xl border text-xs sm:text-sm text-[var(--text-heading)] bg-[#F8FAFC]/70 dark:bg-black/20 placeholder:text-[#94A3B8] focus:outline-none focus:border-[#1F7A8C] focus:ring-1 focus:ring-[#1F7A8C] transition-colors ${
+                                        errors.budget ? 'border-rose-400' : 'border-[#E2ECEF] dark:border-[var(--border-subtle)]'
+                                      }`}
+                                    />
+                                  )}
+                                </div>
                               </div>
                               {errors.budget && <p className="text-[11px] text-rose-500 mt-1 font-medium">{errors.budget}</p>}
                             </div>
@@ -632,7 +1107,7 @@ export const Contact: React.FC = () => {
                                   value={form.timeline}
                                   onChange={(e) => {
                                     setForm({ ...form, timeline: e.target.value });
-                                    if (errors.timeline) setErrors((prev) => ({ ...prev, timeline: '' }));
+                                    if (errors.timeline) setErrors((prev) => { const copy = { ...prev }; delete copy.timeline; return copy; });
                                   }}
                                   className={`w-full appearance-none px-3.5 py-2.5 rounded-xl border text-xs sm:text-sm text-[var(--text-heading)] bg-[#F8FAFC]/70 dark:bg-black/20 focus:outline-none focus:border-[#1F7A8C] focus:ring-1 focus:ring-[#1F7A8C] transition-colors pr-9 ${
                                     errors.timeline ? 'border-rose-400' : 'border-[#E2ECEF] dark:border-[var(--border-subtle)]'
@@ -847,7 +1322,9 @@ export const Contact: React.FC = () => {
                           </div>
                           <div className="flex justify-between py-1 border-b border-[#E2ECEF] dark:border-slate-800">
                             <span className="text-[#64748B]">Budget / Window:</span>
-                            <span className="font-bold text-[#022B3A] dark:text-white">{form.budget} · {form.timeline}</span>
+                            <span className="font-bold text-[#022B3A] dark:text-white">
+                              {getEffectiveBudget()} ({selectedCurrency}) · {form.timeline}
+                            </span>
                           </div>
                           {form.file && (
                             <div className="flex justify-between py-1 border-b border-[#E2ECEF] dark:border-slate-800">
@@ -876,17 +1353,24 @@ export const Contact: React.FC = () => {
                       {step < 4 ? (
                         <button
                           type="button"
+                          disabled={isValidatingEmail}
                           onClick={handleNextStep}
-                          className="bg-[#024959] hover:bg-[#013540] text-white px-6 py-2.5 sm:py-3 rounded-xl font-bold text-xs sm:text-sm shadow-sm transition-all inline-flex items-center space-x-2 cursor-pointer"
+                          className="bg-[#024959] hover:bg-[#013540] text-white px-6 py-2.5 sm:py-3 rounded-xl font-bold text-xs sm:text-sm shadow-sm transition-all inline-flex items-center space-x-2 disabled:opacity-60 cursor-pointer"
                         >
                           <span>
-                            {step === 1
+                            {isValidatingEmail
+                              ? 'Verifying Email...'
+                              : step === 1
                               ? 'Next: Project Details'
                               : step === 2
                               ? 'Next: Delivery Stage'
                               : 'Next: Review Scope'}
                           </span>
-                          <ArrowRight className="w-4 h-4" />
+                          {isValidatingEmail ? (
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                          ) : (
+                            <ArrowRight className="w-4 h-4" />
+                          )}
                         </button>
                       ) : (
                         <button
@@ -896,7 +1380,11 @@ export const Contact: React.FC = () => {
                           className="bg-[#024959] hover:bg-[#013540] text-white px-7 py-3 rounded-xl font-bold text-xs sm:text-sm shadow-sm transition-all inline-flex items-center space-x-2 disabled:opacity-50 cursor-pointer"
                         >
                           <span>{isSubmitting ? 'Transmitting Scope...' : 'Submit Proposal Request'}</span>
-                          <ArrowRight className="w-4 h-4" />
+                          {isSubmitting ? (
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                          ) : (
+                            <ArrowRight className="w-4 h-4" />
+                          )}
                         </button>
                       )}
                     </div>

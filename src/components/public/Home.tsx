@@ -49,6 +49,8 @@ const SERVICES = [
     description: 'Fast, scalable, and responsive digital products built with React, Next.js, Node.js, and modern cloud architecture.',
     tags: ['React', 'Next.js', 'Node.js', 'PostgreSQL'],
     color: '#1F7A8C', // Brand Teal
+    slug: 'saas-mvp-development',
+    linkTarget: '/services/saas-mvp-development',
   },
   {
     icon: <Palette className="w-6 h-6" />,
@@ -57,6 +59,8 @@ const SERVICES = [
     description: 'Visual identities and user-friendly interfaces designed to elevate brand authority and convert visitors into customers.',
     tags: ['Brand Identity', 'UI/UX Design', 'Figma', 'Motion'],
     color: '#8B5CF6', // Creative Purple
+    slug: 'brand-identity-design-system',
+    linkTarget: '/services/brand-identity-design-system',
   },
   {
     icon: <Cpu className="w-6 h-6" />,
@@ -65,6 +69,8 @@ const SERVICES = [
     description: 'Integrating customized AI models, workflow automations, and intelligent bots to eliminate repetitive business overhead.',
     tags: ['OpenAI', 'Python', 'n8n', 'Zapier'],
     color: '#0284C7', // Cyber Cyan Blue
+    slug: 'ai-workflow-automation',
+    linkTarget: '/services/ai-workflow-automation',
   },
   {
     icon: <TrendingUp className="w-6 h-6" />,
@@ -73,6 +79,8 @@ const SERVICES = [
     description: 'Targeted search engine optimization, performance ad campaigns, and authoritative content strategies that drive revenue.',
     tags: ['Technical SEO', 'Google Ads', 'Meta Ads', 'Copywriting'],
     color: '#D97706', // Growth Amber
+    slug: 'digital-marketing-seo',
+    linkTarget: '/services/digital-marketing-seo',
   },
   {
     icon: <Shield className="w-6 h-6" />,
@@ -81,6 +89,8 @@ const SERVICES = [
     description: 'Comprehensive vulnerability assessments, penetration testing, and security hardening for web applications and cloud servers.',
     tags: ['Pen Testing', 'OWASP Audit', 'Cloud Security'],
     color: '#E11D48', // Security Crimson Red
+    slug: 'cybersecurity-audit',
+    linkTarget: '/services/cybersecurity-audit',
   },
   {
     icon: <Database className="w-6 h-6" />,
@@ -89,6 +99,8 @@ const SERVICES = [
     description: 'Converting siloed data into actionable executive dashboards, automated reporting, and structured business insights.',
     tags: ['PowerBI', 'Data Pipelines', 'SQL', 'Analytics'],
     color: '#059669', // Data Emerald Green
+    slug: 'data-intelligence-analytics',
+    linkTarget: '/services/data-intelligence-analytics',
   },
 ];
 

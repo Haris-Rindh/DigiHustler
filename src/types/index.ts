@@ -115,6 +115,9 @@ export interface Lead {
   timeline?: string;
   targetGroupId?: GroupId;
   scopeDescription?: string;
+  attachmentUrl?: string;
+  attachmentName?: string;
+  currency?: string;
 }
 
 export interface ProjectAssignment {

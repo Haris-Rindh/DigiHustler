@@ -122,8 +122,7 @@ interface AppContextType {
   bulkImportMembers: (importedRows: Partial<User>[]) => { count: number; newUsers: User[] };
   sendBatchCredentials: () => { count: number; memberNames: string[] };
 
-  // Full-Scope Live Website CMS Studio Actions (with Add & Remove)
-  updateSiteContent: (section: keyof SiteContent, data: any) => void;
+  updateSiteContent: (section: keyof SiteContent | Partial<SiteContent>, data?: any) => void;
   addItemToSiteContent: <K extends keyof SiteContent>(section: K, item: any) => void;
   removeItemFromSiteContent: <K extends keyof SiteContent>(section: K, itemId: string) => void;
   updateItemInSiteContent: <K extends keyof SiteContent>(section: K, itemId: string, updatedItem: any) => void;
@@ -1924,16 +1923,19 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   // ── FULL-SCOPE LIVE WEBSITE CMS STUDIO ACTIONS (WITH DYNAMIC ADD & REMOVE) ──
 
-  const updateSiteContent = (section: keyof SiteContent, data: any) => {
+  const updateSiteContent = (section: keyof SiteContent | Partial<SiteContent>, data?: any) => {
     if (!PERMISSIONS.canEditWebsiteContent(currentTier, currentUser)) return;
 
-    const newContent = {
-      ...siteContent,
-      [section]: data
-    };
-    setSiteContent(newContent);
-    dbService.saveSiteContent(newContent);
-    realtimeSync.broadcast('CMS_UPDATED', newContent);
+    setSiteContent((prev) => {
+      const newContent: SiteContent = typeof section === 'string'
+        ? { ...prev, [section]: data }
+        : { ...prev, ...section };
+
+      safeSetItem(`${LOCAL_STORAGE_KEY}_site_content`, JSON.stringify(newContent));
+      dbService.saveSiteContent(newContent);
+      realtimeSync.broadcast('CMS_UPDATED', newContent);
+      return newContent;
+    });
 
     const auditEntry: SecurityAuditLog = {
       id: `audit-${Date.now()}`,
@@ -1942,7 +1944,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       actorName: currentUser.name,
       actorRole: currentTier,
       action: 'CMS_UPDATED',
-      details: `Updated website content section: ${String(section)}`
+      details: `Updated website content section: ${typeof section === 'string' ? String(section) : Object.keys(section).join(', ')}`
     };
     setAuditLogs(prev => [auditEntry, ...prev]);
     dbService.insertAuditLog(auditEntry);

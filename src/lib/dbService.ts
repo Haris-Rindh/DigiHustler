@@ -208,6 +208,52 @@ export const dbService = {
     });
   },
 
+  // ── Upload Client Lead Document / Brief to Storage ──
+  async uploadLeadAttachment(file: File): Promise<{ url: string; name: string } | null> {
+    if (!file) return null;
+    const name = file.name;
+    // 1. Try Supabase storage
+    if (isSupabaseConfigured && supabase) {
+      try {
+        const ext = file.name.split('.').pop()?.toLowerCase() || 'bin';
+        const cleanName = `lead-docs/${Date.now()}-${Math.random().toString(36).substring(2, 7)}.${ext}`;
+        // Try uploading to 'documents' bucket
+        let { error } = await supabase.storage
+          .from('documents')
+          .upload(cleanName, file, { upsert: true, contentType: file.type || 'application/octet-stream' });
+        
+        if (!error) {
+          const { data } = supabase.storage.from('documents').getPublicUrl(cleanName);
+          return { url: `${data.publicUrl}?t=${Date.now()}`, name };
+        }
+
+        // Try avatars bucket fallback
+        const { error: avErr } = await supabase.storage
+          .from('avatars')
+          .upload(cleanName, file, { upsert: true, contentType: file.type || 'application/octet-stream' });
+        if (!avErr) {
+          const { data } = supabase.storage.from('avatars').getPublicUrl(cleanName);
+          return { url: `${data.publicUrl}?t=${Date.now()}`, name };
+        }
+      } catch (err) {
+        console.warn('Storage upload error for lead file:', err);
+      }
+    }
+
+    // 2. Base64 fallback if <= 4MB
+    if (file.size <= 4 * 1024 * 1024) {
+      const dataUrl = await new Promise<string>((resolve) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = () => resolve('');
+        reader.readAsDataURL(file);
+      });
+      if (dataUrl) return { url: dataUrl, name };
+    }
+
+    return { url: '', name };
+  },
+
   // ── 3. Leads CRUD ──
   async insertLead(lead: Lead) {
     if (!isSupabaseConfigured || !supabase) return;
@@ -219,8 +265,8 @@ export const dbService = {
         company_name: lead.clientCompany || '',
         scope_description: lead.brief,
         target_group_id: lead.suggestedGroupId,
-        budget_range: String(lead.budgetEstimate || 0),
-        timeline: 'Flexible',
+        budget_range: lead.budgetRange || String(lead.budgetEstimate || 0),
+        timeline: lead.timeline || 'Flexible',
         referral_source: 'Website Client Portal',
         status: lead.status,
         created_at: lead.createdAt || new Date().toISOString(),

@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useReducedMotion } from 'framer-motion';
 import { SiteServiceItem } from '../../types';
+import { getServiceDedicatedRoute } from '../../lib/serviceRoutes';
 
 export interface ServiceFeatureRowProps {
   service: SiteServiceItem;
@@ -14,19 +15,8 @@ export interface ServiceFeatureRowProps {
  * If no dedicated detail route exists, returns null.
  */
 export const getServiceDetailRoute = (service: SiteServiceItem): string | null => {
-  const slug = (service.slug || '').toLowerCase();
-  const title = (service.title || '').toLowerCase();
-
-  if (slug.includes('web') || slug.includes('engineering') || title.includes('web') || title.includes('engineering')) {
-    return '/services/saas-mvp-development';
-  }
-  if (slug.includes('ui-ux') || slug.includes('brand') || title.includes('ui/ux') || title.includes('brand')) {
-    return '/services/brand-identity-design-system';
-  }
-  if (slug.includes('ai') || slug.includes('automation') || title.includes('ai') || title.includes('automation')) {
-    return '/services/ai-workflow-automation';
-  }
-  return null;
+  const route = getServiceDedicatedRoute(service);
+  return route && route !== '/services' ? route : null;
 };
 
 // Neutral placeholder SVG data URI for services without a photograph

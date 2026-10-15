@@ -7,51 +7,63 @@ export interface NotificationResult {
   whatsappQuickLink: string;
 }
 
+export interface LeadNotificationPayload {
+  name: string;
+  email: string;
+  company?: string;
+  services: string[];
+  currency?: string;
+  budget?: string;
+  timeline?: string;
+  description: string;
+  attachmentName?: string;
+  attachmentUrl?: string;
+}
+
 export const notificationService = {
   /**
    * Generates a direct WhatsApp click-to-chat URL for management to instantly reply to a lead.
    */
-  generateWhatsAppReplyUrl(lead: Lead, managementPhone: string = '923206806396'): string {
+  generateWhatsAppReplyUrl(lead: Lead | LeadNotificationPayload, managementPhone: string = '923206806396'): string {
     const cleanPhone = managementPhone.replace(/[^0-9]/g, '');
-    const message = `*🚨 New DigiHust Client Lead Received!*\n\n` +
-      `*Client:* ${lead.clientName}\n` +
-      `*Email:* ${lead.email}\n` +
-      (lead.companyName ? `*Company:* ${lead.companyName}\n` : '') +
-      `*Budget:* ${lead.budgetRange}\n` +
-      `*Timeline:* ${lead.timeline}\n` +
-      `*Domain:* ${(lead.targetGroupId || lead.suggestedGroupId || 'tech').toUpperCase()}\n\n` +
-      `*Scope:* ${lead.scopeDescription}\n\n` +
-      `_Action: Respond within 1-2 hours for high ticket conversion._`;
+    const isPayload = !('id' in lead);
+    const payload = lead as LeadNotificationPayload;
+    const leadObj = lead as Lead;
+    const clientName = isPayload ? payload.name : leadObj.clientName;
+    const clientEmail = isPayload ? payload.email : leadObj.clientEmail;
+    const company = (isPayload ? payload.company : (leadObj.clientCompany || leadObj.companyName)) || 'Not Specified';
+    const budget = (isPayload ? payload.budget : (leadObj.budgetRange || String(leadObj.budgetEstimate || 'Flexible'))) || 'Flexible';
+    const timeline = lead.timeline || 'Flexible';
+    const scope = (isPayload ? payload.description : (leadObj.scopeDescription || leadObj.brief || '')) || '';
+    const attachment = lead.attachmentName ? `\n*Attachment:* ${lead.attachmentName}${lead.attachmentUrl ? ` (${lead.attachmentUrl})` : ''}` : '';
+
+    const message = `*🚨 New DigiHust Client Inquiry!*\n\n` +
+      `*Client:* ${clientName}\n` +
+      `*Email:* ${clientEmail}\n` +
+      `*Company:* ${company}\n` +
+      `*Budget:* ${budget}\n` +
+      `*Timeline:* ${timeline}` +
+      attachment + `\n\n` +
+      `*Project Overview:*\n${scope}\n\n` +
+      `_Action: Respond within 24 hours to schedule discovery alignment._`;
 
     return `https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`;
   },
 
   /**
-   * Generates direct WhatsApp outreach link for the client if client provided phone or for direct email response.
+   * Dispatches automated lead email notifications directly to digihust@gmail.com
    */
-  generateDirectClientWhatsAppUrl(clientPhone: string, clientName: string): string {
-    const cleanPhone = clientPhone.replace(/[^0-9]/g, '');
-    const message = `Hello ${clientName}, thank you for reaching out to DigiHust regarding your project scope. Our engineering squad is reviewing your requirements. What time is best for a quick 15-minute alignment call?`;
-    return `https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`;
-  },
-
-  /**
-   * Dispatches automated lead email notifications directly to digihust@gmail.com via EmailJS
-   */
-  async dispatchLeadEmail(leadData: {
-    name: string;
-    email: string;
-    company?: string;
-    services: string[];
-    budget?: string;
-    timeline?: string;
-    description: string;
-  }): Promise<boolean> {
+  async dispatchLeadEmail(leadData: LeadNotificationPayload): Promise<boolean> {
     const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID || 'service_kk1oyko';
     const templateId = import.meta.env.VITE_EMAILJS_CONTACT_TEMPLATE_ID || import.meta.env.VITE_EMAILJS_TEMPLATE_ID || 'template_xcxoq8x';
     const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY || 'hvCezH1wrH-95AZDc';
 
-    // 1. Primary: EmailJS SDK (Direct connection to your Gmail)
+    const formattedServices = Array.isArray(leadData.services) ? leadData.services.join(', ') : leadData.services;
+    const attachmentInfo = leadData.attachmentName 
+      ? `${leadData.attachmentName}${leadData.attachmentUrl ? ` (${leadData.attachmentUrl})` : ''}`
+      : 'None Attached';
+
+    // 1. Primary: EmailJS SDK (Direct dispatch to Gmail inbox)
     if (serviceId && templateId && publicKey) {
       try {
         const emailParams = {
@@ -66,17 +78,21 @@ export const notificationService = {
           name: leadData.name,
           from_name: leadData.name,
           company: leadData.company || 'Not Specified',
-          services: Array.isArray(leadData.services) ? leadData.services.join(', ') : leadData.services,
-          budget: leadData.budget,
-          timeline: leadData.timeline,
+          services: formattedServices,
+          currency: leadData.currency || 'USD',
+          budget: leadData.budget || 'Flexible',
+          timeline: leadData.timeline || 'Flexible',
+          attachment: attachmentInfo,
+          attachment_url: leadData.attachmentUrl || '',
+          attachment_name: leadData.attachmentName || '',
           project_description: leadData.description,
-          message: leadData.description,
+          message: `${leadData.description}\n\n[Attachment: ${attachmentInfo}]`,
           submitted_at: new Date().toLocaleString()
         };
 
         const res = await emailjs.send(serviceId, templateId, emailParams, publicKey);
         if (res.status === 200) {
-          console.log('✓ EmailJS Lead Dispatched Successfully:', res);
+          console.log('✓ EmailJS Lead Dispatched to Team Successfully:', res);
           return true;
         }
       } catch (err) {
@@ -84,7 +100,7 @@ export const notificationService = {
       }
     }
 
-    // 2. Secondary Fallback: Direct FormSubmit.co Dispatcher
+    // 2. Secondary Fallback: FormSubmit AJAX Dispatcher
     try {
       const formData = new FormData();
       formData.append('_subject', `🚨 New DigiHust Project Lead: ${leadData.name} (${leadData.budget})`);
@@ -94,9 +110,12 @@ export const notificationService = {
       formData.append('Client Name', leadData.name);
       formData.append('Client Email', leadData.email);
       formData.append('Company', leadData.company || 'Not Specified');
-      formData.append('Services Required', Array.isArray(leadData.services) ? leadData.services.join(', ') : leadData.services);
-      formData.append('Budget Range', leadData.budget || '');
-      formData.append('Target Timeline', leadData.timeline || '');
+      formData.append('Services Required', formattedServices);
+      formData.append('Budget', leadData.budget || 'Flexible');
+      formData.append('Currency', leadData.currency || 'USD');
+      formData.append('Target Timeline', leadData.timeline || 'Flexible');
+      formData.append('Attachment File', attachmentInfo);
+      if (leadData.attachmentUrl) formData.append('Attachment URL', leadData.attachmentUrl);
       formData.append('Project Scope & Description', leadData.description || '');
       formData.append('Submitted At', new Date().toLocaleString());
 
@@ -112,6 +131,72 @@ export const notificationService = {
       }
     } catch (err) {
       console.warn('Lead email dispatch fallback notice:', err);
+    }
+
+    return false;
+  },
+
+  /**
+   * Dispatches automated confirmation receipt email directly to the CLIENT's inbox
+   */
+  async dispatchClientConfirmationEmail(leadData: LeadNotificationPayload): Promise<boolean> {
+    const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID || 'service_kk1oyko';
+    const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY || 'hvCezH1wrH-95AZDc';
+    const confirmationTemplateId = import.meta.env.VITE_EMAILJS_CLIENT_CONFIRM_TEMPLATE_ID || 
+      import.meta.env.VITE_EMAILJS_CONTACT_TEMPLATE_ID || 
+      'template_xcxoq8x';
+
+    const formattedServices = Array.isArray(leadData.services) ? leadData.services.join(', ') : leadData.services;
+
+    // 1. Primary: EmailJS
+    if (serviceId && publicKey && confirmationTemplateId) {
+      try {
+        const confirmationParams = {
+          to_email: leadData.email,
+          to: leadData.email,
+          email: leadData.email,
+          recipient: leadData.email,
+          client_email: leadData.email,
+          client_name: leadData.name,
+          name: leadData.name,
+          reply_to: 'digihust@gmail.com',
+          from_name: 'DigiHust Leadership Team',
+          company_name: 'DigiHust',
+          services: formattedServices,
+          budget: leadData.budget || 'Flexible',
+          timeline: leadData.timeline || 'Flexible',
+          message: `Hello ${leadData.name},\n\nThank you for reaching out to DigiHust! We have successfully received your project inquiry for ${formattedServices} with a budget of ${leadData.budget || 'Flexible'}.\n\nOur dedicated technical squad and engineering leads are currently reviewing your specifications. We will reach back out to you within 24 hours to schedule a short discovery alignment call.\n\nWarm regards,\nDigiHust Operations & Engineering\nhttps://www.digihust.tech`,
+          submitted_at: new Date().toLocaleString()
+        };
+
+        const res = await emailjs.send(serviceId, confirmationTemplateId, confirmationParams, publicKey);
+        if (res.status === 200) {
+          console.log('✓ EmailJS Client Confirmation Dispatched Successfully:', res);
+          return true;
+        }
+      } catch (err) {
+        console.warn('Client confirmation EmailJS warning:', err);
+      }
+    }
+
+    // 2. Secondary Fallback via FormSubmit autoresponder endpoint
+    try {
+      const formData = new FormData();
+      formData.append('_subject', `We received your project request — DigiHust`);
+      formData.append('_replyto', 'digihust@gmail.com');
+      formData.append('_autoresponse', `Hello ${leadData.name},\n\nThank you for contacting DigiHust! We have received your project brief regarding ${formattedServices}. Our engineering squad is reviewing your requirements and will reach out to you within 24 hours.\n\nWarm regards,\nDigiHust Team`);
+      formData.append('Client Name', leadData.name);
+      formData.append('Services', formattedServices);
+      formData.append('Status', 'Received - In Review');
+
+      await fetch(`https://formsubmit.co/ajax/${encodeURIComponent(leadData.email)}`, {
+        method: 'POST',
+        headers: { 'Accept': 'application/json' },
+        body: formData
+      });
+      return true;
+    } catch (err) {
+      console.warn('Client confirmation fallback warning:', err);
     }
 
     return false;
@@ -145,6 +230,9 @@ export const notificationService = {
             targetGroupId: lead.targetGroupId,
             budgetRange: lead.budgetRange,
             timeline: lead.timeline,
+            attachmentUrl: lead.attachmentUrl,
+            attachmentName: lead.attachmentName,
+            currency: lead.currency,
             timestamp: new Date().toISOString(),
             whatsappReplyUrl: whatsappQuickLink
           })

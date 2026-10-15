@@ -227,12 +227,12 @@ export const Footer: React.FC = () => {
             <h3 className="text-[11px] font-extrabold text-[var(--text-heading)] uppercase tracking-widest">Capabilities</h3>
             <ul className="grid grid-cols-2 md:grid-cols-1 gap-x-4 gap-y-2.5 text-xs text-[var(--text-muted)]">
               {[
-                { name: 'Web Development', href: '/services' },
-                { name: 'Creative & UI/UX', href: '/services' },
-                { name: 'AI & Automation', href: '/services' },
-                { name: 'Digital Marketing', href: '/services' },
-                { name: 'Cybersecurity', href: '/services' },
-                { name: 'Data Intelligence', href: '/services' },
+                { name: 'Web Development', href: '/services/saas-mvp-development' },
+                { name: 'Creative & UI/UX', href: '/services/brand-identity-design-system' },
+                { name: 'AI & Automation', href: '/services/ai-workflow-automation' },
+                { name: 'Digital Marketing', href: '/services/digital-marketing-seo' },
+                { name: 'Cybersecurity', href: '/services/cybersecurity-audit' },
+                { name: 'Data Intelligence', href: '/services/data-intelligence-analytics' },
               ].map((s) => (
                 <li key={s.name}>
                   <Link 

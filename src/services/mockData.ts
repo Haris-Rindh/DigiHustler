@@ -766,7 +766,7 @@ export const DEFAULT_SITE_CONTENT: SiteContent = {
       imageUrl: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=1200&q=80',
       size: 'large',
       patternVariant: 'dotted-grid',
-      linkTarget: '/contact?service=web-engineering'
+      linkTarget: '/services/saas-mvp-development'
     },
     {
       id: 's-creative',
@@ -783,7 +783,7 @@ export const DEFAULT_SITE_CONTENT: SiteContent = {
       imageUrl: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1200&q=80',
       size: 'medium',
       patternVariant: 'concentric-rings',
-      linkTarget: '/contact?service=creative-design'
+      linkTarget: '/services/brand-identity-design-system'
     },
     {
       id: 's-data',
@@ -800,7 +800,7 @@ export const DEFAULT_SITE_CONTENT: SiteContent = {
       imageUrl: 'https://images.unsplash.com/photo-1677442136019-21780efad99a?auto=format&fit=crop&w=1200&q=80',
       size: 'small',
       patternVariant: 'mesh-gradient',
-      linkTarget: '/contact?service=ai-automation'
+      linkTarget: '/services/ai-workflow-automation'
     },
     {
       id: 's-graphics',
@@ -817,7 +817,7 @@ export const DEFAULT_SITE_CONTENT: SiteContent = {
       imageUrl: 'https://images.unsplash.com/photo-1626785774573-4b799315345d?auto=format&fit=crop&w=1200&q=80',
       size: 'small',
       patternVariant: 'flowing-waves',
-      linkTarget: '/contact?service=graphic-design'
+      linkTarget: '/services/brand-identity-design-system'
     },
     {
       id: 's-marketing',
@@ -834,7 +834,7 @@ export const DEFAULT_SITE_CONTENT: SiteContent = {
       imageUrl: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1200&q=80',
       size: 'small',
       patternVariant: 'isometric-grid',
-      linkTarget: '/contact?service=digital-marketing'
+      linkTarget: '/services/digital-marketing-seo'
     }
   ],
   packages: [

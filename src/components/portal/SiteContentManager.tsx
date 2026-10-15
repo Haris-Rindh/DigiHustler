@@ -53,12 +53,35 @@ export const SiteContentManager: React.FC = () => {
 
   const [savedFeedback, setSavedFeedback] = useState<string | null>(null);
 
+  // Helper to reliably resolve current active contact illustration
+  const getResolvedContactIllustration = (content?: SiteContent | null): string => {
+    if (!content) return '/contact-illustration.png';
+    return (
+      (content.customImages?.contactFormImage && content.customImages.contactFormImage !== '/contact-illustration.png' ? content.customImages.contactFormImage : null) ||
+      (content.contact?.illustrationUrl && content.contact.illustrationUrl !== '/contact-illustration.png' ? content.contact.illustrationUrl : null) ||
+      (content.contact?.formImageUrl && content.contact.formImageUrl !== '/contact-illustration.png' ? content.contact.formImageUrl : null) ||
+      (content.contactIllustrationUrl && content.contactIllustrationUrl !== '/contact-illustration.png' ? content.contactIllustrationUrl : null) ||
+      content.customImages?.contactFormImage ||
+      content.contact?.illustrationUrl ||
+      content.contactIllustrationUrl ||
+      '/contact-illustration.png'
+    );
+  };
+
   // Active drafts with robust default fallbacks
   const safeContent = siteContent || DEFAULT_SITE_CONTENT;
   const [heroDraft, setHeroDraft] = useState(safeContent.hero || DEFAULT_SITE_CONTENT.hero);
   const [howItWorksVideoUrlDraft, setHowItWorksVideoUrlDraft] = useState(safeContent.howItWorksVideoUrl || '');
   const [aboutDraft, setAboutDraft] = useState(safeContent.about || DEFAULT_SITE_CONTENT.about);
-  const [contactDraft, setContactDraft] = useState(safeContent.contact || DEFAULT_SITE_CONTENT.contact);
+  const [contactDraft, setContactDraft] = useState(() => {
+    const base = safeContent.contact || DEFAULT_SITE_CONTENT.contact;
+    const resolvedIll = getResolvedContactIllustration(safeContent);
+    return {
+      ...base,
+      illustrationUrl: base.illustrationUrl || resolvedIll,
+      formImageUrl: base.formImageUrl || resolvedIll,
+    };
+  });
   const [careersDraft, setCareersDraft] = useState(safeContent.careers || { noPositionsMessage: "We're always looking for exceptional talent, but we don't have any open positions right now. Check back soon!", openPositions: [] });
   const [customImagesDraft, setCustomImagesDraft] = useState(safeContent.customImages || {});
 
@@ -82,7 +105,14 @@ export const SiteContentManager: React.FC = () => {
   useEffect(() => {
     if (siteContent?.hero) setHeroDraft(siteContent.hero);
     if (siteContent?.about) setAboutDraft(siteContent.about);
-    if (siteContent?.contact) setContactDraft(siteContent.contact);
+    if (siteContent?.contact) {
+      const resolvedIll = getResolvedContactIllustration(siteContent);
+      setContactDraft({
+        ...siteContent.contact,
+        illustrationUrl: siteContent.contact.illustrationUrl || resolvedIll,
+        formImageUrl: siteContent.contact.formImageUrl || resolvedIll,
+      });
+    }
     if (siteContent?.customImages) setCustomImagesDraft(siteContent.customImages);
   }, [siteContent]);
 
@@ -191,17 +221,26 @@ export const SiteContentManager: React.FC = () => {
 
   const handleSaveContact = (e: React.FormEvent) => {
     e.preventDefault();
-    updateSiteContent('contact', contactDraft);
-    const illUrl = (contactDraft as any).illustrationUrl || (contactDraft as any).formImageUrl;
-    if (illUrl) {
-      updateSiteContent('contactIllustrationUrl' as any, illUrl);
-      const updatedCustomImages = {
-        ...customImagesDraft,
-        contactFormImage: illUrl,
-      };
-      setCustomImagesDraft(updatedCustomImages);
-      updateSiteContent('customImages', updatedCustomImages);
-    }
+    const illUrl = (contactDraft as any).illustrationUrl || (contactDraft as any).formImageUrl || getResolvedContactIllustration(safeContent);
+    const updatedContact = {
+      ...contactDraft,
+      illustrationUrl: illUrl,
+      formImageUrl: illUrl,
+    };
+    setContactDraft(updatedContact);
+    const updatedCustomImages = {
+      ...customImagesDraft,
+      contactFormImage: illUrl,
+    };
+    setCustomImagesDraft(updatedCustomImages);
+
+    // Atomically persist all contact illustration properties in one transaction
+    updateSiteContent({
+      contact: updatedContact,
+      contactIllustrationUrl: illUrl,
+      customImages: updatedCustomImages,
+    } as any);
+
     triggerSaved('Contact information and illustration updated live!');
   };
 
@@ -247,14 +286,19 @@ export const SiteContentManager: React.FC = () => {
           formImageUrl: finalUrl,
         };
         setContactDraft(updatedContact);
-        updateSiteContent('contact', updatedContact);
-        updateSiteContent('contactIllustrationUrl' as any, finalUrl);
         const updatedCustomImages = {
           ...customImagesDraft,
           contactFormImage: finalUrl,
         };
         setCustomImagesDraft(updatedCustomImages);
-        updateSiteContent('customImages', updatedCustomImages);
+
+        // Atomically persist all contact illustration properties in one transaction
+        updateSiteContent({
+          contact: updatedContact,
+          contactIllustrationUrl: finalUrl,
+          customImages: updatedCustomImages,
+        } as any);
+
         showToast('Contact form illustration uploaded and saved live!', 'success');
       } else {
         showToast('Failed to process image file.', 'error');
@@ -2534,14 +2578,16 @@ export const SiteContentManager: React.FC = () => {
                       formImageUrl: '/contact-illustration.png',
                     };
                     setContactDraft(updated);
-                    updateSiteContent('contact', updated);
-                    updateSiteContent('contactIllustrationUrl' as any, '/contact-illustration.png');
                     const updatedCustomImages = {
                       ...customImagesDraft,
                       contactFormImage: '/contact-illustration.png',
                     };
                     setCustomImagesDraft(updatedCustomImages);
-                    updateSiteContent('customImages', updatedCustomImages);
+                    updateSiteContent({
+                      contact: updated,
+                      contactIllustrationUrl: '/contact-illustration.png',
+                      customImages: updatedCustomImages,
+                    } as any);
                     showToast('Reset to default contact illustration.', 'info');
                   }}
                   className="text-xs font-semibold text-[var(--text-muted)] hover:text-rose-500 transition-colors flex items-center gap-1 cursor-pointer self-start sm:self-auto"
@@ -2559,9 +2605,7 @@ export const SiteContentManager: React.FC = () => {
                   src={
                     (contactDraft as any).illustrationUrl ||
                     (contactDraft as any).formImageUrl ||
-                    safeContent.contactIllustrationUrl ||
-                    safeContent.customImages?.contactFormImage ||
-                    '/contact-illustration.png'
+                    getResolvedContactIllustration(safeContent)
                   }
                   alt="Contact illustration preview"
                   className="w-full h-full object-cover rounded-xl"
