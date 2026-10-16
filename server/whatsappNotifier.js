@@ -11,7 +11,7 @@
  */
 
 export async function sendWhatsAppNotification(leadData) {
-  const targetNumbers = (process.env.WHATSAPP_NUMBERS || process.env.VITE_MANAGEMENT_PHONE || '923226806396,923206806396')
+  const targetNumbers = (leadData.recipients || process.env.WHATSAPP_NUMBERS || process.env.VITE_MANAGEMENT_PHONE || '923226806396,923206806396')
     .split(',')
     .map((n) => n.replace(/[^0-9]/g, ''))
     .filter(Boolean);
@@ -23,31 +23,44 @@ export async function sendWhatsAppNotification(leadData) {
   const budget = leadData.budget || 'Flexible';
   const timeline = leadData.timeline || 'Flexible';
   const company = leadData.company || 'Not Specified';
+  const clientPhone = leadData.clientPhone || leadData.phone || '';
+  const clientPhoneClean = clientPhone.replace(/[^0-9]/g, '');
   const attachment = leadData.attachmentName
     ? `\n*Attachment:* ${leadData.attachmentName}${leadData.attachmentUrl ? ` (${leadData.attachmentUrl})` : ''}`
     : '';
 
-  const message =
-    `🚨 *NEW DIGIHUST CLIENT INTAKE*\n` +
-    `━━━━━━━━━━━━━━━━━━━━━━\n` +
-    `👤 *Client:* ${leadData.name || 'Anonymous'}\n` +
-    `📧 *Email:* ${leadData.email}\n` +
-    `🏢 *Company:* ${company}\n` +
-    `🛠️ *Services:* ${formattedServices}\n` +
-    `💰 *Budget:* ${budget} (${currency})\n` +
-    `⏱️ *Timeline:* ${timeline}` +
-    attachment + `\n` +
-    `━━━━━━━━━━━━━━━━━━━━━━\n` +
-    `📝 *Project Overview:*\n${leadData.description || 'No description provided.'}\n` +
-    `━━━━━━━━━━━━━━━━━━━━━━\n` +
-    `⚡ *Direct Client Contact:*\n` +
-    `WhatsApp: https://wa.me/?text=Hi%20${encodeURIComponent(leadData.name || '')}\n` +
-    `Email: mailto:${leadData.email}`;
+  const isTest = Boolean(leadData.isTest);
+
+  const message = isTest
+    ? `🧪 *DIGIHUST WHATSAPP NOTIFICATION TEST*\n` +
+      `━━━━━━━━━━━━━━━━━━━━━━\n` +
+      `✓ Automated WhatsApp notification gateway is ACTIVE and reachable!\n` +
+      `🕒 Timestamp: ${new Date().toLocaleString()}\n` +
+      `━━━━━━━━━━━━━━━━━━━━━━\n` +
+      `DigiHust Executive Leadership Desk\n` +
+      `Recipients: +923226806396, +923206806396`
+    : `🚨 *NEW DIGIHUST CLIENT INTAKE*\n` +
+      `━━━━━━━━━━━━━━━━━━━━━━\n` +
+      `👤 *Client:* ${leadData.name || 'Anonymous'}\n` +
+      `📧 *Email:* ${leadData.email}\n` +
+      `📱 *Phone / WhatsApp:* ${clientPhone || 'Not Provided'}\n` +
+      `🏢 *Company:* ${company}\n` +
+      `🛠️ *Services:* ${formattedServices}\n` +
+      `💰 *Budget:* ${budget} (${currency})\n` +
+      `⏱️ *Timeline:* ${timeline}` +
+      attachment + `\n` +
+      `━━━━━━━━━━━━━━━━━━━━━━\n` +
+      `📝 *Project Overview:*\n${leadData.description || 'No description provided.'}\n` +
+      `━━━━━━━━━━━━━━━━━━━━━━\n` +
+      `⚡ *Direct Client Contact:*\n` +
+      (clientPhoneClean ? `WhatsApp: https://wa.me/${clientPhoneClean}?text=Hello%20${encodeURIComponent(leadData.name || '')}\n` : '') +
+      `Email: mailto:${leadData.email}`;
 
   const results = [];
 
   // 1. Webhook / Automation dispatch (e.g. n8n, Zapier, Make, Green-API, UltraMsg)
   const webhookUrl =
+    leadData.webhookUrl ||
     process.env.WHATSAPP_WEBHOOK_URL ||
     process.env.VITE_WHATSAPP_WEBHOOK_URL ||
     process.env.LEAD_NOTIFICATION_WEBHOOK;
@@ -57,7 +70,7 @@ export async function sendWhatsAppNotification(leadData) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          event: 'NEW_CLIENT_INQUIRY',
+          event: isTest ? 'TEST_ALERT' : 'NEW_CLIENT_INQUIRY',
           recipients: targetNumbers,
           message,
           lead: leadData,
@@ -67,21 +80,34 @@ export async function sendWhatsAppNotification(leadData) {
       results.push({ channel: 'webhook', status: res.status, ok: res.ok });
     } catch (err) {
       console.warn('[WhatsApp Notifier] Webhook dispatch warning:', err?.message);
+      results.push({ channel: 'webhook', status: 500, ok: false, error: err?.message });
     }
   }
 
   // 2. CallMeBot Free API dispatch
-  const callmebotKey = process.env.CALLMEBOT_API_KEY || process.env.WHATSAPP_API_KEY;
-  if (callmebotKey) {
+  const generalKey =
+    leadData.callmebotApiKey ||
+    process.env.CALLMEBOT_API_KEY ||
+    process.env.WHATSAPP_API_KEY;
+
+  if (generalKey) {
     for (const phone of targetNumbers) {
+      const apiKey = process.env[`CALLMEBOT_API_KEY_${phone}`] || generalKey;
       try {
         const url = `https://api.callmebot.com/whatsapp.php?phone=${phone}&text=${encodeURIComponent(
           message
-        )}&apikey=${callmebotKey}`;
+        )}&apikey=${apiKey}`;
         const res = await fetch(url);
-        results.push({ channel: `callmebot:${phone}`, status: res.status, ok: res.ok });
+        const text = await res.text().catch(() => '');
+        results.push({ 
+          channel: `callmebot:${phone}`, 
+          status: res.status, 
+          ok: res.ok, 
+          response: text.slice(0, 150) 
+        });
       } catch (err) {
         console.warn(`[WhatsApp Notifier] CallMeBot dispatch to ${phone} warning:`, err?.message);
+        results.push({ channel: `callmebot:${phone}`, status: 500, ok: false, error: err?.message });
       }
     }
   }
@@ -113,13 +139,14 @@ export async function sendWhatsAppNotification(leadData) {
         results.push({ channel: `twilio:${phone}`, status: res.status, ok: res.ok });
       } catch (err) {
         console.warn(`[WhatsApp Notifier] Twilio dispatch to ${phone} warning:`, err?.message);
+        results.push({ channel: `twilio:${phone}`, status: 500, ok: false, error: err?.message });
       }
     }
   }
 
   if (process.env.NODE_ENV !== 'production') {
     console.log(
-      `✓ [WhatsApp Background Notifier] Dispatched lead notification to leadership recipients (${targetNumbers.length} recipients).`
+      `✓ [WhatsApp Background Notifier] Dispatched lead notification to leadership (${targetNumbers.join(', ')}). Results: ${results.length} channels attempted.`
     );
   }
 

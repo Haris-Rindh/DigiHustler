@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  Shield, Lock, Key, AlertCircle, CheckCircle2, RefreshCw, 
-  Send, Play, Pause, Download, Eye, FileText, Check, Clock, 
+import {
+  Shield, Lock, Key, AlertCircle, CheckCircle2, RefreshCw,
+  Send, Play, Pause, Download, Eye, FileText, Check, Clock,
   Search, Filter, ArrowRight, UserCheck, ShieldAlert, AlertTriangle, X
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
@@ -69,7 +69,7 @@ export const MigrationAdminView: React.FC = () => {
   // ── ACTION STATES ─────────────────────────────────────────────────────────
   const [testEmail, setTestEmail] = useState(currentUser?.email || '');
   const [isSendingTest, setIsSendingTest] = useState(false);
-  
+
   const [isRunningDryRun, setIsRunningDryRun] = useState(false);
   const [dryRunModalOpen, setDryRunModalOpen] = useState(false);
   const [dryRunResults, setDryRunResults] = useState<any>(null);
@@ -373,7 +373,7 @@ export const MigrationAdminView: React.FC = () => {
           <div className="w-14 h-14 mx-auto rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-500 mb-5">
             <Lock className="w-7 h-7" />
           </div>
-          
+
           <h2 className="font-display font-extrabold text-xl text-[var(--text-heading)] mb-2">
             MFA Step-Up Required
           </h2>
@@ -441,7 +441,7 @@ export const MigrationAdminView: React.FC = () => {
 
   return (
     <div className="space-y-8 animate-in fade-in duration-300">
-      
+
       {/* ── TOP HEADER BAR ── */}
       <div className="p-6 sm:p-8 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] shadow-xl flex flex-col md:flex-row md:items-center md:justify-between gap-6">
         <div>
@@ -551,7 +551,7 @@ export const MigrationAdminView: React.FC = () => {
 
       {/* ── CAMPAIGN CONTROLS & SCHEDULE CONFIG ── */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-        
+
         {/* Left: Schedule & Batch Config Form */}
         <div className="lg:col-span-6 p-6 sm:p-8 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] shadow-xl">
           <div className="flex items-center space-x-2 pb-4 mb-4 border-b border-[var(--border-subtle)]">
@@ -727,9 +727,8 @@ export const MigrationAdminView: React.FC = () => {
               type="button"
               onClick={handleTogglePause}
               disabled={isTogglingPause}
-              className={`w-full sm:w-1/2 py-3.5 rounded-xl font-bold text-xs uppercase tracking-wider shadow-lg flex items-center justify-center space-x-2 transition-all cursor-pointer text-white ${
-                isPaused ? 'bg-amber-600 hover:bg-amber-500' : 'bg-rose-600 hover:bg-rose-500'
-              }`}
+              className={`w-full sm:w-1/2 py-3.5 rounded-xl font-bold text-xs uppercase tracking-wider shadow-lg flex items-center justify-center space-x-2 transition-all cursor-pointer text-white ${isPaused ? 'bg-amber-600 hover:bg-amber-500' : 'bg-rose-600 hover:bg-rose-500'
+                }`}
             >
               {isTogglingPause ? (
                 <RefreshCw className="w-4 h-4 animate-spin" />
@@ -791,11 +790,10 @@ export const MigrationAdminView: React.FC = () => {
               <button
                 key={st}
                 onClick={() => setStatusFilter(st)}
-                className={`px-3 py-1.5 rounded-xl text-[11px] font-bold whitespace-nowrap transition-colors cursor-pointer capitalize ${
-                  statusFilter === st
+                className={`px-3 py-1.5 rounded-xl text-[11px] font-bold whitespace-nowrap transition-colors cursor-pointer capitalize ${statusFilter === st
                     ? 'bg-[var(--brand-teal)] text-white'
                     : 'bg-[var(--bg-page)] text-[var(--text-muted)] hover:text-[var(--text-body)] border border-[var(--border-subtle)]'
-                }`}
+                  }`}
               >
                 {st.replace('_', ' ')}
               </button>
@@ -844,17 +842,16 @@ export const MigrationAdminView: React.FC = () => {
                       {acc.masked_email}
                     </td>
                     <td className="py-3.5 px-4">
-                      <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase ${
-                        acc.status === 'completed'
+                      <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase ${acc.status === 'completed'
                           ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30'
                           : acc.status === 'reset_sent'
-                          ? 'bg-blue-500/15 text-blue-400 border border-blue-500/30'
-                          : acc.status === 'notice_sent'
-                          ? 'bg-amber-500/15 text-amber-400 border border-amber-500/30'
-                          : acc.status === 'needs_attention' || acc.status === 'failed'
-                          ? 'bg-rose-500/15 text-rose-400 border border-rose-500/30'
-                          : 'bg-slate-500/15 text-slate-400 border border-slate-500/30'
-                      }`}>
+                            ? 'bg-blue-500/15 text-blue-400 border border-blue-500/30'
+                            : acc.status === 'notice_sent'
+                              ? 'bg-amber-500/15 text-amber-400 border border-amber-500/30'
+                              : acc.status === 'needs_attention' || acc.status === 'failed'
+                                ? 'bg-rose-500/15 text-rose-400 border border-rose-500/30'
+                                : 'bg-slate-500/15 text-slate-400 border border-slate-500/30'
+                        }`}>
                         {acc.status.replace('_', ' ')}
                       </span>
                       {acc.needs_attention_reason && (
@@ -874,7 +871,7 @@ export const MigrationAdminView: React.FC = () => {
                       ) : acc.notice_sent_at ? (
                         `Notice ${new Date(acc.notice_sent_at).toLocaleDateString()}`
                       ) : (
-                        '—'
+                        ''
                       )}
                     </td>
                   </tr>

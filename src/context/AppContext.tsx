@@ -1,15 +1,15 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
-import { 
-  User, Group, Lead, Project, Payout, Applicant, GlobalAdminSettings, PipelineStage, 
-  Deliverable, Comment, ProjectAssignment, GroupId, UserRole, UserRoleTier, UserStatus, 
-  SplitOverride, Assignment, SubTask, Milestone, Certificate, CertificateType, CertificateStatus, 
+import {
+  User, Group, Lead, Project, Payout, Applicant, GlobalAdminSettings, PipelineStage,
+  Deliverable, Comment, ProjectAssignment, GroupId, UserRole, UserRoleTier, UserStatus,
+  SplitOverride, Assignment, SubTask, Milestone, Certificate, CertificateType, CertificateStatus,
   CertificateTemplate, Announcement, AnnouncementScope, SiteContent, SecurityAuditLog,
   SiteCaseStudy, SiteTestimonial, SiteServiceItem, SitePackage, SiteTeamMember, SiteFAQ, SiteValueProp, SiteBlogPost
 } from '../types';
-import { 
-  INITIAL_GROUPS, INITIAL_USERS, INITIAL_LEADS, INITIAL_PROJECTS, INITIAL_PAYOUTS, 
-  INITIAL_APPLICANTS, INITIAL_SETTINGS, INITIAL_ASSIGNMENTS, INITIAL_CERTIFICATES, 
-  INITIAL_ANNOUNCEMENTS, DEFAULT_SITE_CONTENT, INITIAL_AUDIT_LOGS 
+import {
+  INITIAL_GROUPS, INITIAL_USERS, INITIAL_LEADS, INITIAL_PROJECTS, INITIAL_PAYOUTS,
+  INITIAL_APPLICANTS, INITIAL_SETTINGS, INITIAL_ASSIGNMENTS, INITIAL_CERTIFICATES,
+  INITIAL_ANNOUNCEMENTS, DEFAULT_SITE_CONTENT, INITIAL_AUDIT_LOGS, DEFAULT_CASE_STUDIES
 } from '../services/mockData';
 import { getNextMemberId, syncIdCounter } from '../lib/memberIdGenerator';
 import { getUserRoleTier, PERMISSIONS } from '../lib/permissions';
@@ -37,7 +37,7 @@ interface AppContextType {
   settings: GlobalAdminSettings;
   siteContent: SiteContent;
   auditLogs: SecurityAuditLog[];
-  
+
   // Real Auth Actions (Production Authenticator)
   loginWithMemberId: (memberIdOrEmail: string, password?: string) => { success: boolean; error?: string };
   loginWithSupabaseSession: (identifier: string) => { success: boolean; error?: string };
@@ -49,7 +49,7 @@ interface AppContextType {
 
   // Master CEO User & Security Governance Actions
   createUserAccount: (
-    userData: Omit<User, 'id' | 'completedProjectsCount' | 'totalEarnings' | 'rating' | 'statusHistory' | 'notes' | 'documents'>, 
+    userData: Omit<User, 'id' | 'completedProjectsCount' | 'totalEarnings' | 'rating' | 'statusHistory' | 'notes' | 'documents'>,
     initialPlainPassword?: string
   ) => { success: boolean; newUser?: User; error?: string };
   deleteUserAccount: (targetUserId: string, reason?: string) => { success: boolean; error?: string };
@@ -64,15 +64,15 @@ interface AppContextType {
   updateLeadStatus: (leadId: string, newStatus: PipelineStage) => void;
   deleteLead: (leadId: string) => void;
   reviewLeadToProject: (
-    leadId: string, 
-    groupId: GroupId, 
+    leadId: string,
+    groupId: GroupId,
     assignedLeaderId: string,
-    totalValue: number, 
+    totalValue: number,
     externalFee: number,
     isLeadGenIndependent: boolean,
     leadGenUserPct: number,
-    splitMgmtPct: number, 
-    splitLeaderPct: number, 
+    splitMgmtPct: number,
+    splitLeaderPct: number,
     splitFreelancerPct: number
   ) => void;
   assignProjectTeam: (projectId: string, assignments: ProjectAssignment[]) => void;
@@ -126,8 +126,8 @@ interface AppContextType {
 
   updateSiteContent: (section: keyof SiteContent | Partial<SiteContent>, data?: any) => void;
   addItemToSiteContent: <K extends keyof SiteContent>(section: K, item: any) => void;
-  removeItemFromSiteContent: <K extends keyof SiteContent>(section: K, itemId: string) => void;
-  updateItemInSiteContent: <K extends keyof SiteContent>(section: K, itemId: string, updatedItem: any) => void;
+  removeItemFromSiteContent: <K extends keyof SiteContent>(section: K, itemId: string, targetIndex?: number) => void;
+  updateItemInSiteContent: <K extends keyof SiteContent>(section: K, itemId: string, updatedItem: any, targetIndex?: number) => void;
   resetSiteContent: () => void;
 
   // Applicant Workflow Actions
@@ -150,6 +150,50 @@ interface AppContextType {
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 const LOCAL_STORAGE_KEY = 'digihust_clean_v6';
+
+// Helper to guarantee every item in any CMS array has a distinct, unique ID and default case studies are preserved
+export const sanitizeSiteContent = (raw: SiteContent | null | undefined): SiteContent => {
+  const content = raw ? { ...raw } : { ...DEFAULT_SITE_CONTENT };
+
+  const arraySections: (keyof SiteContent)[] = [
+    'services', 'caseStudies', 'valueProps', 'testimonials',
+    'teamMembers', 'blogPosts', 'faqs', 'packages'
+  ];
+
+  arraySections.forEach((sectionKey) => {
+    const arr = content[sectionKey];
+    if (Array.isArray(arr)) {
+      const seenIds = new Set<string>();
+      (content as any)[sectionKey] = arr.map((item: any, idx: number) => {
+        if (!item || typeof item !== 'object') return item;
+        let id = item.id;
+        // If id is missing, blank, or duplicate
+        if (!id || typeof id !== 'string' || id.trim() === '' || seenIds.has(id)) {
+          id = item.slug ? `${item.slug}` : `${String(sectionKey).slice(0, 4)}-${idx + 1}`;
+          if (seenIds.has(id)) {
+            id = `${id}-${idx + 1}`;
+          }
+        }
+        seenIds.add(id);
+        return {
+          ...item,
+          id
+        };
+      });
+    }
+  });
+
+  if (!content.caseStudies || content.caseStudies.length === 0) {
+    content.caseStudies = DEFAULT_CASE_STUDIES;
+  } else {
+    content.caseStudies = content.caseStudies.map((cs, idx) => ({
+      ...cs,
+      id: cs.id || cs.slug || `cs-${idx + 1}`
+    }));
+  }
+
+  return content;
+};
 
 export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   // Load initial state from local storage if available
@@ -213,7 +257,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   const [siteContent, setSiteContent] = useState<SiteContent>(() => {
     const saved = localStorage.getItem(`${LOCAL_STORAGE_KEY}_site_content`);
-    return saved ? JSON.parse(saved) : DEFAULT_SITE_CONTENT;
+    return sanitizeSiteContent(saved ? JSON.parse(saved) : DEFAULT_SITE_CONTENT);
   });
 
   const [auditLogs, setAuditLogs] = useState<SecurityAuditLog[]>(() => {
@@ -229,9 +273,9 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   }, []);
 
   const showToast = useCallback((
-    message: string, 
-    type: 'success' | 'error' | 'warning' | 'info' = 'info', 
-    title?: string, 
+    message: string,
+    type: 'success' | 'error' | 'warning' | 'info' = 'info',
+    title?: string,
     duration: number = 3500
   ) => {
     const id = `toast-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`;
@@ -290,7 +334,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         const cloudData = await dbService.fetchInitialData();
         if (!cloudData) return;
 
-        // 1. USERS — Cloud is 100% authoritative. Replace local state with cloud.
+        // 1. USERS  Cloud is 100% authoritative. Replace local state with cloud.
         //    Only seed cloud from local IF cloud is completely empty (first-time setup).
         if (cloudData.users !== null) {
           if (cloudData.users && cloudData.users.length > 0) {
@@ -315,7 +359,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
           }
         }
 
-        // 2. LEADS — Cloud authoritative
+        // 2. LEADS  Cloud authoritative
         if (cloudData.leads !== null) {
           if (cloudData.leads.length > 0) {
             setLeads(cloudData.leads);
@@ -324,7 +368,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
           }
         }
 
-        // 3. PROJECTS — Cloud authoritative
+        // 3. PROJECTS  Cloud authoritative
         if (cloudData.projects !== null) {
           if (cloudData.projects.length > 0) {
             setProjects(cloudData.projects);
@@ -333,7 +377,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
           }
         }
 
-        // 4. ASSIGNMENTS — Cloud authoritative
+        // 4. ASSIGNMENTS  Cloud authoritative
         if (cloudData.assignments !== null) {
           if (cloudData.assignments.length > 0) {
             setAssignments(cloudData.assignments);
@@ -342,7 +386,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
           }
         }
 
-        // 5. CERTIFICATES — Cloud authoritative
+        // 5. CERTIFICATES  Cloud authoritative
         if (cloudData.certificates !== null) {
           if (cloudData.certificates.length > 0) {
             setCertificates(cloudData.certificates);
@@ -351,7 +395,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
           }
         }
 
-        // 6. ANNOUNCEMENTS — Cloud authoritative
+        // 6. ANNOUNCEMENTS  Cloud authoritative
         if (cloudData.announcements !== null) {
           if (cloudData.announcements.length > 0) {
             setAnnouncements(cloudData.announcements);
@@ -360,19 +404,19 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
           }
         }
 
-        // 7. SITE CONTENT CMS — Cloud authoritative
+        // 7. SITE CONTENT CMS  Cloud authoritative
         if (cloudData.siteContent) {
-          setSiteContent({ ...DEFAULT_SITE_CONTENT, ...cloudData.siteContent });
+          setSiteContent(sanitizeSiteContent({ ...DEFAULT_SITE_CONTENT, ...cloudData.siteContent }));
         } else {
           dbService.saveSiteContent(siteContent || DEFAULT_SITE_CONTENT);
         }
 
-        // 8. AUDIT LOGS — Cloud authoritative
+        // 8. AUDIT LOGS  Cloud authoritative
         if (cloudData.auditLogs && cloudData.auditLogs.length > 0) {
           setAuditLogs(cloudData.auditLogs);
         }
 
-        // 9. PAYOUTS — Cloud authoritative
+        // 9. PAYOUTS  Cloud authoritative
         if (cloudData.payouts !== null && cloudData.payouts !== undefined) {
           if (cloudData.payouts.length > 0) {
             setPayouts(cloudData.payouts);
@@ -381,7 +425,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
           }
         }
 
-        // 10. APPLICANTS — Cloud authoritative
+        // 10. APPLICANTS  Cloud authoritative
         if (cloudData.applicants !== null && cloudData.applicants !== undefined) {
           if (cloudData.applicants.length > 0) {
             setApplicants(cloudData.applicants);
@@ -390,7 +434,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
           }
         }
 
-        // 11. GLOBAL SETTINGS — Cloud authoritative
+        // 11. GLOBAL SETTINGS  Cloud authoritative
         if (cloudData.settings) {
           setSettings(cloudData.settings);
         } else {
@@ -487,8 +531,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     const cleanId = identifier.trim().toLowerCase();
 
     // 1. Strict search: Match ONLY current database memberId or email (no legacy aliases or backdoors)
-    const foundUser = users.find(u => 
-      u.memberId?.trim().toLowerCase() === cleanId || 
+    const foundUser = users.find(u =>
+      u.memberId?.trim().toLowerCase() === cleanId ||
       u.email?.trim().toLowerCase() === cleanId
     );
 
@@ -506,9 +550,9 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     }
 
     if (!foundUser.passwordHash) {
-      return { 
-        success: false, 
-        error: 'No password is set for this account. Please use "Forgot Password" to verify your identity and set a secure password.' 
+      return {
+        success: false,
+        error: 'No password is set for this account. Please use "Forgot Password" to verify your identity and set a secure password.'
       };
     }
 
@@ -528,8 +572,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   const loginWithSupabaseSession = (identifier: string): { success: boolean; error?: string } => {
     const cleanId = identifier.trim().toLowerCase();
-    const foundUser = users.find(u => 
-      u.memberId?.trim().toLowerCase() === cleanId || 
+    const foundUser = users.find(u =>
+      u.memberId?.trim().toLowerCase() === cleanId ||
       u.email?.trim().toLowerCase() === cleanId
     );
 
@@ -549,7 +593,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     return { success: true };
   };
 
-  
+
   // Auto-logout after 30 minutes of inactivity
   useEffect(() => {
     if (!currentUser) return;
@@ -583,14 +627,14 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   }, [currentUser]);
 
 
-  
+
   // Inactivity Timeout Logout (30 minutes)
   useEffect(() => {
     if (!isAuthenticated) return;
-    
+
     let timeoutId: number;
     const TIMEOUT_MS = 30 * 60 * 1000; // 30 minutes
-    
+
     const resetTimer = () => {
       window.clearTimeout(timeoutId);
       timeoutId = window.setTimeout(() => {
@@ -603,10 +647,10 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     };
 
     resetTimer();
-    
+
     const events = ['mousemove', 'mousedown', 'keypress', 'DOMMouseScroll', 'mousewheel', 'touchmove', 'MSPointerMove', 'scroll'];
     events.forEach(e => window.addEventListener(e, resetTimer, { passive: true }));
-    
+
     return () => {
       window.clearTimeout(timeoutId);
       events.forEach(e => window.removeEventListener(e, resetTimer));
@@ -641,24 +685,24 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   const requestPasswordReset = async (emailOrMemberId: string): Promise<{ success: boolean; message: string; email?: string }> => {
     const clean = emailOrMemberId.trim().toLowerCase();
-    const foundUser = users.find(u => 
-      u.email?.trim().toLowerCase() === clean || 
+    const foundUser = users.find(u =>
+      u.email?.trim().toLowerCase() === clean ||
       u.memberId?.trim().toLowerCase() === clean
     );
 
     if (!foundUser || !foundUser.email) {
-      return { 
-        success: false, 
-        message: 'No active DigiHust account found with this email address or Member ID.' 
+      return {
+        success: false,
+        message: 'No active DigiHust account found with this email address or Member ID.'
       };
     }
 
     // 1. Generate and store OTP in Supabase cloud
     const otpRes = await dbService.createPasswordResetOtp(foundUser.email, foundUser.name);
     if (!otpRes.success || !otpRes.otp) {
-      return { 
-        success: false, 
-        message: otpRes.error || 'Failed to generate security reset code. Please try again.' 
+      return {
+        success: false,
+        message: otpRes.error || 'Failed to generate security reset code. Please try again.'
       };
     }
 
@@ -677,10 +721,10 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     // 3. Dispatch backup email service
     await emailService.sendPasswordResetEmail(foundUser.email, foundUser.name, otpRes.otp);
 
-    return { 
-      success: true, 
+    return {
+      success: true,
       email: foundUser.email,
-      message: `A secure password reset email has been dispatched to ${foundUser.email}. Please check your inbox (and spam folder) for the reset link or 6-digit code.` 
+      message: `A secure password reset email has been dispatched to ${foundUser.email}. Please check your inbox (and spam folder) for the reset link or 6-digit code.`
     };
   };
 
@@ -713,7 +757,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   // ── CEO MASTER USER & SECURITY GOVERNANCE ─────────────────────────────────
 
   const createUserAccount = (
-    userData: Omit<User, 'id' | 'completedProjectsCount' | 'totalEarnings' | 'rating' | 'statusHistory' | 'notes' | 'documents'>, 
+    userData: Omit<User, 'id' | 'completedProjectsCount' | 'totalEarnings' | 'rating' | 'statusHistory' | 'notes' | 'documents'>,
     initialPlainPassword?: string
   ): { success: boolean; newUser?: User; error?: string } => {
     if (!PERMISSIONS.canCreateUserAccount(currentTier) && currentUser.role !== 'management') {
@@ -943,15 +987,15 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   };
 
   const reviewLeadToProject = (
-    leadId: string, 
-    groupId: GroupId, 
+    leadId: string,
+    groupId: GroupId,
     assignedLeaderId: string,
-    totalValue: number, 
+    totalValue: number,
     externalFee: number,
     isLeadGenIndependent: boolean,
     leadGenUserPct: number,
-    splitMgmtPct: number, 
-    splitLeaderPct: number, 
+    splitMgmtPct: number,
+    splitLeaderPct: number,
     splitFreelancerPct: number
   ) => {
     const lead = leads.find(l => l.id === leadId);
@@ -1551,10 +1595,10 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const toggleCertificateLock = (certId: string, isLocked: boolean) => {
     setCertificates(prev => prev.map(c => {
       if (c.id === certId) {
-        const updated = { 
-          ...c, 
-          isLocked, 
-          releasedAt: !isLocked ? (c.releasedAt || new Date().toISOString()) : undefined 
+        const updated = {
+          ...c,
+          isLocked,
+          releasedAt: !isLocked ? (c.releasedAt || new Date().toISOString()) : undefined
         };
         dbService.upsertCertificate(updated);
         return updated;
@@ -1613,9 +1657,9 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const updateCertificateDriveUrl = (certId: string, driveUrl: string, documentTitle?: string, isLocked?: boolean, isHidden?: boolean) => {
     setCertificates(prev => prev.map(c => {
       if (c.id === certId) {
-        const updated = { 
-          ...c, 
-          driveUrl, 
+        const updated = {
+          ...c,
+          driveUrl,
           documentTitle: documentTitle || c.documentTitle,
           isLocked: isLocked !== undefined ? isLocked : c.isLocked,
           isHidden: isHidden !== undefined ? isHidden : c.isHidden
@@ -1992,14 +2036,22 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const addItemToSiteContent = <K extends keyof SiteContent>(section: K, item: any) => {
     if (!PERMISSIONS.canEditWebsiteContent(currentTier, currentUser)) return;
 
-    const currentList = Array.isArray(siteContent[section]) ? (siteContent[section] as any[]) : [];
-    const newContent = {
-      ...siteContent,
-      [section]: [...currentList, item]
+    const guaranteedItem = {
+      ...item,
+      id: item.id || item.slug || `${String(section).slice(0, 4)}-${Date.now()}`
     };
-    setSiteContent(newContent);
-    dbService.saveSiteContent(newContent);
-    realtimeSync.broadcast('CMS_UPDATED', newContent);
+
+    setSiteContent((prev) => {
+      const currentList = Array.isArray(prev[section]) ? ([...prev[section] as any[]]) : [];
+      const newContent = {
+        ...prev,
+        [section]: [...currentList, guaranteedItem]
+      };
+      safeSetItem(`${LOCAL_STORAGE_KEY}_site_content`, JSON.stringify(newContent));
+      dbService.saveSiteContent(newContent);
+      realtimeSync.broadcast('CMS_UPDATED', newContent);
+      return newContent;
+    });
 
     const auditEntry: SecurityAuditLog = {
       id: `audit-${Date.now()}`,
@@ -2008,23 +2060,41 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       actorName: currentUser.name,
       actorRole: currentTier,
       action: 'CMS_UPDATED',
-      details: `Added new item to ${String(section)} (ID: ${item.id || 'new'})`
+      details: `Added new item to ${String(section)} (ID: ${guaranteedItem.id})`
     };
     setAuditLogs(prev => [auditEntry, ...prev]);
     dbService.insertAuditLog(auditEntry);
   };
 
-  const removeItemFromSiteContent = <K extends keyof SiteContent>(section: K, itemId: string) => {
+  const removeItemFromSiteContent = <K extends keyof SiteContent>(
+    section: K,
+    itemId: string,
+    targetIndex?: number
+  ) => {
     if (!PERMISSIONS.canEditWebsiteContent(currentTier, currentUser)) return;
 
-    const currentList = Array.isArray(siteContent[section]) ? (siteContent[section] as any[]) : [];
-    const newContent = {
-      ...siteContent,
-      [section]: currentList.filter(item => item.id !== itemId)
-    };
-    setSiteContent(newContent);
-    dbService.saveSiteContent(newContent);
-    realtimeSync.broadcast('CMS_UPDATED', newContent);
+    setSiteContent((prev) => {
+      const currentList = Array.isArray(prev[section]) ? ([...prev[section] as any[]]) : [];
+      let indexToRemove = -1;
+      if (typeof targetIndex === 'number' && targetIndex >= 0 && targetIndex < currentList.length) {
+        indexToRemove = targetIndex;
+      } else if (itemId && typeof itemId === 'string' && itemId.trim() !== '') {
+        indexToRemove = currentList.findIndex(item => item && (item.id === itemId || item.slug === itemId));
+      }
+
+      if (indexToRemove === -1) return prev;
+
+      const updatedList = currentList.filter((_, idx) => idx !== indexToRemove);
+      const newContent: SiteContent = {
+        ...prev,
+        [section]: updatedList
+      };
+
+      safeSetItem(`${LOCAL_STORAGE_KEY}_site_content`, JSON.stringify(newContent));
+      dbService.saveSiteContent(newContent);
+      realtimeSync.broadcast('CMS_UPDATED', newContent);
+      return newContent;
+    });
 
     const auditEntry: SecurityAuditLog = {
       id: `audit-${Date.now()}`,
@@ -2033,23 +2103,57 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       actorName: currentUser.name,
       actorRole: currentTier,
       action: 'CMS_UPDATED',
-      details: `Removed item from ${String(section)} (ID: ${itemId})`
+      details: `Removed item from ${String(section)} (ID: ${itemId || targetIndex})`
     };
     setAuditLogs(prev => [auditEntry, ...prev]);
     dbService.insertAuditLog(auditEntry);
   };
 
-  const updateItemInSiteContent = <K extends keyof SiteContent>(section: K, itemId: string, updatedItem: any) => {
+  const updateItemInSiteContent = <K extends keyof SiteContent>(
+    section: K,
+    itemId: string,
+    updatedItem: any,
+    targetIndex?: number
+  ) => {
     if (!PERMISSIONS.canEditWebsiteContent(currentTier, currentUser)) return;
 
-    const currentList = Array.isArray(siteContent[section]) ? (siteContent[section] as any[]) : [];
-    const newContent = {
-      ...siteContent,
-      [section]: currentList.map(item => item.id === itemId ? { ...item, ...updatedItem } : item)
-    };
-    setSiteContent(newContent);
-    dbService.saveSiteContent(newContent);
-    realtimeSync.broadcast('CMS_UPDATED', newContent);
+    setSiteContent((prev) => {
+      const currentList = Array.isArray(prev[section]) ? ([...prev[section] as any[]]) : [];
+
+      let indexToUpdate = -1;
+      if (typeof targetIndex === 'number' && targetIndex >= 0 && targetIndex < currentList.length) {
+        indexToUpdate = targetIndex;
+      } else if (itemId && typeof itemId === 'string' && itemId.trim() !== '') {
+        indexToUpdate = currentList.findIndex(item => item && (item.id === itemId || item.slug === itemId));
+      }
+
+      // Strict Safeguard: If target cannot be identified, NEVER update all items!
+      if (indexToUpdate === -1) {
+        console.warn(`[updateItemInSiteContent] Could not locate unique target item '${itemId}' in section '${String(section)}'`);
+        return prev;
+      }
+
+      const updatedList = currentList.map((item, idx) => {
+        if (idx === indexToUpdate) {
+          return {
+            ...item,
+            ...updatedItem,
+            id: item.id || itemId || `${String(section)}-${idx + 1}`
+          };
+        }
+        return item;
+      });
+
+      const newContent: SiteContent = {
+        ...prev,
+        [section]: updatedList
+      };
+
+      safeSetItem(`${LOCAL_STORAGE_KEY}_site_content`, JSON.stringify(newContent));
+      dbService.saveSiteContent(newContent);
+      realtimeSync.broadcast('CMS_UPDATED', newContent);
+      return newContent;
+    });
   };
 
   const resetSiteContent = () => {
@@ -2059,14 +2163,14 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     realtimeSync.broadcast('CMS_UPDATED', DEFAULT_SITE_CONTENT);
   };
 
-  // ── PINNED MEMBERS — Persisted to Supabase for cross-device sync ─────────
+  // ── PINNED MEMBERS  Persisted to Supabase for cross-device sync ─────────
   const updatePinnedMembers = (pinnedIds: string[]) => {
     const newContent = { ...siteContent, pinnedMemberIds: pinnedIds };
     setSiteContent(newContent);
     dbService.saveSiteContent(newContent);
     realtimeSync.broadcast('CMS_UPDATED', newContent);
     // Also sync to localStorage as fast local cache
-    try { localStorage.setItem('digihust_pinned_members', JSON.stringify(pinnedIds)); } catch {}
+    try { localStorage.setItem('digihust_pinned_members', JSON.stringify(pinnedIds)); } catch { }
   };
 
   // Applicant Actions

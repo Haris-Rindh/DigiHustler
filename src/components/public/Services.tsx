@@ -243,11 +243,10 @@ export const Services: React.FC = () => {
               {SLIDESHOW_ITEMS.map((_, idx) => (
                 <div
                   key={idx}
-                  className={`h-1.5 sm:h-2 rounded-full transition-all duration-500 ${
-                    idx === currentSlideIndex
+                  className={`h-1.5 sm:h-2 rounded-full transition-all duration-500 ${idx === currentSlideIndex
                       ? 'w-6 sm:w-8 bg-[var(--brand-teal)]'
                       : 'w-2 bg-white/30'
-                  }`}
+                    }`}
                 />
               ))}
             </div>
@@ -283,11 +282,10 @@ export const Services: React.FC = () => {
                   <button
                     key={cat.id}
                     onClick={() => setSelectedCategory(cat.id)}
-                    className={`px-4 py-2 rounded-xl font-sans font-semibold text-sm tracking-normal transition-all duration-200 cursor-pointer flex items-center gap-2 ${
-                      isSelected
+                    className={`px-4 py-2 rounded-xl font-sans font-semibold text-sm tracking-normal transition-all duration-200 cursor-pointer flex items-center gap-2 ${isSelected
                         ? 'bg-[var(--brand-teal)] text-white shadow-md border border-cyan-400/50'
                         : 'bg-[var(--bg-surface)] text-[var(--text-body)] hover:text-[var(--text-heading)] border border-[var(--border-subtle)] hover:border-[var(--brand-teal)]/50'
-                    }`}
+                      }`}
                   >
                     <span>{cat.label}</span>
                   </button>
@@ -367,7 +365,7 @@ export const Services: React.FC = () => {
                 num: '04',
                 icon: <Rocket className="w-5 h-5 text-[var(--brand-teal)] stroke-[2.2]" />,
                 title: 'Clean Handover & SLA Assurance',
-                desc: 'We deliver complete code, documentation, and support — backed by our 30-day warranty.',
+                desc: 'We deliver complete code, documentation, and support  backed by our 30-day warranty.',
                 img: modelStep4,
               },
             ].map((step) => (

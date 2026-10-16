@@ -1,6 +1,6 @@
 import {
   Group, User, Lead, Project, Payout, Applicant, GlobalAdminSettings, Assignment,
-  Certificate, Announcement, SiteContent, SecurityAuditLog
+  Certificate, Announcement, SiteContent, SecurityAuditLog, SiteCaseStudy
 } from '../types';
 import { quickHashSync } from '../lib/crypto';
 
@@ -152,7 +152,7 @@ export const INITIAL_USERS: User[] = [
     "isCeoMaster": false,
     "groupId": "growth",
     "title": "Co-founder",
-    "bio": "I help businesses and busy professionals optimize workflows through data-driven Virtual Assistance, B2B Lead Generation, and targeted Web Research. Skilled in Python and Generative AI, I automate repetitive tasks, manage operations, and deliver precise results—helping you scale faster with less effort.",
+    "bio": "I help businesses and busy professionals optimize workflows through data-driven Virtual Assistance, B2B Lead Generation, and targeted Web Research. Skilled in Python and Generative AI, I automate repetitive tasks, manage operations, and deliver precise resultshelping you scale faster with less effort.",
     "specialties": [
       "Lead Generation",
       "Management",
@@ -215,7 +215,7 @@ export const INITIAL_USERS: User[] = [
     "isCeoMaster": false,
     "groupId": "data",
     "title": "AI  & App developer",
-    "bio": "Building foundational skills in AI and cross-platform mobile app development. Currently learning how to build intelligent systems using Python—covering core concepts like data analysis, machine learning algorithms, neural networks, and data visualization. Alongside AI, also learning mobile development with Flutter and Dart to create responsive Android and iOS applications with state management, API integration, and Firebase backend services. Eager to apply my growing skills to write clean code and develop practical, real-world solutions.",
+    "bio": "Building foundational skills in AI and cross-platform mobile app development. Currently learning how to build intelligent systems using Pythoncovering core concepts like data analysis, machine learning algorithms, neural networks, and data visualization. Alongside AI, also learning mobile development with Flutter and Dart to create responsive Android and iOS applications with state management, API integration, and Firebase backend services. Eager to apply my growing skills to write clean code and develop practical, real-world solutions.",
     "specialties": [
       "Artificial Intelligence",
       "Data Analysis",
@@ -708,6 +708,106 @@ export const INITIAL_SETTINGS: GlobalAdminSettings = {
   maxActiveProjectsPerFreelancer: 5
 };
 
+// ── DEFAULT PORTFOLIO PROJECTS & CASE STUDIES ──────────────────────────────
+export const DEFAULT_CASE_STUDIES: SiteCaseStudy[] = [
+  {
+    id: 'cs-1',
+    slug: 'real-estate-marketplace-portal',
+    category: 'Web Development',
+    title: 'Real-Estate Marketplace Portal',
+    client: 'Estates Direct UK',
+    tags: ['React', 'Node.js', 'PostgreSQL', 'Tailwind CSS', 'PostGIS', 'AWS'],
+    summary: 'High-performance property listing and agent management platform with interactive geospatial search and instant inquiry routing.',
+    impactMetric: '+140%',
+    impactLabel: 'Conversion Rate Growth',
+    imageUrl: 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=800&q=80',
+    projectUrl: 'https://estatesdirect.demo',
+    deliverables: ['Next.js Architecture', 'Spatial Database', 'Automated Valuation API'],
+    challenge: 'Legacy WordPress backend suffering from 5+ second load times and unscalable database indexing across 40,000+ UK property listings.',
+    solution: 'Re-engineered from scratch with Next.js, Node.js, PostgreSQL with PostGIS for sub-second spatial queries, and real-time agent leads.'
+  },
+  {
+    id: 'cs-2',
+    slug: 'automotive-brand-identity',
+    category: 'Creative & Branding',
+    title: 'Automotive Brand Identity & 3D Motion Ads',
+    client: 'Veloce Motors DE',
+    tags: ['Brand Identity', 'Figma', 'After Effects', '3D Animation', 'Motion Design'],
+    summary: 'Complete brand redesign, comprehensive design system, and a suite of 3D motion advertisement teasers for digital launch.',
+    impactMetric: '2.4M',
+    impactLabel: 'Global Launch Impressions',
+    imageUrl: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=800&q=80',
+    projectUrl: 'https://veloce-motors.demo',
+    deliverables: ['Brand Design System', '3D Commercial Spots', 'Digital Asset Guidelines'],
+    challenge: 'A modern electric performance startup needed a visual identity that felt aggressive, premium, and distinct from legacy competitors.',
+    solution: 'Engineered a modern typographic identity system, Figma design system, and three 30-second 4K 3D motion trailers in Cinema 4D & After Effects.'
+  },
+  {
+    id: 'cs-3',
+    slug: 'hospital-bi-dashboard',
+    category: 'AI & Data Solutions',
+    title: 'Executive Sales BI & Analytics Suite',
+    client: 'Titan Healthcare Systems',
+    tags: ['PowerBI', 'SQL', 'Python', 'ETL Pipelines', 'Data Automation'],
+    summary: 'Integrated fragmented hospital SQL data stores into a unified executive PowerBI dashboard with automated weekly KPI reports.',
+    impactMetric: '12+ Hrs',
+    impactLabel: 'Saved Per Week / Department',
+    imageUrl: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=800&q=80',
+    projectUrl: 'https://titan-bi.demo',
+    deliverables: ['Automated Python ETL', 'Executive PowerBI Dashboard', 'HIPAA Hardened Schemas'],
+    challenge: 'Executive leadership spent 12+ manual hours weekly compiling disparate spreadsheets with inconsistent financial figures.',
+    solution: 'Engineered automated Python ETL pipelines syncing multiple SQL databases directly into an interactive PowerBI executive console.'
+  },
+  {
+    id: 'cs-4',
+    slug: 'saas-fintech-redesign',
+    category: 'Web Development',
+    title: 'Enterprise FinTech Trading Console',
+    client: 'Apex FinTech US',
+    tags: ['React', 'TypeScript', 'WebSockets', 'Tailwind', 'High Throughput'],
+    summary: 'Complete architectural redesign of a high-throughput financial trading console for enterprise institutional traders.',
+    impactMetric: '60 FPS',
+    impactLabel: 'Maintained Under High Concurrency',
+    imageUrl: 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?auto=format&fit=crop&w=800&q=80',
+    projectUrl: 'https://apex-trading.demo',
+    deliverables: ['Virtualized Data Tables', 'WebSocket State Engine', 'High-Contrast Trading UI'],
+    challenge: 'Dense financial data tables causing heavy browser lag and frame drops during live market volatility spikes.',
+    solution: 'Rebuilt using virtualized React tables, WebSocket state managers, and dark-mode high-contrast UI components.'
+  },
+  {
+    id: 'cs-5',
+    slug: 'ai-logistics-bot',
+    category: 'AI Solutions & Automation',
+    title: 'Autonomous Logistics Customer Support AI',
+    client: 'LogiXpress Logistics',
+    tags: ['OpenAI', 'Python', 'WhatsApp API', 'Automation', 'FastAPI'],
+    summary: 'Custom OpenAI & Python automation system resolving tracking inquiries over WhatsApp and email without human staff.',
+    impactMetric: '78%',
+    impactLabel: 'Inquiries Resolved Autonomously',
+    imageUrl: 'https://images.unsplash.com/photo-1677442135703-1787eea5ce01?auto=format&fit=crop&w=800&q=80',
+    projectUrl: 'https://logixpress-ai.demo',
+    deliverables: ['WhatsApp Business Bot', 'ERP Webhook Sync', 'Automated Ticket Escalation'],
+    challenge: 'Customer service department overwhelmed with 800+ repetitive tracking status inquiries every day.',
+    solution: 'Deployed an autonomous OpenAI agent integrated with WhatsApp Business API and the central ERP database.'
+  },
+  {
+    id: 'cs-6',
+    slug: 'ecommerce-brand-kit',
+    category: 'Creative & UI/UX',
+    title: 'E-Commerce Brand & Mobile UI Kit',
+    client: 'Nexus Global Goods',
+    tags: ['UI/UX', 'Figma', 'Brand Identity', 'Shopify', 'Mobile Design'],
+    summary: 'Comprehensive branding system, responsive Shopify theme design, and iOS application UI mockups.',
+    impactMetric: '$280K',
+    impactLabel: 'Generated In First 30 Days',
+    imageUrl: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=800&q=80',
+    projectUrl: 'https://nexus-goods.demo',
+    deliverables: ['Custom Shopify Liquid Theme', 'Figma Mobile App Prototype', 'Packaging Vector Kit'],
+    challenge: 'Expanding brand needed a coherent, luxury identity across mobile, packaging, and web storefront.',
+    solution: 'Designed comprehensive visual design system, custom Shopify liquid templates, and Figma mobile app prototype.'
+  }
+];
+
 // ── FULL DEFAULT EXECUTIVE CMS (LIVE SITE CONTENT) ───────────────────────────
 export const DEFAULT_SITE_CONTENT: SiteContent = {
   hero: {
@@ -748,7 +848,7 @@ export const DEFAULT_SITE_CONTENT: SiteContent = {
       badge: 'SLA Speed'
     }
   ],
-  caseStudies: [],
+  caseStudies: DEFAULT_CASE_STUDIES,
   testimonials: [],
   services: [
     {
@@ -1080,7 +1180,7 @@ By implementing static HTML generation and pre-rendering at build time, every te
       slug: 'owasp-top-10-web-security-checklist-for-startups',
       title: 'The Essential OWASP Web Application Security & Hardening Checklist',
       excerpt: 'Protecting your digital infrastructure against injection, broken access controls, and data exposure before production deployment.',
-      content: `Security is not an afterthought—it must be architected from day zero. Startups moving fast often overlook basic security hygiene, leaving their infrastructure vulnerable to credential stuffing, broken object-level authorization, and unprotected secrets.
+      content: `Security is not an afterthoughtit must be architected from day zero. Startups moving fast often overlook basic security hygiene, leaving their infrastructure vulnerable to credential stuffing, broken object-level authorization, and unprotected secrets.
 
 ### Core Hardening Pillars
 1. **Zero-Trust Access Control**: Enforce strict server-side authorization checks on every state mutation.

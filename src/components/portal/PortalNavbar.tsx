@@ -4,7 +4,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { 
   Shield, LayoutDashboard, Briefcase, Users, Award, DollarSign, Bell, Settings, 
   LogOut, ChevronDown, Menu, X, Key, Check, AlertCircle,
-  Layers, ExternalLink, Eye, EyeOff, User, Upload, Camera, RefreshCw, Trash2 
+  Layers, ExternalLink, Eye, EyeOff, User, Upload, Camera, RefreshCw, Trash2, Inbox 
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { LanguageSelector } from '../ui/LanguageSelector';
@@ -161,6 +161,13 @@ export const PortalNavbar: React.FC = () => {
   // Secondary Items (Compressed into the "More" dropdown on desktop)
   const secondaryNavItems: NavItem[] = [
     { 
+      label: 'Client Inquiries', 
+      href: '/portal/dashboard?tab=leads', 
+      icon: <Inbox className="w-4 h-4 text-cyan-400" />, 
+      description: 'Review inbound leads, quotes & attachments',
+      show: currentTier === 'ceo' || currentTier === 'manager' 
+    },
+    { 
       label: 'Certificates', 
       href: '/portal/certificates', 
       icon: <Award className="w-4 h-4 text-purple-400" />, 
@@ -177,7 +184,12 @@ export const PortalNavbar: React.FC = () => {
   ].filter(i => i.show);
 
   // Check if any secondary link is currently active
-  const activeSecondaryItem = secondaryNavItems.find(item => location.pathname === item.href);
+  const activeSecondaryItem = secondaryNavItems.find(item => {
+    if (item.href.includes('?tab=')) {
+      return (location.pathname + location.search) === item.href;
+    }
+    return location.pathname === item.href;
+  });
   const isSecondaryActive = !!activeSecondaryItem;
 
   const getTierBadge = (tier: UserRoleTier) => {

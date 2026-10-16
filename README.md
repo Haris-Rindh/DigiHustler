@@ -1,4 +1,4 @@
-# ⚡ DigiHust — Enterprise Digital Services & Specialized Talent Platform
+# ⚡ DigiHust  Enterprise Digital Services & Specialized Talent Platform
 
 <div align="center">
 

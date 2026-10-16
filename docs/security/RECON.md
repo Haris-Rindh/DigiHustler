@@ -14,7 +14,7 @@
 | Build | `vite build && node scripts/prerender.js` | Outputs to `dist/` |
 | Hosting | Vercel | `vercel.json` with headers, redirects, rewrites |
 | Database | Supabase (PostgreSQL) | URL: `ptvchzbzokyumeizsuge.supabase.co` |
-| Auth (portal) | **Custom SHA-256 + localStorage** — NOT Supabase Auth | ⚠️ HIGH RISK — see S3 |
+| Auth (portal) | **Custom SHA-256 + localStorage**  NOT Supabase Auth | ⚠️ HIGH RISK  see S3 |
 | Email | EmailJS (client-side `@emailjs/browser`) | Public key in VITE_ vars |
 | Notifications | WhatsApp via CallMeBot / Twilio / Webhook (server-side) | Keys via process.env |
 | Realtime | Supabase Realtime broadcast channel | `lib/realtimeSync.ts` |
@@ -46,7 +46,7 @@
 | `/team` | Team | None |
 | `/blog` | Blog | None |
 | `/blog/:slug` | BlogPost | None |
-| `/contact` | Contact | None — has file upload |
+| `/contact` | Contact | None  has file upload |
 | `/apply` | Apply | None |
 | `/careers` | Careers | None |
 | `/privacy` | PrivacyPolicy | None |
@@ -91,10 +91,10 @@
 
 | Variable | Prefix | Visibility | Purpose | Risk |
 |----------|--------|-----------|---------|------|
-| `VITE_SUPABASE_URL` | VITE_ | **PUBLIC** (in bundle) | Supabase project URL | Low — anon key enforces RLS |
+| `VITE_SUPABASE_URL` | VITE_ | **PUBLIC** (in bundle) | Supabase project URL | Low  anon key enforces RLS |
 | `VITE_SUPABASE_ANON_KEY` | VITE_ | **PUBLIC** (in bundle) | Supabase anonymous JWT | Low IF RLS is strict |
-| `VITE_EMAILJS_SERVICE_ID` | VITE_ | **PUBLIC** | EmailJS service identifier | Medium — could abuse free quota |
-| `VITE_EMAILJS_PUBLIC_KEY` | VITE_ | **PUBLIC** | EmailJS public key | Medium — same |
+| `VITE_EMAILJS_SERVICE_ID` | VITE_ | **PUBLIC** | EmailJS service identifier | Medium  could abuse free quota |
+| `VITE_EMAILJS_PUBLIC_KEY` | VITE_ | **PUBLIC** | EmailJS public key | Medium  same |
 | `VITE_EMAILJS_CONTACT_TEMPLATE_ID` | VITE_ | **PUBLIC** | EmailJS contact template | Low |
 | `VITE_EMAILJS_RESET_TEMPLATE_ID` | VITE_ | **PUBLIC** | EmailJS reset OTP template | Low |
 | `VITE_SITE_URL` | VITE_ | **PUBLIC** | Canonical site URL | None |
@@ -105,7 +105,7 @@
 | `TWILIO_WHATSAPP_FROM` | none | **Server-side only** | Twilio sender number | Low |
 
 **Finding:** No `service_role` key found in source. No `VITE_` leakage of server secrets found.  
-**Finding:** `.env` file contains the **real Supabase anon key** and EmailJS keys — this file is correctly `.gitignore`'d but committed `.env.example` also contains the real production anon key (not a placeholder).
+**Finding:** `.env` file contains the **real Supabase anon key** and EmailJS keys  this file is correctly `.gitignore`'d but committed `.env.example` also contains the real production anon key (not a placeholder).
 
 ---
 
@@ -113,16 +113,16 @@
 
 | Table | RLS Enabled | Current Policies | Risk |
 |-------|------------|-----------------|------|
-| `public.users` | ✅ | `FOR ALL USING (true)` — anon full access | **CRITICAL** |
-| `public.leads` | ✅ | `FOR ALL USING (true)` + anon insert | **HIGH** — anon can read all leads |
-| `public.projects` | ✅ | `FOR ALL USING (true)` | **CRITICAL** — anon can read/write |
+| `public.users` | ✅ | `FOR ALL USING (true)`  anon full access | **CRITICAL** |
+| `public.leads` | ✅ | `FOR ALL USING (true)` + anon insert | **HIGH**  anon can read all leads |
+| `public.projects` | ✅ | `FOR ALL USING (true)` | **CRITICAL**  anon can read/write |
 | `public.assignments` | ✅ | `FOR ALL USING (true)` | **CRITICAL** |
-| `public.certificates` | ✅ | `FOR ALL USING (true)` + public read | HIGH — over-permissive write |
+| `public.certificates` | ✅ | `FOR ALL USING (true)` + public read | HIGH  over-permissive write |
 | `public.announcements` | ✅ | `FOR ALL USING (true)` | **CRITICAL** |
-| `public.site_content` | ✅ | `FOR ALL USING (true)` + public read | **CRITICAL** — anon can write CMS |
-| `public.audit_logs` | ✅ | `FOR ALL USING (true)` | **CRITICAL** — anon can read/write |
+| `public.site_content` | ✅ | `FOR ALL USING (true)` + public read | **CRITICAL**  anon can write CMS |
+| `public.audit_logs` | ✅ | `FOR ALL USING (true)` | **CRITICAL**  anon can read/write |
 
-**Supabase Storage Buckets:** avatars (seen in URLs) — policy status unknown from code.
+**Supabase Storage Buckets:** avatars (seen in URLs)  policy status unknown from code.
 
 ---
 
@@ -145,11 +145,11 @@
 
 | Form | Location | Uploads | Backend Validation |
 |------|----------|---------|------------------|
-| Contact / Quote | `/contact` → `Contact.tsx` | Yes — PDF brief to Supabase Storage | ❌ Client-only |
+| Contact / Quote | `/contact` → `Contact.tsx` | Yes  PDF brief to Supabase Storage | ❌ Client-only |
 | Newsletter signup | Footer (`Footer.tsx`) | No | ❌ localStorage only |
 | Apply form | `/apply` → `Apply.tsx` | Unknown | Unknown |
-| CMS image upload | `/portal/cms` → `SiteContentManager.tsx` | Yes — images to Supabase Storage | ❌ Client-only |
-| Avatar upload | PeopleDirectory | Yes — to Supabase Storage `avatars` bucket | ❌ Client-only |
+| CMS image upload | `/portal/cms` → `SiteContentManager.tsx` | Yes  images to Supabase Storage | ❌ Client-only |
+| Avatar upload | PeopleDirectory | Yes  to Supabase Storage `avatars` bucket | ❌ Client-only |
 | PDF template | PdfTemplateEditorModal | No (PDF generated client-side) | N/A |
 
 ---
@@ -173,8 +173,8 @@
 
 | Endpoint | File | Method | Auth Check | CORS | Risk |
 |----------|------|--------|-----------|------|------|
-| `POST /api/send-whatsapp` | `api/send-whatsapp.js` | POST/GET/OPTIONS | ❌ None | `*` wildcard | **HIGH** — unauthenticated, public |
-| `GET /api/verify-email` | `api/verify-email.js` | GET/POST/OPTIONS | ❌ None | `*` wildcard | **MEDIUM** — email oracle, abuse |
+| `POST /api/send-whatsapp` | `api/send-whatsapp.js` | POST/GET/OPTIONS | ❌ None | `*` wildcard | **HIGH**  unauthenticated, public |
+| `GET /api/verify-email` | `api/verify-email.js` | GET/POST/OPTIONS | ❌ None | `*` wildcard | **MEDIUM**  email oracle, abuse |
 
 ---
 
@@ -182,9 +182,9 @@
 
 - `.gitignore` correctly excludes `.env` and `.env.*`
 - No `.git` folder exposed in `public/`  
-- **`.env.example` contains REAL production keys** — not placeholders (finding for S1/S2)
-- Large number of patch `.cjs` files in root: `patch.cjs`, `patch_about.cjs`, etc. — likely historical one-off scripts, should be cleaned up
-- `payout_calculator.html` in root — standalone HTML with unknown content
+- **`.env.example` contains REAL production keys**  not placeholders (finding for S1/S2)
+- Large number of patch `.cjs` files in root: `patch.cjs`, `patch_about.cjs`, etc.  likely historical one-off scripts, should be cleaned up
+- `payout_calculator.html` in root  standalone HTML with unknown content
 
 ---
 
@@ -193,19 +193,19 @@
 Probing these paths must return 404 (not index.html content leaking info):
 `/.env`, `/.git/HEAD`, `/package.json`, `/vercel.json`, `/src/main.tsx`, `/*.map`, `/supabase/`, `/scripts/prerender.js`
 
-Current Vercel rewrite: `/((?!api/).*)` → `/index.html` — all non-API paths serve index.html or prerendered HTML, meaning `/package.json` would serve React app (acceptable but not ideal).
+Current Vercel rewrite: `/((?!api/).*)` → `/index.html`  all non-API paths serve index.html or prerendered HTML, meaning `/package.json` would serve React app (acceptable but not ideal).
 
 ---
 
 ## 11. Missing / Incomplete Items (Pre-Audit Baseline)
 
 - No `build.sourcemap` explicitly set to `false` in `vite.config.js`
-- No DOMPurify — blog/CMS rich text not sanitized
+- No DOMPurify  blog/CMS rich text not sanitized
 - CSP is in **Report-Only** mode (not enforcing)
 - No rate limiting on `/api/` functions
 - CORS on both API functions is `Access-Control-Allow-Origin: *`
 - No `X-Robots-Tag: noindex` header on private routes
 - `robots.txt` in `dist/` has duplicate/malformed entries (two `User-agent: *` blocks)
-- Sitemap `lastmod` is always "today" — not real modification time
+- Sitemap `lastmod` is always "today"  not real modification time
 - Sitemap includes no portfolio detail pages or blog posts
 - `.env.example` has real production values, not placeholders

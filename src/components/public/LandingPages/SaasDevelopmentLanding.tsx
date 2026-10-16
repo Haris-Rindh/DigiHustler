@@ -1,9 +1,9 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { 
-  Code, CheckCircle2, ArrowRight, ShieldCheck, Zap, Server, Database, 
-  Layers, Lock, Terminal, Globe, Award 
+import {
+  Code, CheckCircle2, ArrowRight, ShieldCheck, Zap, Server, Database,
+  Layers, Lock, Terminal, Globe, Award
 } from 'lucide-react';
 import { SEOHead } from '../../seo/SEOHead';
 
@@ -59,7 +59,7 @@ export const SaasDevelopmentLanding: React.FC = () => {
             transition={{ delay: 0.2 }}
             className="text-base sm:text-lg text-[var(--text-body)] max-w-3xl mx-auto leading-relaxed"
           >
-            Stop juggling fragmented freelancers. DigiHust assigns a pre-vetted full-stack engineering squad—frontend engineers, backend architects, DevOps, and QA testers—governed by strict milestone SLAs and single-point accountability.
+            Stop juggling fragmented freelancers. DigiHust assigns a pre-vetted full-stack engineering squadfrontend engineers, backend architects, DevOps, and QA testersgoverned by strict milestone SLAs and single-point accountability.
           </motion.p>
 
           <motion.div
@@ -181,12 +181,11 @@ export const SaasDevelopmentLanding: React.FC = () => {
                 ]
               }
             ].map((pkg, idx) => (
-              <Link 
-                key={idx} 
+              <Link
+                key={idx}
                 to="/contact"
-                className={`group p-8 premium-card ${
-                  pkg.popular ? 'border-[var(--brand-teal)] ring-2 ring-[var(--brand-teal)]/30' : ''
-                } space-y-6 flex flex-col justify-between relative cursor-pointer block select-none`}
+                className={`group p-8 premium-card ${pkg.popular ? 'border-[var(--brand-teal)] ring-2 ring-[var(--brand-teal)]/30' : ''
+                  } space-y-6 flex flex-col justify-between relative cursor-pointer block select-none`}
               >
                 {pkg.popular && (
                   <span className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-[var(--brand-teal)] text-white text-[10px] font-black uppercase tracking-widest shadow-md">
@@ -209,11 +208,10 @@ export const SaasDevelopmentLanding: React.FC = () => {
                   </ul>
                 </div>
                 <div
-                  className={`w-full py-3 rounded-xl text-center font-bold text-xs shadow transition-all duration-150 ${
-                    pkg.popular
+                  className={`w-full py-3 rounded-xl text-center font-bold text-xs shadow transition-all duration-150 ${pkg.popular
                       ? 'bg-[var(--brand-teal)] text-white group-hover:bg-[var(--brand-teal-hover)]'
                       : 'bg-[var(--bg-subtle)] text-[var(--text-heading)] group-hover:bg-[var(--brand-teal)] group-hover:text-white border border-[var(--border-subtle)]'
-                  }`}
+                    }`}
                 >
                   Request Proposal for Scope
                 </div>

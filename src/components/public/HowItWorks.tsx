@@ -245,8 +245,10 @@ export const HowItWorks: React.FC = () => {
             >
               {/* Step Number Sidebar */}
               <div
-                className={`lg:w-1/3 p-10 flex flex-col justify-between text-[var(--text-heading)] ${
-                  i % 2 === 0 ? 'bg-[var(--bg-page)]' : 'bg-[var(--bg-surface)]'
+                className={`lg:w-1/3 p-10 flex flex-col justify-between text-[var(--text-heading)] bg-[var(--bg-page)] ${
+                  i % 2 === 1
+                    ? 'border-b lg:border-b-0 lg:border-l border-[var(--border-subtle)]'
+                    : 'border-b lg:border-b-0 lg:border-r border-[var(--border-subtle)]'
                 }`}
               >
                 <div>

@@ -1,8 +1,8 @@
-# Google Search Console & Bing Webmaster — Setup Guide
+# Google Search Console & Bing Webmaster  Setup Guide
 
 ## Step 1: Google Search Console
 
-### Option A: Domain Property (recommended — covers all subdomains)
+### Option A: Domain Property (recommended  covers all subdomains)
 1. Go to https://search.google.com/search-console → **Add Property**
 2. Select **Domain** → enter `digihust.tech`
 3. Copy the TXT record (e.g., `google-site-verification=xxxxxxxxxx`)

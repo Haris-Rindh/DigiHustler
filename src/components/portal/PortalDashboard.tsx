@@ -34,8 +34,21 @@ export const PortalDashboard: React.FC = () => {
 
   // Management Tab State
   const [mgmtTab, setMgmtTab] = useState<'directory' | 'applicants' | 'squads' | 'analytics' | 'sprints' | 'leads' | 'migration'>(
-    () => location.pathname === '/portal/migration' ? 'migration' : 'directory'
+    () => {
+      const search = new URLSearchParams(location.search);
+      if (search.get('tab') === 'leads') return 'leads';
+      if (location.pathname === '/portal/migration') return 'migration';
+      return 'directory';
+    }
   );
+
+  React.useEffect(() => {
+    const search = new URLSearchParams(location.search);
+    const tabParam = search.get('tab');
+    if (tabParam === 'leads') {
+      setMgmtTab('leads');
+    }
+  }, [location.search]);
   
   // Staff / Specialist / Intern Tab State
   const [staffTab, setStaffTab] = useState<'my_sprints' | 'my_tasks' | 'my_documents' | 'my_squad' | 'broadcasts'>('my_sprints');

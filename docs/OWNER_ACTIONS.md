@@ -1,4 +1,4 @@
-# Owner Action Items — DigiHust Security & SEO Hardening
+# Owner Action Items  DigiHust Security & SEO Hardening
 
 > **Generated:** 2026-10-17  
 > Some items below require owner approval before agents can proceed. Others are purely owner/team actions.
@@ -39,7 +39,7 @@ Creates and configures `avatars`, `documents`, and `lead-attachments` buckets wi
 ### 3. Rotate the Default CEO Portal Password in Production Database
 Owner action: In Supabase Dashboard → Table Editor → `users` table:
 Update user `usr-ceo-1` to rotate the initial password or trigger password reset.
-- **tailwindcss v4** (major): fixes the `braces` DoS vulnerability. Test first — breaking changes.
+- **tailwindcss v4** (major): fixes the `braces` DoS vulnerability. Test first  breaking changes.
 - **vite v8** (major): fixes the esbuild dev-server issue. Test first.
 
 **→ Approve major upgrades?** Agents will test before committing.
@@ -71,7 +71,7 @@ In [`src/lib/emailService.ts:30`](../src/lib/emailService.ts#L30):
 console.log(`[DigiHust Mailer] Sending password recovery OTP (${otpCode}) to ...`)
 ```
 This logs the actual OTP to server logs. **Remove the OTP from this log immediately.**  
-Agent can fix this — just say "go".
+Agent can fix this  just say "go".
 
 ### 12. EmailJS Domain Restriction (S2)
 Log into https://emailjs.com → Account → Services → Allowed Origins.  

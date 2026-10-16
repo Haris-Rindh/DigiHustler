@@ -258,7 +258,7 @@ export const dbService = {
   async insertLead(lead: Lead) {
     if (!isSupabaseConfigured || !supabase) return;
     try {
-      await supabase.from('leads').upsert({
+      const payload: Record<string, any> = {
         id: lead.id,
         client_name: lead.clientName,
         email: lead.clientEmail,
@@ -271,7 +271,24 @@ export const dbService = {
         status: lead.status,
         created_at: lead.createdAt || new Date().toISOString(),
         assigned_to: lead.submittedByUserId
-      });
+      };
+
+      const phoneVal = lead.clientPhone || lead.phone;
+      if (phoneVal) {
+        payload.client_phone = phoneVal;
+      }
+
+      let { error } = await supabase.from('leads').upsert(payload);
+      // Fallback if client_phone column doesn't exist in Supabase table schema
+      if (error && error.message?.includes('client_phone')) {
+        delete payload.client_phone;
+        payload.phone = phoneVal;
+        const retry1 = await supabase.from('leads').upsert(payload);
+        if (retry1.error && retry1.error.message?.includes('phone')) {
+          delete payload.phone;
+          await supabase.from('leads').upsert(payload);
+        }
+      }
     } catch (err) {
       console.error('Failed to insert lead to Supabase:', err);
     }
@@ -882,12 +899,18 @@ function mapUserFromDb(row: any): User {
 }
 
 function mapLeadFromDb(row: any): Lead {
+  const phoneMatch = row.scope_description?.match(/Client Phone \/ WhatsApp:\s*([^\n\r]+)/i) || 
+                     row.scope_description?.match(/Phone:\s*([^\n\r]+)/i);
+  const clientPhone = row.client_phone || row.phone || (phoneMatch ? phoneMatch[1].trim() : undefined);
+
   return {
     id: row.id,
     title: row.title || (row.scope_description ? row.scope_description.slice(0, 40) : `Inquiry from ${row.client_name}`),
     clientName: row.client_name || 'Client',
     clientEmail: row.email || '',
     clientCompany: row.company_name || '',
+    clientPhone,
+    phone: clientPhone,
     submittedByUserId: row.assigned_to || 'usr-ceo-1',
     submittedByUserName: 'Client Portal Intake',
     brief: row.scope_description || '',

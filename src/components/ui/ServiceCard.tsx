@@ -69,8 +69,8 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
       className={`group relative rounded-2xl overflow-hidden bg-[var(--bg-surface)] border border-[var(--border-subtle)] flex flex-col justify-between h-full transition-all duration-200 ease-out hover:-translate-y-1 hover:shadow-xl hover:border-[#1F7A8C]/50 ${className}`}
     >
       <div>
-        {/* ── FLUSH TOP IMAGE (Zero space, no image zoom or filter animation) ── */}
-        <div className="relative w-full aspect-[16/10] sm:aspect-[16/9] overflow-hidden bg-[var(--bg-subtle)]">
+        {/* ── FLUSH TOP IMAGE (16:9 Aspect Ratio) ── */}
+        <div className="relative w-full aspect-video overflow-hidden bg-[var(--bg-subtle)]">
           <img
             src={imageSrc}
             alt={service.title}

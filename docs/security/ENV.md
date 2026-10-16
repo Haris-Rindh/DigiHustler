@@ -1,4 +1,4 @@
-# DigiHust Environment Variables — Reference
+# DigiHust Environment Variables  Reference
 
 > **Security classification:** Internal. Do not share publicly.
 
@@ -7,7 +7,7 @@
 | Variable | Prefix | Location | Visibility | Purpose |
 |----------|--------|----------|-----------|---------|
 | `VITE_SUPABASE_URL` | `VITE_` | `.env` / Vercel | **Public** (in browser bundle) | Supabase project REST endpoint |
-| `VITE_SUPABASE_ANON_KEY` | `VITE_` | `.env` / Vercel | **Public** (in browser bundle) | Supabase anonymous JWT — safe ONLY if RLS is correct |
+| `VITE_SUPABASE_ANON_KEY` | `VITE_` | `.env` / Vercel | **Public** (in browser bundle) | Supabase anonymous JWT  safe ONLY if RLS is correct |
 | `VITE_EMAILJS_SERVICE_ID` | `VITE_` | `.env` / Vercel | **Public** | EmailJS service ID for contact/OTP emails |
 | `VITE_EMAILJS_PUBLIC_KEY` | `VITE_` | `.env` / Vercel | **Public** | EmailJS SDK public key |
 | `VITE_EMAILJS_CONTACT_TEMPLATE_ID` | `VITE_` | `.env` / Vercel | **Public** | EmailJS template for contact form |
@@ -17,7 +17,7 @@
 | `WHATSAPP_NUMBERS` | none | Vercel dashboard only | **Server-side secret** | Comma-separated target WhatsApp numbers |
 | `WHATSAPP_WEBHOOK_URL` | none | Vercel dashboard only | **Server-side secret** | Automation webhook (n8n/Zapier etc.) |
 | `TWILIO_ACCOUNT_SID` | none | Vercel dashboard only | **Server-side secret** | Twilio account identifier |
-| `TWILIO_AUTH_TOKEN` | none | Vercel dashboard only | **Server-side secret** | Twilio auth token — treat as password |
+| `TWILIO_AUTH_TOKEN` | none | Vercel dashboard only | **Server-side secret** | Twilio auth token  treat as password |
 | `TWILIO_WHATSAPP_FROM` | none | Vercel dashboard only | **Server-side secret** | Twilio WhatsApp sender number |
 
 ## Rules
@@ -33,5 +33,5 @@
 
 - ✅ No `service_role` key found anywhere in source
 - ✅ No Twilio credentials found in source (correctly server-side only)  
-- ⚠️ **FIXED:** `.env.example` previously contained real production anon key and EmailJS keys — replaced with placeholders
+- ⚠️ **FIXED:** `.env.example` previously contained real production anon key and EmailJS keys  replaced with placeholders
 - ✅ Server-side vars (`TWILIO_*`, `CALLMEBOT_*`, `WHATSAPP_*`) have no `VITE_` prefix

@@ -36,7 +36,7 @@ export const EditorialPolicy: React.FC = () => {
               </h2>
             </div>
             <p className="text-sm leading-relaxed text-[var(--text-body)]">
-              Every article and technical guide published on the DigiHust Knowledge Hub is authored or reviewed by identified domain specialists—including software engineers, UI/UX architects, AI practitioners, and security auditors. We do not publish anonymous or unverified technical claims.
+              Every article and technical guide published on the DigiHust Knowledge Hub is authored or reviewed by identified domain specialistsincluding software engineers, UI/UX architects, AI practitioners, and security auditors. We do not publish anonymous or unverified technical claims.
             </p>
           </div>
 
@@ -74,7 +74,7 @@ export const EditorialPolicy: React.FC = () => {
           <div className="p-5 rounded-2xl bg-[var(--brand-teal-subtle)] border border-[var(--brand-teal)]/30 text-xs text-[var(--text-heading)] flex items-center justify-between gap-4">
             <div className="flex items-center space-x-2.5">
               <ShieldCheck className="w-4 h-4 text-[var(--brand-teal)] shrink-0" />
-              <span>DRAFT FOR OWNER REVIEW — Governed by DigiHust Technical Standards.</span>
+              <span>DRAFT FOR OWNER REVIEW  Governed by DigiHust Technical Standards.</span>
             </div>
             <Link to="/contact" className="font-bold text-[var(--brand-teal)] hover:underline flex items-center gap-1 shrink-0">
               <span>Contact Leads</span>

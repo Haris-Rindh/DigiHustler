@@ -4,7 +4,7 @@ import {
   FileText, Image as ImageIcon, Check, RotateCcw, 
   Plus, Trash2, Eye, Layout, Star, Briefcase, Users, Layers, ExternalLink,
   DollarSign, HelpCircle, Info, PhoneCall, ChevronRight, X, ShieldAlert, CheckCircle2,
-  Mail, Download, Upload, Loader2
+  Mail, Download, Upload, Loader2, Award
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { 
@@ -645,15 +645,18 @@ export const SiteContentManager: React.FC = () => {
       <div className="flex items-center space-x-1.5 border-b border-[var(--border-subtle)] pb-2 overflow-x-auto">
         {[
           { id: 'hero' as const,        label: '1. Hero Section',     icon: null,                                     status: 'live',     tip: 'Controls the main headline, subtext, badge, and stat tokens on the homepage' },
-          { id: 'services' as const,    label: '2. Services',         icon: <Layers className="w-3.5 h-3.5" />,     status: 'live',     tip: 'The capability cards shown on homepage and /services page' },
-          { id: 'caseStudies' as const, label: '3. Case Studies',     icon: <Briefcase className="w-3.5 h-3.5" />,  status: 'live',     tip: 'Work/Portfolio section on homepage and /work page' },
-          { id: 'testimonials' as const,label: '4. Testimonials',     icon: <Star className="w-3.5 h-3.5" />,       status: 'live',     tip: 'Client reviews shown on homepage' },
-          { id: 'team' as const,        label: '5. Team Profiles',    icon: <Users className="w-3.5 h-3.5" />,      status: 'live',     tip: 'Team members shown on the /team page' },
-          { id: 'blog' as const,        label: '6. Blog & Insights',  icon: <FileText className="w-3.5 h-3.5" />,   status: 'live',     tip: 'Manage articles and technical guides on /blog and /blog/:slug' },
-          { id: 'about' as const,       label: '7. Company Story',    icon: <Info className="w-3.5 h-3.5" />,       status: 'live',     tip: 'Mission, vision, and company story shown on /about page' },
-          { id: 'contact' as const,     label: '8. Contact Info',     icon: <PhoneCall className="w-3.5 h-3.5" />,  status: 'live',     tip: 'Email, phone, and address shown on the /contact page sidebar' },
-          { id: 'careers' as const,     label: '9. Careers',          icon: <Briefcase className="w-3.5 h-3.5" />,  status: 'live',     tip: 'Manage open positions and messaging on /careers' },
-          { id: 'newsletter' as const,  label: '10. Newsletter',      icon: <Mail className="w-3.5 h-3.5" />,       status: 'live',     tip: 'View newsletter subscribers and export to CSV' },
+          { id: 'valueProps' as const,  label: '2. Value Props',      icon: <Award className="w-3.5 h-3.5" />,        status: 'live',     tip: 'Key value propositions and advantages on the homepage' },
+          { id: 'services' as const,    label: '3. Services',         icon: <Layers className="w-3.5 h-3.5" />,       status: 'live',     tip: 'The capability cards shown on homepage and /services page' },
+          { id: 'caseStudies' as const, label: '4. Case Studies',     icon: <Briefcase className="w-3.5 h-3.5" />,    status: 'live',     tip: 'Work/Portfolio section on homepage and /work page' },
+          { id: 'testimonials' as const,label: '5. Testimonials',     icon: <Star className="w-3.5 h-3.5" />,         status: 'live',     tip: 'Client reviews shown on homepage' },
+          { id: 'team' as const,        label: '6. Team Profiles',    icon: <Users className="w-3.5 h-3.5" />,        status: 'live',     tip: 'Team members shown on the /team page' },
+          { id: 'blog' as const,        label: '7. Blog & Insights',  icon: <FileText className="w-3.5 h-3.5" />,     status: 'live',     tip: 'Manage articles and technical guides on /blog and /blog/:slug' },
+          { id: 'faqs' as const,        label: '8. FAQs',             icon: <HelpCircle className="w-3.5 h-3.5" />,   status: 'live',     tip: 'Frequently asked questions shown across the platform' },
+          { id: 'about' as const,       label: '9. Company Story',    icon: <Info className="w-3.5 h-3.5" />,         status: 'live',     tip: 'Mission, vision, and company story shown on /about page' },
+          { id: 'contact' as const,     label: '10. Contact Info',    icon: <PhoneCall className="w-3.5 h-3.5" />,    status: 'live',     tip: 'Email, phone, and address shown on the /contact page sidebar' },
+          { id: 'careers' as const,     label: '11. Careers',         icon: <Briefcase className="w-3.5 h-3.5" />,    status: 'live',     tip: 'Manage open positions and messaging on /careers' },
+          { id: 'images' as const,      label: '12. Image Studio',    icon: <ImageIcon className="w-3.5 h-3.5" />,    status: 'live',     tip: 'Manage image slot overrides and custom assets' },
+          { id: 'newsletter' as const,  label: '13. Newsletter',      icon: <Mail className="w-3.5 h-3.5" />,         status: 'live',     tip: 'View newsletter subscribers and export to CSV' },
         ].map((tab) => (
           <button
             key={tab.id}
@@ -1596,213 +1599,229 @@ export const SiteContentManager: React.FC = () => {
           </div>
 
           <div className="space-y-6">
-            {(siteContent.caseStudies || []).map((cs) => (
-              <div key={cs.id} className="p-6 sm:p-8 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] space-y-4">
-                <div className="flex items-center justify-between pb-3 border-b border-[var(--border-subtle)]">
-                  <div className="flex items-center space-x-2">
-                    <span className="font-bold text-xs uppercase text-[var(--brand-teal)]">{cs.slug}</span>
-                    <span className="text-[10px] text-[var(--text-muted)]">ID: {cs.id}</span>
-                  </div>
-                  <button
-                    onClick={() => {
-                      if (confirm(`Are you sure you want to delete case study '${cs.title}'?`)) {
-                        removeItemFromSiteContent('caseStudies', cs.id);
-                        triggerSaved('Case Study removed.');
-                      }
-                    }}
-                    className="flex items-center space-x-1 px-3 py-1 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 text-xs font-bold transition-all cursor-pointer"
-                  >
-                    <Trash2 className="w-3.5 h-3.5" />
-                    <span>Delete</span>
-                  </button>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                  <div>
-                    <label className="block text-xs font-bold uppercase text-[var(--text-muted)] mb-1">Project Title</label>
-                    <input
-                      type="text"
-                      value={cs.title}
-                      onChange={(e) => updateItemInSiteContent('caseStudies', cs.id, { title: e.target.value })}
-                      className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs text-[var(--text-heading)]"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-bold uppercase text-[var(--text-muted)] mb-1">Client Organization</label>
-                    <input
-                      type="text"
-                      value={cs.client}
-                      onChange={(e) => updateItemInSiteContent('caseStudies', cs.id, { client: e.target.value })}
-                      className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs text-[var(--text-heading)]"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-bold uppercase text-[var(--text-muted)] mb-1">Category</label>
-                    <input
-                      type="text"
-                      value={cs.category}
-                      onChange={(e) => updateItemInSiteContent('caseStudies', cs.id, { category: e.target.value })}
-                      className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs text-[var(--text-heading)]"
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                  <div>
-                    <label className="block text-xs font-bold uppercase text-[var(--text-muted)] mb-1">Impact Metric (e.g. +140%)</label>
-                    <input
-                      type="text"
-                      value={cs.impactMetric || ''}
-                      onChange={(e) => updateItemInSiteContent('caseStudies', cs.id, { impactMetric: e.target.value })}
-                      className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs text-[var(--text-heading)] font-bold"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-bold uppercase text-[var(--text-muted)] mb-1">Impact Label</label>
-                    <input
-                      type="text"
-                      value={cs.impactLabel || ''}
-                      onChange={(e) => updateItemInSiteContent('caseStudies', cs.id, { impactLabel: e.target.value })}
-                      className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs text-[var(--text-heading)]"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-bold uppercase text-[var(--text-muted)] mb-1">Live Demo / External Link</label>
-                    <input
-                      type="url"
-                      placeholder="https://..."
-                      value={cs.projectUrl || ''}
-                      onChange={(e) => updateItemInSiteContent('caseStudies', cs.id, { projectUrl: e.target.value })}
-                      className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs text-[var(--text-heading)]"
-                    />
-                  </div>
-                </div>
-
-                {/* Case Study Image & Visual Uploader */}
-                <div className="p-4 rounded-2xl bg-[var(--bg-subtle)] border border-[var(--border-subtle)] space-y-3">
-                  <div className="flex items-center justify-between">
-                    <label className="block text-xs font-bold uppercase text-[var(--text-muted)]">
-                      Project Cover Image
-                    </label>
-                    {cs.imageUrl && (
-                      <button
-                        type="button"
-                        onClick={() => updateItemInSiteContent('caseStudies', cs.id, { imageUrl: '' })}
-                        className="text-[10px] text-rose-500 hover:underline cursor-pointer"
-                      >
-                        Reset / Clear
-                      </button>
-                    )}
+            {(siteContent.caseStudies || []).map((cs, idx) => {
+              const csId = cs.id || cs.slug || `cs-${idx + 1}`;
+              return (
+                <div key={csId} className="p-6 sm:p-8 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] space-y-4">
+                  <div className="flex items-center justify-between pb-3 border-b border-[var(--border-subtle)]">
+                    <div className="flex items-center space-x-2">
+                      <span className="font-bold text-xs uppercase text-[var(--brand-teal)]">{cs.slug || `Project #${idx + 1}`}</span>
+                      <span className="text-[10px] text-[var(--text-muted)]">ID: {csId}</span>
+                    </div>
+                    <button
+                      onClick={() => {
+                        if (confirm(`Are you sure you want to delete case study '${cs.title}'?`)) {
+                          removeItemFromSiteContent('caseStudies', csId, idx);
+                          triggerSaved('Case Study removed.');
+                        }
+                      }}
+                      className="flex items-center space-x-1 px-3 py-1 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 text-xs font-bold transition-all cursor-pointer"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                      <span>Delete</span>
+                    </button>
                   </div>
 
-                  <div className="flex flex-col sm:flex-row gap-4 items-start">
-                    {/* Live Thumbnail Preview */}
-                    <div className="w-32 h-20 sm:w-40 sm:h-24 rounded-xl overflow-hidden bg-black/20 border border-[var(--border-subtle)] shrink-0 relative flex items-center justify-center">
-                      {cs.imageUrl ? (
-                        <img
-                          src={formatImageUrl(cs.imageUrl, cs.category)}
-                          alt={cs.title}
-                          referrerPolicy="no-referrer"
-                          className="w-full h-full object-cover"
-                          onError={(e) => handleImageError(e, undefined, cs.category)}
-                        />
-                      ) : (
-                        <div className="text-[10px] text-[var(--text-muted)] text-center p-2">
-                          No Image Uploaded
-                        </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div>
+                      <label className="block text-xs font-bold uppercase text-[var(--text-muted)] mb-1">Project Title</label>
+                      <input
+                        type="text"
+                        value={cs.title}
+                        onChange={(e) => updateItemInSiteContent('caseStudies', csId, { title: e.target.value }, idx)}
+                        className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs text-[var(--text-heading)]"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold uppercase text-[var(--text-muted)] mb-1">Client Organization</label>
+                      <input
+                        type="text"
+                        value={cs.client}
+                        onChange={(e) => updateItemInSiteContent('caseStudies', csId, { client: e.target.value }, idx)}
+                        className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs text-[var(--text-heading)]"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold uppercase text-[var(--text-muted)] mb-1">Category</label>
+                      <input
+                        type="text"
+                        value={cs.category}
+                        onChange={(e) => updateItemInSiteContent('caseStudies', csId, { category: e.target.value }, idx)}
+                        className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs text-[var(--text-heading)]"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div>
+                      <label className="block text-xs font-bold uppercase text-[var(--text-muted)] mb-1">Impact Metric (e.g. +140%)</label>
+                      <input
+                        type="text"
+                        value={cs.impactMetric || ''}
+                        onChange={(e) => updateItemInSiteContent('caseStudies', csId, { impactMetric: e.target.value }, idx)}
+                        className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs text-[var(--text-heading)] font-bold"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold uppercase text-[var(--text-muted)] mb-1">Impact Label</label>
+                      <input
+                        type="text"
+                        value={cs.impactLabel || ''}
+                        onChange={(e) => updateItemInSiteContent('caseStudies', csId, { impactLabel: e.target.value }, idx)}
+                        className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs text-[var(--text-heading)]"
+                      />
+                    </div>
+                    <div>
+                      <div className="flex items-center justify-between mb-1">
+                        <label className="block text-xs font-bold uppercase text-[var(--text-muted)]">Live Demo / External Link</label>
+                        {cs.projectUrl && (
+                          <a
+                            href={cs.projectUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-[10px] text-[var(--brand-teal)] hover:underline flex items-center gap-0.5 cursor-pointer"
+                          >
+                            <span>Open link</span>
+                            <ExternalLink className="w-2.5 h-2.5" />
+                          </a>
+                        )}
+                      </div>
+                      <input
+                        type="url"
+                        placeholder="https://yourprojectdemo.com"
+                        value={cs.projectUrl || ''}
+                        onChange={(e) => updateItemInSiteContent('caseStudies', csId, { projectUrl: e.target.value }, idx)}
+                        className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs text-[var(--text-heading)] focus:border-[var(--brand-teal)] focus:outline-none"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Case Study Image & Visual Uploader */}
+                  <div className="p-4 rounded-2xl bg-[var(--bg-subtle)] border border-[var(--border-subtle)] space-y-3">
+                    <div className="flex items-center justify-between">
+                      <label className="block text-xs font-bold uppercase text-[var(--text-muted)]">
+                        Project Cover Image
+                      </label>
+                      {cs.imageUrl && (
+                        <button
+                          type="button"
+                          onClick={() => updateItemInSiteContent('caseStudies', csId, { imageUrl: '' }, idx)}
+                          className="text-[10px] text-rose-500 hover:underline cursor-pointer"
+                        >
+                          Reset / Clear
+                        </button>
                       )}
                     </div>
 
-                    {/* Image URL & Upload button */}
-                    <div className="flex-1 space-y-2.5 w-full">
-                      <div className="flex gap-2">
-                        <input
-                          type="url"
-                          placeholder="Paste image link from Postimg, Imgur, Drive, Unsplash, etc."
-                          value={cs.imageUrl || ''}
-                          onChange={(e) => updateItemInSiteContent('caseStudies', cs.id, { imageUrl: e.target.value })}
-                          className="flex-1 bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs text-[var(--text-heading)] font-mono"
-                        />
-                        <label className="px-4 py-2 rounded-xl bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-white text-xs font-bold cursor-pointer whitespace-nowrap flex items-center gap-1.5 shadow-sm transition-all active:scale-95">
-                          {uploadingTargetId === cs.id ? (
-                            <>
-                              <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                              <span>Uploading...</span>
-                            </>
-                          ) : (
-                            <>
-                              <Upload className="w-3.5 h-3.5" />
-                              <span>Upload Image</span>
-                            </>
-                          )}
-                          <input
-                            type="file"
-                            accept="image/*"
-                            className="hidden"
-                            disabled={uploadingTargetId === cs.id}
-                            onChange={async (e) => {
-                              const file = e.target.files?.[0];
-                              if (file) {
-                                setUploadingTargetId(cs.id);
-                                const url = await uploadAssetSafely(file, 'portfolio');
-                                if (url) {
-                                  updateItemInSiteContent('caseStudies', cs.id, { imageUrl: url });
-                                  showToast('Case study image uploaded successfully!', 'success');
-                                } else {
-                                  showToast('Failed to process image file.', 'error');
-                                }
-                                setUploadingTargetId(null);
-                              }
-                            }}
+                    <div className="flex flex-col sm:flex-row gap-4 items-start">
+                      {/* Live Thumbnail Preview */}
+                      <div className="w-32 h-20 sm:w-40 sm:h-24 rounded-xl overflow-hidden bg-black/20 border border-[var(--border-subtle)] shrink-0 relative flex items-center justify-center">
+                        {cs.imageUrl ? (
+                          <img
+                            src={formatImageUrl(cs.imageUrl, cs.category)}
+                            alt={cs.title}
+                            referrerPolicy="no-referrer"
+                            className="w-full h-full object-cover"
+                            onError={(e) => handleImageError(e, undefined, cs.category)}
                           />
-                        </label>
+                        ) : (
+                          <div className="text-[10px] text-[var(--text-muted)] text-center p-2">
+                            No Image Uploaded
+                          </div>
+                        )}
                       </div>
 
-                      {/* Presets Row */}
-                      <div className="flex flex-wrap items-center gap-1.5">
-                        <span className="text-[10px] text-[var(--text-muted)] mr-1">Presets:</span>
-                        {CURATED_PORTFOLIO_IMAGE_PRESETS.map((preset) => (
-                          <button
-                            key={preset.label}
-                            type="button"
-                            onClick={() => updateItemInSiteContent('caseStudies', cs.id, { imageUrl: preset.url })}
-                            className="px-2.5 py-1 rounded-lg text-[10px] font-semibold bg-[var(--bg-page)] hover:bg-[var(--bg-surface)] hover:text-[var(--brand-teal)] border border-[var(--border-subtle)] transition-colors cursor-pointer"
-                          >
-                            {preset.label}
-                          </button>
-                        ))}
+                      {/* Image URL & Upload button */}
+                      <div className="flex-1 space-y-2.5 w-full">
+                        <div className="flex gap-2">
+                          <input
+                            type="url"
+                            placeholder="Paste image link from Postimg, Imgur, Drive, Unsplash, etc."
+                            value={cs.imageUrl || ''}
+                            onChange={(e) => updateItemInSiteContent('caseStudies', csId, { imageUrl: e.target.value }, idx)}
+                            className="flex-1 bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs text-[var(--text-heading)] font-mono"
+                          />
+                          <label className="px-4 py-2 rounded-xl bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-white text-xs font-bold cursor-pointer whitespace-nowrap flex items-center gap-1.5 shadow-sm transition-all active:scale-95">
+                            {uploadingTargetId === csId ? (
+                              <>
+                                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                <span>Uploading...</span>
+                              </>
+                            ) : (
+                              <>
+                                <Upload className="w-3.5 h-3.5" />
+                                <span>Upload Image</span>
+                              </>
+                            )}
+                            <input
+                              type="file"
+                              accept="image/*"
+                              className="hidden"
+                              disabled={uploadingTargetId === csId}
+                              onChange={async (e) => {
+                                const file = e.target.files?.[0];
+                                if (file) {
+                                  setUploadingTargetId(csId);
+                                  const url = await uploadAssetSafely(file, 'portfolio');
+                                  if (url) {
+                                    updateItemInSiteContent('caseStudies', csId, { imageUrl: url }, idx);
+                                    showToast('Case study image uploaded successfully!', 'success');
+                                  } else {
+                                    showToast('Failed to process image file.', 'error');
+                                  }
+                                  setUploadingTargetId(null);
+                                }
+                              }}
+                            />
+                          </label>
+                        </div>
+
+                        {/* Presets Row */}
+                        <div className="flex flex-wrap items-center gap-1.5">
+                          <span className="text-[10px] text-[var(--text-muted)] mr-1">Presets:</span>
+                          {CURATED_PORTFOLIO_IMAGE_PRESETS.map((preset) => (
+                            <button
+                              key={preset.label}
+                              type="button"
+                              onClick={() => updateItemInSiteContent('caseStudies', csId, { imageUrl: preset.url }, idx)}
+                              className="px-2.5 py-1 rounded-lg text-[10px] font-semibold bg-[var(--bg-page)] hover:bg-[var(--bg-surface)] hover:text-[var(--brand-teal)] border border-[var(--border-subtle)] transition-colors cursor-pointer"
+                            >
+                              {preset.label}
+                            </button>
+                          ))}
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
 
-                <div>
-                  <label className="block text-xs font-bold uppercase text-[var(--text-muted)] mb-1">Summary Description</label>
-                  <textarea
-                    value={cs.summary}
-                    onChange={(e) => updateItemInSiteContent('caseStudies', cs.id, { summary: e.target.value })}
-                    rows={2}
-                    className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl p-3 text-xs text-[var(--text-heading)]"
-                  />
-                </div>
+                  <div>
+                    <label className="block text-xs font-bold uppercase text-[var(--text-muted)] mb-1">Summary Description</label>
+                    <textarea
+                      value={cs.summary}
+                      onChange={(e) => updateItemInSiteContent('caseStudies', csId, { summary: e.target.value }, idx)}
+                      rows={2}
+                      className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl p-3 text-xs text-[var(--text-heading)]"
+                    />
+                  </div>
 
-                {/* Card Save Action Bar */}
-                <div className="flex items-center justify-between pt-3 border-t border-[var(--border-subtle)]">
-                  <span className="text-[11px] text-emerald-500 font-semibold flex items-center gap-1">
-                    <Check className="w-3.5 h-3.5" />
-                    <span>Auto-saved live</span>
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => triggerSaved(`Case Study '${cs.title}' saved live!`)}
-                    className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-white text-xs font-bold transition-all shadow-xs cursor-pointer"
-                  >
-                    <Check className="w-3.5 h-3.5" />
-                    <span>Save Case Study</span>
-                  </button>
+                  {/* Card Save Action Bar */}
+                  <div className="flex items-center justify-between pt-3 border-t border-[var(--border-subtle)]">
+                    <span className="text-[11px] text-emerald-500 font-semibold flex items-center gap-1">
+                      <Check className="w-3.5 h-3.5" />
+                      <span>Auto-saved live</span>
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => triggerSaved(`Case Study '${cs.title}' saved live!`)}
+                      className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-white text-xs font-bold transition-all shadow-xs cursor-pointer"
+                    >
+                      <Check className="w-3.5 h-3.5" />
+                      <span>Save Case Study</span>
+                    </button>
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
 
           {/* Add Case Study Modal */}
@@ -2898,13 +2917,24 @@ export const SiteContentManager: React.FC = () => {
         <div className="space-y-6">
           <div className="flex items-center justify-between p-4 rounded-2xl bg-[var(--bg-surface)] border border-[var(--border-subtle)]">
             <h3 className="font-display font-extrabold text-base text-[var(--text-heading)]">Frequently Asked Questions ({(siteContent.faqs || []).length})</h3>
-            <button
-              onClick={() => setShowAddFAQ(true)}
-              className="flex items-center space-x-1.5 px-4 py-2 rounded-xl bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-white text-xs font-bold shadow-md cursor-pointer"
-            >
-              <Plus className="w-4 h-4" />
-              <span>Add FAQ</span>
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => triggerSaved('All FAQ items synced & saved live!')}
+                className="flex items-center space-x-1.5 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-md cursor-pointer transition-colors"
+              >
+                <Check className="w-4 h-4" />
+                <span>Save All FAQs</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowAddFAQ(true)}
+                className="flex items-center space-x-1.5 px-4 py-2 rounded-xl bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-white text-xs font-bold shadow-md cursor-pointer"
+              >
+                <Plus className="w-4 h-4" />
+                <span>Add FAQ</span>
+              </button>
+            </div>
           </div>
 
           <div className="space-y-4">
@@ -2936,6 +2966,22 @@ export const SiteContentManager: React.FC = () => {
                   rows={3}
                   className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl p-3 text-xs text-[var(--text-body)]"
                 />
+
+                {/* Card Save Action Bar */}
+                <div className="flex items-center justify-between pt-3 border-t border-[var(--border-subtle)]">
+                  <span className="text-[11px] text-emerald-500 font-semibold flex items-center gap-1">
+                    <Check className="w-3.5 h-3.5" />
+                    <span>Auto-saved live</span>
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => triggerSaved(`FAQ item '${f.question.slice(0, 30)}...' saved live!`)}
+                    className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-white text-xs font-bold transition-all shadow-xs cursor-pointer"
+                  >
+                    <Check className="w-3.5 h-3.5" />
+                    <span>Save FAQ</span>
+                  </button>
+                </div>
               </div>
             ))}
           </div>

@@ -45,7 +45,7 @@ export const FounderBrainsShowcase: React.FC<FounderBrainsShowcaseProps> = ({
     <section
       ref={containerRef}
       data-hero={dataHero ? 'true' : undefined}
-      className="bg-[#F4F9F8] dark:bg-[#031E28] pt-8 sm:pt-10 md:pt-12 pb-8 sm:pb-10 px-4 sm:px-6 lg:px-8 border-b border-[#9BD8CB]/40 dark:border-cyan-900/40 relative overflow-hidden select-none transition-colors duration-300"
+      className="bg-[#F4F9F8] dark:bg-[#031E28] pt-8 sm:pt-10 md:pt-12 pb-0 px-4 sm:px-6 lg:px-8 border-b border-[#9BD8CB]/40 dark:border-cyan-900/40 relative overflow-hidden select-none transition-colors duration-300"
     >
       {/* ── SECTION HEADING (Prominent Executive Header) ── */}
       <div className="max-w-4xl mx-auto text-center mb-3 sm:mb-4 md:mb-5 px-4">
@@ -115,7 +115,7 @@ export const FounderBrainsShowcase: React.FC<FounderBrainsShowcaseProps> = ({
             <motion.img
               src={foundersDuoImg}
               alt="Mahad Abbas and Muhammad Haseeb - DigiHust Executive Leadership"
-              className="w-[320px] md:w-[380px] lg:w-[430px] h-auto object-contain object-bottom select-none drop-shadow-md pointer-events-none"
+              className="w-[320px] md:w-[380px] lg:w-[430px] h-auto object-contain object-bottom select-none drop-shadow-md pointer-events-none block align-bottom"
               loading="eager"
               decoding="async"
               initial={shouldReduceMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 16 }}

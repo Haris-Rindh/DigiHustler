@@ -32,7 +32,7 @@ export const TRANSLATIONS: Record<LanguageCode, Record<string, string>> = {
     hero_trust_pill: 'Coordinated Specialized Talent',
     hero_headline_1: 'Your Digital Work.',
     hero_headline_2: 'Handled by Skilled People.',
-    hero_sub: 'From custom web development and UI/UX design to AI automations, growth marketing, and cybersecurity — DigiHust unites verified specialists into unified project squads.',
+    hero_sub: 'From custom web development and UI/UX design to AI automations, growth marketing, and cybersecurity  DigiHust unites verified specialists into unified project squads.',
     btn_scoped_quote: 'Get a Scoped Quote',
     btn_explore_capabilities: 'Explore Capabilities',
     hero_active_squads: 'Active Squads:',
@@ -59,7 +59,7 @@ export const TRANSLATIONS: Record<LanguageCode, Record<string, string>> = {
 
     // Model Advantage
     model_tag: 'The Model Advantage',
-    model_heading: 'A Managed Digital Company — Not a Random Freelancer Roll.',
+    model_heading: 'A Managed Digital Company  Not a Random Freelancer Roll.',
     model_p1: 'Managing five freelancers means five negotiations, clashing timelines, blame-shifting and inconsistent quality.',
     model_p2: 'With DigiHust, you engage one professional entity. We architect the scope and assign verified specialists to each domain. Every milestone is guaranteed under a single service-level agreement.',
     model_bullet_1: 'Single contract, single invoice, single accountable point of contact',
@@ -113,7 +113,7 @@ export const TRANSLATIONS: Record<LanguageCode, Record<string, string>> = {
     hero_trust_pill: 'Koordinierte Fachteams',
     hero_headline_1: 'Ihre digitalen Projekte.',
     hero_headline_2: 'Von Experten umgesetzt.',
-    hero_sub: 'Von moderner Webentwicklung und UI/UX bis hin zu KI-Automatisierungen und Cybersicherheit — DigiHust bündelt verifizierte Experten in agilen Projektteams.',
+    hero_sub: 'Von moderner Webentwicklung und UI/UX bis hin zu KI-Automatisierungen und Cybersicherheit  DigiHust bündelt verifizierte Experten in agilen Projektteams.',
     btn_scoped_quote: 'Angebot anfragen',
     btn_explore_capabilities: 'Leistungen entdecken',
     hero_active_squads: 'Aktive Teams:',
@@ -140,7 +140,7 @@ export const TRANSLATIONS: Record<LanguageCode, Record<string, string>> = {
 
     // Model Advantage
     model_tag: 'Der Modell-Vorteil',
-    model_heading: 'Ein gemanagtes Digitalunternehmen — kein Freelancer-Zufallsspiel.',
+    model_heading: 'Ein gemanagtes Digitalunternehmen  kein Freelancer-Zufallsspiel.',
     model_p1: 'Das direkte Management von Freelancern führt zu Reibungsverlusten, Verzögerungen und schwankender Qualität.',
     model_p2: 'Bei DigiHust arbeiten Sie mit einem verlässlichen Partner. Wir strukturieren das Projekt und garantieren Spitzenqualität.',
     model_bullet_1: 'Ein Vertrag, eine Rechnung, ein fester Ansprechpartner',
@@ -194,7 +194,7 @@ export const TRANSLATIONS: Record<LanguageCode, Record<string, string>> = {
     hero_trust_pill: 'فرق متخصصة موحدة',
     hero_headline_1: 'مشاريعك الرقمية.',
     hero_headline_2: 'بأيدي خبراء محترفين.',
-    hero_sub: 'من تطوير الويب المتكامل وتصميم الواجهات إلى حلول الذكاء الاصطناعي والأمن السيبراني — نجمع أفضل الكفاءات في فريق واحد.',
+    hero_sub: 'من تطوير الويب المتكامل وتصميم الواجهات إلى حلول الذكاء الاصطناعي والأمن السيبراني  نجمع أفضل الكفاءات في فريق واحد.',
     btn_scoped_quote: 'طلب عرض سعر مخصص',
     btn_explore_capabilities: 'استكشف الخدمات',
     hero_active_squads: 'الفرق المتخصصة:',
@@ -221,7 +221,7 @@ export const TRANSLATIONS: Record<LanguageCode, Record<string, string>> = {
 
     // Model Advantage
     model_tag: 'ميزة نموذج العمل',
-    model_heading: 'شركة رقمية متكاملة — وليست مجرد منصة مستقلين عشوائية.',
+    model_heading: 'شركة رقمية متكاملة  وليست مجرد منصة مستقلين عشوائية.',
     model_p1: 'إدارة المستقلين بشكل منفصل تتسبب في تأخير الجداول الزمنية واختلاف جودة التنفيذ.',
     model_p2: 'مع DigiHust، تتعاقد مع كيان مهني واحد يضمن جودة البرمجيات والتسليم في الموعد المحدد.',
     model_bullet_1: 'عقد واحد، فاتورة واحدة، وجهة اتصال مسؤولة واحدة',
@@ -275,7 +275,7 @@ export const TRANSLATIONS: Record<LanguageCode, Record<string, string>> = {
     hero_trust_pill: 'Talento Especializado Coordinado',
     hero_headline_1: 'Tu Trabajo Digital.',
     hero_headline_2: 'En Manos de Expertos.',
-    hero_sub: 'Desde desarrollo web a medida y diseño UI/UX hasta automatizaciones de IA y ciberseguridad — DigiHust une especialistas verificados en un solo equipo.',
+    hero_sub: 'Desde desarrollo web a medida y diseño UI/UX hasta automatizaciones de IA y ciberseguridad  DigiHust une especialistas verificados en un solo equipo.',
     btn_scoped_quote: 'Pedir Presupuesto',
     btn_explore_capabilities: 'Explorar Servicios',
     hero_active_squads: 'Equipos Activos:',
@@ -302,7 +302,7 @@ export const TRANSLATIONS: Record<LanguageCode, Record<string, string>> = {
 
     // Model Advantage
     model_tag: 'La Ventaja del Modelo',
-    model_heading: 'Una Empresa Digital Gestionada — Sin el Azar de los Freelancers.',
+    model_heading: 'Una Empresa Digital Gestionada  Sin el Azar de los Freelancers.',
     model_p1: 'Gestionar múltiples freelancers genera demoras, falta de comunicación y calidad inconsistente.',
     model_p2: 'Con DigiHust, colaboras con una entidad profesional que garantiza entregas de alto nivel bajo un mismo acuerdo de servicio.',
     model_bullet_1: 'Un solo contrato, una factura, un contacto responsable',

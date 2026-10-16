@@ -82,12 +82,12 @@ export interface Group {
   color: string;
 }
 
-export type PipelineStage = 
-  | 'new_lead' 
-  | 'under_review' 
-  | 'assigned' 
-  | 'in_progress' 
-  | 'completed' 
+export type PipelineStage =
+  | 'new_lead'
+  | 'under_review'
+  | 'assigned'
+  | 'in_progress'
+  | 'completed'
   | 'paid'
   | 'lead'
   | 'review';
@@ -98,6 +98,8 @@ export interface Lead {
   clientName: string;
   clientCompany?: string;
   clientEmail: string;
+  clientPhone?: string;
+  phone?: string;
   submittedByUserId: string;
   submittedByUserName: string;
   brief: string;
@@ -554,7 +556,7 @@ export interface SiteContent {
   certificateTemplates?: CertificateTemplate[];
   blogPosts?: SiteBlogPost[];
   careers?: SiteCareersContent;
-  // Pinned member IDs in exact order — stored in cloud for cross-device sync
+  // Pinned member IDs in exact order  stored in cloud for cross-device sync
   pinnedMemberIds?: string[];
 }
 
@@ -566,17 +568,17 @@ export interface SecurityAuditLog {
   actorId: string;
   actorName: string;
   actorRole: UserRoleTier;
-  action: 
-    | 'ROLE_MODIFIED' 
-    | 'PERMISSIONS_UPDATED' 
-    | 'SQUAD_REASSIGNED' 
-    | 'CMS_UPDATED' 
-    | 'CREDENTIALS_DISPATCHED' 
-    | 'PASSWORD_RESET' 
-    | 'ACCOUNT_CREATED' 
-    | 'ACCOUNT_SUSPENDED' 
-    | 'CERTIFICATE_ISSUED' 
-    | 'CERTIFICATE_REVOKED';
+  action:
+  | 'ROLE_MODIFIED'
+  | 'PERMISSIONS_UPDATED'
+  | 'SQUAD_REASSIGNED'
+  | 'CMS_UPDATED'
+  | 'CREDENTIALS_DISPATCHED'
+  | 'PASSWORD_RESET'
+  | 'ACCOUNT_CREATED'
+  | 'ACCOUNT_SUSPENDED'
+  | 'CERTIFICATE_ISSUED'
+  | 'CERTIFICATE_REVOKED';
   targetId?: string;
   targetName?: string;
   details: string;

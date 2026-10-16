@@ -20,7 +20,7 @@
 --       - Private tables are locked to anon (no read/write)
 --       - The application reads/writes private tables via the anon key from
 --         the browser, relying on Supabase Storage/DB as a "trusted" backend.
---       - OWNER ACTION REQUIRED: This architecture has an inherent risk —
+--       - OWNER ACTION REQUIRED: This architecture has an inherent risk 
 --         any visitor with the anon key can attempt API calls. Correct long-term
 --         fix is to migrate portal auth to Supabase Auth (see S3 in audit report).
 --       - As an intermediate measure, these policies block raw anon access while
@@ -88,7 +88,7 @@ CREATE POLICY "leads_anon_insert"
 
 
 -- ============================================================
--- USERS: lock down — no anon access to user records
+-- USERS: lock down  no anon access to user records
 -- ============================================================
 DROP POLICY IF EXISTS "Allow full access users" ON public.users;
 
@@ -99,25 +99,25 @@ DROP POLICY IF EXISTS "Allow full access users" ON public.users;
 
 
 -- ============================================================
--- PROJECTS: lock down — no anon access
+-- PROJECTS: lock down  no anon access
 -- ============================================================
 DROP POLICY IF EXISTS "Allow full access projects" ON public.projects;
 
 
 -- ============================================================
--- ASSIGNMENTS: lock down — no anon access
+-- ASSIGNMENTS: lock down  no anon access
 -- ============================================================
 DROP POLICY IF EXISTS "Allow full access assignments" ON public.assignments;
 
 
 -- ============================================================
--- ANNOUNCEMENTS: lock down — no anon access
+-- ANNOUNCEMENTS: lock down  no anon access
 -- ============================================================
 DROP POLICY IF EXISTS "Allow full access announcements" ON public.announcements;
 
 
 -- ============================================================
--- AUDIT_LOGS: lock down — no anon access (highly sensitive)
+-- AUDIT_LOGS: lock down  no anon access (highly sensitive)
 -- ============================================================
 DROP POLICY IF EXISTS "Allow full access audit_logs" ON public.audit_logs;
 

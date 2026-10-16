@@ -50,8 +50,8 @@
 |------|--------|
 | One self-referencing absolute canonical per prerendered route | ✅ Done (injected in prerender.js) |
 | `https://www.digihust.tech/path` format (no trailing slash for subpages) | ✅ Done |
-| In prerendered HTML (not JS-only) | ✅ Verified — prerender.js injects into `<head>` |
-| **Action:** Runtime SEOHead.tsx uses `window.location.href` which may have params — filter them | ⚠️ Owner/Dev |
+| In prerendered HTML (not JS-only) | ✅ Verified  prerender.js injects into `<head>` |
+| **Action:** Runtime SEOHead.tsx uses `window.location.href` which may have params  filter them | ⚠️ Owner/Dev |
 
 ---
 
@@ -85,7 +85,7 @@
 |------|--------|
 | H1 tag present in prerendered HTML per route | ✅ Injected by prerender.js |
 | One H1 per page | ✅ Prerender enforces single H1 |
-| Heading hierarchy (h1→h2→h3) — **requires visual audit** | ⚠️ Owner/Dev to verify per page |
+| Heading hierarchy (h1→h2→h3)  **requires visual audit** | ⚠️ Owner/Dev to verify per page |
 
 ---
 
@@ -94,8 +94,8 @@
 | Item | Status |
 |------|--------|
 | OG image has alt in prerendered HTML (`og:image:alt`) | ✅ Fixed |
-| Content images — requires component-level audit | ⚠️ Owner/Dev |
-| CMS uploads — alt field in SiteContentManager | ⚠️ Not yet required — Owner/Dev to add field |
+| Content images  requires component-level audit | ⚠️ Owner/Dev |
+| CMS uploads  alt field in SiteContentManager | ⚠️ Not yet required  Owner/Dev to add field |
 
 ---
 
@@ -105,7 +105,7 @@
 |--------|-------|--------|
 | `ProfessionalService` (Organization) | All pages | ✅ Done (prerender.js + SEOHead.tsx) |
 | `FAQPage` | Home page | ✅ Done |
-| `WebSite` | — | ⚠️ Not yet added |
+| `WebSite` |  | ⚠️ Not yet added |
 | `BreadcrumbList` | Inner pages | ⚠️ Not yet added |
 | `BlogPosting` | Blog posts | ⚠️ Not yet added (prerendered HTML only has ProfessionalService) |
 | `Service` | Service pages | ⚠️ Not yet added |
@@ -140,8 +140,8 @@
 
 | Item | Status |
 |------|--------|
-| Route-level code splitting (React.lazy) | ⚠️ Not yet — large 1.6MB main chunk in build |
-| framer-motion LazyMotion | ⚠️ Not yet — imports full motion |
+| Route-level code splitting (React.lazy) | ⚠️ Not yet  large 1.6MB main chunk in build |
+| framer-motion LazyMotion | ⚠️ Not yet  imports full motion |
 | Self-hosted fonts | ✅ Done (per earlier work) |
 | font-display: swap | ✅ Done |
 | Lighthouse Mobile score | 🔴 Run after deploy |
@@ -176,7 +176,7 @@
 | Default OG image at `/og-image.jpg` (1200x630) | ✅ File exists in dist |
 | `og:image:width`, `og:image:height`, `og:image:alt` | ✅ Added in prerender.js |
 | `twitter:image` set | ✅ Done |
-| Per-blog-post OG images | ⚠️ Not yet — uses default |
+| Per-blog-post OG images | ⚠️ Not yet  uses default |
 | **Action:** Owner to confirm og-image.jpg is brand artwork (not stock) | 🔴 Owner |
 
 ---
@@ -185,7 +185,7 @@
 
 | Item | Status |
 |------|--------|
-| GSC verification meta tag | 🔴 Needs owner token — see SEARCH_CONSOLE.md |
+| GSC verification meta tag | 🔴 Needs owner token  see SEARCH_CONSOLE.md |
 | Sitemap submission | 🔴 Owner action |
 | Bing Webmaster Tools | 🔴 Owner action |
 

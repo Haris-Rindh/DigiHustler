@@ -3,18 +3,18 @@
 > Managed digital services company delivering coordinated specialist squads across web engineering, design systems, AI automations, and cybersecurity under one accountable roof.
 
 ## Key pages
-- https://www.digihust.tech/ : Homepage — Overview of core disciplines, coordinated delivery architecture, case studies, and FAQ
-- https://www.digihust.tech/services : Services & Capabilities — Full spectrum of technical and creative disciplines
-- https://www.digihust.tech/services/saas-mvp-development : SaaS & Web App Engineering — Dedicated React, Next.js, and Node.js squads
-- https://www.digihust.tech/services/ai-workflow-automation : AI Workflow Automation — Custom LLM agents, n8n pipelines, and intelligent workflows
-- https://www.digihust.tech/services/brand-identity-design-system : Brand Identity & UI/UX Design — Design systems, Figma tokens, and 3D motion
-- https://www.digihust.tech/portfolio : Case Studies & Portfolio — Selected client deliveries across engineering, data, and design
-- https://www.digihust.tech/how-it-works : Methodology — 4-step delivery process with strict milestone SLAs
-- https://www.digihust.tech/about : About DigiHust — Origin within the Digiskill ecosystem, mission, and company model
-- https://www.digihust.tech/team : Team & Specialists — Domain leads, software engineers, and founders Mahad Abbas and Muhammad Haseeb
-- https://www.digihust.tech/blog : Insights Hub — Technical architecture deep dives, AI automation frameworks, and security checklists
-- https://www.digihust.tech/contact : Contact & Scope Intake — Transparent milestone quotes and 24-hour proposal turnaround
-- https://www.digihust.tech/careers : Careers — Opportunities for verified specialists to join technical squads
-- https://www.digihust.tech/editorial-policy : Editorial Policy — Publishing standards, author attribution, and correction procedures
-- https://www.digihust.tech/privacy : Privacy Policy — Client intellectual property protection and confidentiality
-- https://www.digihust.tech/terms : Terms of Service — Milestone contracts, 100% IP transfer, and warranties
+- https://www.digihust.tech/ : Homepage  Overview of core disciplines, coordinated delivery architecture, case studies, and FAQ
+- https://www.digihust.tech/services : Services & Capabilities  Full spectrum of technical and creative disciplines
+- https://www.digihust.tech/services/saas-mvp-development : SaaS & Web App Engineering  Dedicated React, Next.js, and Node.js squads
+- https://www.digihust.tech/services/ai-workflow-automation : AI Workflow Automation  Custom LLM agents, n8n pipelines, and intelligent workflows
+- https://www.digihust.tech/services/brand-identity-design-system : Brand Identity & UI/UX Design  Design systems, Figma tokens, and 3D motion
+- https://www.digihust.tech/portfolio : Case Studies & Portfolio  Selected client deliveries across engineering, data, and design
+- https://www.digihust.tech/how-it-works : Methodology  4-step delivery process with strict milestone SLAs
+- https://www.digihust.tech/about : About DigiHust  Origin within the Digiskill ecosystem, mission, and company model
+- https://www.digihust.tech/team : Team & Specialists  Domain leads, software engineers, and founders Mahad Abbas and Muhammad Haseeb
+- https://www.digihust.tech/blog : Insights Hub  Technical architecture deep dives, AI automation frameworks, and security checklists
+- https://www.digihust.tech/contact : Contact & Scope Intake  Transparent milestone quotes and 24-hour proposal turnaround
+- https://www.digihust.tech/careers : Careers  Opportunities for verified specialists to join technical squads
+- https://www.digihust.tech/editorial-policy : Editorial Policy  Publishing standards, author attribution, and correction procedures
+- https://www.digihust.tech/privacy : Privacy Policy  Client intellectual property protection and confidentiality
+- https://www.digihust.tech/terms : Terms of Service  Milestone contracts, 100% IP transfer, and warranties

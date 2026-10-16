@@ -1,9 +1,9 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { 
-  Palette, CheckCircle2, ArrowRight, Layout, 
-  Layers, Eye, Smartphone, Box, ShieldCheck 
+import {
+  Palette, CheckCircle2, ArrowRight, Layout,
+  Layers, Eye, Smartphone, Box, ShieldCheck
 } from 'lucide-react';
 import { SEOHead } from '../../seo/SEOHead';
 
@@ -59,7 +59,7 @@ export const DesignSystemLanding: React.FC = () => {
             transition={{ delay: 0.2 }}
             className="text-base sm:text-lg text-[var(--text-body)] max-w-3xl mx-auto leading-relaxed"
           >
-            From complete typography & vector logo guidelines to comprehensive Figma component token libraries and 3D motion trailers—DigiHust crafts digital experiences that command premium market positioning.
+            From complete typography & vector logo guidelines to comprehensive Figma component token libraries and 3D motion trailersDigiHust crafts digital experiences that command premium market positioning.
           </motion.p>
 
           <motion.div

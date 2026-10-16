@@ -60,16 +60,19 @@ export default async function handler(req, res) {
       try { leadData = JSON.parse(leadData); } catch (_) {}
     }
 
-    // Basic schema validation – require name and email
-    if (!leadData || !leadData.name || !leadData.email) {
+    // Basic schema validation – require name and email unless it's a test dispatch
+    if (!leadData.isTest && (!leadData || !leadData.name || !leadData.email)) {
       return res.status(400).json({ success: false, error: 'Missing required fields: name, email.' });
     }
 
     // Sanitize inputs – strip control characters, enforce max length
     const sanitize = (v) => (typeof v === 'string' ? v.replace(/[\x00-\x1F\x7F]/g, '').slice(0, 500) : '');
     const safe = {
-      name: sanitize(leadData.name),
-      email: sanitize(leadData.email).slice(0, 254),
+      isTest: Boolean(leadData.isTest),
+      name: sanitize(leadData.name || 'DigiHust Admin Tester'),
+      email: sanitize(leadData.email || 'digihust@gmail.com').slice(0, 254),
+      clientPhone: sanitize(leadData.clientPhone || leadData.phone || ''),
+      phone: sanitize(leadData.clientPhone || leadData.phone || ''),
       company: sanitize(leadData.company),
       description: sanitize(leadData.description),
       services: Array.isArray(leadData.services)
@@ -79,14 +82,19 @@ export default async function handler(req, res) {
       currency: sanitize(leadData.currency),
       timeline: sanitize(leadData.timeline),
       attachmentName: sanitize(leadData.attachmentName),
+      attachmentUrl: sanitize(leadData.attachmentUrl),
+      callmebotApiKey: sanitize(leadData.callmebotApiKey),
+      webhookUrl: sanitize(leadData.webhookUrl),
     };
 
     const result = await sendWhatsAppNotification(safe);
-    // Return generic success – don't expose internal result details
-    return res.status(200).json({ success: true });
+    return res.status(200).json({ 
+      success: true, 
+      recipients: result.recipients, 
+      results: result.results 
+    });
   } catch (error) {
-    // Generic error – do not expose stack traces or internal messages
     console.error('[WhatsApp API] Internal error:', error?.message);
-    return res.status(200).json({ success: true });
+    return res.status(500).json({ success: false, error: error?.message });
   }
 }

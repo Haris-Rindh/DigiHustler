@@ -203,7 +203,7 @@ export const validateFullName = (name: string): { isValid: boolean; error?: stri
   if (/\d/.test(trimmed)) {
     return { isValid: false, error: 'Name cannot contain numbers. Only letters are allowed.' };
   }
-  // Strictly letters (English and accented Latin) and spaces — no symbols like '_-+= or punctuation
+  // Strictly letters (English and accented Latin) and spaces  no symbols like '_-+= or punctuation
   if (!/^[a-zA-Z\u00C0-\u024F\s]+$/.test(trimmed)) {
     return { isValid: false, error: 'Name cannot contain symbols or special characters. Only letters and spaces are allowed.' };
   }
@@ -212,6 +212,24 @@ export const validateFullName = (name: string): { isValid: boolean; error?: stri
   }
   if (trimmed.length > 60) {
     return { isValid: false, error: 'Name cannot exceed 60 characters' };
+  }
+  return { isValid: true };
+};
+
+export const validatePhoneNumber = (phone: string): { isValid: boolean; error?: string } => {
+  const trimmed = phone.trim();
+  if (!trimmed) {
+    return { isValid: false, error: 'Please enter your phone or WhatsApp number' };
+  }
+  if (/[a-zA-Z]/.test(trimmed)) {
+    return { isValid: false, error: 'Phone number cannot contain letters' };
+  }
+  const digitsOnly = trimmed.replace(/[^0-9]/g, '');
+  if (digitsOnly.length < 8) {
+    return { isValid: false, error: 'Please enter a valid international phone number (at least 8 digits)' };
+  }
+  if (digitsOnly.length > 16) {
+    return { isValid: false, error: 'Phone number cannot exceed 16 digits' };
   }
   return { isValid: true };
 };
@@ -231,6 +249,7 @@ export const Contact: React.FC = () => {
   const [form, setForm] = useState({
     name: '',
     email: '',
+    phone: '',
     company: '',
     description: '',
     budget: '',
@@ -297,8 +316,8 @@ export const Contact: React.FC = () => {
     const incomingServicesRaw = servicesFlowParam
       ? servicesFlowParam.split(',').map((s) => s.trim()).filter(Boolean)
       : serviceParam
-      ? [serviceParam]
-      : [];
+        ? [serviceParam]
+        : [];
 
     const mappedServices = Array.from(
       new Set(incomingServicesRaw.map(mapServiceToContactOption))
@@ -433,6 +452,12 @@ export const Contact: React.FC = () => {
       }
     } else {
       setEmailSuggestion(null);
+    }
+
+    // 3. Strict Phone / WhatsApp Validation
+    const phoneCheck = validatePhoneNumber(form.phone);
+    if (!phoneCheck.isValid) {
+      errs.phone = phoneCheck.error!;
     }
 
     if (!form.description.trim() || form.description.length < 10) {
@@ -603,12 +628,16 @@ export const Contact: React.FC = () => {
         rawBudget = budgetMap[form.budget] || 3000;
       }
 
+      const cleanPhone = form.phone.trim();
+
       const newLeadData = {
         title: `${form.company || form.name} | ${form.services[0]}`,
         clientName: form.name,
         clientCompany: form.company || undefined,
         clientEmail: form.email,
-        brief: `${projectParam ? `[Referenced Case Study: ${projectParam}]\n\n` : ''}${form.description}\n\nServices: ${form.services.join(', ')}\nTimeline: ${form.timeline}\nBudget: ${effectiveBudget} (${selectedCurrency})\nStage: ${form.stage}\nNDA Requested: ${form.ndaRequired ? 'Yes' : 'No'}${uploadedAttachmentUrl ? `\nAttached Document: ${uploadedAttachmentName} (${uploadedAttachmentUrl})` : form.file ? `\nAttached: ${form.file.name}` : ''}`,
+        clientPhone: cleanPhone,
+        phone: cleanPhone,
+        brief: `${projectParam ? `[Referenced Case Study: ${projectParam}]\n\n` : ''}${form.description}\n\nClient Phone / WhatsApp: ${cleanPhone}\nServices: ${form.services.join(', ')}\nTimeline: ${form.timeline}\nBudget: ${effectiveBudget} (${selectedCurrency})\nStage: ${form.stage}\nNDA Requested: ${form.ndaRequired ? 'Yes' : 'No'}${uploadedAttachmentUrl ? `\nAttached Document: ${uploadedAttachmentName} (${uploadedAttachmentUrl})` : form.file ? `\nAttached: ${form.file.name}` : ''}`,
         budgetEstimate: rawBudget,
         budgetRange: effectiveBudget,
         timeline: form.timeline,
@@ -632,6 +661,8 @@ export const Contact: React.FC = () => {
         await notificationService.dispatchLeadEmail({
           name: form.name,
           email: form.email,
+          clientPhone: cleanPhone,
+          phone: cleanPhone,
           company: form.company,
           services: form.services,
           currency: selectedCurrency,
@@ -650,6 +681,8 @@ export const Contact: React.FC = () => {
         await notificationService.dispatchClientConfirmationEmail({
           name: form.name,
           email: form.email,
+          clientPhone: cleanPhone,
+          phone: cleanPhone,
           company: form.company,
           services: form.services,
           currency: selectedCurrency,
@@ -669,6 +702,8 @@ export const Contact: React.FC = () => {
         await notificationService.dispatchLeadWhatsApp({
           name: form.name,
           email: form.email,
+          clientPhone: cleanPhone,
+          phone: cleanPhone,
           company: form.company,
           services: form.services,
           currency: selectedCurrency,
@@ -684,7 +719,7 @@ export const Contact: React.FC = () => {
 
       // 5. Optional Direct WhatsApp instant reply link if user wants immediate 1-to-1 chat
       const phone = siteContent?.contactPhone || '923226806396';
-      const cleanPhone = phone.replace(/[^0-9]/g, '');
+      const cleanManagementPhone = phone.replace(/[^0-9]/g, '');
       const msg = encodeURIComponent(
         `*🚨 New DigiHust Client Intake*\n\n` +
         (projectParam ? `*Referenced Project:* ${projectParam}\n` : '') +
@@ -697,7 +732,7 @@ export const Contact: React.FC = () => {
         (uploadedAttachmentUrl ? `*Document:* ${uploadedAttachmentName} (${uploadedAttachmentUrl})\n` : '') +
         `\n*Project Overview:*\n${form.description}`
       );
-      setWhatsappLink(`https://wa.me/${cleanPhone}?text=${msg}`);
+      setWhatsappLink(`https://wa.me/${cleanManagementPhone}?text=${msg}`);
     } catch (err) {
       console.warn('Lead submission warning:', err);
     }
@@ -801,7 +836,7 @@ export const Contact: React.FC = () => {
                     <span>Open WhatsApp Chat with Team (Optional)</span>
                   </a>
                   <p className="text-xs text-[var(--text-muted)]">
-                    No action needed — our team is already reviewing your intake. Click above only if you wish to start an instant 1-on-1 chat now.
+                    No action needed  our team is already reviewing your intake. Click above only if you wish to start an instant 1-on-1 chat now.
                   </p>
                 </div>
               )}
@@ -814,6 +849,7 @@ export const Contact: React.FC = () => {
                     setForm({
                       name: '',
                       email: '',
+                      phone: '',
                       company: '',
                       description: '',
                       budget: '',
@@ -892,7 +928,7 @@ export const Contact: React.FC = () => {
                           Tell us about yourself
                         </h2>
                         <p className="text-xs sm:text-sm text-[#64748B] dark:text-[var(--text-muted)] leading-relaxed mb-6">
-                          We'll get back to you with the right team and next steps — usually within 24 hours.
+                          We'll get back to you with the right team and next steps  usually within 24 hours.
                         </p>
 
                         <div className="space-y-4">
@@ -923,9 +959,8 @@ export const Contact: React.FC = () => {
                                     }
                                   }}
                                   placeholder="e.g. Sarah Jenkins"
-                                  className={`w-full pl-10 pr-3.5 py-2.5 rounded-xl border text-xs sm:text-sm text-[var(--text-heading)] bg-[#F8FAFC]/70 dark:bg-black/20 placeholder:text-[#94A3B8] focus:outline-none focus:border-[#1F7A8C] focus:ring-1 focus:ring-[#1F7A8C] transition-colors ${
-                                    errors.name ? 'border-rose-400 bg-rose-50/20' : 'border-[#E2ECEF] dark:border-[var(--border-subtle)]'
-                                  }`}
+                                  className={`w-full pl-10 pr-3.5 py-2.5 rounded-xl border text-xs sm:text-sm text-[var(--text-heading)] bg-[#F8FAFC]/70 dark:bg-black/20 placeholder:text-[#94A3B8] focus:outline-none focus:border-[#1F7A8C] focus:ring-1 focus:ring-[#1F7A8C] transition-colors ${errors.name ? 'border-rose-400 bg-rose-50/20' : 'border-[#E2ECEF] dark:border-[var(--border-subtle)]'
+                                    }`}
                                 />
                               </div>
                               {errors.name && <p className="text-[11px] text-rose-500 mt-1 font-medium">{errors.name}</p>}
@@ -967,13 +1002,12 @@ export const Contact: React.FC = () => {
                                     }
                                   }}
                                   placeholder="you@company.com"
-                                  className={`w-full pl-10 pr-3.5 py-2.5 rounded-xl border text-xs sm:text-sm text-[var(--text-heading)] bg-[#F8FAFC]/70 dark:bg-black/20 placeholder:text-[#94A3B8] focus:outline-none focus:border-[#1F7A8C] focus:ring-1 focus:ring-[#1F7A8C] transition-colors ${
-                                    errors.email
+                                  className={`w-full pl-10 pr-3.5 py-2.5 rounded-xl border text-xs sm:text-sm text-[var(--text-heading)] bg-[#F8FAFC]/70 dark:bg-black/20 placeholder:text-[#94A3B8] focus:outline-none focus:border-[#1F7A8C] focus:ring-1 focus:ring-[#1F7A8C] transition-colors ${errors.email
                                       ? 'border-rose-400 bg-rose-50/20'
                                       : verifiedEmail === form.email.trim() && form.email
-                                      ? 'border-emerald-500/70 dark:border-emerald-400/70 bg-emerald-50/10'
-                                      : 'border-[#E2ECEF] dark:border-[var(--border-subtle)]'
-                                  }`}
+                                        ? 'border-emerald-500/70 dark:border-emerald-400/70 bg-emerald-50/10'
+                                        : 'border-[#E2ECEF] dark:border-[var(--border-subtle)]'
+                                    }`}
                                 />
                               </div>
                               {errors.email && (
@@ -996,20 +1030,52 @@ export const Contact: React.FC = () => {
                             </div>
                           </div>
 
-                          {/* Row 2: Company / Organization Name */}
-                          <div>
-                            <label className="block text-xs font-bold text-[#1E293B] dark:text-white mb-1.5">
-                              Company / Organization Name <span className="text-[#94A3B8] font-normal">(optional)</span>
-                            </label>
-                            <div className="relative">
-                              <Building2 className="w-4 h-4 text-[#94A3B8] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-                              <input
-                                type="text"
-                                value={form.company}
-                                onChange={(e) => setForm({ ...form, company: e.target.value })}
-                                placeholder="e.g. Acme Innovations Ltd."
-                                className="w-full pl-10 pr-3.5 py-2.5 rounded-xl border border-[#E2ECEF] dark:border-[var(--border-subtle)] text-xs sm:text-sm text-[var(--text-heading)] bg-[#F8FAFC]/70 dark:bg-black/20 placeholder:text-[#94A3B8] focus:outline-none focus:border-[#1F7A8C] focus:ring-1 focus:ring-[#1F7A8C] transition-colors"
-                              />
+                          {/* Row 2: Company / Organization Name & Phone / WhatsApp Number */}
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                              <label className="block text-xs font-bold text-[#1E293B] dark:text-white mb-1.5">
+                                Company / Organization Name <span className="text-[#94A3B8] font-normal">(optional)</span>
+                              </label>
+                              <div className="relative">
+                                <Building2 className="w-4 h-4 text-[#94A3B8] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                                <input
+                                  type="text"
+                                  value={form.company}
+                                  onChange={(e) => setForm({ ...form, company: e.target.value })}
+                                  placeholder="e.g. Acme Innovations Ltd."
+                                  className="w-full pl-10 pr-3.5 py-2.5 rounded-xl border border-[#E2ECEF] dark:border-[var(--border-subtle)] text-xs sm:text-sm text-[var(--text-heading)] bg-[#F8FAFC]/70 dark:bg-black/20 placeholder:text-[#94A3B8] focus:outline-none focus:border-[#1F7A8C] focus:ring-1 focus:ring-[#1F7A8C] transition-colors"
+                                />
+                              </div>
+                            </div>
+
+                            <div>
+                              <label className="block text-xs font-bold text-[#1E293B] dark:text-white mb-1.5">
+                                Phone / WhatsApp Number <span className="text-rose-500">*</span>
+                              </label>
+                              <div className="relative">
+                                <Phone className="w-4 h-4 text-[#94A3B8] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                                <input
+                                  type="tel"
+                                  value={form.phone}
+                                  onChange={(e) => {
+                                    const val = e.target.value;
+                                    setForm({ ...form, phone: val });
+                                    if (/[a-zA-Z]/.test(val)) {
+                                      setErrors((prev) => ({ ...prev, phone: 'Phone number cannot contain letters.' }));
+                                    } else if (errors.phone) {
+                                      setErrors((prev) => {
+                                        const copy = { ...prev };
+                                        delete copy.phone;
+                                        return copy;
+                                      });
+                                    }
+                                  }}
+                                  placeholder="e.g. +92 322 6806396 or +1 415 555 2671"
+                                  className={`w-full pl-10 pr-3.5 py-2.5 rounded-xl border text-xs sm:text-sm text-[var(--text-heading)] bg-[#F8FAFC]/70 dark:bg-black/20 placeholder:text-[#94A3B8] focus:outline-none focus:border-[#1F7A8C] focus:ring-1 focus:ring-[#1F7A8C] transition-colors ${errors.phone ? 'border-rose-400 bg-rose-50/20' : 'border-[#E2ECEF] dark:border-[var(--border-subtle)]'
+                                    }`}
+                                />
+                              </div>
+                              {errors.phone && <p className="text-[11px] text-rose-500 mt-1 font-medium">{errors.phone}</p>}
                             </div>
                           </div>
 
@@ -1029,9 +1095,8 @@ export const Contact: React.FC = () => {
                                   if (errors.description) setErrors((prev) => ({ ...prev, description: '' }));
                                 }}
                                 placeholder="Tell us what you are looking to build or solve. Include target audience, desired features, deadlines, or existing tech stack..."
-                                className={`w-full pl-10 pr-3.5 py-2.5 rounded-xl border text-xs sm:text-sm text-[var(--text-heading)] bg-[#F8FAFC]/70 dark:bg-black/20 placeholder:text-[#94A3B8] focus:outline-none focus:border-[#1F7A8C] focus:ring-1 focus:ring-[#1F7A8C] transition-colors resize-none ${
-                                  errors.description ? 'border-rose-400 bg-rose-50/20' : 'border-[#E2ECEF] dark:border-[var(--border-subtle)]'
-                                }`}
+                                className={`w-full pl-10 pr-3.5 py-2.5 rounded-xl border text-xs sm:text-sm text-[var(--text-heading)] bg-[#F8FAFC]/70 dark:bg-black/20 placeholder:text-[#94A3B8] focus:outline-none focus:border-[#1F7A8C] focus:ring-1 focus:ring-[#1F7A8C] transition-colors resize-none ${errors.description ? 'border-rose-400 bg-rose-50/20' : 'border-[#E2ECEF] dark:border-[var(--border-subtle)]'
+                                  }`}
                               />
                             </div>
                             <div className="flex items-center justify-between mt-1">
@@ -1058,11 +1123,10 @@ export const Contact: React.FC = () => {
                                       setBudgetMode('range');
                                       if (errors.budget) setErrors((prev) => { const copy = { ...prev }; delete copy.budget; return copy; });
                                     }}
-                                    className={`px-2 py-0.5 rounded-md transition-all cursor-pointer ${
-                                      budgetMode === 'range'
+                                    className={`px-2 py-0.5 rounded-md transition-all cursor-pointer ${budgetMode === 'range'
                                         ? 'bg-white dark:bg-[#024959] text-[#022B3A] dark:text-white shadow-xs'
                                         : 'text-[#64748B] hover:text-[#022B3A] dark:hover:text-white'
-                                    }`}
+                                      }`}
                                   >
                                     Range
                                   </button>
@@ -1072,11 +1136,10 @@ export const Contact: React.FC = () => {
                                       setBudgetMode('custom');
                                       if (errors.budget) setErrors((prev) => { const copy = { ...prev }; delete copy.budget; return copy; });
                                     }}
-                                    className={`px-2 py-0.5 rounded-md transition-all cursor-pointer ${
-                                      budgetMode === 'custom'
+                                    className={`px-2 py-0.5 rounded-md transition-all cursor-pointer ${budgetMode === 'custom'
                                         ? 'bg-white dark:bg-[#024959] text-[#022B3A] dark:text-white shadow-xs'
                                         : 'text-[#64748B] hover:text-[#022B3A] dark:hover:text-white'
-                                    }`}
+                                      }`}
                                   >
                                     Custom
                                   </button>
@@ -1115,9 +1178,8 @@ export const Contact: React.FC = () => {
                                           setForm({ ...form, budget: e.target.value });
                                           if (errors.budget) setErrors((prev) => { const copy = { ...prev }; delete copy.budget; return copy; });
                                         }}
-                                        className={`w-full appearance-none px-3 py-2.5 rounded-xl border text-xs sm:text-sm text-[var(--text-heading)] bg-[#F8FAFC]/70 dark:bg-black/20 focus:outline-none focus:border-[#1F7A8C] focus:ring-1 focus:ring-[#1F7A8C] transition-colors pr-7 truncate ${
-                                          errors.budget ? 'border-rose-400' : 'border-[#E2ECEF] dark:border-[var(--border-subtle)]'
-                                        }`}
+                                        className={`w-full appearance-none px-3 py-2.5 rounded-xl border text-xs sm:text-sm text-[var(--text-heading)] bg-[#F8FAFC]/70 dark:bg-black/20 focus:outline-none focus:border-[#1F7A8C] focus:ring-1 focus:ring-[#1F7A8C] transition-colors pr-7 truncate ${errors.budget ? 'border-rose-400' : 'border-[#E2ECEF] dark:border-[var(--border-subtle)]'
+                                          }`}
                                       >
                                         {(CURRENCY_CONFIGS[selectedCurrency] || CURRENCY_CONFIGS.USD).ranges.map((opt) => (
                                           <option key={opt} value={opt === 'Select a range' ? '' : opt} disabled={opt === 'Select a range'}>
@@ -1138,9 +1200,8 @@ export const Contact: React.FC = () => {
                                         if (errors.budget) setErrors((prev) => { const copy = { ...prev }; delete copy.budget; return copy; });
                                       }}
                                       placeholder={`e.g. ${selectedCurrency === 'PKR' ? '500,000' : selectedCurrency === 'EUR' ? '3,500' : '5,000'}`}
-                                      className={`w-full px-3 py-2.5 rounded-xl border text-xs sm:text-sm text-[var(--text-heading)] bg-[#F8FAFC]/70 dark:bg-black/20 placeholder:text-[#94A3B8] focus:outline-none focus:border-[#1F7A8C] focus:ring-1 focus:ring-[#1F7A8C] transition-colors ${
-                                        errors.budget ? 'border-rose-400' : 'border-[#E2ECEF] dark:border-[var(--border-subtle)]'
-                                      }`}
+                                      className={`w-full px-3 py-2.5 rounded-xl border text-xs sm:text-sm text-[var(--text-heading)] bg-[#F8FAFC]/70 dark:bg-black/20 placeholder:text-[#94A3B8] focus:outline-none focus:border-[#1F7A8C] focus:ring-1 focus:ring-[#1F7A8C] transition-colors ${errors.budget ? 'border-rose-400' : 'border-[#E2ECEF] dark:border-[var(--border-subtle)]'
+                                        }`}
                                     />
                                   )}
                                 </div>
@@ -1159,9 +1220,8 @@ export const Contact: React.FC = () => {
                                     setForm({ ...form, timeline: e.target.value });
                                     if (errors.timeline) setErrors((prev) => { const copy = { ...prev }; delete copy.timeline; return copy; });
                                   }}
-                                  className={`w-full appearance-none px-3.5 py-2.5 rounded-xl border text-xs sm:text-sm text-[var(--text-heading)] bg-[#F8FAFC]/70 dark:bg-black/20 focus:outline-none focus:border-[#1F7A8C] focus:ring-1 focus:ring-[#1F7A8C] transition-colors pr-9 ${
-                                    errors.timeline ? 'border-rose-400' : 'border-[#E2ECEF] dark:border-[var(--border-subtle)]'
-                                  }`}
+                                  className={`w-full appearance-none px-3.5 py-2.5 rounded-xl border text-xs sm:text-sm text-[var(--text-heading)] bg-[#F8FAFC]/70 dark:bg-black/20 focus:outline-none focus:border-[#1F7A8C] focus:ring-1 focus:ring-[#1F7A8C] transition-colors pr-9 ${errors.timeline ? 'border-rose-400' : 'border-[#E2ECEF] dark:border-[var(--border-subtle)]'
+                                    }`}
                                 >
                                   {TIMELINE_OPTIONS.map((opt) => (
                                     <option key={opt} value={opt === 'Select a timeframe' ? '' : opt} disabled={opt === 'Select a timeframe'}>
@@ -1258,19 +1318,17 @@ export const Contact: React.FC = () => {
                                 key={s}
                                 type="button"
                                 onClick={() => toggleService(s)}
-                                className={`p-3.5 rounded-xl border text-left flex items-center justify-between transition-all ${
-                                  selected
+                                className={`p-3.5 rounded-xl border text-left flex items-center justify-between transition-all ${selected
                                     ? 'bg-[#E0F2F5] dark:bg-cyan-950/60 border-[#1F7A8C] dark:border-cyan-500 text-[#022B3A] dark:text-white shadow-xs'
                                     : 'bg-[#F8FAFC]/70 dark:bg-black/20 border-[#E2ECEF] dark:border-[var(--border-subtle)] text-[#1E293B] dark:text-white/80 hover:border-[#1F7A8C]/50'
-                                }`}
+                                  }`}
                               >
                                 <span className="text-xs sm:text-sm font-semibold">{s}</span>
                                 <div
-                                  className={`w-4 h-4 rounded-md border flex items-center justify-center transition-colors ${
-                                    selected
+                                  className={`w-4 h-4 rounded-md border flex items-center justify-center transition-colors ${selected
                                       ? 'bg-[#1F7A8C] border-[#1F7A8C] text-white'
                                       : 'border-[#CBD5E1] dark:border-slate-600'
-                                  }`}
+                                    }`}
                                 >
                                   {selected && <CheckCircle2 className="w-3.5 h-3.5" />}
                                 </div>
@@ -1308,11 +1366,10 @@ export const Contact: React.FC = () => {
                                   key={stg}
                                   type="button"
                                   onClick={() => setForm({ ...form, stage: stg })}
-                                  className={`p-3 rounded-xl border text-xs sm:text-sm font-medium text-left transition-all ${
-                                    form.stage === stg
+                                  className={`p-3 rounded-xl border text-xs sm:text-sm font-medium text-left transition-all ${form.stage === stg
                                       ? 'bg-[#E0F2F5] dark:bg-cyan-950/60 border-[#1F7A8C] dark:border-cyan-500 text-[#022B3A] dark:text-white'
                                       : 'bg-[#F8FAFC]/70 dark:bg-black/20 border-[#E2ECEF] dark:border-[var(--border-subtle)] text-[#64748B] dark:text-slate-300'
-                                  }`}
+                                    }`}
                                 >
                                   {stg}
                                 </button>
@@ -1423,10 +1480,10 @@ export const Contact: React.FC = () => {
                             {isValidatingEmail
                               ? 'Verifying Email...'
                               : step === 1
-                              ? 'Next: Project Details'
-                              : step === 2
-                              ? 'Next: Delivery Stage'
-                              : 'Next: Review Scope'}
+                                ? 'Next: Project Details'
+                                : step === 2
+                                  ? 'Next: Delivery Stage'
+                                  : 'Next: Review Scope'}
                           </span>
                           {isValidatingEmail ? (
                             <Loader2 className="w-4 h-4 animate-spin" />

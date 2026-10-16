@@ -1,6 +1,6 @@
 # DigiHust Backlink Strategy
 
-> **Classification:** Internal — Owner/Marketing Team  
+> **Classification:** Internal  Owner/Marketing Team  
 > **Strategy type:** White-hat organic only. No paid links, PBNs, or link farms.
 
 ---
@@ -38,9 +38,9 @@
 
 **Action: Founders (Mahad Abbas, Muhammad Haseeb)**
 
-- **LinkedIn Company Page:** Create `linkedin.com/company/digihust` — link to website, post case studies
-- **LinkedIn Personal Profiles:** Both founders — add DigiHust as company, post thought leadership
-- **GitHub Org:** Create `github.com/digihust` org — link to site in bio
+- **LinkedIn Company Page:** Create `linkedin.com/company/digihust`  link to website, post case studies
+- **LinkedIn Personal Profiles:** Both founders  add DigiHust as company, post thought leadership
+- **GitHub Org:** Create `github.com/digihust` org  link to site in bio
 - **Behance:** Portfolio of design work linking back to portfolio pages
 - **Dribbble:** UI/UX shots with links to DigiHust case studies
 - **AngelList/Wellfound:** Startup profile
@@ -53,17 +53,17 @@
 **Action: Founders + Domain Leads**
 
 Target publications:
-- Dev.to (technical articles — free)
-- Hashnode (technical blog — free)
+- Dev.to (technical articles  free)
+- Hashnode (technical blog  free)
 - Medium (agency/startup publications)
 - HackerNoon (technical/startup)
 - SitePoint (web development)
-- Smashing Magazine (design/development — harder, high value)
+- Smashing Magazine (design/development  harder, high value)
 - Local: TechInPakistan, BytesForAll
 
 **Content angles:**
 - "How We Built X for Client Y" (case study, mentions client's site → mutual link)
-- "The OWASP Security Checklist for Startups" (already a blog post — pitch this)
+- "The OWASP Security Checklist for Startups" (already a blog post  pitch this)
 - "Why Pakistani Tech Talent Rivals Silicon Valley" (thought leadership)
 
 ---
@@ -93,12 +93,12 @@ Target publications:
 **Action: Content Team**
 
 These pages/tools attract natural backlinks:
-1. **OWASP Security Checklist** (blog post — already exists) → submit to security communities
-2. **"Pakistan Digital Talent Report"** — create an annual survey/report (high link value)
-3. **Free ROI Calculator** — simple web tool on `/tools/roi-calculator` 
-4. **Free Proposal Template** — PDF download on `/resources/proposal-template`
-5. **"Cost of Bad SEO" Calculator** — interactive tool
-6. **Portfolio case studies** — submit to CSS galleries (cssdesignawards.com, awwwards.com)
+1. **OWASP Security Checklist** (blog post  already exists) → submit to security communities
+2. **"Pakistan Digital Talent Report"**  create an annual survey/report (high link value)
+3. **Free ROI Calculator**  simple web tool on `/tools/roi-calculator` 
+4. **Free Proposal Template**  PDF download on `/resources/proposal-template`
+5. **"Cost of Bad SEO" Calculator**  interactive tool
+6. **Portfolio case studies**  submit to CSS galleries (cssdesignawards.com, awwwards.com)
 
 ---
 
@@ -133,7 +133,7 @@ These pages/tools attract natural backlinks:
 - [ ] Submit to 3 additional directories
 - [ ] Free tool live on `/tools/` with link-building outreach
 - [ ] Pakistan tech media mention (TechInPakistan, ArenaMultimedia)
-- [ ] First data from GSC — identify ranking opportunities
+- [ ] First data from GSC  identify ranking opportunities
 - [ ] Review and refresh linkable assets
 
 ---

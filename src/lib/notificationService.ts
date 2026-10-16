@@ -10,6 +10,8 @@ export interface NotificationResult {
 export interface LeadNotificationPayload {
   name: string;
   email: string;
+  clientPhone?: string;
+  phone?: string;
   company?: string;
   services: string[];
   currency?: string;
@@ -18,6 +20,9 @@ export interface LeadNotificationPayload {
   description: string;
   attachmentName?: string;
   attachmentUrl?: string;
+  isTest?: boolean;
+  callmebotApiKey?: string;
+  webhookUrl?: string;
 }
 
 export const notificationService = {
@@ -59,7 +64,7 @@ export const notificationService = {
     const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY || 'hvCezH1wrH-95AZDc';
 
     const formattedServices = Array.isArray(leadData.services) ? leadData.services.join(', ') : leadData.services;
-    const attachmentInfo = leadData.attachmentName 
+    const attachmentInfo = leadData.attachmentName
       ? `${leadData.attachmentName}${leadData.attachmentUrl ? ` (${leadData.attachmentUrl})` : ''}`
       : 'None Attached';
 
@@ -77,6 +82,8 @@ export const notificationService = {
           client_name: leadData.name,
           name: leadData.name,
           from_name: leadData.name,
+          phone: leadData.clientPhone || leadData.phone || 'Not Specified',
+          client_phone: leadData.clientPhone || leadData.phone || 'Not Specified',
           company: leadData.company || 'Not Specified',
           services: formattedServices,
           currency: leadData.currency || 'USD',
@@ -86,7 +93,7 @@ export const notificationService = {
           attachment_url: leadData.attachmentUrl || '',
           attachment_name: leadData.attachmentName || '',
           project_description: leadData.description,
-          message: `${leadData.description}\n\n[Attachment: ${attachmentInfo}]`,
+          message: `${leadData.description}\n\n[Client Phone: ${leadData.clientPhone || leadData.phone || 'Not Specified'}]\n[Attachment: ${attachmentInfo}]`,
           submitted_at: new Date().toLocaleString()
         };
 
@@ -111,6 +118,7 @@ export const notificationService = {
       formData.append('_template', 'table');
       formData.append('Client Name', leadData.name);
       formData.append('Client Email', leadData.email);
+      formData.append('Client Phone / WhatsApp', leadData.clientPhone || leadData.phone || 'Not Specified');
       formData.append('Company', leadData.company || 'Not Specified');
       formData.append('Services Required', formattedServices);
       formData.append('Budget', leadData.budget || 'Flexible');
@@ -146,7 +154,7 @@ export const notificationService = {
     const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY || 'hvCezH1wrH-95AZDc';
     const clientConfirmTemplateId = import.meta.env.VITE_EMAILJS_CLIENT_CONFIRM_TEMPLATE_ID;
 
-    // Do NOT send template_xcxoq8x here — template_xcxoq8x is bound to digihust@gmail.com.
+    // Do NOT send template_xcxoq8x here  template_xcxoq8x is bound to digihust@gmail.com.
     // Re-sending template_xcxoq8x causes Admin to receive duplicate emails!
     if (!clientConfirmTemplateId || clientConfirmTemplateId === 'template_xcxoq8x') {
       console.log('ℹ️ Client confirmation is handled via EmailJS Auto-Reply or awaiting dedicated VITE_EMAILJS_CLIENT_CONFIRM_TEMPLATE_ID.');
@@ -193,9 +201,9 @@ export const notificationService = {
    * Dispatches automated background WhatsApp notifications directly to DigiHust Leadership
    * (+923226806396 / +923206806396) without requiring any user click or browser pop-up.
    */
-  async dispatchLeadWhatsApp(leadData: LeadNotificationPayload): Promise<boolean> {
+  async dispatchLeadWhatsApp(leadData: LeadNotificationPayload): Promise<{ success: boolean; details?: string; results?: any[] }> {
+    // 1. Primary: Serverless & Dev Endpoint /api/send-whatsapp
     try {
-      // 1. Primary: Serverless & Dev Endpoint /api/send-whatsapp
       const res = await fetch('/api/send-whatsapp', {
         method: 'POST',
         headers: {
@@ -206,24 +214,58 @@ export const notificationService = {
       });
 
       if (res.ok) {
+        const json = await res.json().catch(() => ({}));
         if (import.meta.env.DEV) {
           console.log('✓ Automated Background WhatsApp Dispatched to DigiHust Leadership');
         }
-        return true;
+        return { success: true, results: json?.results };
       }
-    } catch (err) {
-      console.warn('API /api/send-whatsapp dispatch notice:', err);
+    } catch (err: any) {
+      console.warn('API /api/send-whatsapp dispatch notice:', err?.message);
     }
 
-    // 2. Secondary Webhook Fallback if directly configured in client environment
-    const webhookUrl = import.meta.env.VITE_WHATSAPP_WEBHOOK_URL || import.meta.env.VITE_LEAD_NOTIFICATION_WEBHOOK;
+    // 2. Direct CallMeBot client-side fallback (if API key saved in localStorage or env)
+    const savedCallMeBotKey = leadData.callmebotApiKey ||
+      (typeof localStorage !== 'undefined' ? localStorage.getItem('dgh_callmebot_api_key') : null) ||
+      import.meta.env.VITE_CALLMEBOT_API_KEY;
+
+    if (savedCallMeBotKey) {
+      const phones = ['923226806396', '923206806396'];
+      const clientPhoneStr = leadData.clientPhone || leadData.phone || 'Not Specified';
+      const msg = leadData.isTest
+        ? `🧪 *DIGIHUST WHATSAPP ALERT TEST*\nAutomated WhatsApp gateway is ACTIVE and connected!\nDigiHust Leadership (+923226806396 / +923206806396)`
+        : `🚨 *NEW DIGIHUST CLIENT INTAKE*\n\n` +
+        `Client: ${leadData.name}\n` +
+        `Email: ${leadData.email}\n` +
+        `Phone: ${clientPhoneStr}\n` +
+        `Company: ${leadData.company || 'Not Specified'}\n` +
+        `Services: ${Array.isArray(leadData.services) ? leadData.services.join(', ') : leadData.services}\n` +
+        `Budget: ${leadData.budget || 'Flexible'} (${leadData.currency || 'USD'})\n` +
+        `Timeline: ${leadData.timeline || 'Flexible'}\n\n` +
+        `Project Scope:\n${leadData.description}`;
+
+      for (const phone of phones) {
+        try {
+          const callmebotUrl = `https://api.callmebot.com/whatsapp.php?phone=${phone}&text=${encodeURIComponent(msg)}&apikey=${savedCallMeBotKey}`;
+          fetch(callmebotUrl, { mode: 'no-cors' }).catch(() => { });
+        } catch { }
+      }
+      return { success: true, details: 'Dispatched via CallMeBot client fallback' };
+    }
+
+    // 3. Secondary Webhook Fallback if directly configured in client environment or localStorage
+    const webhookUrl = leadData.webhookUrl ||
+      (typeof localStorage !== 'undefined' ? localStorage.getItem('dgh_whatsapp_webhook') : null) ||
+      import.meta.env.VITE_WHATSAPP_WEBHOOK_URL ||
+      import.meta.env.VITE_LEAD_NOTIFICATION_WEBHOOK;
+
     if (webhookUrl) {
       try {
         await fetch(webhookUrl, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            event: 'NEW_CLIENT_INQUIRY',
+            event: leadData.isTest ? 'TEST_ALERT' : 'NEW_CLIENT_INQUIRY',
             lead: leadData,
             timestamp: new Date().toISOString(),
           }),
@@ -231,13 +273,13 @@ export const notificationService = {
         if (import.meta.env.DEV) {
           console.log('✓ Webhook Lead WhatsApp Dispatched Successfully');
         }
-        return true;
+        return { success: true, details: 'Dispatched via webhook' };
       } catch (webhookErr) {
         console.warn('WhatsApp direct webhook dispatch warning:', webhookErr);
       }
     }
 
-    return false;
+    return { success: false, details: 'No active WhatsApp API key or webhook configured' };
   },
 
   /**

@@ -78,59 +78,7 @@ export const getServiceImage = (service: SiteServiceItem, index: number): string
   return SERVICE_IMAGES[index % SERVICE_IMAGES.length];
 };
 
-export const getServiceEmoji = (service: SiteServiceItem, index: number): string => {
-  const combined = `${service.slug || ''} ${service.title || ''} ${service.id || ''}`.toLowerCase();
 
-  if (
-    combined.includes('web') ||
-    combined.includes('saas') ||
-    combined.includes('dev') ||
-    combined.includes('engineering')
-  ) {
-    return '💻';
-  }
-  if (
-    combined.includes('creative') ||
-    combined.includes('brand') ||
-    combined.includes('ui') ||
-    combined.includes('ux') ||
-    combined.includes('design')
-  ) {
-    return '🎨';
-  }
-  if (
-    combined.includes('ai') ||
-    combined.includes('automation') ||
-    combined.includes('workflow')
-  ) {
-    return '🤖';
-  }
-  if (
-    combined.includes('market') ||
-    combined.includes('seo') ||
-    combined.includes('growth')
-  ) {
-    return '📈';
-  }
-  if (
-    combined.includes('cyber') ||
-    combined.includes('security') ||
-    combined.includes('audit')
-  ) {
-    return '🛡️';
-  }
-  if (
-    combined.includes('data') ||
-    combined.includes('intelligence') ||
-    combined.includes('bi') ||
-    combined.includes('analytic')
-  ) {
-    return '📊';
-  }
-
-  const fallbackEmojis = ['💻', '🎨', '🤖', '📈', '🛡️', '📊'];
-  return fallbackEmojis[index % fallbackEmojis.length];
-};
 
 export const DEFAULT_SERVICE_BULLETS: Record<string, string[]> = {
   web: [
@@ -301,7 +249,6 @@ export const ServiceFeatureRow: React.FC<ServiceFeatureRowProps> = ({
   const detailRoute = getServiceDedicatedRoute(service);
 
   const imageSrc = getServiceImage(service, index);
-  const emoji = getServiceEmoji(service, index);
   const bullets = getServiceBullets(service);
 
   const motionStyle: React.CSSProperties = shouldReduceMotion
@@ -319,11 +266,11 @@ export const ServiceFeatureRow: React.FC<ServiceFeatureRowProps> = ({
       aria-labelledby={headingId}
       className="grid grid-cols-1 md:grid-cols-2 gap-0 w-full border-b border-[var(--border-subtle)] last:border-b-0 scroll-mt-[88px]"
     >
-      {/* ── IMAGE CELL ── */}
+      {/* ── IMAGE CELL (16:9 Aspect Ratio) ── */}
       {/* Mobile: always order-1. Desktop: Even is order-1 (Col 1), Odd is order-2 (Col 2) */}
       <div
         style={motionStyle}
-        className={`w-full aspect-square relative overflow-hidden bg-slate-100 dark:bg-slate-900 border-b border-[var(--border-subtle)] md:border-b-0 ${
+        className={`w-full aspect-video relative overflow-hidden bg-slate-100 dark:bg-slate-900 border-b border-[var(--border-subtle)] md:border-b-0 ${
           isEven
             ? 'order-1 md:order-1 md:border-r md:border-[var(--border-subtle)]'
             : 'order-1 md:order-2'
@@ -332,8 +279,8 @@ export const ServiceFeatureRow: React.FC<ServiceFeatureRowProps> = ({
         <img
           src={imageSrc}
           alt={service.title}
-          width={600}
-          height={600}
+          width={640}
+          height={360}
           loading={isFirst ? 'eager' : 'lazy'}
           fetchPriority={isFirst ? 'high' : 'auto'}
           decoding="async"
@@ -345,22 +292,19 @@ export const ServiceFeatureRow: React.FC<ServiceFeatureRowProps> = ({
       {/* Mobile: always order-2. Desktop: Even is order-2 (Col 2), Odd is order-1 (Col 1) */}
       <div
         style={motionStyle}
-        className={`w-full aspect-square flex flex-col items-center justify-center p-6 sm:p-8 md:p-10 lg:p-12 text-center bg-[var(--bg-page)] ${
+        className={`w-full flex flex-col items-center justify-center p-6 sm:p-8 md:p-8 lg:p-10 text-center bg-[var(--bg-page)] ${
           isEven
             ? 'order-2 md:order-2'
             : 'order-2 md:order-1 md:border-r md:border-[var(--border-subtle)]'
         }`}
       >
-        {/* Title with Swirl Glyph & Emoji */}
+        {/* Title with Swirl Glyph (No emoji) */}
         <h2
           id={headingId}
-          className="font-display font-bold text-xl sm:text-2xl md:text-2xl lg:text-[28px] text-[#B8860B] dark:text-[#FBBF24] tracking-tight flex items-center justify-center gap-2 mb-6"
+          className="font-display font-bold text-xl sm:text-2xl md:text-2xl lg:text-[28px] text-[#B8860B] dark:text-[#FBBF24] tracking-tight flex items-center justify-center gap-2 mb-4 sm:mb-5"
         >
           <FlourishSwirl className="w-5 h-5 sm:w-6 sm:h-6 shrink-0" />
           <span>{service.title}</span>
-          <span className="text-xl sm:text-2xl select-none" aria-hidden="true">
-            {emoji}
-          </span>
         </h2>
 
         {/* Uppercase Left-Aligned Bullets Container */}

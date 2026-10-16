@@ -4,13 +4,15 @@ import {
   Inbox, Search, Filter, MessageSquare, Mail, Calendar, ArrowRight,
   CheckCircle2, Clock, AlertCircle, Trash2, ExternalLink, Paperclip,
   Building, DollarSign, Shield, ChevronDown, ChevronUp, Copy, Check,
-  Briefcase, Sparkles, RefreshCw, X
+  Briefcase, Sparkles, RefreshCw, X, Phone, Settings, Zap, Send, Key, HelpCircle
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { Lead, GroupId, PipelineStage } from '../../types';
+import { notificationService } from '../../lib/notificationService';
+import { dbService } from '../../lib/dbService';
 
 export const InboundLeadsManager: React.FC = () => {
-  const { leads, groups, users, currentUser, updateLeadStatus, deleteLead, reviewLeadToProject } = useApp();
+  const { leads, groups, users, currentUser, updateLeadStatus, deleteLead, reviewLeadToProject, showToast } = useApp();
 
   const [filterStatus, setFilterStatus] = useState<string>('all');
   const [filterSquad, setFilterSquad] = useState<string>('all');
@@ -18,6 +20,23 @@ export const InboundLeadsManager: React.FC = () => {
   const [sortBy, setSortBy] = useState<'newest' | 'oldest' | 'highest_budget'>('newest');
   const [expandedLeadId, setExpandedLeadId] = useState<string | null>(null);
   const [copiedEmail, setCopiedEmail] = useState<string | null>(null);
+
+  // Phone Prompt Modal for leads without an existing phone number
+  const [phonePromptLead, setPhonePromptLead] = useState<Lead | null>(null);
+  const [manualPhoneInput, setManualPhoneInput] = useState<string>('');
+
+  // Email action dropdown state
+  const [activeEmailDropdownLeadId, setActiveEmailDropdownLeadId] = useState<string | null>(null);
+
+  // WhatsApp Gateway Configuration & Live Tester state
+  const [showGatewayConfig, setShowGatewayConfig] = useState<boolean>(false);
+  const [callmebotKey, setCallmebotKey] = useState<string>(() => {
+    return typeof localStorage !== 'undefined' ? (localStorage.getItem('dgh_callmebot_api_key') || '') : '';
+  });
+  const [customWebhook, setCustomWebhook] = useState<string>(() => {
+    return typeof localStorage !== 'undefined' ? (localStorage.getItem('dgh_whatsapp_webhook') || '') : '';
+  });
+  const [testStatus, setTestStatus] = useState<{ loading: boolean; message?: string; success?: boolean } | null>(null);
 
   // Conversion Modal State
   const [convertingLead, setConvertingLead] = useState<Lead | null>(null);
@@ -101,6 +120,132 @@ export const InboundLeadsManager: React.FC = () => {
     navigator.clipboard.writeText(email);
     setCopiedEmail(email);
     setTimeout(() => setCopiedEmail(null), 2000);
+  };
+
+  const extractPhoneFromBrief = (brief?: string): string => {
+    if (!brief) return '';
+    const match = brief.match(/Client Phone \/ WhatsApp:\s*([^\n\r]+)/i) || 
+                  brief.match(/Phone:\s*([^\n\r]+)/i);
+    return match ? match[1].trim() : '';
+  };
+
+  const getEffectiveLeadPhone = (lead: Lead): string => {
+    return lead.clientPhone || lead.phone || extractPhoneFromBrief(lead.brief) || '';
+  };
+
+  const handleWhatsAppClient = (lead: Lead) => {
+    const clientName = lead.clientName || 'Client';
+    const phone = getEffectiveLeadPhone(lead);
+    const waGreeting = `Hello ${clientName},\n\nThis is ${currentUser?.name || 'DigiHust Operations'} from DigiHust Executive Leadership. We received your project inquiry for "${lead.title || 'Digital Solution'}" and would love to coordinate your project discovery alignment.\n\nWhen would you be available for a brief 15-minute alignment call?`;
+
+    if (phone && phone.trim()) {
+      const cleanDigits = phone.replace(/[^0-9]/g, '');
+      if (cleanDigits.length >= 7) {
+        const url = `https://api.whatsapp.com/send?phone=${cleanDigits}&text=${encodeURIComponent(waGreeting)}`;
+        window.open(url, '_blank', 'noopener,noreferrer');
+        showToast(`Opening WhatsApp chat with ${clientName}`, 'success', 'WhatsApp Launched');
+        return;
+      }
+    }
+
+    setPhonePromptLead(lead);
+    setManualPhoneInput('');
+  };
+
+  const handleEmailClient = (lead: Lead, provider: 'gmail' | 'mailto' = 'gmail') => {
+    const clientEmail = lead.clientEmail || lead.email;
+    if (!clientEmail) {
+      showToast('No email address found for this lead.', 'error', 'Missing Email');
+      return;
+    }
+    const clientName = lead.clientName || 'Client';
+    const subject = `DigiHust Discovery: Next Steps for ${lead.title || 'Your Project'}`;
+    const body = `Hello ${clientName},\n\nThank you for reaching out to DigiHust regarding "${lead.title || 'your digital project'}". We have reviewed your initial specifications and are excited about the opportunity to partner with you.\n\nWe would love to schedule a brief 15-minute discovery call to align on milestones, technical requirements, and target timeline.\n\nPlease let us know what time works best for you this week.\n\nBest regards,\n${currentUser?.name || 'DigiHust Operations Team'}\nDigiHust Executive Leadership\nhttps://www.digihust.tech`;
+
+    if (provider === 'gmail') {
+      const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(clientEmail)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+      window.open(gmailUrl, '_blank', 'noopener,noreferrer');
+      showToast(`Opening Gmail compose for ${clientEmail}`, 'success', 'Gmail Launched');
+    } else {
+      const mailtoUrl = `mailto:${clientEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+      window.location.href = mailtoUrl;
+      showToast(`Launching desktop email client`, 'info', 'Mail Launched');
+    }
+    setActiveEmailDropdownLeadId(null);
+  };
+
+  const handleCopyEmailDraft = (lead: Lead) => {
+    const clientName = lead.clientName || 'Client';
+    const draft = `Subject: DigiHust Discovery: Next Steps for ${lead.title || 'Your Project'}\n\nHello ${clientName},\n\nThank you for reaching out to DigiHust regarding "${lead.title || 'your digital project'}". We have reviewed your initial specifications and are excited about the opportunity to partner with you.\n\nWe would love to schedule a brief 15-minute discovery call to align on milestones, technical requirements, and target timeline.\n\nPlease let us know what time works best for you this week.\n\nBest regards,\n${currentUser?.name || 'DigiHust Operations Team'}\nDigiHust Executive Leadership\nhttps://www.digihust.tech`;
+    navigator.clipboard.writeText(draft);
+    showToast('Email draft template copied to clipboard!', 'success', 'Draft Copied');
+    setActiveEmailDropdownLeadId(null);
+  };
+
+  const handleSaveManualPhoneAndLaunch = () => {
+    if (!phonePromptLead) return;
+    const trimmed = manualPhoneInput.trim();
+    const cleanDigits = trimmed.replace(/[^0-9]/g, '');
+    if (cleanDigits.length < 7) {
+      showToast('Please enter a valid phone number with country code (e.g. +92 322 6806396).', 'error', 'Invalid Phone');
+      return;
+    }
+
+    dbService.updateLead(phonePromptLead.id, { clientPhone: trimmed, phone: trimmed });
+    phonePromptLead.clientPhone = trimmed;
+    phonePromptLead.phone = trimmed;
+
+    const clientName = phonePromptLead.clientName || 'Client';
+    const waGreeting = `Hello ${clientName},\n\nThis is ${currentUser?.name || 'DigiHust Operations'} from DigiHust Executive Leadership. We received your project inquiry for "${phonePromptLead.title || 'Digital Solution'}" and would love to coordinate your project discovery alignment.\n\nWhen would you be available for a brief 15-minute alignment call?`;
+    const url = `https://api.whatsapp.com/send?phone=${cleanDigits}&text=${encodeURIComponent(waGreeting)}`;
+    window.open(url, '_blank', 'noopener,noreferrer');
+    showToast(`Phone saved and WhatsApp launched for ${clientName}`, 'success', 'Connected');
+    setPhonePromptLead(null);
+  };
+
+  const handleSaveGatewaySettings = () => {
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem('dgh_callmebot_api_key', callmebotKey.trim());
+      localStorage.setItem('dgh_whatsapp_webhook', customWebhook.trim());
+    }
+    showToast('WhatsApp gateway credentials saved locally and ready for dispatches.', 'success', 'Settings Saved');
+  };
+
+  const handleTestWhatsAppDispatch = async () => {
+    setTestStatus({ loading: true, message: 'Dispatching test notification to DigiHust Leadership WhatsApp numbers (+923226806396 / +923206806396)...' });
+    try {
+      const res = await notificationService.dispatchLeadWhatsApp({
+        name: currentUser?.name || 'DigiHust Executive',
+        email: currentUser?.email || 'digihust@gmail.com',
+        services: ['Test WhatsApp Alert Gateway'],
+        description: 'Automated gateway connectivity test from DigiHust Management Portal',
+        isTest: true,
+        callmebotApiKey: callmebotKey.trim() || undefined,
+        webhookUrl: customWebhook.trim() || undefined,
+      });
+
+      if (res.success) {
+        setTestStatus({
+          loading: false,
+          success: true,
+          message: '✓ Test WhatsApp alert dispatched successfully! Check WhatsApp on +923226806396 / +923206806396.',
+        });
+        showToast('Test WhatsApp alert dispatched!', 'success', 'WhatsApp Gateway');
+      } else {
+        setTestStatus({
+          loading: false,
+          success: false,
+          message: res.details || 'Delivery unconfirmed. Please verify CallMeBot API key or Webhook URL below.',
+        });
+        showToast('WhatsApp alert delivery unconfirmed', 'warning', 'Gateway Notice');
+      }
+    } catch (err: any) {
+      setTestStatus({
+        loading: false,
+        success: false,
+        message: err?.message || 'Failed to dispatch test notification.',
+      });
+    }
   };
 
   const openConvertModal = (lead: Lead) => {
@@ -197,13 +342,138 @@ export const InboundLeadsManager: React.FC = () => {
             </p>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-2">
             <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-xs font-bold">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
               <span>WhatsApp & Email Sync Live</span>
             </span>
+            <button
+              onClick={() => setShowGatewayConfig(!showGatewayConfig)}
+              className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-xl border border-[var(--border-subtle)] hover:border-[var(--brand-teal)] text-xs font-bold text-[var(--text-heading)] bg-[var(--bg-page)] hover:bg-[var(--bg-subtle)] transition-all cursor-pointer shadow-sm"
+            >
+              <Zap className="w-3.5 h-3.5 text-amber-500" />
+              <span>{showGatewayConfig ? 'Hide Gateway Setup' : 'WhatsApp Gateway & Tester'}</span>
+            </button>
           </div>
         </div>
+
+        {/* ── WHATSAPP ALERT GATEWAY & LIVE TESTER ACCORDION ── */}
+        <AnimatePresence>
+          {showGatewayConfig && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              className="mb-6 pb-6 border-b border-[var(--border-subtle)] space-y-4"
+            >
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                  <h4 className="font-display font-extrabold text-sm sm:text-base text-[var(--text-heading)] flex items-center gap-2">
+                    <Zap className="w-4 h-4 text-emerald-500" />
+                    <span>Executive WhatsApp Automation Gateway</span>
+                  </h4>
+                  <p className="text-xs text-[var(--text-muted)] mt-0.5">
+                    Direct automated alerts dispatched on submission to DigiHust numbers: <strong className="text-emerald-600 dark:text-emerald-400 font-mono">+923226806396</strong> & <strong className="text-emerald-600 dark:text-emerald-400 font-mono">+923206806396</strong>.
+                  </p>
+                </div>
+                <button
+                  onClick={handleTestWhatsAppDispatch}
+                  disabled={testStatus?.loading}
+                  className="inline-flex items-center space-x-2 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white text-xs font-bold transition-all shadow-md cursor-pointer self-start sm:self-auto shrink-0"
+                >
+                  <Send className={`w-3.5 h-3.5 ${testStatus?.loading ? 'animate-spin' : ''}`} />
+                  <span>{testStatus?.loading ? 'Dispatching Test...' : 'Send Live Test Alert to WhatsApp'}</span>
+                </button>
+              </div>
+
+              {testStatus && (
+                <div className={`p-3.5 rounded-2xl text-xs font-medium border flex items-start space-x-2.5 ${
+                  testStatus.success 
+                    ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-700 dark:text-emerald-300' 
+                    : testStatus.loading
+                    ? 'bg-cyan-500/10 border-cyan-500/20 text-cyan-700 dark:text-cyan-300'
+                    : 'bg-amber-500/10 border-amber-500/20 text-amber-700 dark:text-amber-300'
+                }`}>
+                  {testStatus.success ? (
+                    <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
+                  ) : testStatus.loading ? (
+                    <RefreshCw className="w-4 h-4 text-cyan-500 animate-spin shrink-0 mt-0.5" />
+                  ) : (
+                    <AlertCircle className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
+                  )}
+                  <div className="flex-1">
+                    <p className="font-semibold">{testStatus.message}</p>
+                  </div>
+                </div>
+              )}
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-1">
+                {/* Method 1: CallMeBot Free WhatsApp API */}
+                <div className="p-4 rounded-2xl bg-[var(--bg-page)] border border-[var(--border-subtle)] space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-extrabold text-[var(--text-heading)] flex items-center gap-1.5">
+                      <Key className="w-3.5 h-3.5 text-[var(--brand-teal)]" />
+                      <span>Method 1: Free CallMeBot Personal API</span>
+                    </span>
+                    <a
+                      href="https://wa.me/34911061462?text=I%20allow%20callmebot%20to%20send%20me%20messages"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-1"
+                    >
+                      <span>1-Click Activate Key</span>
+                      <ExternalLink className="w-2.5 h-2.5" />
+                    </a>
+                  </div>
+                  <p className="text-[11px] text-[var(--text-muted)] leading-relaxed">
+                    Receive free WhatsApp alerts directly to your phone. To activate: Send <code className="bg-black/10 dark:bg-white/10 px-1 py-0.5 rounded text-[10px]">I allow callmebot to send me messages</code> to <strong>+34 911 06 14 62</strong> on WhatsApp, then paste the returned API key below.
+                  </p>
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={callmebotKey}
+                      onChange={(e) => setCallmebotKey(e.target.value)}
+                      placeholder="Enter CallMeBot API Key (e.g. 123456)"
+                      className="flex-1 px-3 py-2 rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] text-xs text-[var(--text-heading)] font-mono focus:outline-none focus:border-[var(--brand-teal)]"
+                    />
+                    <button
+                      onClick={handleSaveGatewaySettings}
+                      className="px-3.5 py-2 rounded-xl bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-white text-xs font-bold cursor-pointer"
+                    >
+                      Save
+                    </button>
+                  </div>
+                </div>
+
+                {/* Method 2: Custom Webhook Gateway */}
+                <div className="p-4 rounded-2xl bg-[var(--bg-page)] border border-[var(--border-subtle)] space-y-3">
+                  <span className="text-xs font-extrabold text-[var(--text-heading)] flex items-center gap-1.5">
+                    <ExternalLink className="w-3.5 h-3.5 text-[var(--brand-teal)]" />
+                    <span>Method 2: Custom Webhook / n8n / Zapier / UltraMsg</span>
+                  </span>
+                  <p className="text-[11px] text-[var(--text-muted)] leading-relaxed">
+                    Forward new client inquiry payloads directly to your custom webhook URL, Telegram bot, or Green-API / UltraMsg instance.
+                  </p>
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={customWebhook}
+                      onChange={(e) => setCustomWebhook(e.target.value)}
+                      placeholder="https://your-webhook-url.example.com/lead-alerts"
+                      className="flex-1 px-3 py-2 rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] text-xs text-[var(--text-heading)] font-mono focus:outline-none focus:border-[var(--brand-teal)]"
+                    />
+                    <button
+                      onClick={handleSaveGatewaySettings}
+                      className="px-3.5 py-2 rounded-xl bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-white text-xs font-bold cursor-pointer"
+                    >
+                      Save
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Executive KPI Grid */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
@@ -359,12 +629,7 @@ export const InboundLeadsManager: React.FC = () => {
             const attachmentName = lead.attachmentName || 'Attached Document';
             const squadId = lead.suggestedGroupId || lead.groupId || lead.targetGroupId || 'tech';
             const squadObj = groups.find(g => g.id === squadId);
-
-            // WhatsApp message generator for CEO/Co-Founder direct reach
-            const waGreeting = encodeURIComponent(
-              `Hello ${clientName},\n\nThis is ${currentUser?.name || 'DigiHust Operations'} from DigiHust Executive Leadership. We received your project inquiry for "${lead.title || 'Digital Solution'}" and would love to coordinate your project discovery alignment.\n\nWhen would you be available for a brief 15-minute alignment call?`
-            );
-            const waLink = `https://wa.me/?text=${waGreeting}`;
+            const clientPhone = getEffectiveLeadPhone(lead);
 
             return (
               <motion.div
@@ -399,20 +664,29 @@ export const InboundLeadsManager: React.FC = () => {
                           {lead.createdAt ? new Date(lead.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }) : 'Recent'}
                         </span>
                       </div>
-                      <p className="text-xs text-[var(--text-muted)] font-mono flex items-center gap-1.5 mt-0.5">
-                        <span>{clientEmail}</span>
-                        <button
-                          onClick={() => handleCopyEmail(clientEmail)}
-                          className="hover:text-[var(--brand-teal)] transition-colors cursor-pointer"
-                          title="Copy Email"
-                        >
-                          {copiedEmail === clientEmail ? (
-                            <Check className="w-3 h-3 text-emerald-500" />
-                          ) : (
-                            <Copy className="w-3 h-3" />
-                          )}
-                        </button>
-                      </p>
+                      <div className="flex items-center gap-3 mt-0.5 flex-wrap">
+                        <p className="text-xs text-[var(--text-muted)] font-mono flex items-center gap-1.5">
+                          <Mail className="w-3 h-3 text-[var(--brand-teal)]" />
+                          <span>{clientEmail}</span>
+                          <button
+                            onClick={() => handleCopyEmail(clientEmail)}
+                            className="hover:text-[var(--brand-teal)] transition-colors cursor-pointer"
+                            title="Copy Email"
+                          >
+                            {copiedEmail === clientEmail ? (
+                              <Check className="w-3 h-3 text-emerald-500" />
+                            ) : (
+                              <Copy className="w-3 h-3" />
+                            )}
+                          </button>
+                        </p>
+                        {clientPhone && (
+                          <p className="text-xs text-emerald-600 dark:text-emerald-400 font-mono font-semibold flex items-center gap-1.5">
+                            <Phone className="w-3 h-3" />
+                            <span>{clientPhone}</span>
+                          </p>
+                        )}
+                      </div>
                     </div>
                   </div>
 
@@ -488,23 +762,71 @@ export const InboundLeadsManager: React.FC = () => {
                 {/* Bottom Row: Executive Action Triggers */}
                 <div className="flex flex-wrap items-center justify-between gap-3 pt-4 mt-4 border-t border-[var(--border-subtle)]">
                   <div className="flex flex-wrap items-center gap-2">
-                    <a
-                      href={waLink}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition-all shadow-sm cursor-pointer"
+                    {/* WhatsApp Client: direct launch with fallback modal */}
+                    <button
+                      onClick={() => handleWhatsAppClient(lead)}
+                      className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition-all shadow-sm cursor-pointer hover:scale-[1.02] active:scale-[0.98]"
+                      title={clientPhone ? `Start WhatsApp conversation with ${clientPhone}` : 'Connect with client on WhatsApp'}
                     >
                       <MessageSquare className="w-3.5 h-3.5" />
                       <span>WhatsApp Client</span>
-                    </a>
+                      {clientPhone && (
+                        <span className="hidden sm:inline-block text-[10px] bg-emerald-700/60 px-1.5 py-0.2 rounded-md font-mono">
+                          {clientPhone}
+                        </span>
+                      )}
+                    </button>
 
-                    <a
-                      href={`mailto:${clientEmail}?subject=${encodeURIComponent(`DigiHust Discovery: Next Steps for ${lead.title || 'Your Project'}`)}`}
-                      className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-xl border border-[var(--border-subtle)] hover:border-[var(--brand-teal)] text-[var(--text-heading)] bg-[var(--bg-page)] hover:bg-[var(--bg-subtle)] text-xs font-bold transition-all cursor-pointer"
-                    >
-                      <Mail className="w-3.5 h-3.5 text-[var(--brand-teal)]" />
-                      <span>Email Client</span>
-                    </a>
+                    {/* Email Client: launches Gmail Web compose in new tab with pre-drafted discovery alignment email */}
+                    <div className="relative">
+                      <div className="inline-flex rounded-xl shadow-sm">
+                        <button
+                          onClick={() => handleEmailClient(lead, 'gmail')}
+                          className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-l-xl border border-r-0 border-[var(--border-subtle)] hover:border-[var(--brand-teal)] text-[var(--text-heading)] bg-[var(--bg-page)] hover:bg-[var(--bg-subtle)] text-xs font-bold transition-all cursor-pointer"
+                          title="Open Gmail Web Compose with pre-drafted discovery email"
+                        >
+                          <Mail className="w-3.5 h-3.5 text-[var(--brand-teal)]" />
+                          <span>Email Client</span>
+                        </button>
+                        <button
+                          onClick={() => setActiveEmailDropdownLeadId(activeEmailDropdownLeadId === lead.id ? null : lead.id)}
+                          className="px-2 py-1.5 rounded-r-xl border border-[var(--border-subtle)] hover:border-[var(--brand-teal)] text-[var(--text-heading)] bg-[var(--bg-page)] hover:bg-[var(--bg-subtle)] text-xs transition-all cursor-pointer"
+                          title="More email options"
+                        >
+                          <ChevronDown className="w-3 h-3" />
+                        </button>
+                      </div>
+
+                      {/* Email Client Options Dropdown */}
+                      {activeEmailDropdownLeadId === lead.id && (
+                        <div className="absolute left-0 mt-1.5 w-60 rounded-2xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] shadow-2xl p-1.5 z-30 animate-in fade-in zoom-in-95 duration-100">
+                          <button
+                            onClick={() => handleEmailClient(lead, 'gmail')}
+                            className="w-full text-left px-3 py-2 rounded-xl text-xs font-semibold text-[var(--text-heading)] hover:bg-[var(--bg-page)] flex items-center justify-between cursor-pointer"
+                          >
+                            <span className="flex items-center gap-2">
+                              <Mail className="w-3.5 h-3.5 text-rose-500" />
+                              <span>Open in Gmail Web</span>
+                            </span>
+                            <span className="text-[10px] font-mono text-[var(--brand-teal)] font-bold">1-Click</span>
+                          </button>
+                          <button
+                            onClick={() => handleEmailClient(lead, 'mailto')}
+                            className="w-full text-left px-3 py-2 rounded-xl text-xs font-semibold text-[var(--text-heading)] hover:bg-[var(--bg-page)] flex items-center gap-2 cursor-pointer"
+                          >
+                            <ExternalLink className="w-3.5 h-3.5 text-[var(--text-muted)]" />
+                            <span>Default Mail App (mailto:)</span>
+                          </button>
+                          <button
+                            onClick={() => handleCopyEmailDraft(lead)}
+                            className="w-full text-left px-3 py-2 rounded-xl text-xs font-semibold text-[var(--text-heading)] hover:bg-[var(--bg-page)] flex items-center gap-2 cursor-pointer border-t border-[var(--border-subtle)] mt-1 pt-1.5"
+                          >
+                            <Copy className="w-3.5 h-3.5 text-[var(--text-muted)]" />
+                            <span>Copy Discovery Draft Template</span>
+                          </button>
+                        </div>
+                      )}
+                    </div>
                   </div>
 
                   <div className="flex items-center space-x-2">
@@ -715,6 +1037,101 @@ export const InboundLeadsManager: React.FC = () => {
                   className="px-5 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold transition-all shadow-md cursor-pointer"
                 >
                   Confirm Delete
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* ── PHONE PROMPT MODAL (FOR LEADS WITHOUT PHONE) ── */}
+      <AnimatePresence>
+        {phonePromptLead && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="w-full max-w-md rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] shadow-2xl p-6 space-y-4"
+            >
+              <div className="flex items-center justify-between pb-3 border-b border-[var(--border-subtle)]">
+                <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 flex items-center justify-center">
+                    <MessageSquare className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h3 className="font-display font-extrabold text-base text-[var(--text-heading)]">
+                      WhatsApp Client Chat
+                    </h3>
+                    <p className="text-xs text-[var(--text-muted)]">
+                      Connect with {phonePromptLead.clientName}
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setPhonePromptLead(null)}
+                  className="p-1 rounded-xl text-[var(--text-muted)] hover:bg-[var(--bg-page)] cursor-pointer"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+
+              <div className="space-y-3 text-xs text-[var(--text-body)]">
+                <p>
+                  No phone number was recorded on this lead inquiry. Enter the client's phone or WhatsApp number below to launch the direct chat:
+                </p>
+
+                <div>
+                  <label className="block text-xs font-bold text-[var(--text-heading)] mb-1">
+                    Client Phone / WhatsApp Number
+                  </label>
+                  <div className="relative">
+                    <Phone className="w-4 h-4 text-[#94A3B8] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                    <input
+                      type="tel"
+                      value={manualPhoneInput}
+                      onChange={(e) => setManualPhoneInput(e.target.value)}
+                      placeholder="e.g. +92 322 6806396 or +1 415 555 2671"
+                      className="w-full pl-10 pr-3.5 py-2.5 rounded-xl border border-[var(--border-subtle)] text-xs text-[var(--text-heading)] bg-[var(--bg-page)] focus:outline-none focus:border-emerald-500 font-mono"
+                    />
+                  </div>
+                </div>
+
+                <div className="p-3 rounded-2xl bg-[var(--bg-page)] border border-[var(--border-subtle)]">
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-[10px] font-bold text-[var(--text-muted)] uppercase">Pre-Written Greeting</span>
+                    <button
+                      onClick={() => {
+                        const clientName = phonePromptLead.clientName || 'Client';
+                        const waGreeting = `Hello ${clientName},\n\nThis is ${currentUser?.name || 'DigiHust Operations'} from DigiHust Executive Leadership. We received your project inquiry for "${phonePromptLead.title || 'Digital Solution'}" and would love to coordinate your project discovery alignment.\n\nWhen would you be available for a brief 15-minute alignment call?`;
+                        navigator.clipboard.writeText(waGreeting);
+                        showToast('Greeting message copied to clipboard!', 'success', 'Copied');
+                      }}
+                      className="text-[10px] font-bold text-emerald-600 hover:underline flex items-center gap-1 cursor-pointer"
+                    >
+                      <Copy className="w-2.5 h-2.5" />
+                      <span>Copy Text</span>
+                    </button>
+                  </div>
+                  <p className="text-[11px] text-[var(--text-muted)] line-clamp-3 italic">
+                    "Hello {phonePromptLead.clientName}, This is DigiHust Executive Leadership. We received your project inquiry..."
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-end space-x-2 pt-2 border-t border-[var(--border-subtle)]">
+                <button
+                  onClick={() => setPhonePromptLead(null)}
+                  className="px-4 py-2 rounded-xl border border-[var(--border-subtle)] text-xs font-bold text-[var(--text-muted)] hover:bg-[var(--bg-page)] cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleSaveManualPhoneAndLaunch}
+                  className="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition-all shadow-md cursor-pointer flex items-center space-x-1.5"
+                >
+                  <MessageSquare className="w-3.5 h-3.5" />
+                  <span>Start WhatsApp Chat</span>
                 </button>
               </div>
             </motion.div>
