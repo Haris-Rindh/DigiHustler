@@ -99,10 +99,13 @@ export async function sendWhatsAppNotification(leadData) {
         )}&apikey=${apiKey}`;
         const res = await fetch(url);
         const text = await res.text().catch(() => '');
+        const lower = text.toLowerCase();
+        // CallMeBot returns HTTP 200 even when API key is invalid or message failed
+        const isOk = res.ok && !lower.includes('invalid') && !lower.includes('error') && !lower.includes('apikey can not be');
         results.push({ 
           channel: `callmebot:${phone}`, 
           status: res.status, 
-          ok: res.ok, 
+          ok: isOk, 
           response: text.slice(0, 150) 
         });
       } catch (err) {
@@ -144,14 +147,28 @@ export async function sendWhatsAppNotification(leadData) {
     }
   }
 
+  const anySuccess = results.some((r) => r.ok);
+
   if (process.env.NODE_ENV !== 'production') {
     console.log(
-      `✓ [WhatsApp Background Notifier] Dispatched lead notification to leadership (${targetNumbers.join(', ')}). Results: ${results.length} channels attempted.`
+      `✓ [WhatsApp Background Notifier] Dispatched lead notification to leadership (${targetNumbers.join(', ')}). Results: ${results.length} channels attempted. Success: ${anySuccess}`
     );
   }
 
+  if (results.length === 0) {
+    return {
+      success: false,
+      reason: 'no_provider_configured',
+      error: 'No active WhatsApp API key (CALLMEBOT_API_KEY), Webhook (WHATSAPP_WEBHOOK_URL), or Twilio credentials configured.',
+      recipients: targetNumbers,
+      results: [],
+      timestamp: new Date().toISOString(),
+    };
+  }
+
   return {
-    success: true,
+    success: anySuccess,
+    error: anySuccess ? undefined : (results[0]?.response || results[0]?.error || 'WhatsApp delivery failed across all channels.'),
     recipients: targetNumbers,
     messageLength: message.length,
     results,

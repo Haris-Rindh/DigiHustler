@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Inbox, Search, Filter, MessageSquare, Mail, Calendar, ArrowRight,
@@ -12,7 +12,18 @@ import { notificationService } from '../../lib/notificationService';
 import { dbService } from '../../lib/dbService';
 
 export const InboundLeadsManager: React.FC = () => {
-  const { leads, groups, users, currentUser, updateLeadStatus, deleteLead, reviewLeadToProject, showToast } = useApp();
+  const { 
+    leads, 
+    groups, 
+    users, 
+    currentUser, 
+    updateLeadStatus, 
+    deleteLead, 
+    reviewLeadToProject, 
+    showToast,
+    siteContent,
+    updateSiteContent
+  } = useApp();
 
   const [filterStatus, setFilterStatus] = useState<string>('all');
   const [filterSquad, setFilterSquad] = useState<string>('all');
@@ -31,11 +42,21 @@ export const InboundLeadsManager: React.FC = () => {
   // WhatsApp Gateway Configuration & Live Tester state
   const [showGatewayConfig, setShowGatewayConfig] = useState<boolean>(false);
   const [callmebotKey, setCallmebotKey] = useState<string>(() => {
-    return typeof localStorage !== 'undefined' ? (localStorage.getItem('dgh_callmebot_api_key') || '') : '';
+    return siteContent?.callmebotApiKey || (typeof localStorage !== 'undefined' ? (localStorage.getItem('dgh_callmebot_api_key') || '') : '');
   });
   const [customWebhook, setCustomWebhook] = useState<string>(() => {
-    return typeof localStorage !== 'undefined' ? (localStorage.getItem('dgh_whatsapp_webhook') || '') : '';
+    return siteContent?.whatsappWebhookUrl || (typeof localStorage !== 'undefined' ? (localStorage.getItem('dgh_whatsapp_webhook') || '') : '');
   });
+
+  // Keep state in sync if siteContent changes
+  useEffect(() => {
+    if (siteContent?.callmebotApiKey && !callmebotKey) {
+      setCallmebotKey(siteContent.callmebotApiKey);
+    }
+    if (siteContent?.whatsappWebhookUrl && !customWebhook) {
+      setCustomWebhook(siteContent.whatsappWebhookUrl);
+    }
+  }, [siteContent?.callmebotApiKey, siteContent?.whatsappWebhookUrl]);
   const [testStatus, setTestStatus] = useState<{ loading: boolean; message?: string; success?: boolean } | null>(null);
 
   // Conversion Modal State
@@ -203,12 +224,21 @@ export const InboundLeadsManager: React.FC = () => {
     setPhonePromptLead(null);
   };
 
-  const handleSaveGatewaySettings = () => {
+  const handleSaveGatewaySettings = async () => {
+    const trimmedKey = callmebotKey.trim();
+    const trimmedWebhook = customWebhook.trim();
     if (typeof localStorage !== 'undefined') {
-      localStorage.setItem('dgh_callmebot_api_key', callmebotKey.trim());
-      localStorage.setItem('dgh_whatsapp_webhook', customWebhook.trim());
+      localStorage.setItem('dgh_callmebot_api_key', trimmedKey);
+      localStorage.setItem('dgh_whatsapp_webhook', trimmedWebhook);
     }
-    showToast('WhatsApp gateway credentials saved locally and ready for dispatches.', 'success', 'Settings Saved');
+    if (siteContent) {
+      await updateSiteContent({
+        ...siteContent,
+        callmebotApiKey: trimmedKey,
+        whatsappWebhookUrl: trimmedWebhook,
+      });
+    }
+    showToast('WhatsApp gateway credentials saved to database & active for all public forms.', 'success', 'Settings Saved');
   };
 
   const handleTestWhatsAppDispatch = async () => {
@@ -343,10 +373,17 @@ export const InboundLeadsManager: React.FC = () => {
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-xs font-bold">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span>WhatsApp & Email Sync Live</span>
-            </span>
+            {callmebotKey.trim() || customWebhook.trim() ? (
+              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-xs font-bold">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                <span>WhatsApp Gateway Active</span>
+              </span>
+            ) : (
+              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400 text-xs font-bold">
+                <span className="w-2 h-2 rounded-full bg-amber-500" />
+                <span>WhatsApp: Gateway Key Needed</span>
+              </span>
+            )}
             <button
               onClick={() => setShowGatewayConfig(!showGatewayConfig)}
               className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-xl border border-[var(--border-subtle)] hover:border-[var(--brand-teal)] text-xs font-bold text-[var(--text-heading)] bg-[var(--bg-page)] hover:bg-[var(--bg-subtle)] transition-all cursor-pointer shadow-sm"
@@ -410,23 +447,35 @@ export const InboundLeadsManager: React.FC = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-1">
                 {/* Method 1: CallMeBot Free WhatsApp API */}
                 <div className="p-4 rounded-2xl bg-[var(--bg-page)] border border-[var(--border-subtle)] space-y-3">
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between flex-wrap gap-2">
                     <span className="text-xs font-extrabold text-[var(--text-heading)] flex items-center gap-1.5">
                       <Key className="w-3.5 h-3.5 text-[var(--brand-teal)]" />
                       <span>Method 1: Free CallMeBot Personal API</span>
                     </span>
-                    <a
-                      href="https://wa.me/34911061462?text=I%20allow%20callmebot%20to%20send%20me%20messages"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-1"
-                    >
-                      <span>1-Click Activate Key</span>
-                      <ExternalLink className="w-2.5 h-2.5" />
-                    </a>
+                    <div className="flex items-center gap-2">
+                      <a
+                        href="https://wa.me/34623786449?text=I%20allow%20callmebot%20to%20send%20me%20messages"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-1"
+                      >
+                        <span>Bot #1</span>
+                        <ExternalLink className="w-2.5 h-2.5" />
+                      </a>
+                      <span className="text-[10px] text-[var(--text-muted)]">·</span>
+                      <a
+                        href="https://wa.me/34911061462?text=I%20allow%20callmebot%20to%20send%20me%20messages"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-1"
+                      >
+                        <span>Bot #2</span>
+                        <ExternalLink className="w-2.5 h-2.5" />
+                      </a>
+                    </div>
                   </div>
                   <p className="text-[11px] text-[var(--text-muted)] leading-relaxed">
-                    Receive free WhatsApp alerts directly to your phone. To activate: Send <code className="bg-black/10 dark:bg-white/10 px-1 py-0.5 rounded text-[10px]">I allow callmebot to send me messages</code> to <strong>+34 911 06 14 62</strong> on WhatsApp, then paste the returned API key below.
+                    Receive free WhatsApp alerts directly to your phone. To activate: Send <code className="bg-black/10 dark:bg-white/10 px-1 py-0.5 rounded text-[10px]">I allow callmebot to send me messages</code> to <strong>+34 623 78 64 49</strong> or <strong>+34 911 06 14 62</strong> on WhatsApp, then paste the returned 6-digit API key below and click Save.
                   </p>
                   <div className="flex gap-2">
                     <input

@@ -89,7 +89,9 @@ export default async function handler(req, res) {
 
     const result = await sendWhatsAppNotification(safe);
     return res.status(200).json({ 
-      success: true, 
+      success: Boolean(result.success), 
+      error: result.error,
+      reason: result.reason,
       recipients: result.recipients, 
       results: result.results 
     });

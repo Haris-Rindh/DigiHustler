@@ -558,6 +558,9 @@ export interface SiteContent {
   careers?: SiteCareersContent;
   // Pinned member IDs in exact order  stored in cloud for cross-device sync
   pinnedMemberIds?: string[];
+  // WhatsApp Notification Gateway Configuration
+  whatsappWebhookUrl?: string;
+  callmebotApiKey?: string;
 }
 
 // ── SECURITY & PERMISSION AUDIT LOG TYPES ────────────────────────────────────

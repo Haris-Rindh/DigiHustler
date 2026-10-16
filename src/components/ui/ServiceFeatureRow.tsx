@@ -78,7 +78,59 @@ export const getServiceImage = (service: SiteServiceItem, index: number): string
   return SERVICE_IMAGES[index % SERVICE_IMAGES.length];
 };
 
+export const getServiceEmoji = (service: SiteServiceItem, index: number): string => {
+  const combined = `${service.slug || ''} ${service.title || ''} ${service.id || ''}`.toLowerCase();
 
+  if (
+    combined.includes('web') ||
+    combined.includes('saas') ||
+    combined.includes('dev') ||
+    combined.includes('engineering')
+  ) {
+    return '💻';
+  }
+  if (
+    combined.includes('creative') ||
+    combined.includes('brand') ||
+    combined.includes('ui') ||
+    combined.includes('ux') ||
+    combined.includes('design')
+  ) {
+    return '🎨';
+  }
+  if (
+    combined.includes('ai') ||
+    combined.includes('automation') ||
+    combined.includes('workflow')
+  ) {
+    return '🤖';
+  }
+  if (
+    combined.includes('market') ||
+    combined.includes('seo') ||
+    combined.includes('growth')
+  ) {
+    return '📈';
+  }
+  if (
+    combined.includes('cyber') ||
+    combined.includes('security') ||
+    combined.includes('audit')
+  ) {
+    return '🛡️';
+  }
+  if (
+    combined.includes('data') ||
+    combined.includes('intelligence') ||
+    combined.includes('bi') ||
+    combined.includes('analytic')
+  ) {
+    return '📊';
+  }
+
+  const fallbackEmojis = ['💻', '🎨', '🤖', '📈', '🛡️', '📊'];
+  return fallbackEmojis[index % fallbackEmojis.length];
+};
 
 export const DEFAULT_SERVICE_BULLETS: Record<string, string[]> = {
   web: [
@@ -208,6 +260,14 @@ export const FlourishSwirl: React.FC<{ className?: string }> = ({
   </svg>
 );
 
+export const cleanTitle = (title: string): string => {
+  if (!title) return '';
+  return title
+    .replace(/^[\p{Emoji}\p{Symbol}\s•\-\|~]+/gu, '')
+    .replace(/[\p{Emoji}\p{Symbol}]+$/gu, '')
+    .trim();
+};
+
 export const ServiceFeatureRow: React.FC<ServiceFeatureRowProps> = ({
   service,
   index,
@@ -250,6 +310,7 @@ export const ServiceFeatureRow: React.FC<ServiceFeatureRowProps> = ({
 
   const imageSrc = getServiceImage(service, index);
   const bullets = getServiceBullets(service);
+  const displayTitle = cleanTitle(service.title);
 
   const motionStyle: React.CSSProperties = shouldReduceMotion
     ? {}
@@ -264,9 +325,9 @@ export const ServiceFeatureRow: React.FC<ServiceFeatureRowProps> = ({
       ref={rowRef}
       id={slug}
       aria-labelledby={headingId}
-      className="grid grid-cols-1 md:grid-cols-2 gap-0 w-full border-b border-[var(--border-subtle)] last:border-b-0 scroll-mt-[88px]"
+      className="grid grid-cols-1 md:grid-cols-2 gap-0 w-full border-b border-[var(--border-subtle)] last:border-b-0 scroll-mt-[88px] items-stretch"
     >
-      {/* ── IMAGE CELL (16:9 Aspect Ratio) ── */}
+      {/* ── IMAGE CELL (16:9 RATIO) ── */}
       {/* Mobile: always order-1. Desktop: Even is order-1 (Col 1), Odd is order-2 (Col 2) */}
       <div
         style={motionStyle}
@@ -278,9 +339,9 @@ export const ServiceFeatureRow: React.FC<ServiceFeatureRowProps> = ({
       >
         <img
           src={imageSrc}
-          alt={service.title}
-          width={640}
-          height={360}
+          alt={displayTitle}
+          width={960}
+          height={540}
           loading={isFirst ? 'eager' : 'lazy'}
           fetchPriority={isFirst ? 'high' : 'auto'}
           decoding="async"
@@ -288,35 +349,34 @@ export const ServiceFeatureRow: React.FC<ServiceFeatureRowProps> = ({
         />
       </div>
 
-      {/* ── TEXT CELL ── */}
+      {/* ── TEXT CELL (MATCHING 16:9 RATIO ON DESKTOP) ── */}
       {/* Mobile: always order-2. Desktop: Even is order-2 (Col 2), Odd is order-1 (Col 1) */}
       <div
         style={motionStyle}
-        className={`w-full flex flex-col items-center justify-center p-6 sm:p-8 md:p-8 lg:p-10 text-center bg-[var(--bg-page)] ${
+        className={`w-full min-h-[280px] md:min-h-0 md:aspect-video flex flex-col items-center justify-center p-6 sm:p-8 md:p-4 lg:p-6 text-center bg-[var(--bg-page)] ${
           isEven
             ? 'order-2 md:order-2'
             : 'order-2 md:order-1 md:border-r md:border-[var(--border-subtle)]'
         }`}
       >
-        {/* Title with Swirl Glyph (No emoji) */}
+        {/* Clean Title without symbols or emojis */}
         <h2
           id={headingId}
-          className="font-display font-bold text-xl sm:text-2xl md:text-2xl lg:text-[28px] text-[#B8860B] dark:text-[#FBBF24] tracking-tight flex items-center justify-center gap-2 mb-4 sm:mb-5"
+          className="font-display font-bold text-xl sm:text-2xl md:text-xl lg:text-2xl text-[#B8860B] dark:text-[#FBBF24] tracking-tight mb-3 lg:mb-4 text-center"
         >
-          <FlourishSwirl className="w-5 h-5 sm:w-6 sm:h-6 shrink-0" />
-          <span>{service.title}</span>
+          {displayTitle}
         </h2>
 
         {/* Uppercase Left-Aligned Bullets Container */}
-        <div className="w-full max-w-[280px] sm:max-w-[320px] mx-auto text-left mb-6">
-          <ul className="space-y-2.5 sm:space-y-3 font-sans font-bold text-xs sm:text-[13px] tracking-wider uppercase text-slate-800 dark:text-slate-100">
+        <div className="w-full max-w-[280px] sm:max-w-[320px] mx-auto text-left mb-3 lg:mb-4">
+          <ul className="space-y-1.5 sm:space-y-2 font-sans font-bold text-[11px] sm:text-xs tracking-wider uppercase text-slate-800 dark:text-slate-100">
             {bullets.map((item, idx) => (
-              <li key={idx} className="flex items-center gap-2.5">
+              <li key={idx} className="flex items-center gap-2">
                 <span
                   className="w-1.5 h-1.5 rounded-full bg-slate-900 dark:bg-slate-200 shrink-0"
                   aria-hidden="true"
                 />
-                <span>{item}</span>
+                <span className="truncate">{item}</span>
               </li>
             ))}
           </ul>
@@ -326,7 +386,7 @@ export const ServiceFeatureRow: React.FC<ServiceFeatureRowProps> = ({
         {detailRoute && (
           <Link
             to={detailRoute}
-            className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold uppercase tracking-wider text-[var(--brand-teal)] hover:text-[var(--brand-teal-hover)] dark:text-cyan-400 dark:hover:text-cyan-300 transition-colors group mt-2 focus:outline-hidden focus:ring-2 focus:ring-[var(--brand-teal)] rounded-sm"
+            className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold uppercase tracking-wider text-[var(--brand-teal)] hover:text-[var(--brand-teal-hover)] dark:text-cyan-400 dark:hover:text-cyan-300 transition-colors group focus:outline-hidden focus:ring-2 focus:ring-[var(--brand-teal)] rounded-sm"
           >
             <span>Explore Service</span>
             <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-1" />

@@ -108,7 +108,7 @@ export const PrivacyPolicy: React.FC = () => {
                 <p className="text-[var(--text-muted)] leading-relaxed mb-6">
                   If you have additional questions or require more information about our Privacy Policy, do not hesitate to contact our legal and security compliance team.
                 </p>
-                <a href="mailto:digihust@gmail.com" className="inline-flex items-center space-x-2 bg-[var(--brand-teal)] text-white px-6 py-3 rounded-xl font-bold shadow-md hover:bg-[var(--brand-teal-hover)] transition-colors">
+                <a href="https://mail.google.com/mail/?view=cm&fs=1&to=digihust@gmail.com" target="_blank" rel="noopener noreferrer" className="inline-flex items-center space-x-2 bg-[var(--brand-teal)] text-white px-6 py-3 rounded-xl font-bold shadow-md hover:bg-[var(--brand-teal-hover)] transition-colors">
                   <Mail className="w-5 h-5" />
                   <span>digihust@gmail.com</span>
                 </a>

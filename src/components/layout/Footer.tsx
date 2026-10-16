@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ShieldCheck, Linkedin, Github, Facebook, Instagram, Twitter, Mail, AtSign, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { SiGmail } from 'react-icons/si';
 import logoImg from '../../assets/logo.png';
 import { LAST_UPDATED, LAST_UPDATED_DISPLAY } from '../../config/siteConfig';
 import { dbService } from '../../lib/dbService';
@@ -57,11 +58,11 @@ const SOCIAL_LINKS: SocialLink[] = [
     glowColor: 'rgba(31, 122, 140, 0.4)',
   },
   {
-    label: 'Email Inquiries',
-    href: 'mailto:digihust@gmail.com',
-    icon: Mail,
-    color: 'var(--brand-teal)',
-    glowColor: 'rgba(31, 122, 140, 0.5)',
+    label: 'Gmail (digihust@gmail.com)',
+    href: 'https://mail.google.com/mail/?view=cm&fs=1&to=digihust@gmail.com',
+    icon: SiGmail,
+    color: '#EA4335',
+    glowColor: 'rgba(234, 67, 53, 0.45)',
   },
 ];
 
@@ -209,6 +210,11 @@ export const Footer: React.FC = () => {
                       rel="noopener noreferrer"
                       title={s.label}
                       aria-label={s.label}
+                      onClick={() => {
+                        if (s.href.includes('digihust@gmail.com') && navigator.clipboard) {
+                          navigator.clipboard.writeText('digihust@gmail.com').catch(() => {});
+                        }
+                      }}
                       className="relative w-8 h-8 rounded-lg bg-[var(--bg-surface)] border border-[var(--border-subtle)] hover:border-[var(--brand-teal)] hover:bg-[var(--brand-teal-subtle)] flex items-center justify-center transition-all duration-200 cursor-pointer group-hover:-translate-y-0.5 active:translate-y-0 z-10"
                     >
                       <IconComponent 

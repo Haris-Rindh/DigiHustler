@@ -92,7 +92,7 @@ export const Careers: React.FC = () => {
 
               <div className="mt-8 pt-8 border-t border-[var(--border-subtle)]">
                 <p className="text-sm text-[var(--text-muted)]">
-                  Think you'd be a great fit anyway? Send your resume to <a href="mailto:digihust@gmail.com" className="text-[var(--brand-teal)] hover:underline font-medium">digihust@gmail.com</a>
+                  Think you'd be a great fit anyway? Send your resume to <a href="https://mail.google.com/mail/?view=cm&fs=1&to=digihust@gmail.com" target="_blank" rel="noopener noreferrer" className="text-[var(--brand-teal)] hover:underline font-medium">digihust@gmail.com</a>
                 </p>
               </div>
             </motion.div>

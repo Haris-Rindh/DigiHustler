@@ -215,16 +215,21 @@ export const notificationService = {
 
       if (res.ok) {
         const json = await res.json().catch(() => ({}));
-        if (import.meta.env.DEV) {
-          console.log('✓ Automated Background WhatsApp Dispatched to DigiHust Leadership');
+        if (json?.success && json?.results && json.results.some((r: any) => r.ok)) {
+          if (import.meta.env.DEV) {
+            console.log('✓ Automated Background WhatsApp Dispatched to DigiHust Leadership');
+          }
+          return { success: true, results: json.results };
         }
-        return { success: true, results: json?.results };
+        if (json?.error || json?.reason) {
+          console.warn('WhatsApp API notice:', json.error || json.reason);
+        }
       }
     } catch (err: any) {
       console.warn('API /api/send-whatsapp dispatch notice:', err?.message);
     }
 
-    // 2. Direct CallMeBot client-side fallback (if API key saved in localStorage or env)
+    // 2. Direct CallMeBot client-side fallback (if API key saved in localStorage, siteContent, or env)
     const savedCallMeBotKey = leadData.callmebotApiKey ||
       (typeof localStorage !== 'undefined' ? localStorage.getItem('dgh_callmebot_api_key') : null) ||
       import.meta.env.VITE_CALLMEBOT_API_KEY;
@@ -253,7 +258,7 @@ export const notificationService = {
       return { success: true, details: 'Dispatched via CallMeBot client fallback' };
     }
 
-    // 3. Secondary Webhook Fallback if directly configured in client environment or localStorage
+    // 3. Secondary Webhook Fallback if directly configured in client environment, siteContent, or localStorage
     const webhookUrl = leadData.webhookUrl ||
       (typeof localStorage !== 'undefined' ? localStorage.getItem('dgh_whatsapp_webhook') : null) ||
       import.meta.env.VITE_WHATSAPP_WEBHOOK_URL ||
@@ -261,7 +266,7 @@ export const notificationService = {
 
     if (webhookUrl) {
       try {
-        await fetch(webhookUrl, {
+        const whRes = await fetch(webhookUrl, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -270,16 +275,21 @@ export const notificationService = {
             timestamp: new Date().toISOString(),
           }),
         });
-        if (import.meta.env.DEV) {
-          console.log('✓ Webhook Lead WhatsApp Dispatched Successfully');
+        if (whRes.ok) {
+          if (import.meta.env.DEV) {
+            console.log('✓ Webhook Lead WhatsApp Dispatched Successfully');
+          }
+          return { success: true, details: 'Dispatched via webhook' };
         }
-        return { success: true, details: 'Dispatched via webhook' };
       } catch (webhookErr) {
         console.warn('WhatsApp direct webhook dispatch warning:', webhookErr);
       }
     }
 
-    return { success: false, details: 'No active WhatsApp API key or webhook configured' };
+    return { 
+      success: false, 
+      details: 'No active WhatsApp API key (CALLMEBOT_API_KEY) or Webhook (WHATSAPP_WEBHOOK_URL) configured in .env or Portal settings.' 
+    };
   },
 
   /**

@@ -21,7 +21,10 @@ import {
   AlertCircle,
   ExternalLink,
   Loader2,
+  Check,
+  Copy,
 } from 'lucide-react';
+import { SiGmail } from 'react-icons/si';
 import { SEOHead } from '../seo/SEOHead';
 import { useApp } from '../../context/AppContext';
 import { GroupId } from '../../types';
@@ -264,7 +267,9 @@ export const Contact: React.FC = () => {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [waDispatched, setWaDispatched] = useState<boolean>(false);
   const [whatsappLink, setWhatsappLink] = useState<string>('');
+  const [copiedEmail, setCopiedEmail] = useState<boolean>(false);
 
   const [selectedCurrency, setSelectedCurrency] = useState<string>('USD');
   const [budgetMode, setBudgetMode] = useState<'range' | 'custom'>('range');
@@ -697,9 +702,8 @@ export const Contact: React.FC = () => {
       }
 
       // 4. Automated background WhatsApp dispatch to DigiHust Leadership (+923226806396 / +923206806396)
-      // Dispatched instantly in the background without requiring client to click or interact with WhatsApp
       try {
-        await notificationService.dispatchLeadWhatsApp({
+        const waRes = await notificationService.dispatchLeadWhatsApp({
           name: form.name,
           email: form.email,
           clientPhone: cleanPhone,
@@ -712,27 +716,31 @@ export const Contact: React.FC = () => {
           description: `${projectParam ? `[Referenced Case Study: ${projectParam}]\n\n` : ''}${form.description}\nStage: ${form.stage}`,
           attachmentName: uploadedAttachmentName || form.file?.name,
           attachmentUrl: uploadedAttachmentUrl,
+          callmebotApiKey: siteContent?.callmebotApiKey,
+          webhookUrl: siteContent?.whatsappWebhookUrl,
         });
+        setWaDispatched(Boolean(waRes.success));
       } catch (waErr) {
         console.warn('Background WhatsApp automated dispatch warning:', waErr);
+        setWaDispatched(false);
       }
 
-      // 5. Optional Direct WhatsApp instant reply link if user wants immediate 1-to-1 chat
+      // 5. Direct WhatsApp instant 1-tap message link
       const phone = siteContent?.contactPhone || '923226806396';
       const cleanManagementPhone = phone.replace(/[^0-9]/g, '');
-      const msg = encodeURIComponent(
+      const waBriefText =
         `*🚨 New DigiHust Client Intake*\n\n` +
         (projectParam ? `*Referenced Project:* ${projectParam}\n` : '') +
         `*Client:* ${form.name}\n` +
         `*Email:* ${form.email}\n` +
-        `*Company:* ${form.company || 'Not Specified'}\n` +
+        (cleanPhone ? `*Phone / WhatsApp:* ${cleanPhone}\n` : '') +
+        (form.company ? `*Company:* ${form.company}\n` : '') +
         `*Services:* ${form.services.join(', ')}\n` +
         `*Budget:* ${effectiveBudget} (${selectedCurrency})\n` +
         `*Timeline:* ${form.timeline}\n` +
         (uploadedAttachmentUrl ? `*Document:* ${uploadedAttachmentName} (${uploadedAttachmentUrl})\n` : '') +
-        `\n*Project Overview:*\n${form.description}`
-      );
-      setWhatsappLink(`https://wa.me/${cleanManagementPhone}?text=${msg}`);
+        `\n*Project Overview:*\n${form.description}`;
+      setWhatsappLink(`https://api.whatsapp.com/send?phone=${cleanManagementPhone}&text=${encodeURIComponent(waBriefText)}`);
     } catch (err) {
       console.warn('Lead submission warning:', err);
     }
@@ -807,11 +815,17 @@ export const Contact: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="p-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-xs text-emerald-800 dark:text-emerald-300 flex items-start space-x-2">
+                <div className={`p-3 rounded-2xl border text-xs flex items-start space-x-2 ${
+                  waDispatched
+                    ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-800 dark:text-emerald-300'
+                    : 'bg-cyan-500/10 border-cyan-500/20 text-cyan-800 dark:text-cyan-300'
+                }`}>
                   <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
                   <div>
-                    <span className="font-extrabold block">WhatsApp Alert</span>
-                    <span className="text-[11px] opacity-80">Auto-sent to DigiHust Leadership</span>
+                    <span className="font-extrabold block">WhatsApp Status</span>
+                    <span className="text-[11px] opacity-80">
+                      {waDispatched ? 'Auto-sent to DigiHust Leadership' : 'Instant Chat Link Ready'}
+                    </span>
                   </div>
                 </div>
 
@@ -830,13 +844,15 @@ export const Contact: React.FC = () => {
                     href={whatsappLink}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center justify-center space-x-2.5 w-full px-6 py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm shadow-md transition-all hover:scale-[1.01] cursor-pointer"
+                    className="inline-flex items-center justify-center space-x-2.5 w-full px-6 py-4 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm shadow-xl transition-all hover:scale-[1.02] cursor-pointer"
                   >
                     <MessageSquare className="w-5 h-5" />
-                    <span>Open WhatsApp Chat with Team (Optional)</span>
+                    <span>Send Inquiry on WhatsApp to CEO (+92 322 6806396)</span>
                   </a>
                   <p className="text-xs text-[var(--text-muted)]">
-                    No action needed  our team is already reviewing your intake. Click above only if you wish to start an instant 1-on-1 chat now.
+                    {waDispatched
+                      ? 'Inquiry already auto-dispatched to leadership. Click above if you want to chat directly with our CEO.'
+                      : 'Click above to instantly send your full project brief directly to DigiHust Leadership on WhatsApp with 1 tap — nothing to copy or paste!'}
                   </p>
                 </div>
               )}
@@ -1568,13 +1584,47 @@ export const Contact: React.FC = () => {
                 Prefer to email directly or have an RFP document ready?
               </p>
               <div className="space-y-1.5 text-xs">
-                <a
-                  href="mailto:digihust@gmail.com"
-                  className="flex items-center gap-1.5 text-[#1F7A8C] hover:underline font-medium"
-                >
-                  <Mail className="w-3.5 h-3.5 shrink-0 text-[#94A3B8]" />
-                  <span>digihust@gmail.com</span>
-                </a>
+                <div className="flex items-center justify-between gap-1.5">
+                  <a
+                    href="https://mail.google.com/mail/?view=cm&fs=1&to=digihust@gmail.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    title="Open in Gmail (browser)"
+                    onClick={() => {
+                      if (navigator.clipboard) {
+                        navigator.clipboard.writeText('digihust@gmail.com').catch(() => {});
+                      }
+                    }}
+                    className="flex items-center gap-1.5 text-[#1F7A8C] hover:underline font-medium group"
+                  >
+                    <SiGmail className="w-3.5 h-3.5 shrink-0 text-[#EA4335]" />
+                    <span>digihust@gmail.com</span>
+                  </a>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      if (navigator.clipboard) {
+                        navigator.clipboard.writeText('digihust@gmail.com');
+                        setCopiedEmail(true);
+                        setTimeout(() => setCopiedEmail(false), 2000);
+                      }
+                    }}
+                    title="Copy email address"
+                    className="p-1 rounded text-[#94A3B8] hover:text-[#1F7A8C] hover:bg-[#E0F2F5] dark:hover:bg-cyan-950/60 transition-colors inline-flex items-center gap-1"
+                  >
+                    {copiedEmail ? (
+                      <>
+                        <Check className="w-3 h-3 text-emerald-500" />
+                        <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold">
+                          Copied!
+                        </span>
+                      </>
+                    ) : (
+                      <Copy className="w-3 h-3" />
+                    )}
+                  </button>
+                </div>
                 <a
                   href="tel:+923226806396"
                   className="flex items-center gap-1.5 text-[#64748B] dark:text-[var(--text-muted)] hover:text-[#1F7A8C] font-medium"
