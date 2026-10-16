@@ -68,13 +68,13 @@ export const notificationService = {
       try {
         const emailParams = {
           to_email: 'digihust@gmail.com',
-          to: 'digihust@gmail.com',
-          email: 'digihust@gmail.com',
+          admin_email: 'digihust@gmail.com',
           recipient: 'digihust@gmail.com',
           reply_to: leadData.email,
           from_email: leadData.email,
-          client_name: leadData.name,
+          email: leadData.email, // Client's actual email (read by EmailJS Auto-Reply)
           client_email: leadData.email,
+          client_name: leadData.name,
           name: leadData.name,
           from_name: leadData.name,
           company: leadData.company || 'Not Specified',
@@ -142,61 +142,92 @@ export const notificationService = {
   async dispatchClientConfirmationEmail(leadData: LeadNotificationPayload): Promise<boolean> {
     const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID || 'service_kk1oyko';
     const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY || 'hvCezH1wrH-95AZDc';
-    const confirmationTemplateId = import.meta.env.VITE_EMAILJS_CLIENT_CONFIRM_TEMPLATE_ID || 
-      import.meta.env.VITE_EMAILJS_CONTACT_TEMPLATE_ID || 
-      'template_xcxoq8x';
+    const clientConfirmTemplateId = import.meta.env.VITE_EMAILJS_CLIENT_CONFIRM_TEMPLATE_ID;
+
+    // Do NOT send template_xcxoq8x here — template_xcxoq8x is bound to digihust@gmail.com.
+    // Re-sending template_xcxoq8x causes Admin to receive duplicate emails!
+    if (!clientConfirmTemplateId || clientConfirmTemplateId === 'template_xcxoq8x') {
+      console.log('ℹ️ Client confirmation is handled via EmailJS Auto-Reply or awaiting dedicated VITE_EMAILJS_CLIENT_CONFIRM_TEMPLATE_ID.');
+      return true;
+    }
 
     const formattedServices = Array.isArray(leadData.services) ? leadData.services.join(', ') : leadData.services;
 
-    // 1. Primary: EmailJS
-    if (serviceId && publicKey && confirmationTemplateId) {
-      try {
-        const confirmationParams = {
-          to_email: leadData.email,
-          to: leadData.email,
-          email: leadData.email,
-          recipient: leadData.email,
-          client_email: leadData.email,
-          client_name: leadData.name,
-          name: leadData.name,
-          reply_to: 'digihust@gmail.com',
-          from_name: 'DigiHust Leadership Team',
-          company_name: 'DigiHust',
-          services: formattedServices,
-          budget: leadData.budget || 'Flexible',
-          timeline: leadData.timeline || 'Flexible',
-          message: `Hello ${leadData.name},\n\nThank you for reaching out to DigiHust! We have successfully received your project inquiry for ${formattedServices} with a budget of ${leadData.budget || 'Flexible'}.\n\nOur dedicated technical squad and engineering leads are currently reviewing your specifications. We will reach back out to you within 24 hours to schedule a short discovery alignment call.\n\nWarm regards,\nDigiHust Operations & Engineering\nhttps://www.digihust.tech`,
-          submitted_at: new Date().toLocaleString()
-        };
+    // Dispatch via dedicated Client Confirmation Template
+    try {
+      const confirmationParams = {
+        to_email: leadData.email,
+        to: leadData.email,
+        email: leadData.email,
+        recipient: leadData.email,
+        client_email: leadData.email,
+        client_name: leadData.name,
+        name: leadData.name,
+        reply_to: 'digihust@gmail.com',
+        from_name: 'DigiHust Operations Team',
+        company_name: 'DigiHust',
+        services: formattedServices,
+        budget: leadData.budget || 'Flexible',
+        timeline: leadData.timeline || 'Flexible',
+        message: `Hello ${leadData.name},\n\nThank you for reaching out to DigiHust! We have successfully received your project inquiry for ${formattedServices} with a budget of ${leadData.budget || 'Flexible'}.\n\nOur dedicated technical squad and engineering leads are currently reviewing your specifications. We will reach back out to you within 24 hours to schedule a short discovery alignment call.\n\nWarm regards,\nDigiHust Operations & Engineering\nhttps://www.digihust.tech`,
+        submitted_at: new Date().toLocaleString()
+      };
 
-        const res = await emailjs.send(serviceId, confirmationTemplateId, confirmationParams, publicKey);
-        if (res.status === 200) {
-          console.log('✓ EmailJS Client Confirmation Dispatched Successfully:', res);
-          return true;
-        }
-      } catch (err) {
-        console.warn('Client confirmation EmailJS warning:', err);
+      const res = await emailjs.send(serviceId, clientConfirmTemplateId, confirmationParams, publicKey);
+      if (res.status === 200) {
+        console.log('✓ EmailJS Client Confirmation Dispatched Successfully:', res);
+        return true;
       }
+    } catch (err) {
+      console.warn('Client confirmation EmailJS warning:', err);
     }
 
-    // 2. Secondary Fallback via FormSubmit autoresponder endpoint
-    try {
-      const formData = new FormData();
-      formData.append('_subject', `We received your project request — DigiHust`);
-      formData.append('_replyto', 'digihust@gmail.com');
-      formData.append('_autoresponse', `Hello ${leadData.name},\n\nThank you for contacting DigiHust! We have received your project brief regarding ${formattedServices}. Our engineering squad is reviewing your requirements and will reach out to you within 24 hours.\n\nWarm regards,\nDigiHust Team`);
-      formData.append('Client Name', leadData.name);
-      formData.append('Services', formattedServices);
-      formData.append('Status', 'Received - In Review');
+    return false;
+  },
 
-      await fetch(`https://formsubmit.co/ajax/${encodeURIComponent(leadData.email)}`, {
+  /**
+   * Dispatches automated background WhatsApp notifications directly to DigiHust Leadership
+   * (+923226806396 / +923206806396) without requiring any user click or browser pop-up.
+   */
+  async dispatchLeadWhatsApp(leadData: LeadNotificationPayload): Promise<boolean> {
+    try {
+      // 1. Primary: Serverless & Dev Endpoint /api/send-whatsapp
+      const res = await fetch('/api/send-whatsapp', {
         method: 'POST',
-        headers: { 'Accept': 'application/json' },
-        body: formData
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: JSON.stringify(leadData),
       });
-      return true;
+
+      if (res.ok) {
+        const data = await res.json();
+        console.log('✓ Automated Background WhatsApp Dispatched to DigiHust Leadership:', data);
+        return true;
+      }
     } catch (err) {
-      console.warn('Client confirmation fallback warning:', err);
+      console.warn('API /api/send-whatsapp dispatch notice:', err);
+    }
+
+    // 2. Secondary Webhook Fallback if directly configured in client environment
+    const webhookUrl = import.meta.env.VITE_WHATSAPP_WEBHOOK_URL || import.meta.env.VITE_LEAD_NOTIFICATION_WEBHOOK;
+    if (webhookUrl) {
+      try {
+        await fetch(webhookUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            event: 'NEW_CLIENT_INQUIRY',
+            lead: leadData,
+            timestamp: new Date().toISOString(),
+          }),
+        });
+        console.log('✓ Webhook Lead WhatsApp Dispatched Successfully');
+        return true;
+      } catch (webhookErr) {
+        console.warn('WhatsApp direct webhook dispatch warning:', webhookErr);
+      }
     }
 
     return false;

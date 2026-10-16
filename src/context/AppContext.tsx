@@ -60,6 +60,7 @@ interface AppContextType {
 
   // Pipeline & Project Actions
   submitLead: (leadData: Omit<Lead, 'id' | 'createdAt' | 'status' | 'submittedByUserId' | 'submittedByUserName'>) => void;
+  updateLeadStatus: (leadId: string, newStatus: PipelineStage) => void;
   deleteLead: (leadId: string) => void;
   reviewLeadToProject: (
     leadId: string, 
@@ -902,6 +903,12 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     };
     setLeads(prev => [newLead, ...prev]);
     dbService.insertLead(newLead);
+  };
+
+  const updateLeadStatus = (leadId: string, newStatus: PipelineStage) => {
+    setLeads(prev => prev.map(l => l.id === leadId ? { ...l, status: newStatus } : l));
+    dbService.updateLead(leadId, { status: newStatus });
+    showToast(`Inquiry status updated to ${newStatus.replace('_', ' ').toUpperCase()}`, 'info', 'Status Updated');
   };
 
   const deleteLead = (leadId: string) => {
@@ -2149,6 +2156,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
         // Pipeline & Project
         submitLead,
+        updateLeadStatus,
         deleteLead,
         reviewLeadToProject,
         assignProjectTeam,

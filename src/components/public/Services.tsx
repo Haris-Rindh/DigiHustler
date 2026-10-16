@@ -99,7 +99,7 @@ export const Services: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
 
   const rawServices: SiteServiceItem[] =
-    siteContent?.services && siteContent.services.length > 0
+    siteContent?.services && siteContent.services.length >= 6
       ? siteContent.services
       : DEFAULT_SITE_CONTENT.services;
 
@@ -298,9 +298,9 @@ export const Services: React.FC = () => {
         </div>
       </section>
 
-      {/* ── ALTERNATING ZIGZAG SERVICE LISTING (Matching Reference Design) ── */}
-      <section className="bg-[var(--bg-page)] py-[64px] px-[20px] sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto flex flex-col gap-[48px] lg:gap-[56px]">
+      {/* ── CONTIGUOUS CHECKERBOARD SERVICE LISTING (Matching Reference Design) ── */}
+      <section className="bg-[var(--bg-page)] py-12 sm:py-16 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-5xl mx-auto border border-[var(--border-subtle)] bg-[var(--bg-page)] shadow-xs overflow-hidden">
           {sortedServices.map((svc, index) => (
             <ServiceFeatureRow
               key={svc.id || svc.slug || index}

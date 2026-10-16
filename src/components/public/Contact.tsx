@@ -27,6 +27,13 @@ import { useApp } from '../../context/AppContext';
 import { GroupId } from '../../types';
 import { notificationService } from '../../lib/notificationService';
 import { dbService } from '../../lib/dbService';
+import {
+  validateEmailFormat,
+  verifyEmailDomainDns,
+  verifyEmailExistence,
+  DISPOSABLE_EMAIL_DOMAINS,
+} from '../../lib/emailVerification';
+export { validateEmailFormat, verifyEmailDomainDns, verifyEmailExistence, DISPOSABLE_EMAIL_DOMAINS };
 
 const SERVICES = [
   'Website / Full-Stack App',
@@ -188,24 +195,6 @@ const STAGE_OPTIONS = [
   'Enterprise System Migration',
 ];
 
-const DISPOSABLE_EMAIL_DOMAINS = new Set([
-  'mailinator.com',
-  'tempmail.com',
-  '10minutemail.com',
-  'guerrillamail.com',
-  'throwawaymail.com',
-  'yopmail.com',
-  'trashmail.com',
-  'sharklasers.com',
-  'dispostable.com',
-  'getairmail.com',
-  'mohmal.com',
-  'fakeinbox.com',
-  'temp-mail.org',
-  'tempail.com',
-  'burnermail.io',
-]);
-
 export const validateFullName = (name: string): { isValid: boolean; error?: string } => {
   const trimmed = name.trim();
   if (!trimmed) {
@@ -214,9 +203,9 @@ export const validateFullName = (name: string): { isValid: boolean; error?: stri
   if (/\d/.test(trimmed)) {
     return { isValid: false, error: 'Name cannot contain numbers. Only letters are allowed.' };
   }
-  // Standard letters (including Latin accented characters like José, Müller), spaces, apostrophes and hyphens
-  if (!/^[a-zA-Z\u00C0-\u024F\s'-]+$/.test(trimmed)) {
-    return { isValid: false, error: 'Name cannot contain symbols or special characters.' };
+  // Strictly letters (English and accented Latin) and spaces — no symbols like '_-+= or punctuation
+  if (!/^[a-zA-Z\u00C0-\u024F\s]+$/.test(trimmed)) {
+    return { isValid: false, error: 'Name cannot contain symbols or special characters. Only letters and spaces are allowed.' };
   }
   if (trimmed.length < 2) {
     return { isValid: false, error: 'Name must be at least 2 letters' };
@@ -225,90 +214,6 @@ export const validateFullName = (name: string): { isValid: boolean; error?: stri
     return { isValid: false, error: 'Name cannot exceed 60 characters' };
   }
   return { isValid: true };
-};
-
-export const validateEmailFormat = (email: string): { isValid: boolean; error?: string; domain?: string } => {
-  const trimmed = email.trim();
-  if (!trimmed) {
-    return { isValid: false, error: 'Please provide your work email address' };
-  }
-  // RFC compliant email format validation
-  const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+$/;
-  if (!emailRegex.test(trimmed)) {
-    return { isValid: false, error: 'Please enter a valid work email (e.g. name@company.com)' };
-  }
-
-  const parts = trimmed.split('@');
-  if (parts.length !== 2) {
-    return { isValid: false, error: 'Invalid email address structure' };
-  }
-
-  const domain = parts[1].toLowerCase().trim();
-  if (!domain.includes('.') || domain.endsWith('.')) {
-    return { isValid: false, error: 'Email domain must have a valid extension (e.g. .com, .org)' };
-  }
-
-  if (DISPOSABLE_EMAIL_DOMAINS.has(domain)) {
-    return { isValid: false, error: 'Disposable or temporary email addresses are not accepted.' };
-  }
-
-  return { isValid: true, domain };
-};
-
-export const verifyEmailDomainDns = async (domain: string): Promise<{ exists: boolean; message?: string }> => {
-  try {
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 3500);
-
-    const mxRes = await fetch(`https://dns.google/resolve?name=${encodeURIComponent(domain)}&type=MX`, {
-      signal: controller.signal,
-      headers: { Accept: 'application/dns-json' },
-    });
-    clearTimeout(timeout);
-
-    if (mxRes.ok) {
-      const data = await mxRes.json();
-      if (data.Status === 3) {
-        return {
-          exists: false,
-          message: `The email domain "@${domain}" does not exist. Please check your spelling.`,
-        };
-      }
-      if (data.Status === 0 && Array.isArray(data.Answer) && data.Answer.length > 0) {
-        return { exists: true };
-      }
-    }
-
-    // Fallback: Check root A record
-    const aController = new AbortController();
-    const aTimeout = setTimeout(() => aController.abort(), 3000);
-    const aRes = await fetch(`https://dns.google/resolve?name=${encodeURIComponent(domain)}&type=A`, {
-      signal: aController.signal,
-      headers: { Accept: 'application/dns-json' },
-    });
-    clearTimeout(aTimeout);
-
-    if (aRes.ok) {
-      const aData = await aRes.json();
-      if (aData.Status === 3) {
-        return {
-          exists: false,
-          message: `The email domain "@${domain}" does not exist. Please check your spelling.`,
-        };
-      }
-      if (aData.Status === 0 && Array.isArray(aData.Answer) && aData.Answer.length > 0) {
-        return { exists: true };
-      }
-    }
-
-    return {
-      exists: false,
-      message: `The domain "@${domain}" has no active mail server. Please provide a working email.`,
-    };
-  } catch (err) {
-    console.warn('Email domain check warning:', err);
-    return { exists: true };
-  }
 };
 
 export const Contact: React.FC = () => {
@@ -346,6 +251,8 @@ export const Contact: React.FC = () => {
   const [budgetMode, setBudgetMode] = useState<'range' | 'custom'>('range');
   const [customBudgetAmount, setCustomBudgetAmount] = useState<string>('');
   const [isValidatingEmail, setIsValidatingEmail] = useState<boolean>(false);
+  const [verifiedEmail, setVerifiedEmail] = useState<string | null>(null);
+  const [emailSuggestion, setEmailSuggestion] = useState<string | null>(null);
 
   const { submitLead, siteContent } = useApp();
 
@@ -441,6 +348,66 @@ export const Contact: React.FC = () => {
     });
   };
 
+  const handleEmailBlur = async () => {
+    const trimmed = form.email.trim();
+    if (!trimmed) {
+      setEmailSuggestion(null);
+      return;
+    }
+
+    const formatCheck = validateEmailFormat(trimmed);
+    if (!formatCheck.isValid) {
+      setErrors((prev) => ({ ...prev, email: formatCheck.error! }));
+      setEmailSuggestion(formatCheck.suggestion || null);
+      setVerifiedEmail(null);
+      return;
+    }
+
+    setEmailSuggestion(null);
+    if (verifiedEmail === trimmed) return;
+
+    setIsValidatingEmail(true);
+    const existenceCheck = await verifyEmailExistence(trimmed);
+    setIsValidatingEmail(false);
+
+    if (!existenceCheck.exists) {
+      setErrors((prev) => ({
+        ...prev,
+        email: existenceCheck.message || 'This email account does not exist on the internet. Please check your spelling and retype it.',
+      }));
+      setVerifiedEmail(null);
+    } else {
+      setVerifiedEmail(trimmed);
+      setErrors((prev) => {
+        const copy = { ...prev };
+        delete copy.email;
+        return copy;
+      });
+    }
+  };
+
+  const applyEmailSuggestion = (suggestion: string) => {
+    setForm((prev) => ({ ...prev, email: suggestion }));
+    setEmailSuggestion(null);
+    setErrors((prev) => {
+      const copy = { ...prev };
+      delete copy.email;
+      return copy;
+    });
+    setIsValidatingEmail(true);
+    verifyEmailExistence(suggestion).then((res) => {
+      setIsValidatingEmail(false);
+      if (res.exists) {
+        setVerifiedEmail(suggestion);
+      } else {
+        setErrors((prev) => ({
+          ...prev,
+          email: res.message || 'This email account does not exist on the internet. Please retype it.',
+        }));
+      }
+    });
+  };
+
   const getEffectiveBudget = useCallback(() => {
     if (budgetMode === 'custom') {
       return customBudgetAmount.trim() ? `${selectedCurrency} ${customBudgetAmount.trim()}` : '';
@@ -457,10 +424,15 @@ export const Contact: React.FC = () => {
       errs.name = nameCheck.error!;
     }
 
-    // 2. Strict Email Validation: RFC syntax and disposable domain block
+    // 2. Strict Email Validation: RFC syntax, Gmail 6-30 char limit & symbols, typos, and disposable domains
     const emailCheck = validateEmailFormat(form.email);
     if (!emailCheck.isValid) {
       errs.email = emailCheck.error!;
+      if (emailCheck.suggestion) {
+        setEmailSuggestion(emailCheck.suggestion);
+      }
+    } else {
+      setEmailSuggestion(null);
     }
 
     if (!form.description.trim() || form.description.length < 10) {
@@ -487,21 +459,24 @@ export const Contact: React.FC = () => {
 
   const handleNextStep = async () => {
     if (step === 1) {
-      const { isValid, domain } = validateStep1Sync();
+      const { isValid } = validateStep1Sync();
       if (!isValid) return;
 
-      // 3. Email Existence / DNS MX verification
-      if (domain) {
+      const trimmedEmail = form.email.trim();
+      // 3. Email Existence & Mailbox Verification on the Internet
+      if (verifiedEmail !== trimmedEmail) {
         setIsValidatingEmail(true);
-        const dnsCheck = await verifyEmailDomainDns(domain);
+        const existenceCheck = await verifyEmailExistence(trimmedEmail);
         setIsValidatingEmail(false);
-        if (!dnsCheck.exists) {
+
+        if (!existenceCheck.exists) {
           setErrors((prev) => ({
             ...prev,
-            email: dnsCheck.message || 'This email domain does not exist. Please check your spelling.',
+            email: existenceCheck.message || 'This email account does not exist on the internet. Please check your spelling and retype it.',
           }));
           return;
         }
+        setVerifiedEmail(trimmedEmail);
       }
 
       setErrors({});
@@ -550,26 +525,33 @@ export const Contact: React.FC = () => {
     if (e) e.preventDefault();
     if (form.honeypot) return;
 
-    const { isValid, domain } = validateStep1Sync();
+    const { isValid } = validateStep1Sync();
     if (!isValid) {
       setStep(1);
       return;
     }
 
-    setIsSubmitting(true);
+    const trimmedEmail = form.email.trim();
+    // Verify email existence before submission if not already verified
+    if (verifiedEmail !== trimmedEmail) {
+      setIsSubmitting(true);
+      setIsValidatingEmail(true);
+      const existenceCheck = await verifyEmailExistence(trimmedEmail);
+      setIsValidatingEmail(false);
 
-    if (domain) {
-      const dnsCheck = await verifyEmailDomainDns(domain);
-      if (!dnsCheck.exists) {
+      if (!existenceCheck.exists) {
         setIsSubmitting(false);
         setErrors((prev) => ({
           ...prev,
-          email: dnsCheck.message || 'This email domain does not exist. Please check your spelling.',
+          email: existenceCheck.message || 'This email account does not exist on the internet. Please check your spelling and retype it.',
         }));
         setStep(1);
         return;
       }
+      setVerifiedEmail(trimmedEmail);
     }
+
+    setIsSubmitting(true);
 
     try {
       // 1. Upload attached document to Supabase Storage if present
@@ -633,15 +615,19 @@ export const Contact: React.FC = () => {
         currency: selectedCurrency,
         attachmentUrl: uploadedAttachmentUrl,
         attachmentName: uploadedAttachmentName || form.file?.name,
-        status: 'new' as const,
+        status: 'new_lead' as const,
+        suggestedGroupId: targetGroupId,
+        targetGroupId: targetGroupId,
         groupId: targetGroupId,
+        scopeDescription: form.description,
         assignedSpecialistIds: [],
         rating: 5.0,
       };
 
+      // 1. Submit lead to AppContext & Supabase (CEO & Co-Founder Portal)
       await submitLead(newLeadData);
 
-      // 2. Dispatch detailed lead alert to management (digihust@gmail.com)
+      // 2. Dispatch detailed lead alert to management email (digihust@gmail.com)
       try {
         await notificationService.dispatchLeadEmail({
           name: form.name,
@@ -659,7 +645,7 @@ export const Contact: React.FC = () => {
         console.warn('Contact Form EmailJS dispatch warning:', emailErr);
       }
 
-      // 3. Dispatch confirmation email to client
+      // 3. Dispatch confirmation email directly to client's inbox
       try {
         await notificationService.dispatchClientConfirmationEmail({
           name: form.name,
@@ -677,7 +663,26 @@ export const Contact: React.FC = () => {
         console.warn('Client confirmation email dispatch warning:', clientEmailErr);
       }
 
-      // 4. WhatsApp instant reply link
+      // 4. Automated background WhatsApp dispatch to DigiHust Leadership (+923226806396 / +923206806396)
+      // Dispatched instantly in the background without requiring client to click or interact with WhatsApp
+      try {
+        await notificationService.dispatchLeadWhatsApp({
+          name: form.name,
+          email: form.email,
+          company: form.company,
+          services: form.services,
+          currency: selectedCurrency,
+          budget: effectiveBudget,
+          timeline: form.timeline,
+          description: `${projectParam ? `[Referenced Case Study: ${projectParam}]\n\n` : ''}${form.description}\nStage: ${form.stage}`,
+          attachmentName: uploadedAttachmentName || form.file?.name,
+          attachmentUrl: uploadedAttachmentUrl,
+        });
+      } catch (waErr) {
+        console.warn('Background WhatsApp automated dispatch warning:', waErr);
+      }
+
+      // 5. Optional Direct WhatsApp instant reply link if user wants immediate 1-to-1 chat
       const phone = siteContent?.contactPhone || '923226806396';
       const cleanPhone = phone.replace(/[^0-9]/g, '');
       const msg = encodeURIComponent(
@@ -725,7 +730,7 @@ export const Contact: React.FC = () => {
           className="mb-8 sm:mb-10 text-center sm:text-left"
         >
           <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full text-xs font-extrabold uppercase tracking-widest text-[#1F7A8C] dark:text-cyan-400 bg-[#E0F2F5] dark:bg-cyan-950/80 border border-[#CEE9ED] dark:border-cyan-800/40 mb-3.5">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#1F7A8C] dark:bg-cyan-400 animate-pulse" />
+            <span className="w-1.5 h-1.5 rounded-full bg-[#1F7A8C] dark:text-cyan-400 animate-pulse" />
             <span>Project Intake & Scoping</span>
           </div>
           <h1 className="font-display font-extrabold text-3xl sm:text-4xl lg:text-5xl text-[#022B3A] dark:text-white tracking-tight mb-3">
@@ -744,19 +749,45 @@ export const Contact: React.FC = () => {
               initial={{ opacity: 0, scale: 0.96 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.96 }}
-              className="p-10 sm:p-14 rounded-[32px] bg-white dark:bg-[var(--bg-surface)] text-[var(--text-heading)] border border-[#E2ECEF] dark:border-[var(--border-subtle)] text-center shadow-[0_16px_50px_rgba(2,43,58,0.08)] space-y-6 max-w-2xl mx-auto"
+              className="p-8 sm:p-12 rounded-[32px] bg-white dark:bg-[var(--bg-surface)] text-[var(--text-heading)] border border-[#E2ECEF] dark:border-[var(--border-subtle)] text-center shadow-[0_16px_50px_rgba(2,43,58,0.08)] space-y-6 max-w-2xl mx-auto"
             >
               <div className="w-20 h-20 rounded-3xl bg-[#E0F2F5] dark:bg-cyan-950/80 border-2 border-[#1F7A8C] dark:border-cyan-500 flex items-center justify-center mx-auto shadow-sm">
                 <CheckCircle2 className="w-10 h-10 text-[#1F7A8C] dark:text-cyan-400" />
               </div>
               <h2 className="font-display font-extrabold text-3xl sm:text-4xl text-[#022B3A] dark:text-white">
-                Proposal Request Received!
+                Project Intake Dispatched!
               </h2>
-              <p className="text-[var(--text-body)] max-w-md mx-auto leading-relaxed text-sm sm:text-base">
-                Thank you, <strong className="text-[#022B3A] dark:text-white font-bold">{form.name}</strong>. A confirmation email has been dispatched to{' '}
-                <strong className="text-[#022B3A] dark:text-white font-bold">{form.email}</strong>. Our management and engineering leads will review your requirements for{' '}
-                <span className="text-[#1F7A8C] dark:text-cyan-400 font-semibold">{form.services.join(', ')}</span> and reach back out within 24 hours.
+              <p className="text-[var(--text-body)] max-w-lg mx-auto leading-relaxed text-sm sm:text-base">
+                Thank you, <strong className="text-[#022B3A] dark:text-white font-bold">{form.name}</strong>. Your project scope for{' '}
+                <span className="text-[#1F7A8C] dark:text-cyan-400 font-semibold">{form.services.join(', ')}</span> has been securely transmitted.
               </p>
+
+              {/* Multi-channel Delivery Status Badges */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 max-w-lg mx-auto text-left">
+                <div className="p-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-xs text-emerald-800 dark:text-emerald-300 flex items-start space-x-2">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
+                  <div>
+                    <span className="font-extrabold block">Executive Portal</span>
+                    <span className="text-[11px] opacity-80">Queued in CEO / Co-Founder Desk</span>
+                  </div>
+                </div>
+
+                <div className="p-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-xs text-emerald-800 dark:text-emerald-300 flex items-start space-x-2">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
+                  <div>
+                    <span className="font-extrabold block">WhatsApp Alert</span>
+                    <span className="text-[11px] opacity-80">Auto-sent to DigiHust Leadership</span>
+                  </div>
+                </div>
+
+                <div className="p-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-xs text-emerald-800 dark:text-emerald-300 flex items-start space-x-2">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
+                  <div>
+                    <span className="font-extrabold block">Email Delivery</span>
+                    <span className="text-[11px] opacity-80">Sent to digihust & your inbox</span>
+                  </div>
+                </div>
+              </div>
 
               {whatsappLink && (
                 <div className="pt-2 space-y-3 max-w-md mx-auto">
@@ -767,10 +798,10 @@ export const Contact: React.FC = () => {
                     className="inline-flex items-center justify-center space-x-2.5 w-full px-6 py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm shadow-md transition-all hover:scale-[1.01] cursor-pointer"
                   >
                     <MessageSquare className="w-5 h-5" />
-                    <span>Connect with Team on WhatsApp</span>
+                    <span>Open WhatsApp Chat with Team (Optional)</span>
                   </a>
                   <p className="text-xs text-[var(--text-muted)]">
-                    Prefer immediate coordination? Forward your project brief directly to our team on WhatsApp.
+                    No action needed — our team is already reviewing your intake. Click above only if you wish to start an instant 1-on-1 chat now.
                   </p>
                 </div>
               )}
@@ -891,8 +922,8 @@ export const Contact: React.FC = () => {
                                     setForm({ ...form, name: val });
                                     if (/\d/.test(val)) {
                                       setErrors((prev) => ({ ...prev, name: 'Name cannot contain numbers. Only letters are allowed.' }));
-                                    } else if (val && !/^[a-zA-Z\u00C0-\u024F\s'-]*$/.test(val)) {
-                                      setErrors((prev) => ({ ...prev, name: 'Name cannot contain symbols or special characters.' }));
+                                    } else if (val && !/^[a-zA-Z\u00C0-\u024F\s]*$/.test(val)) {
+                                      setErrors((prev) => ({ ...prev, name: 'Name cannot contain symbols or special characters. Only letters and spaces are allowed.' }));
                                     } else if (errors.name) {
                                       setErrors((prev) => {
                                         const copy = { ...prev };
@@ -915,19 +946,28 @@ export const Contact: React.FC = () => {
                                 <label className="block text-xs font-bold text-[#1E293B] dark:text-white">
                                   Work Email Address <span className="text-rose-500">*</span>
                                 </label>
-                                {isValidatingEmail && (
+                                {isValidatingEmail ? (
                                   <span className="text-[10px] text-[#1F7A8C] dark:text-cyan-400 font-semibold flex items-center gap-1">
-                                    <Loader2 className="w-3 h-3 animate-spin" /> Verifying domain...
+                                    <Loader2 className="w-3 h-3 animate-spin" /> Verifying email on the internet...
                                   </span>
-                                )}
+                                ) : verifiedEmail === form.email.trim() && form.email && !errors.email ? (
+                                  <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1">
+                                    <CheckCircle2 className="w-3 h-3" /> Email verified & active
+                                  </span>
+                                ) : null}
                               </div>
                               <div className="relative">
                                 <Mail className="w-4 h-4 text-[#94A3B8] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
                                 <input
                                   type="email"
                                   value={form.email}
+                                  onBlur={handleEmailBlur}
                                   onChange={(e) => {
-                                    setForm({ ...form, email: e.target.value });
+                                    const val = e.target.value;
+                                    setForm({ ...form, email: val });
+                                    if (verifiedEmail && verifiedEmail !== val.trim()) {
+                                      setVerifiedEmail(null);
+                                    }
                                     if (errors.email) {
                                       setErrors((prev) => {
                                         const copy = { ...prev };
@@ -938,11 +978,31 @@ export const Contact: React.FC = () => {
                                   }}
                                   placeholder="you@company.com"
                                   className={`w-full pl-10 pr-3.5 py-2.5 rounded-xl border text-xs sm:text-sm text-[var(--text-heading)] bg-[#F8FAFC]/70 dark:bg-black/20 placeholder:text-[#94A3B8] focus:outline-none focus:border-[#1F7A8C] focus:ring-1 focus:ring-[#1F7A8C] transition-colors ${
-                                    errors.email ? 'border-rose-400 bg-rose-50/20' : 'border-[#E2ECEF] dark:border-[var(--border-subtle)]'
+                                    errors.email
+                                      ? 'border-rose-400 bg-rose-50/20'
+                                      : verifiedEmail === form.email.trim() && form.email
+                                      ? 'border-emerald-500/70 dark:border-emerald-400/70 bg-emerald-50/10'
+                                      : 'border-[#E2ECEF] dark:border-[var(--border-subtle)]'
                                   }`}
                                 />
                               </div>
-                              {errors.email && <p className="text-[11px] text-rose-500 mt-1 font-medium">{errors.email}</p>}
+                              {errors.email && (
+                                <p className="text-[11px] text-rose-500 mt-1 font-medium flex items-center gap-1.5">
+                                  <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                                  {errors.email}
+                                </p>
+                              )}
+                              {emailSuggestion && (
+                                <div className="mt-1.5">
+                                  <button
+                                    type="button"
+                                    onClick={() => applyEmailSuggestion(emailSuggestion)}
+                                    className="text-[11px] text-[#1F7A8C] dark:text-cyan-400 hover:underline flex items-center gap-1 bg-[#1F7A8C]/10 dark:bg-cyan-950/40 px-2 py-0.5 rounded-md font-medium"
+                                  >
+                                    Did you mean <span className="font-bold underline">{emailSuggestion}</span>? Click to apply
+                                  </button>
+                                </div>
+                              )}
                             </div>
                           </div>
 

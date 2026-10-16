@@ -345,42 +345,126 @@ routes.forEach((route) => {
 
 console.log(`Successfully pre-rendered ${routes.length} static HTML pages in dist/!`);
 
+// ── JSON-LD XSS escape helper (S6) ────────────────────────────────────────────
+// Escapes </script> sequences that could break out of <script> tags
+function safeJsonLd(obj) {
+  return JSON.stringify(obj).replace(/<\/script>/gi, '<\\/script>').replace(/</g, '\\u003c');
+}
 
-// Generate Sitemap
+// ── Fix JSON-LD in already-written HTML files ─────────────────────────────────
+// Walk dist/ and escape any existing JSON-LD blocks for safety
+const allHtmlFiles = [];
+function walkDir(dir) {
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    const fullPath = path.join(dir, entry.name);
+    if (entry.isDirectory()) walkDir(fullPath);
+    else if (entry.name.endsWith('.html')) allHtmlFiles.push(fullPath);
+  }
+}
+walkDir(distDir);
+for (const f of allHtmlFiles) {
+  let content = fs.readFileSync(f, 'utf-8');
+  // Escape </script> inside ld+json blocks
+  content = content.replace(
+    /(<script type="application\/ld\+json">)([\s\S]*?)(<\/script>)/gi,
+    (_, open, body, close) => open + body.replace(/<\/script>/gi, '<\\/script>') + close
+  );
+  fs.writeFileSync(f, content, 'utf-8');
+}
+
+// ── Sitemap (E1) ──────────────────────────────────────────────────────────────
 console.log('Generating sitemap.xml...');
 const sitemapUrl = process.env.VITE_SITE_URL || 'https://www.digihust.tech';
+
+// Assign realistic lastmod dates by content type (not "today" for everything)
+// Blog posts and portfolio pages get a specific date; structural pages get a recent date
+const BUILD_DATE = new Date().toISOString().split('T')[0]; // today for structural pages
+
+// Only index public, non-private routes
+const SITEMAP_EXCLUSIONS = new Set([
+  '/verify', '/cert', '/verify/cert',
+  '/project/track',
+  '/portal', '/portal/login', '/portal/dashboard', '/portal/assignments',
+  '/portal/roster', '/portal/people', '/portal/directory', '/portal/announcements',
+  '/portal/certificates', '/portal/cms',
+  '/dashboard', '/ledger', '/roster', '/admin',
+  '/404', '/500', '/403', '/401', '/maintenance', '/offline',
+  '/apply', // thank-you / utility
+]);
+
+function isExcluded(routePath) {
+  for (const excl of SITEMAP_EXCLUSIONS) {
+    if (routePath === excl || routePath.startsWith(excl + '/')) return true;
+  }
+  return false;
+}
+
+function getLastmod(routePath) {
+  // Blog posts — set a specific publish date
+  if (routePath === '/blog/how-to-architect-nextjs-for-ai-crawlers') return '2026-09-15';
+  if (routePath === '/blog/demystifying-ai-automations-n8n-vs-custom-python') return '2026-09-22';
+  if (routePath === '/blog/owasp-top-10-web-security-checklist-for-startups') return '2026-10-01';
+  // Portfolio case studies — relatively stable content
+  if (routePath.startsWith('/portfolio/')) return '2026-09-01';
+  // Service pages update occasionally
+  if (routePath.startsWith('/services/')) return '2026-10-10';
+  // Core marketing pages
+  return BUILD_DATE;
+}
+
+function getPriority(routePath) {
+  if (routePath === '/') return '1.0';
+  if (routePath.startsWith('/services/') && routePath !== '/services') return '0.9';
+  if (routePath === '/services' || routePath === '/contact') return '0.9';
+  if (routePath.startsWith('/portfolio/') && routePath !== '/portfolio') return '0.8';
+  if (routePath.startsWith('/blog/') && routePath !== '/blog') return '0.7';
+  return '0.8';
+}
+
 let sitemapContent = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
 
 routes.forEach((route) => {
-  const isHome = route.path === '/';
-  const priority = isHome ? '1.0' : route.path.startsWith('/services') ? '0.9' : '0.8';
-  const loc = `${sitemapUrl}${isHome ? '' : route.path}`;
-  sitemapContent += `  <url>
-    <loc>${loc}</loc>
-    <lastmod>${new Date().toISOString()}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>${priority}</priority>
-  </url>\n`;
+  if (isExcluded(route.path)) return;
+  const loc = `${sitemapUrl}${route.path === '/' ? '' : route.path}`;
+  const lastmod = getLastmod(route.path);
+  const priority = getPriority(route.path);
+  sitemapContent += `  <url>\n    <loc>${loc}</loc>\n    <lastmod>${lastmod}</lastmod>\n    <changefreq>${route.path === '/' ? 'daily' : route.path.startsWith('/blog') ? 'monthly' : 'weekly'}</changefreq>\n    <priority>${priority}</priority>\n  </url>\n`;
 });
 
 sitemapContent += `</urlset>`;
 fs.writeFileSync(path.join(distDir, 'sitemap.xml'), sitemapContent, 'utf-8');
 console.log('sitemap.xml successfully generated!');
 
-// Generate Robots.txt
+// ── Robots.txt (E2) ───────────────────────────────────────────────────────────
 console.log('Generating robots.txt...');
 const robotsContent = `User-agent: *
 Allow: /
-
-# Private Routes
 Disallow: /portal/
 Disallow: /admin/
+Disallow: /admin
 Disallow: /dashboard/
+Disallow: /dashboard
+Disallow: /ledger/
+Disallow: /ledger
+Disallow: /roster/
+Disallow: /roster
 Disallow: /project/track/
+Disallow: /api/
+
+# AI & LLM crawlers — allowed (see /llms.txt)
+User-agent: GPTBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
 
 Sitemap: ${sitemapUrl}/sitemap.xml
 `;
 fs.writeFileSync(path.join(distDir, 'robots.txt'), robotsContent, 'utf-8');
 console.log('robots.txt successfully generated!');
-
-

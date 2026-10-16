@@ -5,7 +5,7 @@ import {
   Users, Briefcase, Award, Bell, CheckCircle2, 
   ArrowRight, Shield, Layers, TrendingUp, Clock, PlusCircle, 
   CheckSquare, FileText, Lock, Key, AlertCircle, UserCheck, UserPlus,
-  Mail, MessageSquare, ExternalLink, Calendar, Check, Download
+  Mail, MessageSquare, ExternalLink, Calendar, Check, Download, Inbox
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { ForcePasswordReset } from './ForcePasswordReset';
@@ -18,6 +18,7 @@ import { ApplicantWorkflowQueue } from '../dashboard/PeopleManagement/ApplicantW
 import { SquadMatrixView } from '../dashboard/PeopleManagement/SquadMatrixView';
 import { PeopleAnalyticsView } from '../dashboard/PeopleManagement/PeopleAnalyticsView';
 import { QuickInviteModal } from '../dashboard/PeopleManagement/QuickInviteModal';
+import { InboundLeadsManager } from './InboundLeadsManager';
 import { BoxesLoader } from '../ui/BoxesLoader';
 
 export const PortalDashboard: React.FC = () => {
@@ -29,7 +30,7 @@ export const PortalDashboard: React.FC = () => {
   const isManagement = currentTier === 'ceo' || currentTier === 'manager' || currentUser?.role === 'management';
 
   // Management Tab State
-  const [mgmtTab, setMgmtTab] = useState<'directory' | 'applicants' | 'squads' | 'analytics' | 'sprints'>('directory');
+  const [mgmtTab, setMgmtTab] = useState<'directory' | 'applicants' | 'squads' | 'analytics' | 'sprints' | 'leads'>('directory');
   
   // Staff / Specialist / Intern Tab State
   const [staffTab, setStaffTab] = useState<'my_sprints' | 'my_tasks' | 'my_documents' | 'my_squad' | 'broadcasts'>('my_sprints');
@@ -52,6 +53,7 @@ export const PortalDashboard: React.FC = () => {
   }
 
   const pendingApplicantsCount = (applicants || []).filter((a) => a.status === 'pending').length;
+  const pendingLeadsCount = (leads || []).filter((l) => l.status === 'new_lead' || l.status === 'lead').length;
 
   // Filter assignments based on 4-Tier Access Matrix
   const visibleAssignments = (assignments || []).filter((asgn) => {
@@ -140,7 +142,23 @@ export const PortalDashboard: React.FC = () => {
       {isManagement ? (
         <>
           {/* Executive Metrics */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-6">
+            <div 
+              onClick={() => setMgmtTab('leads')}
+              className="p-6 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] hover:border-[var(--brand-teal)] shadow-md hover:shadow-xl hover:-translate-y-1.5 transition-all duration-200 ease-out cursor-pointer select-none group"
+            >
+              <div className="flex items-center justify-between text-[var(--text-muted)] mb-2">
+                <span className="text-xs font-bold uppercase tracking-wider group-hover:text-[var(--brand-teal)] transition-colors duration-150">Client Inquiries</span>
+                <Inbox className="w-4 h-4 text-[var(--brand-teal)]" />
+              </div>
+              <div className="font-display font-black text-2xl sm:text-3xl text-[var(--text-heading)] mb-1">
+                {leads.length} Leads
+              </div>
+              <p className="text-[11px] text-[var(--text-muted)]">
+                {pendingLeadsCount > 0 ? `${pendingLeadsCount} new unreviewed` : 'Inbound project intakes'}
+              </p>
+            </div>
+
             <div 
               onClick={() => setMgmtTab('squads')}
               className="p-6 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] hover:border-[var(--brand-teal)] shadow-md hover:shadow-xl hover:-translate-y-1.5 transition-all duration-200 ease-out cursor-pointer select-none group"
@@ -201,6 +219,12 @@ export const PortalDashboard: React.FC = () => {
           {/* Executive Navigation Tabs */}
           <div className="flex items-center space-x-2 p-1.5 rounded-2xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] overflow-x-auto shadow-sm">
             {[
+              {
+                id: 'leads',
+                label: 'Client Inquiries',
+                icon: <Inbox className="w-4 h-4" />,
+                badge: pendingLeadsCount > 0 ? pendingLeadsCount : undefined,
+              },
               { id: 'directory', label: 'People Directory', icon: <Users className="w-4 h-4" /> },
               {
                 id: 'applicants',
@@ -242,6 +266,8 @@ export const PortalDashboard: React.FC = () => {
 
           {/* Executive Tab Panels */}
           <div className="min-h-[400px]">
+            {mgmtTab === 'leads' && <InboundLeadsManager />}
+
             {mgmtTab === 'directory' && (
               <PeopleDirectory
                 onSelectUser={(u) => setSelectedUser(u)}
