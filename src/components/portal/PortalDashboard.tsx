@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { 
   Users, Briefcase, Award, Bell, CheckCircle2, 
@@ -19,6 +19,7 @@ import { SquadMatrixView } from '../dashboard/PeopleManagement/SquadMatrixView';
 import { PeopleAnalyticsView } from '../dashboard/PeopleManagement/PeopleAnalyticsView';
 import { QuickInviteModal } from '../dashboard/PeopleManagement/QuickInviteModal';
 import { InboundLeadsManager } from './InboundLeadsManager';
+import { MigrationAdminView } from './MigrationAdminView';
 import { BoxesLoader } from '../ui/BoxesLoader';
 
 export const PortalDashboard: React.FC = () => {
@@ -29,8 +30,12 @@ export const PortalDashboard: React.FC = () => {
 
   const isManagement = currentTier === 'ceo' || currentTier === 'manager' || currentUser?.role === 'management';
 
+  const location = useLocation();
+
   // Management Tab State
-  const [mgmtTab, setMgmtTab] = useState<'directory' | 'applicants' | 'squads' | 'analytics' | 'sprints' | 'leads'>('directory');
+  const [mgmtTab, setMgmtTab] = useState<'directory' | 'applicants' | 'squads' | 'analytics' | 'sprints' | 'leads' | 'migration'>(
+    () => location.pathname === '/portal/migration' ? 'migration' : 'directory'
+  );
   
   // Staff / Specialist / Intern Tab State
   const [staffTab, setStaffTab] = useState<'my_sprints' | 'my_tasks' | 'my_documents' | 'my_squad' | 'broadcasts'>('my_sprints');
@@ -235,6 +240,7 @@ export const PortalDashboard: React.FC = () => {
               { id: 'squads', label: 'Squad Matrix', icon: <Layers className="w-4 h-4" /> },
               { id: 'analytics', label: 'Analytics & SLA', icon: <TrendingUp className="w-4 h-4" /> },
               { id: 'sprints', label: 'Active Sprints & Broadcasts', icon: <Briefcase className="w-4 h-4" /> },
+              { id: 'migration', label: 'Auth Migration', icon: <Lock className="w-4 h-4" /> },
             ].map((tab) => {
               const isActive = mgmtTab === tab.id;
               return (
@@ -384,6 +390,8 @@ export const PortalDashboard: React.FC = () => {
                 </div>
               </div>
             )}
+
+            {mgmtTab === 'migration' && <MigrationAdminView />}
           </div>
         </>
       ) : (

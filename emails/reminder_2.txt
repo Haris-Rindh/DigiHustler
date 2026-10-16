@@ -1,0 +1,17 @@
+Final reminder: update your DigiHust account password
+
+Hi {{first_name}},
+
+This is a final scheduled reminder regarding your DigiHust account. Our security upgrade requires all active team members and specialists to update their passwords to our new standard.
+
+Automated migration reminders will conclude shortly. After this window, your account will remain secure and accessible, but you will need to initiate password recovery manually via the "Forgot password" screen on our login page.
+
+Set your password here:
+{{reset_link}}
+
+Link expires in {{expiry}}. Minimum 12 characters.
+
+Security check: We will never call, message, or email you to ask for your password. Report any suspicious messages to {{support_email}}.
+
+Mahad Abbas, Founder & CEO, DigiHust
+https://www.digihust.tech

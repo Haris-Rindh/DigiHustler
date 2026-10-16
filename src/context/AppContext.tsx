@@ -40,6 +40,7 @@ interface AppContextType {
   
   // Real Auth Actions (Production Authenticator)
   loginWithMemberId: (memberIdOrEmail: string, password?: string) => { success: boolean; error?: string };
+  loginWithSupabaseSession: (identifier: string) => { success: boolean; error?: string };
   logout: () => void;
   switchRole: (userId: string) => void;
   changePassword: (newPassword: string) => { success: boolean; error?: string };
@@ -500,23 +501,47 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     }
 
     // 2. Strict Password Verification (Individual user password only - no backdoors)
-    if (password) {
-      const computedHash = quickHashSync(password);
-      const isHashMatch = foundUser.passwordHash 
-        ? computedHash === foundUser.passwordHash
-        : true;
-
-      if (!isHashMatch) {
-        return { success: false, error: 'Incorrect password. Please verify your credentials and try again.' };
-      }
+    if (!password) {
+      return { success: false, error: 'Password is required to authenticate.' };
     }
 
-    // Refresh user passwordHash if needed
-    const updatedUser = {
-      ...foundUser,
-      passwordHash: foundUser.passwordHash || (password ? quickHashSync(password) : '')
-    };
+    if (!foundUser.passwordHash) {
+      return { 
+        success: false, 
+        error: 'No password is set for this account. Please use "Forgot Password" to verify your identity and set a secure password.' 
+      };
+    }
 
+    const computedHash = quickHashSync(password);
+    if (computedHash !== foundUser.passwordHash) {
+      return { success: false, error: 'Incorrect credentials. Please verify your credentials and try again.' };
+    }
+
+    const updatedUser = { ...foundUser };
+
+    setCurrentUser(updatedUser);
+    setIsAuthenticated(true);
+    localStorage.setItem(`${LOCAL_STORAGE_KEY}_is_authenticated`, JSON.stringify(true));
+    localStorage.setItem(`${LOCAL_STORAGE_KEY}_current_user`, JSON.stringify(updatedUser));
+    return { success: true };
+  };
+
+  const loginWithSupabaseSession = (identifier: string): { success: boolean; error?: string } => {
+    const cleanId = identifier.trim().toLowerCase();
+    const foundUser = users.find(u => 
+      u.memberId?.trim().toLowerCase() === cleanId || 
+      u.email?.trim().toLowerCase() === cleanId
+    );
+
+    if (!foundUser) {
+      return { success: false, error: 'User profile not found in directory.' };
+    }
+
+    if (foundUser.status === 'suspended') {
+      return { success: false, error: 'This account has been suspended by Executive Management.' };
+    }
+
+    const updatedUser = { ...foundUser };
     setCurrentUser(updatedUser);
     setIsAuthenticated(true);
     localStorage.setItem(`${LOCAL_STORAGE_KEY}_is_authenticated`, JSON.stringify(true));
@@ -1807,6 +1832,13 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     return { success: true };
   };
 
+  const generateSecureTempHash = () => {
+    const seed = typeof crypto !== 'undefined' && crypto.randomUUID
+      ? crypto.randomUUID()
+      : `${Date.now()}_${Math.random()}`;
+    return quickHashSync(`sec_init_${seed}`);
+  };
+
   const quickInviteUser = (userData: Omit<User, 'id' | 'completedProjectsCount' | 'totalEarnings' | 'rating' | 'statusHistory' | 'notes' | 'documents'>): User => {
     const { memberId } = getNextMemberId(userData.joinYear, users);
     const roleTier: UserRoleTier = userData.roleTier || (userData.role === 'management' ? 'manager' : (userData.role === 'group_leader' ? 'group_leader' : (userData.role === 'intern' ? 'intern' : 'member')));
@@ -1818,7 +1850,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       memberId,
       roleTier,
       status: finalStatus,
-      passwordHash: quickHashSync('DigiHust@2026'),
+      passwordHash: generateSecureTempHash(),
       completedProjectsCount: 0,
       totalEarnings: 0,
       rating: 5.0,
@@ -1872,7 +1904,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       const newUser: User = {
         id: `usr-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
         memberId,
-        passwordHash: quickHashSync('DigiHust@2026'),
+        passwordHash: generateSecureTempHash(),
         name: row.name || 'Specialist',
         email: row.email || `specialist-${Date.now()}@digihust.com`,
         phone: row.phone || '',
@@ -2059,7 +2091,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     const newUser: User = {
       id: `usr-${Date.now()}`,
       memberId,
-      passwordHash: quickHashSync('DigiHust@2026'),
+      passwordHash: generateSecureTempHash(),
       name: applicant.name,
       email: applicant.email,
       phone: applicant.phone,
@@ -2139,6 +2171,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
         // Auth
         loginWithMemberId,
+        loginWithSupabaseSession,
         logout,
         switchRole,
         changePassword,

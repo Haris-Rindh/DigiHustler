@@ -1,0 +1,15 @@
+Reminder: Please set your new DigiHust password
+
+Hi {{first_name}},
+
+We noticed you have not yet updated your DigiHust account password following our recent security enhancement. To maintain uninterrupted access to your active deliverables, workspaces, and portal, please take a moment to choose your new password.
+
+Set your password here:
+{{reset_link}}
+
+Password requirements: at least 12 characters. This one-time link expires in {{expiry}}. If expired, generate a fresh link at www.digihust.tech via "Forgot password".
+
+Security reminder: DigiHust staff will never contact you asking for your credentials or OTP codes. If you have questions, reach us at {{support_email}}.
+
+Mahad Abbas, Founder & CEO, DigiHust
+https://www.digihust.tech

@@ -36,6 +36,7 @@ import { DigitalMarketingLanding } from './components/public/LandingPages/Digita
 import { CybersecurityLanding } from './components/public/LandingPages/CybersecurityLanding';
 import { DataIntelligenceLanding } from './components/public/LandingPages/DataIntelligenceLanding';
 import { ClientProjectTracker } from './components/public/ClientProjectTracker';
+import { ResetPasswordPage } from './components/public/ResetPassword';
 
 // Portal & Tiered Management System
 import { PortalLogin } from './components/portal/PortalLogin';
@@ -141,6 +142,9 @@ export const App: React.FC = () => {
                 <Route path="/cert/:certId" element={<CertificateVerification />} />
                 <Route path="/verify/cert/:certId" element={<CertificateVerification />} />
 
+                {/* ── Security Account Recovery / Password Reset ── */}
+                <Route path="/reset-password" element={<ResetPasswordPage />} />
+
                 {/* ── Staff Portal System (4-Tier Architecture) ── */}
                 <Route path="/portal/login" element={<PortalLogin />} />
                 <Route path="/portal" element={<ProtectedRoute><PortalDashboard /></ProtectedRoute>} />
@@ -152,6 +156,7 @@ export const App: React.FC = () => {
                 <Route path="/portal/announcements" element={<ProtectedRoute><AnnouncementsFeed /></ProtectedRoute>} />
                 <Route path="/portal/certificates" element={<ProtectedRoute><CertificateManager /></ProtectedRoute>} />
                 <Route path="/portal/cms" element={<ProtectedRoute><SiteContentManager /></ProtectedRoute>} />
+                <Route path="/portal/migration" element={<ProtectedRoute><PortalDashboard /></ProtectedRoute>} />
                 <Route path="/portal/ledger" element={<Navigate to="/portal/dashboard" replace />} />
                 <Route path="/portal/settings" element={<Navigate to="/portal/dashboard" replace />} />
 

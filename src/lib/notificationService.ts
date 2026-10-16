@@ -92,7 +92,9 @@ export const notificationService = {
 
         const res = await emailjs.send(serviceId, templateId, emailParams, publicKey);
         if (res.status === 200) {
-          console.log('✓ EmailJS Lead Dispatched to Team Successfully:', res);
+          if (import.meta.env.DEV) {
+            console.log('✓ EmailJS Lead Dispatched to Team Successfully');
+          }
           return true;
         }
       } catch (err) {
@@ -175,7 +177,9 @@ export const notificationService = {
 
       const res = await emailjs.send(serviceId, clientConfirmTemplateId, confirmationParams, publicKey);
       if (res.status === 200) {
-        console.log('✓ EmailJS Client Confirmation Dispatched Successfully:', res);
+        if (import.meta.env.DEV) {
+          console.log('✓ EmailJS Client Confirmation Dispatched Successfully');
+        }
         return true;
       }
     } catch (err) {
@@ -202,8 +206,9 @@ export const notificationService = {
       });
 
       if (res.ok) {
-        const data = await res.json();
-        console.log('✓ Automated Background WhatsApp Dispatched to DigiHust Leadership:', data);
+        if (import.meta.env.DEV) {
+          console.log('✓ Automated Background WhatsApp Dispatched to DigiHust Leadership');
+        }
         return true;
       }
     } catch (err) {
@@ -223,7 +228,9 @@ export const notificationService = {
             timestamp: new Date().toISOString(),
           }),
         });
-        console.log('✓ Webhook Lead WhatsApp Dispatched Successfully');
+        if (import.meta.env.DEV) {
+          console.log('✓ Webhook Lead WhatsApp Dispatched Successfully');
+        }
         return true;
       } catch (webhookErr) {
         console.warn('WhatsApp direct webhook dispatch warning:', webhookErr);

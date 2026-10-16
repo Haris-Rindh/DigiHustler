@@ -1,0 +1,19 @@
+Action needed: set your new DigiHust password
+
+Hi {{first_name}},
+
+As announced on {{notice_date}}, our account security upgrade is now live. To keep using your DigiHust account, please set a new password.
+
+1) Open this link, which takes you to a page on https://www.digihust.tech:
+{{reset_link}}
+
+2) Choose a password of at least 12 characters that you don't use anywhere else (a password manager helps).
+
+3) Sign in as usual. Your projects, files and history are all still there.
+
+The link works once and expires after {{expiry}}. If it has expired, go to www.digihust.tech, choose "Forgot password" and we will send a new one.
+
+Not expecting this, or something looks off? Don't click the link; contact {{support_email}} and we will check it with you. A reminder: we never ask for your current password or ask you to send a password by message.
+
+Mahad Abbas, Founder & CEO, DigiHust
+https://www.digihust.tech

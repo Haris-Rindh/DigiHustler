@@ -216,7 +216,7 @@ INSERT INTO public.users (
   'Founder & CEO',
   '+92 320 6806396',
   'DGH2400001',
-  '5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8', -- quickHash of DigiHust@2026
+  NULL, -- Password set by owner during initial setup/reset; no default password in code
   'active',
   2024,
   '["Executive Strategy", "Global Delivery Governance", "Enterprise Accounts"]'::jsonb

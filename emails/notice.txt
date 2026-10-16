@@ -1,0 +1,16 @@
+Heads-up: DigiHust account security upgrade on {{notice_date}}
+
+Hi {{first_name}},
+
+On {{notice_date}} we are upgrading how DigiHust protects your account. This is a planned security improvement and you don't need to do anything today.
+
+What will change: you will need to set a new password the next time you sign in (your old password can't be carried over because we are moving to a stronger way of storing passwords). Your account data, projects and files stay exactly as they are. Sign-in codes sent by email will keep working.
+
+On {{notice_date}} we will send a second email from this address with a button to set your new password. The link opens a page on https://www.digihust.tech, works once, and expires; you can request a new one from the login page.
+
+How to spot a fake: we will never ask for your current password, and we will never send or request passwords by email, WhatsApp or phone. If a message looks suspicious, don't click anything: go to www.digihust.tech and sign in from there, or write to {{support_email}}.
+
+Thank you for trusting us with your work.
+
+Mahad Abbas, Founder & CEO, DigiHust
+https://www.digihust.tech

@@ -3,11 +3,12 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Shield, ArrowRight, Lock, User as UserIcon, Bell, AlertCircle, CheckCircle2, Eye, EyeOff, Mail, Key, RefreshCw, X } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
+import { supabase, isSupabaseConfigured } from '../../lib/supabase';
 import { SEOHead } from '../seo/SEOHead';
 import logoImg from '../../assets/logo.png';
 
 export const PortalLogin: React.FC = () => {
-  const { loginWithMemberId, announcements, requestPasswordReset, completePasswordResetWithOtp } = useApp();
+  const { loginWithMemberId, loginWithSupabaseSession, announcements, requestPasswordReset, completePasswordResetWithOtp } = useApp();
   const navigate = useNavigate();
   const location = useLocation();
   const from = (location.state as any)?.from?.pathname || '/portal/dashboard';
@@ -16,6 +17,17 @@ export const PortalLogin: React.FC = () => {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
+
+  // Migration Policy Upgrade State (Choose a New Password modal)
+  const [newPasswordModalOpen, setNewPasswordModalOpen] = useState(false);
+  const [tempPassword, setTempPassword] = useState('');
+  const [targetAccountEmail, setTargetAccountEmail] = useState('');
+  const [upgradedPassword, setUpgradedPassword] = useState('');
+  const [confirmUpgradedPassword, setConfirmUpgradedPassword] = useState('');
+  const [showUpgradedPassword, setShowUpgradedPassword] = useState(false);
+  const [upgradedLoading, setUpgradedLoading] = useState(false);
+  const [upgradedError, setUpgradedError] = useState('');
 
   // Filter Global announcements visible before login
   const globalAnnouncements = (announcements || []).filter(a => a.scope === 'global');
@@ -54,11 +66,12 @@ export const PortalLogin: React.FC = () => {
     }
   }, [memberId]);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage('');
 
-    if (!memberId.trim()) {
+    const cleanIdentifier = memberId.trim();
+    if (!cleanIdentifier) {
       setErrorMessage('Please enter your permanent Member ID or registered Email.');
       return;
     }
@@ -67,11 +80,155 @@ export const PortalLogin: React.FC = () => {
       return;
     }
 
-    const res = loginWithMemberId(memberId.trim(), password);
-    if (res.success) {
-      navigate(from, { replace: true });
-    } else {
-      setErrorMessage(res.error || 'Authentication failed. Please verify your credentials.');
+    setIsLoggingIn(true);
+
+    try {
+      // 1. Call Legacy-Login migration bridge
+      const resp = await fetch('/api/legacy-login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: cleanIdentifier, password })
+      });
+
+      const data = await resp.json().catch(() => null);
+
+      if (resp.status === 429) {
+        setErrorMessage('Too many login attempts. Please wait 1 minute before trying again.');
+        setIsLoggingIn(false);
+        return;
+      }
+
+      if (resp.ok && data) {
+        // Case A: Password does not meet new >=12 chars policy -> Show in-app upgrade modal
+        if (data.status === 'requires_new_password') {
+          setTempPassword(password);
+          setTargetAccountEmail(data.email || cleanIdentifier);
+          setUpgradedPassword('');
+          setConfirmUpgradedPassword('');
+          setUpgradedError('');
+          setNewPasswordModalOpen(true);
+          setIsLoggingIn(false);
+          return;
+        }
+
+        // Case B: Migrated on login successfully!
+        if (data.status === 'migrated') {
+          const authEmail = data.email || cleanIdentifier;
+          if (isSupabaseConfigured && supabase) {
+            await supabase.auth.signInWithPassword({ email: authEmail, password });
+          }
+          loginWithSupabaseSession(authEmail);
+          navigate(from, { replace: true });
+          return;
+        }
+
+        // Case C: Account was already migrated previously
+        if (data.status === 'already_migrated') {
+          const authEmail = data.email || cleanIdentifier;
+          if (isSupabaseConfigured && supabase) {
+            const { error: sbErr } = await supabase.auth.signInWithPassword({
+              email: authEmail,
+              password
+            });
+            if (!sbErr) {
+              loginWithSupabaseSession(authEmail);
+              navigate(from, { replace: true });
+              return;
+            }
+          }
+          // Fallback to local session check
+          const localRes = loginWithMemberId(cleanIdentifier, password);
+          if (localRes.success) {
+            navigate(from, { replace: true });
+            return;
+          }
+          setErrorMessage('Email or password is incorrect.');
+          setIsLoggingIn(false);
+          return;
+        }
+      }
+
+      if (resp.status === 401 || (data && !data.success)) {
+        // Dev fallback if running without live backend
+        const localRes = loginWithMemberId(cleanIdentifier, password);
+        if (localRes.success) {
+          navigate(from, { replace: true });
+          return;
+        }
+        setErrorMessage(data?.error || 'Email or password is incorrect.');
+        setIsLoggingIn(false);
+        return;
+      }
+
+      // Default fallback
+      const localRes = loginWithMemberId(cleanIdentifier, password);
+      if (localRes.success) {
+        navigate(from, { replace: true });
+      } else {
+        setErrorMessage(localRes.error || 'Authentication failed. Please verify your credentials.');
+      }
+    } catch {
+      // In offline / local development where /api/* is not running, fall back seamlessly
+      const localRes = loginWithMemberId(cleanIdentifier, password);
+      if (localRes.success) {
+        navigate(from, { replace: true });
+      } else {
+        setErrorMessage(localRes.error || 'Authentication failed. Please verify your credentials.');
+      }
+    } finally {
+      setIsLoggingIn(false);
+    }
+  };
+
+  const handleUpgradePasswordSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setUpgradedError('');
+
+    if (upgradedPassword.length < 12) {
+      setUpgradedError('Password must be at least 12 characters.');
+      return;
+    }
+    if (upgradedPassword === 'DigiHust@2026') {
+      setUpgradedError('Please do not use the default password.');
+      return;
+    }
+    if (upgradedPassword !== confirmUpgradedPassword) {
+      setUpgradedError('Passwords do not match. Please re-enter.');
+      return;
+    }
+
+    setUpgradedLoading(true);
+    try {
+      const resp = await fetch('/api/legacy-login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: targetAccountEmail,
+          password: tempPassword,
+          newPassword: upgradedPassword
+        })
+      });
+
+      const data = await resp.json().catch(() => null);
+
+      if (resp.ok && data?.success) {
+        const authEmail = data.email || targetAccountEmail;
+        if (isSupabaseConfigured && supabase) {
+          await supabase.auth.signInWithPassword({
+            email: authEmail,
+            password: upgradedPassword
+          });
+        }
+        loginWithSupabaseSession(authEmail);
+        setNewPasswordModalOpen(false);
+        navigate(from, { replace: true });
+      } else {
+        setUpgradedError(data?.error || 'Failed to update password. Please try again.');
+      }
+    } catch {
+      setUpgradedError('Network error updating password. Please try again.');
+    } finally {
+      setUpgradedLoading(false);
     }
   };
 
@@ -217,6 +374,14 @@ export const PortalLogin: React.FC = () => {
               </p>
             </div>
 
+            {/* Migration Security Upgrade Banner */}
+            <div className="mb-5 p-3.5 rounded-2xl bg-[var(--brand-teal-subtle)] border border-[var(--border-subtle)] flex items-start gap-2.5">
+              <Shield className="w-4 h-4 text-[var(--brand-teal)] flex-shrink-0 mt-0.5" />
+              <p className="text-xs text-[var(--text-body)] leading-relaxed">
+                <strong className="text-[var(--text-heading)]">Account Security Upgrade:</strong> We upgraded account security. Sign in with your usual password, or use &ldquo;Forgot password&rdquo; and we&apos;ll email you a link.
+              </p>
+            </div>
+
             {errorMessage && (
               <div className="mb-5 p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs flex items-center gap-2">
                 <AlertCircle className="w-4 h-4 flex-shrink-0" />
@@ -278,10 +443,20 @@ export const PortalLogin: React.FC = () => {
 
               <button
                 type="submit"
-                className="w-full py-3.5 rounded-xl bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-white font-bold text-sm shadow-lg flex items-center justify-center space-x-2 transition-all cursor-pointer mt-4"
+                disabled={isLoggingIn}
+                className="w-full py-3.5 rounded-xl bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] disabled:opacity-60 text-white font-bold text-sm shadow-lg flex items-center justify-center space-x-2 transition-all cursor-pointer mt-4"
               >
-                <span>Authorize & Enter</span>
-                <ArrowRight className="w-4 h-4" />
+                {isLoggingIn ? (
+                  <>
+                    <RefreshCw className="w-4 h-4 animate-spin" />
+                    <span>Verifying Credentials...</span>
+                  </>
+                ) : (
+                  <>
+                    <span>Authorize & Enter</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </>
+                )}
               </button>
             </form>
           </motion.div>
@@ -551,6 +726,132 @@ export const PortalLogin: React.FC = () => {
               </div>
             )}
 
+          </motion.div>
+        </div>
+      )}
+
+      {/* Modern In-App Password Policy Upgrade Modal (Migrate-On-Login Step) */}
+      {newPasswordModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, y: 10 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            className="bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl relative overflow-hidden"
+          >
+            <div className="flex items-center justify-between pb-4 mb-5 border-b border-[var(--border-subtle)]">
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 rounded-2xl bg-[var(--brand-teal)]/15 border border-[var(--brand-teal)]/30 flex items-center justify-center text-[var(--brand-teal)]">
+                  <ShieldCheck className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="font-display font-extrabold text-base text-[var(--text-heading)]">
+                    Update Account Password
+                  </h3>
+                  <p className="text-[11px] text-[var(--text-muted)]">
+                    New Security Policy: 12+ Characters Required
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setNewPasswordModalOpen(false)}
+                className="p-1.5 rounded-xl text-[var(--text-muted)] hover:text-[var(--text-heading)] hover:bg-[var(--bg-subtle)] transition-colors cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <p className="text-xs text-[var(--text-body)] mb-4 leading-relaxed">
+              Your existing password does not meet our updated security standard. Please set a new password of at least 12 characters to complete your login and protect your account.
+            </p>
+
+            {upgradedError && (
+              <div className="mb-4 p-3 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                <span>{upgradedError}</span>
+              </div>
+            )}
+
+            <form onSubmit={handleUpgradePasswordSubmit} className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] mb-1.5">
+                  New Secure Password
+                </label>
+                <div className="relative">
+                  <Lock className="w-4 h-4 text-[var(--text-muted)] absolute left-3.5 top-3" />
+                  <input
+                    type={showUpgradedPassword ? 'text' : 'password'}
+                    required
+                    value={upgradedPassword}
+                    onChange={(e) => setUpgradedPassword(e.target.value)}
+                    placeholder="At least 12 characters"
+                    className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl pl-10 pr-10 py-2.5 text-sm text-[var(--text-heading)] focus:border-[var(--brand-teal)] focus:outline-none transition-all"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowUpgradedPassword(!showUpgradedPassword)}
+                    className="absolute right-3 top-2.5 text-[var(--text-muted)] hover:text-[var(--text-heading)] p-0.5 rounded cursor-pointer transition-colors"
+                  >
+                    {showUpgradedPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] mb-1.5">
+                  Confirm New Password
+                </label>
+                <div className="relative">
+                  <Lock className="w-4 h-4 text-[var(--text-muted)] absolute left-3.5 top-3" />
+                  <input
+                    type={showUpgradedPassword ? 'text' : 'password'}
+                    required
+                    value={confirmUpgradedPassword}
+                    onChange={(e) => setConfirmUpgradedPassword(e.target.value)}
+                    placeholder="Re-enter your new password"
+                    className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl pl-10 pr-4 py-2.5 text-sm text-[var(--text-heading)] focus:border-[var(--brand-teal)] focus:outline-none transition-all"
+                  />
+                </div>
+              </div>
+
+              {/* Password Policy Checklist */}
+              <div className="p-3.5 rounded-2xl bg-[var(--bg-page)] border border-[var(--border-subtle)] space-y-1.5 text-[11px]">
+                <div className={`flex items-center gap-2 ${upgradedPassword.length >= 12 ? 'text-emerald-500' : 'text-[var(--text-muted)]'}`}>
+                  <CheckCircle2 className="w-3.5 h-3.5 flex-shrink-0" />
+                  <span>Minimum 12 characters ({upgradedPassword.length}/12)</span>
+                </div>
+                <div className={`flex items-center gap-2 ${/[a-z]/.test(upgradedPassword) && /[A-Z]/.test(upgradedPassword) ? 'text-emerald-500' : 'text-[var(--text-muted)]'}`}>
+                  <CheckCircle2 className="w-3.5 h-3.5 flex-shrink-0" />
+                  <span>Both uppercase and lowercase letters</span>
+                </div>
+                <div className={`flex items-center gap-2 ${/[0-9]/.test(upgradedPassword) || /[^A-Za-z0-9]/.test(upgradedPassword) ? 'text-emerald-500' : 'text-[var(--text-muted)]'}`}>
+                  <CheckCircle2 className="w-3.5 h-3.5 flex-shrink-0" />
+                  <span>At least one number or symbol</span>
+                </div>
+                <div className={`flex items-center gap-2 ${upgradedPassword && upgradedPassword === confirmUpgradedPassword ? 'text-emerald-500' : 'text-[var(--text-muted)]'}`}>
+                  <CheckCircle2 className="w-3.5 h-3.5 flex-shrink-0" />
+                  <span>Passwords match</span>
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                disabled={upgradedLoading || upgradedPassword.length < 12 || upgradedPassword !== confirmUpgradedPassword}
+                className="w-full py-3.5 rounded-xl bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] disabled:opacity-50 text-white font-bold text-xs uppercase tracking-wider shadow-lg flex items-center justify-center space-x-2 transition-all cursor-pointer"
+              >
+                {upgradedLoading ? (
+                  <>
+                    <RefreshCw className="w-4 h-4 animate-spin" />
+                    <span>Upgrading Security...</span>
+                  </>
+                ) : (
+                  <>
+                    <span>Save Password & Enter</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </>
+                )}
+              </button>
+            </form>
           </motion.div>
         </div>
       )}

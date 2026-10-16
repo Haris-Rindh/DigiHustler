@@ -21,7 +21,7 @@
         },
         {
           "key": "Strict-Transport-Security",
-          "value": "max-age=63072000; includeSubDomains"
+          "value": "max-age=63072000"
         },
         {
           "key": "Cross-Origin-Opener-Policy",
@@ -52,6 +52,19 @@
     },
     {
       "source": "/portal(.*)",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "no-store, no-cache, must-revalidate"
+        }
+      ]
+    },
+    {
+      "source": "/reset-password(.*)",
       "headers": [
         {
           "key": "X-Robots-Tag",

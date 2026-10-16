@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Final reminder: update your DigiHust account password</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #0b132b; color: #e0e1dd; margin: 0; padding: 24px; line-height: 1.6; }
+    .container { max-width: 580px; margin: 0 auto; background-color: #1c2541; border: 1px solid #3a506b; border-radius: 8px; padding: 32px; }
+    .header { margin-bottom: 24px; border-bottom: 1px solid #3a506b; padding-bottom: 16px; }
+    .brand { font-size: 20px; font-weight: 800; color: #ffffff; text-decoration: none; }
+    .brand span { color: #48cae4; }
+    h1 { font-size: 18px; color: #ffffff; margin-top: 0; }
+    p { margin: 16px 0; font-size: 14px; }
+    .btn-container { margin: 28px 0; text-align: center; }
+    .btn { display: inline-block; background-color: #48cae4; color: #0b132b; text-decoration: none; font-weight: 700; font-size: 14px; padding: 12px 28px; border-radius: 6px; }
+    .url-text { word-break: break-all; font-size: 12px; color: #48cae4; background-color: #0b132b; padding: 8px 12px; border-radius: 4px; border: 1px solid #3a506b; margin-top: 12px; }
+    .alert-box { background-color: rgba(245, 158, 11, 0.08); border-left: 3px solid #f59e0b; padding: 12px 16px; margin: 20px 0; font-size: 13px; }
+    .security-box { background-color: rgba(239, 68, 68, 0.08); border: 1px solid rgba(239, 68, 68, 0.2); padding: 14px; margin: 24px 0; border-radius: 6px; font-size: 13px; }
+    .security-title { font-weight: 700; color: #f87171; margin-bottom: 4px; }
+    .footer { margin-top: 32px; padding-top: 16px; border-top: 1px solid #3a506b; font-size: 12px; color: #8d99ae; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="brand">Digi<span>Hust</span></div>
+    </div>
+    <h1>Final Reminder: Update Your DigiHust Password</h1>
+    <p>Hi {{first_name}},</p>
+    <p>This is a final scheduled reminder regarding your DigiHust account. Our security upgrade requires all active team members and specialists to update their passwords to our new standard.</p>
+
+    <div class="alert-box">
+      <strong>Important:</strong> Automated migration reminders will conclude shortly. After this window, your account will remain secure and accessible, but you will need to initiate password recovery manually via the "Forgot password" screen on our login page.
+    </div>
+
+    <div class="btn-container">
+      <a href="{{reset_link}}" class="btn">Set My Password Now</a>
+      <div class="url-text">{{reset_link}}</div>
+    </div>
+
+    <p style="font-size: 13px; color: #a0aec0;">
+      Link expires in <strong>{{expiry}}</strong>. Minimum 12 characters.
+    </p>
+
+    <div class="security-box">
+      <div class="security-title">Security Check:</div>
+      We will never call, message, or email you to ask for your password. If you ever receive a message requesting your login credentials, report it immediately to <a href="mailto:{{support_email}}" style="color: #48cae4;">{{support_email}}</a>.
+    </div>
+
+    <p>Warm regards,<br /><strong>Mahad Abbas</strong><br />Founder &amp; CEO, DigiHust</p>
+    
+    <div class="footer">
+      DigiHust Operations &bull; https://www.digihust.tech<br />
+      Final automated security notice sent to {{support_email_recipient}}.
+    </div>
+  </div>
+</body>
+</html>

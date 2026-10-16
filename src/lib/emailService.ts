@@ -21,7 +21,9 @@ export const emailService = {
     assignmentTitle: string
   ): Promise<EmailDispatchResult> {
     const cleanEmail = recipientEmail.trim().toLowerCase();
-    console.log(`[DigiHust Mailer] Sending assignment notification for "${assignmentTitle}" to ${cleanEmail}`);
+    if (import.meta.env.DEV) {
+      console.log(`[DigiHust Mailer] Dispatching assignment notification for "${assignmentTitle}"`);
+    }
 
     if (EMAILJS_SERVICE_ID && EMAILJS_PUBLIC_KEY) {
       try {
@@ -55,7 +57,9 @@ export const emailService = {
     otpCode: string
   ): Promise<EmailDispatchResult> {
     const cleanEmail = recipientEmail.trim().toLowerCase();
-    console.log(`[DigiHust Mailer] Sending password recovery OTP (${otpCode}) to ${cleanEmail} for ${recipientName}`);
+    if (import.meta.env.DEV) {
+      console.log('[DigiHust Mailer] Dispatching security password reset OTP verification code');
+    }
 
     // If EmailJS credentials are configured, send real email directly to inbox
     if (EMAILJS_SERVICE_ID && EMAILJS_RESET_TEMPLATE_ID && EMAILJS_PUBLIC_KEY) {
@@ -87,7 +91,9 @@ export const emailService = {
           EMAILJS_PUBLIC_KEY
         );
 
-        console.log('[DigiHust Mailer] EmailJS delivery success:', response.status, response.text);
+        if (import.meta.env.DEV) {
+          console.log('[DigiHust Mailer] EmailJS delivery completed with status:', response.status);
+        }
         return {
           success: true,
           messageId: `emailjs-${Date.now()}`

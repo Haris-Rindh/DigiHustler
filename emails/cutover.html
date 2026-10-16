@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Action needed: set your new DigiHust password</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #0b132b; color: #e0e1dd; margin: 0; padding: 24px; line-height: 1.6; }
+    .container { max-width: 580px; margin: 0 auto; background-color: #1c2541; border: 1px solid #3a506b; border-radius: 8px; padding: 32px; }
+    .header { margin-bottom: 24px; border-bottom: 1px solid #3a506b; padding-bottom: 16px; }
+    .brand { font-size: 20px; font-weight: 800; color: #ffffff; text-decoration: none; }
+    .brand span { color: #48cae4; }
+    h1 { font-size: 18px; color: #ffffff; margin-top: 0; }
+    p { margin: 16px 0; font-size: 14px; }
+    .btn-container { margin: 28px 0; text-align: center; }
+    .btn { display: inline-block; background-color: #48cae4; color: #0b132b; text-decoration: none; font-weight: 700; font-size: 14px; padding: 12px 28px; border-radius: 6px; }
+    .url-text { word-break: break-all; font-size: 12px; color: #48cae4; background-color: #0b132b; padding: 8px 12px; border-radius: 4px; border: 1px solid #3a506b; margin-top: 12px; }
+    .steps { background-color: rgba(72, 202, 228, 0.05); border: 1px solid #3a506b; border-radius: 6px; padding: 16px; margin: 20px 0; font-size: 13px; }
+    .steps ol { margin: 0; padding-left: 20px; }
+    .steps li { margin: 8px 0; }
+    .security-box { background-color: rgba(239, 68, 68, 0.08); border: 1px solid rgba(239, 68, 68, 0.2); padding: 14px; margin: 24px 0; border-radius: 6px; font-size: 13px; }
+    .security-title { font-weight: 700; color: #f87171; margin-bottom: 4px; }
+    .footer { margin-top: 32px; padding-top: 16px; border-top: 1px solid #3a506b; font-size: 12px; color: #8d99ae; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="brand">Digi<span>Hust</span></div>
+    </div>
+    <h1>Action Needed: Set Your New DigiHust Password</h1>
+    <p>Hi {{first_name}},</p>
+    <p>As announced on {{notice_date}}, our account security upgrade is now live. To keep using your DigiHust account, please set a new password.</p>
+    
+    <div class="steps">
+      <ol>
+        <li>Open the secure link below, which directs to <code>https://www.digihust.tech</code></li>
+        <li>Choose a new password of at least 12 characters that you do not use anywhere else (a password manager helps).</li>
+        <li>Sign in as usual. Your projects, files, and history are all preserved.</li>
+      </ol>
+    </div>
+
+    <div class="btn-container">
+      <a href="{{reset_link}}" class="btn">Set My New Password</a>
+      <div class="url-text">{{reset_link}}</div>
+    </div>
+
+    <p style="font-size: 13px; color: #a0aec0;">
+      This link works once and expires after <strong>{{expiry}}</strong>. If it has expired, visit <a href="https://www.digihust.tech/portal/login" style="color: #48cae4;">www.digihust.tech</a>, select "Forgot password", and we will email you a new link.
+    </p>
+
+    <div class="security-box">
+      <div class="security-title">Security Reminder:</div>
+      Not expecting this, or does something look off? Do not click the link; contact <a href="mailto:{{support_email}}" style="color: #48cae4;">{{support_email}}</a> and we will verify it with you. We <strong>never</strong> ask for your current password or request that you send credentials by message or phone.
+    </div>
+
+    <p>Warm regards,<br /><strong>Mahad Abbas</strong><br />Founder &amp; CEO, DigiHust</p>
+    
+    <div class="footer">
+      DigiHust Operations &bull; https://www.digihust.tech<br />
+      This is an essential security reset notification sent to {{support_email_recipient}}.
+    </div>
+  </div>
+</body>
+</html>

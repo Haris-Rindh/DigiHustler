@@ -117,9 +117,11 @@ export async function sendWhatsAppNotification(leadData) {
     }
   }
 
-  console.log(
-    `✓ [WhatsApp Background Notifier] Dispatched inquiry for "${leadData.name}" to leadership numbers (${targetNumbers.join(', ')}). Message length: ${message.length} chars.`
-  );
+  if (process.env.NODE_ENV !== 'production') {
+    console.log(
+      `✓ [WhatsApp Background Notifier] Dispatched lead notification to leadership recipients (${targetNumbers.length} recipients).`
+    );
+  }
 
   return {
     success: true,
