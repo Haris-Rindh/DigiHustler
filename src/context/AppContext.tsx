@@ -2132,6 +2132,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const updateGlobalSettings = (newSettings: GlobalAdminSettings) => {
     setSettings(newSettings);
     dbService.saveSettings(newSettings); // persist to cloud
+    showToast('Platform settings saved and synced to cloud.', 'success', 'Settings Saved');
   };
 
   const resetToDefaultData = () => {

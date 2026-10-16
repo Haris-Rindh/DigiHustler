@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { SEOHead } from '../seo/SEOHead';
 import { useApp } from '../../context/AppContext';
+import { formatImageUrl, handleImageError } from '../../lib/imageUrlHelper';
 
 interface CaseStudy {
   slug: string;
@@ -194,7 +195,7 @@ export const CaseStudyDetail: React.FC = () => {
           ? dynamicStudy.deliverables
           : ['Full Production Application', 'Admin Management Console', 'Architecture Documentation', 'SLA Warranty'],
         tags: dynamicStudy.tags || ['React', 'Full-Stack'],
-        heroImage: dynamicStudy.imageUrl || 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1200&q=80',
+        heroImage: formatImageUrl(dynamicStudy.imageUrl, dynamicStudy.category),
         statHighlight: `${dynamicStudy.impactMetric || '+100%'} ${dynamicStudy.impactLabel || 'Uplift'}`,
         projectUrl: dynamicStudy.projectUrl,
         clientQuote: staticStudy?.clientQuote,
@@ -293,8 +294,10 @@ export const CaseStudyDetail: React.FC = () => {
         <div className="max-w-7xl mx-auto">
           <div className="aspect-[21/9] rounded-3xl overflow-hidden border border-[var(--border-subtle)] shadow-2xl relative bg-[var(--bg-subtle)]">
             <img
-              src={study.heroImage}
+              src={formatImageUrl(study.heroImage, study.category)}
               alt={study.title}
+              referrerPolicy="no-referrer"
+              onError={(e) => handleImageError(e, undefined, study.category)}
               className="w-full h-full object-cover"
             />
           </div>

@@ -4,6 +4,7 @@ import { ArrowLeft, Clock, Calendar, ArrowRight, CheckCircle2, Tag, User } from 
 import { SEOHead } from '../seo/SEOHead';
 import { BLOG_POSTS } from './Blog';
 import { useApp } from '../../context/AppContext';
+import { formatImageUrl, handleImageError } from '../../lib/imageUrlHelper';
 
 export const BlogPost: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -25,7 +26,7 @@ export const BlogPost: React.FC = () => {
           : 'August 2026',
         author: dynamicPost.author,
         authorRole: 'Domain Specialist & Lead',
-        image: dynamicPost.imageUrl || 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=1200&q=80',
+        image: formatImageUrl(dynamicPost.imageUrl, dynamicPost.category),
         tags: dynamicPost.tags || ['Engineering', 'Digital Strategy', 'DigiHust'],
       }
     : staticPost
@@ -136,7 +137,16 @@ export const BlogPost: React.FC = () => {
       <article className="bg-[var(--bg-page)] py-16 px-6 lg:px-8">
         <div className="max-w-4xl mx-auto space-y-8 text-[var(--text-body)] leading-relaxed text-base sm:text-lg">
           <div className="aspect-video rounded-3xl overflow-hidden mb-10 border border-[var(--border-subtle)] shadow-xl bg-[var(--bg-subtle)]">
-            <img src={post.image} alt={post.title} width={800} height={450} decoding="async" className="w-full h-full object-cover" />
+            <img
+              src={formatImageUrl(post.image, post.category)}
+              alt={post.title}
+              width={800}
+              height={450}
+              decoding="async"
+              referrerPolicy="no-referrer"
+              onError={(e) => handleImageError(e, undefined, post.category)}
+              className="w-full h-full object-cover"
+            />
           </div>
 
           <p className="text-xl font-medium text-[var(--text-heading)] leading-relaxed border-l-4 border-[var(--brand-teal)] pl-6 italic bg-[var(--bg-surface)] py-4 rounded-r-2xl border border-y-[var(--border-subtle)] border-r-[var(--border-subtle)]">

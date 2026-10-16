@@ -21,7 +21,7 @@ interface ParsedRow {
 }
 
 export const BulkImportModal: React.FC<BulkImportModalProps> = ({ onClose, onSuccess }) => {
-  const { bulkImportMembers, users } = useApp();
+  const { bulkImportMembers, users, showToast } = useApp();
   const [step, setStep] = useState<'upload' | 'mapping' | 'preview'>('upload');
   const [rawText, setRawText] = useState('');
   const [parsedRows, setParsedRows] = useState<ParsedRow[]>([]);
@@ -129,6 +129,7 @@ Zainab Bibi,zainab.b@digihust.com,freelancer,growth,Technical SEO & Funnel Close
     }));
 
     const result = bulkImportMembers(toImport);
+    showToast(`Successfully imported and registered ${result.count} member(s)!`, 'success', 'Import Complete');
     if (onSuccess) onSuccess(result.count);
     onClose();
   };

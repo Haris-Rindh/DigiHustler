@@ -9,7 +9,7 @@ interface SplitConfigurationViewProps {
 }
 
 export const SplitConfigurationView: React.FC<SplitConfigurationViewProps> = ({ onSelectUser }) => {
-  const { settings, users, updateGlobalSettings, setUserSplitOverride } = useApp();
+  const { settings, users, updateGlobalSettings, setUserSplitOverride, showToast } = useApp();
 
   const [mgmtPct, setMgmtPct] = useState(settings.defaultManagementSplitPct ?? settings.defaultManagementPct ?? 30);
   const [ldrPct, setLdrPct] = useState(settings.defaultLeaderSplitPct ?? settings.defaultLeaderPct ?? 20);
@@ -38,6 +38,7 @@ export const SplitConfigurationView: React.FC<SplitConfigurationViewProps> = ({ 
     });
 
     setSavedSuccess(true);
+    showToast('Company revenue split configuration updated and saved!', 'success', 'Settings Saved');
     setTimeout(() => setSavedSuccess(false), 3000);
   };
 

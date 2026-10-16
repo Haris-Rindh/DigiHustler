@@ -9,7 +9,7 @@ interface RoleManagementModalProps {
 }
 
 export const RoleManagementModal: React.FC<RoleManagementModalProps> = ({ user, onClose }) => {
-  const { currentTier, groups, updateUserRoleWithAuth, updateUserSquadWithAuth, auditLogs } = useApp();
+  const { currentTier, groups, updateUserRoleWithAuth, updateUserSquadWithAuth, auditLogs, showToast } = useApp();
   const [selectedTier, setSelectedTier] = useState<UserRoleTier>(user.roleTier || 'member');
   const [selectedSquad, setSelectedSquad] = useState<GroupId | undefined>(user.groupId);
   const [reason, setReason] = useState('');
@@ -61,6 +61,7 @@ export const RoleManagementModal: React.FC<RoleManagementModalProps> = ({ user, 
     }
 
     setFeedback({ success: true, message: `Successfully updated permissions and squad for ${user.name}.` });
+    showToast(`Permissions and squad updated for ${user.name}.`, 'success', 'Role Updated');
     setTimeout(() => {
       onClose();
     }, 1000);

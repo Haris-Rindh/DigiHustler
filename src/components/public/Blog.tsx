@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { SEOHead } from '../seo/SEOHead';
 import { useApp } from '../../context/AppContext';
+import { formatImageUrl, handleImageError } from '../../lib/imageUrlHelper';
 
 export interface BlogPostItem {
   slug: string;
@@ -78,7 +79,7 @@ export const Blog: React.FC = () => {
     readTime: bp.readTime,
     date: bp.publishedAt ? new Date(bp.publishedAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : 'August 2026',
     author: bp.author,
-    image: bp.imageUrl || 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=800&q=80',
+    image: formatImageUrl(bp.imageUrl, bp.category),
   }));
 
   const allPosts = dynamicPosts.length > 0 ? dynamicPosts : BLOG_POSTS;
@@ -150,12 +151,14 @@ export const Blog: React.FC = () => {
                 className="group block overflow-hidden rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] transition-transform duration-200 hover:-translate-y-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-teal)] hover:border-[var(--brand-teal)] shadow-sm hover:shadow-lg"
               >
                 <img
-                  src={post.image}
+                  src={formatImageUrl(post.image, post.category)}
                   alt={post.title}
                   width={800}
                   height={450}
                   loading={index < 3 ? 'eager' : 'lazy'}
                   decoding="async"
+                  referrerPolicy="no-referrer"
+                  onError={(e) => handleImageError(e, undefined, post.category)}
                   className="aspect-video w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
                 />
                 <div className="p-4 pt-3">

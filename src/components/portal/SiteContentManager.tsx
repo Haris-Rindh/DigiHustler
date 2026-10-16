@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { 
   FileText, Image as ImageIcon, Check, RotateCcw, 
   Plus, Trash2, Eye, Layout, Star, Briefcase, Users, Layers, ExternalLink,
@@ -15,6 +16,7 @@ import { PERMISSIONS } from '../../lib/permissions';
 import { AVAILABLE_SERVICE_ICONS, getServiceIcon } from '../../lib/serviceIcons';
 import { dbService } from '../../lib/dbService';
 import { compressAvatarFile } from '../../lib/utils';
+import { formatImageUrl, handleImageError } from '../../lib/imageUrlHelper';
 
 const SERVICE_PATTERN_OPTIONS = [
   { id: 'dotted-grid', label: 'Dotted Grid' },
@@ -38,6 +40,23 @@ const CURATED_SERVICE_IMAGE_PRESETS = [
   { label: 'Video Studio', url: 'https://images.unsplash.com/photo-1626785774573-4b799315345d?auto=format&fit=crop&w=1200&q=80' },
   { label: 'Growth SEO', url: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1200&q=80' },
   { label: 'Cybersecurity', url: 'https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=1200&q=80' },
+];
+
+const CURATED_PORTFOLIO_IMAGE_PRESETS = [
+  { label: 'E-Commerce', url: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=1200&q=80' },
+  { label: 'FinTech / Trading', url: 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?auto=format&fit=crop&w=1200&q=80' },
+  { label: 'Real Estate', url: 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=1200&q=80' },
+  { label: 'Brand 3D / Motion', url: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=1200&q=80' },
+  { label: 'AI & Data Bot', url: 'https://images.unsplash.com/photo-1677442135703-1787eea5ce01?auto=format&fit=crop&w=1200&q=80' },
+  { label: 'BI Analytics', url: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1200&q=80' },
+];
+
+const CURATED_BLOG_IMAGE_PRESETS = [
+  { label: 'Engineering / Code', url: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=1200&q=80' },
+  { label: 'AI / Automation', url: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1200&q=80' },
+  { label: 'Cybersecurity', url: 'https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=1200&q=80' },
+  { label: 'Cloud Architecture', url: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1200&q=80' },
+  { label: 'Product & Design', url: 'https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?auto=format&fit=crop&w=1200&q=80' },
 ];
 
 export const SiteContentManager: React.FC = () => {
@@ -90,6 +109,27 @@ export const SiteContentManager: React.FC = () => {
   const [isNewsletterLoading, setIsNewsletterLoading] = useState(false);
   const [newsletterSearch, setNewsletterSearch] = useState('');
   const [isUploadingIllustration, setIsUploadingIllustration] = useState(false);
+  const [uploadingTargetId, setUploadingTargetId] = useState<string | null>(null);
+
+  const uploadAssetSafely = async (file: File, folder = 'site-assets'): Promise<string | null> => {
+    let finalUrl: string | null = null;
+    try {
+      finalUrl = await dbService.uploadSiteAsset(file, folder);
+    } catch (uploadErr) {
+      console.warn('Storage upload error, falling back to local compression:', uploadErr);
+    }
+
+    if (!finalUrl) {
+      // Fallback to client-side compressed base64 data URL
+      try {
+        finalUrl = await compressAvatarFile(file, 1200, 0.85);
+      } catch (compErr) {
+        console.error('Image compression failed:', compErr);
+      }
+    }
+
+    return finalUrl;
+  };
 
   useEffect(() => {
     if (activeTab === 'newsletter') {
@@ -202,7 +242,8 @@ export const SiteContentManager: React.FC = () => {
 
   const triggerSaved = (msg: string = 'Changes published live successfully!') => {
     setSavedFeedback(msg);
-    setTimeout(() => setSavedFeedback(null), 2500);
+    showToast(msg, 'success', 'Changes Saved', 4000);
+    setTimeout(() => setSavedFeedback(null), 3500);
   };
 
   // Section Save Handlers
@@ -751,13 +792,23 @@ export const SiteContentManager: React.FC = () => {
         <div className="space-y-6">
           <div className="flex items-center justify-between p-4 rounded-2xl bg-[var(--bg-surface)] border border-[var(--border-subtle)]">
             <h3 className="font-display font-extrabold text-base text-[var(--text-heading)]">Value Proposition Cards ("Why DigiHust")</h3>
-            <button
-              onClick={() => setShowAddValueProp(true)}
-              className="flex items-center space-x-1.5 px-4 py-2 rounded-xl bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-white text-xs font-bold shadow-md cursor-pointer"
-            >
-              <Plus className="w-4 h-4" />
-              <span>Add Value Card</span>
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => triggerSaved('All value proposition cards saved live!')}
+                className="flex items-center space-x-1.5 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-md cursor-pointer transition-all"
+              >
+                <Check className="w-4 h-4" />
+                <span>Save All Cards</span>
+              </button>
+              <button
+                onClick={() => setShowAddValueProp(true)}
+                className="flex items-center space-x-1.5 px-4 py-2 rounded-xl bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-white text-xs font-bold shadow-md cursor-pointer"
+              >
+                <Plus className="w-4 h-4" />
+                <span>Add Value Card</span>
+              </button>
+            </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -791,6 +842,20 @@ export const SiteContentManager: React.FC = () => {
                   rows={2}
                   className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl p-2.5 text-xs text-[var(--text-body)] focus:border-[var(--brand-teal)] focus:outline-none"
                 />
+                <div className="flex items-center justify-between pt-2 border-t border-[var(--border-subtle)]">
+                  <span className="text-[11px] text-emerald-500 font-semibold flex items-center gap-1">
+                    <Check className="w-3.5 h-3.5" />
+                    <span>Auto-saved live</span>
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => triggerSaved(`Value card '${vp.title}' saved live!`)}
+                    className="flex items-center gap-1.5 px-3 py-1 rounded-xl bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-white text-xs font-bold transition-all shadow-xs cursor-pointer"
+                  >
+                    <Check className="w-3.5 h-3.5" />
+                    <span>Save Card</span>
+                  </button>
+                </div>
               </div>
             ))}
           </div>
@@ -853,13 +918,23 @@ export const SiteContentManager: React.FC = () => {
                 </h3>
                 <p className="text-xs text-[var(--text-muted)]">Manage the main service offerings shown on the homepage and /services.</p>
               </div>
-              <button
-                onClick={() => setShowAddService && setShowAddService(true)}
-                className="flex items-center space-x-1.5 px-4 py-2 rounded-xl bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-white text-xs font-bold shadow-md cursor-pointer"
-              >
-                <Plus className="w-4 h-4" />
-                <span>Add Service</span>
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => triggerSaved('All service capabilities saved and synced live!')}
+                  className="flex items-center space-x-1.5 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-md cursor-pointer transition-all"
+                >
+                  <Check className="w-4 h-4" />
+                  <span>Save All Services</span>
+                </button>
+                <button
+                  onClick={() => setShowAddService && setShowAddService(true)}
+                  className="flex items-center space-x-1.5 px-4 py-2 rounded-xl bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-white text-xs font-bold shadow-md cursor-pointer"
+                >
+                  <Plus className="w-4 h-4" />
+                  <span>Add Service</span>
+                </button>
+              </div>
             </div>
 
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
@@ -1076,12 +1151,11 @@ export const SiteContentManager: React.FC = () => {
                           <div className="w-24 h-16 rounded-xl overflow-hidden bg-black/20 border border-[var(--border-subtle)] shrink-0 relative">
                             {service.imageUrl ? (
                               <img
-                                src={service.imageUrl}
+                                src={formatImageUrl(service.imageUrl, 'development')}
                                 alt={service.title}
+                                referrerPolicy="no-referrer"
                                 className="w-full h-full object-cover"
-                                onError={(e) => {
-                                  (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=400&q=80';
-                                }}
+                                onError={(e) => handleImageError(e, undefined, 'development')}
                               />
                             ) : (
                               <div className="w-full h-full flex items-center justify-center text-[10px] text-[var(--text-muted)] text-center p-1">
@@ -1102,22 +1176,35 @@ export const SiteContentManager: React.FC = () => {
                                 }
                                 className="flex-1 bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-1.5 text-xs text-[var(--text-heading)]"
                               />
-                              <label className="px-3 py-1.5 rounded-xl bg-[var(--bg-page)] border border-[var(--border-subtle)] hover:border-[var(--brand-teal)] text-[var(--text-heading)] text-xs font-bold cursor-pointer whitespace-nowrap flex items-center gap-1">
-                                <span>Upload</span>
+                              <label className="px-3 py-1.5 rounded-xl bg-[var(--bg-page)] border border-[var(--border-subtle)] hover:border-[var(--brand-teal)] text-[var(--text-heading)] text-xs font-bold cursor-pointer whitespace-nowrap flex items-center gap-1.5 transition-colors">
+                                {uploadingTargetId === service.id ? (
+                                  <>
+                                    <Loader2 className="w-3.5 h-3.5 animate-spin text-[var(--brand-teal)]" />
+                                    <span>Uploading...</span>
+                                  </>
+                                ) : (
+                                  <>
+                                    <Upload className="w-3.5 h-3.5" />
+                                    <span>Upload</span>
+                                  </>
+                                )}
                                 <input
                                   type="file"
                                   accept="image/*"
                                   className="hidden"
-                                  onChange={(e) => {
+                                  disabled={uploadingTargetId === service.id}
+                                  onChange={async (e) => {
                                     const file = e.target.files?.[0];
                                     if (file) {
-                                      const reader = new FileReader();
-                                      reader.onload = () => {
-                                        if (typeof reader.result === 'string') {
-                                          updateItemInSiteContent('services', service.id, { imageUrl: reader.result });
-                                        }
-                                      };
-                                      reader.readAsDataURL(file);
+                                      setUploadingTargetId(service.id);
+                                      const url = await uploadAssetSafely(file, 'services');
+                                      if (url) {
+                                        updateItemInSiteContent('services', service.id, { imageUrl: url });
+                                        showToast('Service image updated successfully!', 'success');
+                                      } else {
+                                        showToast('Failed to process image file.', 'error');
+                                      }
+                                      setUploadingTargetId(null);
                                     }
                                   }}
                                 />
@@ -1183,6 +1270,22 @@ export const SiteContentManager: React.FC = () => {
                           rows={3}
                           className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl p-2.5 text-xs text-[var(--text-body)]"
                         />
+                      </div>
+
+                      {/* Card Save Action Bar */}
+                      <div className="flex items-center justify-between pt-3 border-t border-[var(--border-subtle)]">
+                        <span className="text-[11px] text-emerald-500 font-semibold flex items-center gap-1">
+                          <Check className="w-3.5 h-3.5" />
+                          <span>Auto-saved live</span>
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => triggerSaved(`Service '${service.title}' saved live!`)}
+                          className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-white text-xs font-bold transition-all shadow-xs cursor-pointer"
+                        >
+                          <Check className="w-3.5 h-3.5" />
+                          <span>Save Service</span>
+                        </button>
                       </div>
                     </div>
                   );
@@ -1340,12 +1443,11 @@ export const SiteContentManager: React.FC = () => {
                       <div className="w-24 h-16 rounded-xl overflow-hidden bg-black/20 border border-[var(--border-subtle)] shrink-0 relative">
                         {newService.imageUrl ? (
                           <img
-                            src={newService.imageUrl}
+                            src={formatImageUrl(newService.imageUrl, 'development')}
                             alt="Service preview"
+                            referrerPolicy="no-referrer"
                             className="w-full h-full object-cover"
-                            onError={(e) => {
-                              (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=400&q=80';
-                            }}
+                            onError={(e) => handleImageError(e, undefined, 'development')}
                           />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center text-[10px] text-[var(--text-muted)] text-center p-1">
@@ -1364,22 +1466,35 @@ export const SiteContentManager: React.FC = () => {
                             onChange={(e) => setNewService({ ...newService, imageUrl: e.target.value })}
                             className="flex-1 bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-1.5 text-xs text-[var(--text-heading)]"
                           />
-                          <label className="px-3 py-1.5 rounded-xl bg-[var(--bg-page)] border border-[var(--border-subtle)] hover:border-[var(--brand-teal)] text-[var(--text-heading)] text-xs font-bold cursor-pointer whitespace-nowrap flex items-center gap-1">
-                            <span>Upload</span>
+                          <label className="px-3 py-1.5 rounded-xl bg-[var(--bg-page)] border border-[var(--border-subtle)] hover:border-[var(--brand-teal)] text-[var(--text-heading)] text-xs font-bold cursor-pointer whitespace-nowrap flex items-center gap-1.5 transition-colors">
+                            {uploadingTargetId === 'new-service' ? (
+                              <>
+                                <Loader2 className="w-3.5 h-3.5 animate-spin text-[var(--brand-teal)]" />
+                                <span>Uploading...</span>
+                              </>
+                            ) : (
+                              <>
+                                <Upload className="w-3.5 h-3.5" />
+                                <span>Upload</span>
+                              </>
+                            )}
                             <input
                               type="file"
                               accept="image/*"
                               className="hidden"
-                              onChange={(e) => {
+                              disabled={uploadingTargetId === 'new-service'}
+                              onChange={async (e) => {
                                 const file = e.target.files?.[0];
                                 if (file) {
-                                  const reader = new FileReader();
-                                  reader.onload = () => {
-                                    if (typeof reader.result === 'string') {
-                                      setNewService({ ...newService, imageUrl: reader.result });
-                                    }
-                                  };
-                                  reader.readAsDataURL(file);
+                                  setUploadingTargetId('new-service');
+                                  const url = await uploadAssetSafely(file, 'services');
+                                  if (url) {
+                                    setNewService({ ...newService, imageUrl: url });
+                                    showToast('Service image uploaded!', 'success');
+                                  } else {
+                                    showToast('Failed to process image file.', 'error');
+                                  }
+                                  setUploadingTargetId(null);
                                 }
                               }}
                             />
@@ -1461,13 +1576,23 @@ export const SiteContentManager: React.FC = () => {
         <div className="space-y-6">
           <div className="flex items-center justify-between p-4 rounded-2xl bg-[var(--bg-surface)] border border-[var(--border-subtle)]">
             <h3 className="font-display font-extrabold text-base text-[var(--text-heading)]">Portfolio Projects & Case Studies ({(siteContent.caseStudies || []).length})</h3>
-            <button
-              onClick={() => setShowAddCaseStudy(true)}
-              className="flex items-center space-x-1.5 px-4 py-2 rounded-xl bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-white text-xs font-bold shadow-md cursor-pointer"
-            >
-              <Plus className="w-4 h-4" />
-              <span>Add New Case Study</span>
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => triggerSaved('All case studies saved live!')}
+                className="flex items-center space-x-1.5 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-md cursor-pointer transition-all"
+              >
+                <Check className="w-4 h-4" />
+                <span>Save All Case Studies</span>
+              </button>
+              <button
+                onClick={() => setShowAddCaseStudy(true)}
+                className="flex items-center space-x-1.5 px-4 py-2 rounded-xl bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-white text-xs font-bold shadow-md cursor-pointer"
+              >
+                <Plus className="w-4 h-4" />
+                <span>Add New Case Study</span>
+              </button>
+            </div>
           </div>
 
           <div className="space-y-6">
@@ -1527,7 +1652,7 @@ export const SiteContentManager: React.FC = () => {
                     <label className="block text-xs font-bold uppercase text-[var(--text-muted)] mb-1">Impact Metric (e.g. +140%)</label>
                     <input
                       type="text"
-                      value={cs.impactMetric}
+                      value={cs.impactMetric || ''}
                       onChange={(e) => updateItemInSiteContent('caseStudies', cs.id, { impactMetric: e.target.value })}
                       className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs text-[var(--text-heading)] font-bold"
                     />
@@ -1536,29 +1661,118 @@ export const SiteContentManager: React.FC = () => {
                     <label className="block text-xs font-bold uppercase text-[var(--text-muted)] mb-1">Impact Label</label>
                     <input
                       type="text"
-                      value={cs.impactLabel}
+                      value={cs.impactLabel || ''}
                       onChange={(e) => updateItemInSiteContent('caseStudies', cs.id, { impactLabel: e.target.value })}
                       className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs text-[var(--text-heading)]"
                     />
                   </div>
                   <div>
-                      <label className="block text-xs font-bold uppercase text-[var(--text-muted)] mb-1">Project Link (External URL)</label>
-                      <input
-                        type="url"
-                        placeholder="https://..."
-                        value={newCaseStudy.projectUrl || ''}
-                        onChange={(e) => setNewCaseStudy({ ...newCaseStudy, projectUrl: e.target.value })}
-                        className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs mb-3"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-bold uppercase text-[var(--text-muted)] mb-1">Image URL</label>
-                      <input
+                    <label className="block text-xs font-bold uppercase text-[var(--text-muted)] mb-1">Live Demo / External Link</label>
+                    <input
                       type="url"
-                      value={cs.imageUrl}
-                      onChange={(e) => updateItemInSiteContent('caseStudies', cs.id, { imageUrl: e.target.value })}
+                      placeholder="https://..."
+                      value={cs.projectUrl || ''}
+                      onChange={(e) => updateItemInSiteContent('caseStudies', cs.id, { projectUrl: e.target.value })}
                       className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs text-[var(--text-heading)]"
                     />
+                  </div>
+                </div>
+
+                {/* Case Study Image & Visual Uploader */}
+                <div className="p-4 rounded-2xl bg-[var(--bg-subtle)] border border-[var(--border-subtle)] space-y-3">
+                  <div className="flex items-center justify-between">
+                    <label className="block text-xs font-bold uppercase text-[var(--text-muted)]">
+                      Project Cover Image
+                    </label>
+                    {cs.imageUrl && (
+                      <button
+                        type="button"
+                        onClick={() => updateItemInSiteContent('caseStudies', cs.id, { imageUrl: '' })}
+                        className="text-[10px] text-rose-500 hover:underline cursor-pointer"
+                      >
+                        Reset / Clear
+                      </button>
+                    )}
+                  </div>
+
+                  <div className="flex flex-col sm:flex-row gap-4 items-start">
+                    {/* Live Thumbnail Preview */}
+                    <div className="w-32 h-20 sm:w-40 sm:h-24 rounded-xl overflow-hidden bg-black/20 border border-[var(--border-subtle)] shrink-0 relative flex items-center justify-center">
+                      {cs.imageUrl ? (
+                        <img
+                          src={formatImageUrl(cs.imageUrl, cs.category)}
+                          alt={cs.title}
+                          referrerPolicy="no-referrer"
+                          className="w-full h-full object-cover"
+                          onError={(e) => handleImageError(e, undefined, cs.category)}
+                        />
+                      ) : (
+                        <div className="text-[10px] text-[var(--text-muted)] text-center p-2">
+                          No Image Uploaded
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Image URL & Upload button */}
+                    <div className="flex-1 space-y-2.5 w-full">
+                      <div className="flex gap-2">
+                        <input
+                          type="url"
+                          placeholder="Paste image link from Postimg, Imgur, Drive, Unsplash, etc."
+                          value={cs.imageUrl || ''}
+                          onChange={(e) => updateItemInSiteContent('caseStudies', cs.id, { imageUrl: e.target.value })}
+                          className="flex-1 bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs text-[var(--text-heading)] font-mono"
+                        />
+                        <label className="px-4 py-2 rounded-xl bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-white text-xs font-bold cursor-pointer whitespace-nowrap flex items-center gap-1.5 shadow-sm transition-all active:scale-95">
+                          {uploadingTargetId === cs.id ? (
+                            <>
+                              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                              <span>Uploading...</span>
+                            </>
+                          ) : (
+                            <>
+                              <Upload className="w-3.5 h-3.5" />
+                              <span>Upload Image</span>
+                            </>
+                          )}
+                          <input
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            disabled={uploadingTargetId === cs.id}
+                            onChange={async (e) => {
+                              const file = e.target.files?.[0];
+                              if (file) {
+                                setUploadingTargetId(cs.id);
+                                const url = await uploadAssetSafely(file, 'portfolio');
+                                if (url) {
+                                  updateItemInSiteContent('caseStudies', cs.id, { imageUrl: url });
+                                  showToast('Case study image uploaded successfully!', 'success');
+                                } else {
+                                  showToast('Failed to process image file.', 'error');
+                                }
+                                setUploadingTargetId(null);
+                              }
+                            }}
+                          />
+                        </label>
+                      </div>
+
+                      {/* Presets Row */}
+                      <div className="flex flex-wrap items-center gap-1.5">
+                        <span className="text-[10px] text-[var(--text-muted)] mr-1">Presets:</span>
+                        {CURATED_PORTFOLIO_IMAGE_PRESETS.map((preset) => (
+                          <button
+                            key={preset.label}
+                            type="button"
+                            onClick={() => updateItemInSiteContent('caseStudies', cs.id, { imageUrl: preset.url })}
+                            className="px-2.5 py-1 rounded-lg text-[10px] font-semibold bg-[var(--bg-page)] hover:bg-[var(--bg-surface)] hover:text-[var(--brand-teal)] border border-[var(--border-subtle)] transition-colors cursor-pointer"
+                          >
+                            {preset.label}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
                   </div>
                 </div>
 
@@ -1570,6 +1784,22 @@ export const SiteContentManager: React.FC = () => {
                     rows={2}
                     className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl p-3 text-xs text-[var(--text-heading)]"
                   />
+                </div>
+
+                {/* Card Save Action Bar */}
+                <div className="flex items-center justify-between pt-3 border-t border-[var(--border-subtle)]">
+                  <span className="text-[11px] text-emerald-500 font-semibold flex items-center gap-1">
+                    <Check className="w-3.5 h-3.5" />
+                    <span>Auto-saved live</span>
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => triggerSaved(`Case Study '${cs.title}' saved live!`)}
+                    className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-white text-xs font-bold transition-all shadow-xs cursor-pointer"
+                  >
+                    <Check className="w-3.5 h-3.5" />
+                    <span>Save Case Study</span>
+                  </button>
                 </div>
               </div>
             ))}
@@ -1627,24 +1857,106 @@ export const SiteContentManager: React.FC = () => {
                   </div>
                 </div>
                 <div>
-                      <label className="block text-xs font-bold uppercase text-[var(--text-muted)] mb-1">Project Link (External URL)</label>
-                      <input
-                        type="url"
-                        placeholder="https://..."
-                        value={newCaseStudy.projectUrl || ''}
-                        onChange={(e) => setNewCaseStudy({ ...newCaseStudy, projectUrl: e.target.value })}
-                        className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs mb-3"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-bold uppercase text-[var(--text-muted)] mb-1">Image URL</label>
-                      <input
+                  <label className="block text-xs font-bold uppercase text-[var(--text-muted)] mb-1">Live Demo / External Link</label>
+                  <input
                     type="url"
-                    value={newCaseStudy.imageUrl}
-                    onChange={(e) => setNewCaseStudy({ ...newCaseStudy, imageUrl: e.target.value })}
-                    placeholder="https://images.unsplash.com/..."
-                    className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs"
+                    placeholder="https://..."
+                    value={newCaseStudy.projectUrl || ''}
+                    onChange={(e) => setNewCaseStudy({ ...newCaseStudy, projectUrl: e.target.value })}
+                    className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs text-[var(--text-heading)]"
                   />
+                </div>
+
+                {/* Case Study Image Field */}
+                <div className="p-3.5 rounded-2xl bg-[var(--bg-page)] border border-[var(--border-subtle)] space-y-3">
+                  <div className="flex items-center justify-between">
+                    <label className="block text-xs font-bold uppercase text-[var(--text-muted)]">Project Image</label>
+                    {newCaseStudy.imageUrl && (
+                      <button
+                        type="button"
+                        onClick={() => setNewCaseStudy({ ...newCaseStudy, imageUrl: '' })}
+                        className="text-[10px] text-rose-500 hover:underline cursor-pointer"
+                      >
+                        Clear
+                      </button>
+                    )}
+                  </div>
+
+                  <div className="flex flex-col sm:flex-row gap-3 items-start">
+                    <div className="w-28 h-16 rounded-xl overflow-hidden bg-black/20 border border-[var(--border-subtle)] shrink-0 flex items-center justify-center">
+                      {newCaseStudy.imageUrl ? (
+                        <img
+                          src={formatImageUrl(newCaseStudy.imageUrl, newCaseStudy.category)}
+                          alt="Preview"
+                          referrerPolicy="no-referrer"
+                          className="w-full h-full object-cover"
+                          onError={(e) => handleImageError(e, undefined, newCaseStudy.category)}
+                        />
+                      ) : (
+                        <span className="text-[10px] text-[var(--text-muted)]">No Image</span>
+                      )}
+                    </div>
+
+                    <div className="flex-1 space-y-2 w-full">
+                      <div className="flex gap-2">
+                        <input
+                          type="url"
+                          value={newCaseStudy.imageUrl || ''}
+                          onChange={(e) => setNewCaseStudy({ ...newCaseStudy, imageUrl: e.target.value })}
+                          placeholder="Paste image link or upload..."
+                          className="flex-1 bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs font-mono text-[var(--text-heading)]"
+                        />
+                        <label className="px-3.5 py-2 rounded-xl bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-white text-xs font-bold cursor-pointer whitespace-nowrap flex items-center gap-1.5 shadow-sm transition-all active:scale-95">
+                          {uploadingTargetId === 'new-case-study' ? (
+                            <>
+                              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                              <span>Uploading...</span>
+                            </>
+                          ) : (
+                            <>
+                              <Upload className="w-3.5 h-3.5" />
+                              <span>Upload</span>
+                            </>
+                          )}
+                          <input
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            disabled={uploadingTargetId === 'new-case-study'}
+                            onChange={async (e) => {
+                              const file = e.target.files?.[0];
+                              if (file) {
+                                setUploadingTargetId('new-case-study');
+                                const url = await uploadAssetSafely(file, 'portfolio');
+                                if (url) {
+                                  setNewCaseStudy({ ...newCaseStudy, imageUrl: url });
+                                  showToast('Image uploaded successfully!', 'success');
+                                } else {
+                                  showToast('Failed to process image file.', 'error');
+                                }
+                                setUploadingTargetId(null);
+                              }
+                            }}
+                          />
+                        </label>
+                      </div>
+
+                      {/* Presets */}
+                      <div className="flex flex-wrap items-center gap-1">
+                        <span className="text-[10px] text-[var(--text-muted)] mr-1">Presets:</span>
+                        {CURATED_PORTFOLIO_IMAGE_PRESETS.map((preset) => (
+                          <button
+                            key={preset.label}
+                            type="button"
+                            onClick={() => setNewCaseStudy({ ...newCaseStudy, imageUrl: preset.url })}
+                            className="px-2 py-0.5 rounded-lg text-[10px] font-semibold bg-[var(--bg-surface)] hover:text-[var(--brand-teal)] border border-[var(--border-subtle)] transition-colors cursor-pointer"
+                          >
+                            {preset.label}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
@@ -1690,13 +2002,23 @@ export const SiteContentManager: React.FC = () => {
         <div className="space-y-6">
           <div className="flex items-center justify-between p-4 rounded-2xl bg-[var(--bg-surface)] border border-[var(--border-subtle)]">
             <h3 className="font-display font-extrabold text-base text-[var(--text-heading)]">Client Testimonials ({(siteContent.testimonials || []).length})</h3>
-            <button
-              onClick={() => setShowAddTestimonial(true)}
-              className="flex items-center space-x-1.5 px-4 py-2 rounded-xl bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-white text-xs font-bold shadow-md cursor-pointer"
-            >
-              <Plus className="w-4 h-4" />
-              <span>Add Testimonial</span>
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => triggerSaved('All client testimonials saved live!')}
+                className="flex items-center space-x-1.5 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-md cursor-pointer transition-all"
+              >
+                <Check className="w-4 h-4" />
+                <span>Save All Testimonials</span>
+              </button>
+              <button
+                onClick={() => setShowAddTestimonial(true)}
+                className="flex items-center space-x-1.5 px-4 py-2 rounded-xl bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-white text-xs font-bold shadow-md cursor-pointer"
+              >
+                <Plus className="w-4 h-4" />
+                <span>Add Testimonial</span>
+              </button>
+            </div>
           </div>
 
           <div className="space-y-4">
@@ -1774,6 +2096,22 @@ export const SiteContentManager: React.FC = () => {
                     rows={2}
                     className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl p-3 text-xs text-[var(--text-heading)]"
                   />
+                </div>
+
+                {/* Card Save Action Bar */}
+                <div className="flex items-center justify-between pt-3 border-t border-[var(--border-subtle)]">
+                  <span className="text-[11px] text-emerald-500 font-semibold flex items-center gap-1">
+                    <Check className="w-3.5 h-3.5" />
+                    <span>Auto-saved live</span>
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => triggerSaved(`Testimonial from '${t.name}' saved live!`)}
+                    className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-white text-xs font-bold transition-all shadow-xs cursor-pointer"
+                  >
+                    <Check className="w-3.5 h-3.5" />
+                    <span>Save Testimonial</span>
+                  </button>
                 </div>
               </div>
             ))}
@@ -1875,13 +2213,23 @@ export const SiteContentManager: React.FC = () => {
                 Manage the specialist profiles showcased on the public /team directory.
               </p>
             </div>
-            <button
-              onClick={() => setShowAddTeam(true)}
-              className="flex items-center space-x-1.5 px-4 py-2 rounded-xl bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-white text-xs font-bold shadow-md cursor-pointer"
-            >
-              <Plus className="w-4 h-4" />
-              <span>Add Team Profile</span>
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => triggerSaved('All team member profiles saved live!')}
+                className="flex items-center space-x-1.5 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-md cursor-pointer transition-all"
+              >
+                <Check className="w-4 h-4" />
+                <span>Save All Profiles</span>
+              </button>
+              <button
+                onClick={() => setShowAddTeam(true)}
+                className="flex items-center space-x-1.5 px-4 py-2 rounded-xl bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-white text-xs font-bold shadow-md cursor-pointer"
+              >
+                <Plus className="w-4 h-4" />
+                <span>Add Team Profile</span>
+              </button>
+            </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -1988,6 +2336,22 @@ export const SiteContentManager: React.FC = () => {
                     className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl p-2.5 text-xs text-[var(--text-body)]"
                   />
                 </div>
+
+                {/* Card Save Action Bar */}
+                <div className="flex items-center justify-between pt-3 border-t border-[var(--border-subtle)]">
+                  <span className="text-[11px] text-emerald-500 font-semibold flex items-center gap-1">
+                    <Check className="w-3.5 h-3.5" />
+                    <span>Auto-saved live</span>
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => triggerSaved(`Team profile '${member.name}' saved live!`)}
+                    className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-white text-xs font-bold transition-all shadow-xs cursor-pointer"
+                  >
+                    <Check className="w-3.5 h-3.5" />
+                    <span>Save Member</span>
+                  </button>
+                </div>
               </div>
             ))}
           </div>
@@ -2074,13 +2438,23 @@ export const SiteContentManager: React.FC = () => {
                 Publish, edit, and manage articles dynamically visible at /blog and /blog/:slug.
               </p>
             </div>
-            <button
-              onClick={() => setShowAddBlog(true)}
-              className="flex items-center space-x-1.5 px-4 py-2.5 rounded-xl bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-white text-xs font-bold shadow-md cursor-pointer self-start sm:self-auto"
-            >
-              <Plus className="w-4 h-4" />
-              <span>Create Blog Post</span>
-            </button>
+            <div className="flex items-center gap-2 self-start sm:self-auto">
+              <button
+                type="button"
+                onClick={() => triggerSaved('All blog posts saved live!')}
+                className="flex items-center space-x-1.5 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-md cursor-pointer transition-all"
+              >
+                <Check className="w-4 h-4" />
+                <span>Save All Posts</span>
+              </button>
+              <button
+                onClick={() => setShowAddBlog(true)}
+                className="flex items-center space-x-1.5 px-4 py-2.5 rounded-xl bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-white text-xs font-bold shadow-md cursor-pointer"
+              >
+                <Plus className="w-4 h-4" />
+                <span>Create Blog Post</span>
+              </button>
+            </div>
           </div>
 
           <div className="space-y-4">
@@ -2129,14 +2503,9 @@ export const SiteContentManager: React.FC = () => {
                   </div>
 
                   <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
-                    {post.imageUrl && (
-                      <div className="lg:col-span-3 aspect-video rounded-xl overflow-hidden bg-[var(--bg-subtle)] border border-[var(--border-subtle)]">
-                        <img src={post.imageUrl} alt={post.title} className="w-full h-full object-cover" />
-                      </div>
-                    )}
-                    <div className={post.imageUrl ? 'lg:col-span-9 space-y-3' : 'lg:col-span-12 space-y-3'}>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        <div>
+                    <div className="lg:col-span-12 space-y-3">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                        <div className="lg:col-span-2">
                           <label className="block text-[11px] font-bold uppercase text-[var(--text-muted)] mb-1">Article Title</label>
                           <input
                             type="text"
@@ -2154,9 +2523,6 @@ export const SiteContentManager: React.FC = () => {
                             className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs text-[var(--text-heading)]"
                           />
                         </div>
-                      </div>
-
-                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                         <div>
                           <label className="block text-[11px] font-bold uppercase text-[var(--text-muted)] mb-1">Category</label>
                           <input
@@ -2166,23 +2532,100 @@ export const SiteContentManager: React.FC = () => {
                             className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs text-[var(--text-heading)]"
                           />
                         </div>
-                        <div>
-                          <label className="block text-[11px] font-bold uppercase text-[var(--text-muted)] mb-1">Read Time</label>
-                          <input
-                            type="text"
-                            value={post.readTime}
-                            onChange={(e) => updateItemInSiteContent('blogPosts', post.id, { readTime: e.target.value })}
-                            className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs text-[var(--text-heading)]"
-                          />
+                      </div>
+
+                      {/* Blog Cover Image & Media Bar */}
+                      <div className="p-3.5 rounded-2xl bg-[var(--bg-subtle)] border border-[var(--border-subtle)] space-y-3">
+                        <div className="flex items-center justify-between">
+                          <label className="block text-[11px] font-bold uppercase text-[var(--text-muted)]">
+                            Article Cover Image
+                          </label>
+                          {post.imageUrl && (
+                            <button
+                              type="button"
+                              onClick={() => updateItemInSiteContent('blogPosts', post.id, { imageUrl: '' })}
+                              className="text-[10px] text-rose-500 hover:underline cursor-pointer"
+                            >
+                              Reset / Clear
+                            </button>
+                          )}
                         </div>
-                        <div>
-                          <label className="block text-[11px] font-bold uppercase text-[var(--text-muted)] mb-1">Cover Image URL</label>
-                          <input
-                            type="url"
-                            value={post.imageUrl}
-                            onChange={(e) => updateItemInSiteContent('blogPosts', post.id, { imageUrl: e.target.value })}
-                            className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs text-[var(--text-heading)]"
-                          />
+
+                        <div className="flex flex-col sm:flex-row gap-4 items-start">
+                          {/* Live preview */}
+                          <div className="w-32 h-20 sm:w-40 sm:h-24 rounded-xl overflow-hidden bg-black/20 border border-[var(--border-subtle)] shrink-0 flex items-center justify-center">
+                            {post.imageUrl ? (
+                              <img
+                                src={formatImageUrl(post.imageUrl, post.category)}
+                                alt={post.title}
+                                referrerPolicy="no-referrer"
+                                className="w-full h-full object-cover"
+                                onError={(e) => handleImageError(e, undefined, post.category)}
+                              />
+                            ) : (
+                              <span className="text-[10px] text-[var(--text-muted)] text-center p-1">No Cover Image</span>
+                            )}
+                          </div>
+
+                          <div className="flex-1 space-y-2.5 w-full">
+                            <div className="flex gap-2">
+                              <input
+                                type="url"
+                                placeholder="Paste image link from Postimg, Imgur, Drive, Unsplash, etc."
+                                value={post.imageUrl || ''}
+                                onChange={(e) => updateItemInSiteContent('blogPosts', post.id, { imageUrl: e.target.value })}
+                                className="flex-1 bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs text-[var(--text-heading)] font-mono"
+                              />
+                              <label className="px-4 py-2 rounded-xl bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-white text-xs font-bold cursor-pointer whitespace-nowrap flex items-center gap-1.5 shadow-sm transition-all active:scale-95">
+                                {uploadingTargetId === post.id ? (
+                                  <>
+                                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                    <span>Uploading...</span>
+                                  </>
+                                ) : (
+                                  <>
+                                    <Upload className="w-3.5 h-3.5" />
+                                    <span>Upload Image</span>
+                                  </>
+                                )}
+                                <input
+                                  type="file"
+                                  accept="image/*"
+                                  className="hidden"
+                                  disabled={uploadingTargetId === post.id}
+                                  onChange={async (e) => {
+                                    const file = e.target.files?.[0];
+                                    if (file) {
+                                      setUploadingTargetId(post.id);
+                                      const url = await uploadAssetSafely(file, 'blog');
+                                      if (url) {
+                                        updateItemInSiteContent('blogPosts', post.id, { imageUrl: url });
+                                        showToast('Blog cover image uploaded!', 'success');
+                                      } else {
+                                        showToast('Failed to process image file.', 'error');
+                                      }
+                                      setUploadingTargetId(null);
+                                    }
+                                  }}
+                                />
+                              </label>
+                            </div>
+
+                            {/* Presets */}
+                            <div className="flex flex-wrap items-center gap-1.5">
+                              <span className="text-[10px] text-[var(--text-muted)] mr-1">Presets:</span>
+                              {CURATED_BLOG_IMAGE_PRESETS.map((preset) => (
+                                <button
+                                  key={preset.label}
+                                  type="button"
+                                  onClick={() => updateItemInSiteContent('blogPosts', post.id, { imageUrl: preset.url })}
+                                  className="px-2.5 py-1 rounded-lg text-[10px] font-semibold bg-[var(--bg-page)] hover:text-[var(--brand-teal)] border border-[var(--border-subtle)] transition-colors cursor-pointer"
+                                >
+                                  {preset.label}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
                         </div>
                       </div>
 
@@ -2205,6 +2648,22 @@ export const SiteContentManager: React.FC = () => {
                           placeholder="Write article content using markdown (e.g. ## Heading 2, ### Heading 3, | Bullet item)..."
                           className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl p-3 text-xs text-[var(--text-body)] leading-relaxed"
                         />
+                      </div>
+
+                      {/* Card Save Action Bar */}
+                      <div className="flex items-center justify-between pt-3 border-t border-[var(--border-subtle)]">
+                        <span className="text-[11px] text-emerald-500 font-semibold flex items-center gap-1">
+                          <Check className="w-3.5 h-3.5" />
+                          <span>Auto-saved live</span>
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => triggerSaved(`Blog post '${post.title}' saved live!`)}
+                          className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-white text-xs font-bold transition-all shadow-xs cursor-pointer"
+                        >
+                          <Check className="w-3.5 h-3.5" />
+                          <span>Save Post</span>
+                        </button>
                       </div>
                     </div>
                   </div>
@@ -2295,20 +2754,96 @@ export const SiteContentManager: React.FC = () => {
                   </div>
                 </div>
 
-                <div>
-                  <label className="block text-xs font-bold uppercase text-[var(--text-muted)] mb-1">Cover Image URL</label>
-                  <input
-                    type="url"
-                    value={newBlog.imageUrl}
-                    onChange={(e) => setNewBlog({ ...newBlog, imageUrl: e.target.value })}
-                    placeholder="https://images.unsplash.com/..."
-                    className="w-full bg-[var(--bg-page)] border border-[var(--border-subtle)] rounded-xl px-3.5 py-2.5 text-xs text-[var(--text-heading)]"
-                  />
-                  {newBlog.imageUrl && (
-                    <div className="mt-2 aspect-[21/9] max-h-36 rounded-xl overflow-hidden border border-[var(--border-subtle)]">
-                      <img src={newBlog.imageUrl} alt="Cover preview" className="w-full h-full object-cover" />
+                {/* Cover Image Uploader & Presets */}
+                <div className="p-3.5 rounded-2xl bg-[var(--bg-page)] border border-[var(--border-subtle)] space-y-3">
+                  <div className="flex items-center justify-between">
+                    <label className="block text-xs font-bold uppercase text-[var(--text-muted)]">Article Cover Image</label>
+                    {newBlog.imageUrl && (
+                      <button
+                        type="button"
+                        onClick={() => setNewBlog({ ...newBlog, imageUrl: '' })}
+                        className="text-[10px] text-rose-500 hover:underline cursor-pointer"
+                      >
+                        Clear
+                      </button>
+                    )}
+                  </div>
+
+                  <div className="flex flex-col sm:flex-row gap-3 items-start">
+                    <div className="w-28 h-16 rounded-xl overflow-hidden bg-black/20 border border-[var(--border-subtle)] shrink-0 flex items-center justify-center">
+                      {newBlog.imageUrl ? (
+                        <img
+                          src={formatImageUrl(newBlog.imageUrl, newBlog.category)}
+                          alt="Cover preview"
+                          referrerPolicy="no-referrer"
+                          className="w-full h-full object-cover"
+                          onError={(e) => handleImageError(e, undefined, newBlog.category)}
+                        />
+                      ) : (
+                        <span className="text-[10px] text-[var(--text-muted)]">No Image</span>
+                      )}
                     </div>
-                  )}
+
+                    <div className="flex-1 space-y-2 w-full">
+                      <div className="flex gap-2">
+                        <input
+                          type="url"
+                          value={newBlog.imageUrl || ''}
+                          onChange={(e) => setNewBlog({ ...newBlog, imageUrl: e.target.value })}
+                          placeholder="Paste image link or upload..."
+                          className="flex-1 bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 text-xs font-mono text-[var(--text-heading)]"
+                        />
+                        <label className="px-3.5 py-2 rounded-xl bg-[var(--brand-teal)] hover:bg-[var(--brand-teal-hover)] text-white text-xs font-bold cursor-pointer whitespace-nowrap flex items-center gap-1.5 shadow-sm transition-all active:scale-95">
+                          {uploadingTargetId === 'new-blog' ? (
+                            <>
+                              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                              <span>Uploading...</span>
+                            </>
+                          ) : (
+                            <>
+                              <Upload className="w-3.5 h-3.5" />
+                              <span>Upload</span>
+                            </>
+                          )}
+                          <input
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            disabled={uploadingTargetId === 'new-blog'}
+                            onChange={async (e) => {
+                              const file = e.target.files?.[0];
+                              if (file) {
+                                setUploadingTargetId('new-blog');
+                                const url = await uploadAssetSafely(file, 'blog');
+                                if (url) {
+                                  setNewBlog({ ...newBlog, imageUrl: url });
+                                  showToast('Cover image uploaded successfully!', 'success');
+                                } else {
+                                  showToast('Failed to process image file.', 'error');
+                                }
+                                setUploadingTargetId(null);
+                              }
+                            }}
+                          />
+                        </label>
+                      </div>
+
+                      {/* Presets */}
+                      <div className="flex flex-wrap items-center gap-1">
+                        <span className="text-[10px] text-[var(--text-muted)] mr-1">Presets:</span>
+                        {CURATED_BLOG_IMAGE_PRESETS.map((preset) => (
+                          <button
+                            key={preset.label}
+                            type="button"
+                            onClick={() => setNewBlog({ ...newBlog, imageUrl: preset.url })}
+                            className="px-2 py-0.5 rounded-lg text-[10px] font-semibold bg-[var(--bg-surface)] hover:text-[var(--brand-teal)] border border-[var(--border-subtle)] transition-colors cursor-pointer"
+                          >
+                            {preset.label}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
                 </div>
 
                 <div>
@@ -2904,6 +3439,24 @@ export const SiteContentManager: React.FC = () => {
         </div>
       )}
 
+      {/* Floating Save Confirmation Notification Bar (always visible even when scrolled down) */}
+      <AnimatePresence>
+        {savedFeedback && (
+          <motion.div
+            initial={{ opacity: 0, y: 30, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 20, scale: 0.95 }}
+            transition={{ duration: 0.2 }}
+            className="fixed bottom-8 left-1/2 -translate-x-1/2 z-[9990] flex items-center gap-3 px-6 py-3.5 rounded-2xl bg-emerald-600 dark:bg-emerald-500 text-white font-bold text-xs sm:text-sm shadow-2xl border border-emerald-400/30 backdrop-blur-md"
+          >
+            <CheckCircle2 className="w-5 h-5 text-emerald-200 shrink-0" />
+            <span>{savedFeedback}</span>
+            <span className="ml-2 px-2 py-0.5 rounded-md bg-white/20 text-[10px] uppercase tracking-wider font-extrabold">
+              Saved Live
+            </span>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

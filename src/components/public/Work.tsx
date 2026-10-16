@@ -6,6 +6,7 @@ import { SEOHead } from '../seo/SEOHead';
 import { useApp } from '../../context/AppContext';
 import { handleCardSpotlightMove, handleCardSpotlightLeave } from '../../lib/cardSpotlight';
 import { ProjectCard } from '../ui/ProjectCard';
+import { formatImageUrl, handleImageError } from '../../lib/imageUrlHelper';
 
 export interface Project {
   id: string;
@@ -172,7 +173,7 @@ export const Work: React.FC = () => {
         solution: cs.solution || 'Engineered customized full-stack solution with enterprise performance guarantees.',
         results: [cs.impactMetric ? `${cs.impactMetric} ${cs.impactLabel}` : '100% On-Time Delivery'],
         tags: cs.tags || ['React', 'Full Stack'],
-        img: cs.imageUrl || 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=800&q=80',
+        img: formatImageUrl(cs.imageUrl, cs.category),
         projectUrl: getProjectLiveUrl(cs),
       }))
     : PROJECTS;
@@ -319,12 +320,14 @@ export const Work: React.FC = () => {
 
               <div className="aspect-video rounded-2xl overflow-hidden mb-6 border border-[var(--border-subtle)]">
                 <img
-                  src={selectedProject.img}
+                  src={formatImageUrl(selectedProject.img, selectedProject.category)}
                   alt={selectedProject.title}
                   width={800}
                   height={450}
                   loading="lazy"
                   decoding="async"
+                  referrerPolicy="no-referrer"
+                  onError={(e) => handleImageError(e, undefined, selectedProject.category)}
                   className="w-full h-full object-cover"
                 />
               </div>

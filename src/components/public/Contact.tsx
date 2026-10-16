@@ -876,18 +876,8 @@ export const Contact: React.FC = () => {
                     {/* Step Indicator Badge */}
                     <div className="flex items-center justify-between mb-2">
                       <span className="px-3 py-1 rounded-full text-xs font-bold text-[#1F7A8C] dark:text-cyan-400 bg-[#E0F2F5] dark:bg-cyan-950/80 border border-[#CEE9ED] dark:border-cyan-800/40 w-fit">
-                        {step} of 4
+                        Step {step} of 4
                       </span>
-                      {step > 1 && (
-                        <button
-                          type="button"
-                          onClick={handlePrevStep}
-                          className="text-xs font-semibold text-[#64748B] hover:text-[#022B3A] dark:hover:text-white flex items-center gap-1 transition-colors"
-                        >
-                          <ArrowLeft className="w-3.5 h-3.5" />
-                          <span>Back</span>
-                        </button>
-                      )}
                     </div>
 
                     {/* Step 1: Tell us about yourself */}
@@ -1409,7 +1399,19 @@ export const Contact: React.FC = () => {
                       100% Milestone Guaranteed · Strict NDA Protected
                     </p>
 
-                    <div className="ml-auto flex items-center gap-3">
+                    <div className="ml-auto flex items-center gap-2.5 sm:gap-3">
+                      {step > 1 && (
+                        <button
+                          type="button"
+                          disabled={isValidatingEmail || isSubmitting}
+                          onClick={handlePrevStep}
+                          className="border border-[#CEE9ED] dark:border-[var(--border-subtle)] hover:bg-[#E0F2F5]/60 dark:hover:bg-cyan-950/40 text-[#022B3A] dark:text-white px-4 sm:px-5 py-2.5 sm:py-3 rounded-xl font-bold text-xs sm:text-sm shadow-sm transition-all inline-flex items-center space-x-1.5 cursor-pointer disabled:opacity-50"
+                        >
+                          <ArrowLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                          <span>Back</span>
+                        </button>
+                      )}
+
                       {step < 4 ? (
                         <button
                           type="button"

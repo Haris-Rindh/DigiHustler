@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Shield, ArrowRight, Lock, User as UserIcon, Bell, AlertCircle, CheckCircle2, Eye, EyeOff, Mail, Key, RefreshCw, X } from 'lucide-react';
+import { Shield, ShieldCheck, ArrowRight, Lock, User as UserIcon, Bell, AlertCircle, CheckCircle2, Eye, EyeOff, Mail, Key, RefreshCw, X } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { supabase, isSupabaseConfigured } from '../../lib/supabase';
 import { SEOHead } from '../seo/SEOHead';

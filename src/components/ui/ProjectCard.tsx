@@ -1,5 +1,6 @@
 import React from 'react';
 import { ArrowRight, ExternalLink } from 'lucide-react';
+import { formatImageUrl, handleImageError } from '../../lib/imageUrlHelper';
 
 export interface ProjectCardData {
   id: string;
@@ -26,6 +27,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
   showDescription = false,
 }) => {
   const liveUrl = project.projectUrl || 'https://github.com/DigiHust-Official';
+  const resolvedImg = formatImageUrl(project.img, project.category);
 
   return (
     <div
@@ -35,10 +37,12 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
         {/* ── 16:9 FLUSH IMAGE (No crop, object-fit: contain on surface color, zero overlays) ── */}
         <div className="w-full aspect-[16/9] overflow-hidden bg-[var(--bg-page)] dark:bg-[#022B3A] flex items-center justify-center">
           <img
-            src={project.img}
+            src={resolvedImg}
             alt={project.title}
             loading="lazy"
             decoding="async"
+            referrerPolicy="no-referrer"
+            onError={(e) => handleImageError(e, undefined, project.category)}
             className="w-full h-full object-contain pointer-events-none"
           />
         </div>

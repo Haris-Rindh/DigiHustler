@@ -39,6 +39,7 @@ import { Project, getProjectLiveUrl, PROJECTS } from './Work';
 import { getServiceIcon } from '../../lib/serviceIcons';
 import { handleCardSpotlightMove, handleCardSpotlightLeave } from '../../lib/cardSpotlight';
 import { GenerativePattern } from '../ui/ServiceBentoCard';
+import { formatImageUrl, handleImageError } from '../../lib/imageUrlHelper';
 
 // ── Service categories ──────────────────────────────────────────────────────
 const SERVICES = [
@@ -274,7 +275,7 @@ export const Home: React.FC = () => {
         solution: cs.solution || 'DigiHust assembled a dedicated cross-functional squad to engineer an end-to-end custom application with enterprise SLA guarantees.',
         results: cs.impactMetric ? [`${cs.impactMetric} ${cs.impactLabel || 'Uplift'}`] : ['+140% Conversion Rate', 'Sub-800ms Latency', '100% On-Time Delivery'],
         tags: cs.tags && cs.tags.length > 0 ? cs.tags : ['React', 'Full Stack', 'Cloud'],
-        img: cs.imageUrl || 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=800&q=80',
+        img: formatImageUrl(cs.imageUrl, cs.category),
         projectUrl: getProjectLiveUrl(cs),
       }))
     : PROJECTS.slice(0, 3);
@@ -964,12 +965,14 @@ export const Home: React.FC = () => {
 
               <div className="aspect-video rounded-2xl overflow-hidden mb-6 border border-[var(--border-subtle)]">
                 <img
-                  src={selectedProject.img}
+                  src={formatImageUrl(selectedProject.img, selectedProject.category)}
                   alt={selectedProject.title}
                   width={800}
                   height={450}
                   loading="lazy"
                   decoding="async"
+                  referrerPolicy="no-referrer"
+                  onError={(e) => handleImageError(e, undefined, selectedProject.category)}
                   className="w-full h-full object-cover"
                 />
               </div>

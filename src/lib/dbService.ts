@@ -819,9 +819,23 @@ export const dbService = {
       const ext = file.name.split('.').pop()?.toLowerCase() || 'png';
       const cleanName = `${folder}/${Date.now()}-${Math.random().toString(36).substring(2, 8)}.${ext}`;
       const bucketName = 'avatars';
+
+      // Ensure valid image content type to satisfy Supabase storage bucket validation
+      const contentType = file.type && file.type.startsWith('image/')
+        ? file.type
+        : ext === 'jpg' || ext === 'jpeg'
+          ? 'image/jpeg'
+          : ext === 'png'
+            ? 'image/png'
+            : ext === 'webp'
+              ? 'image/webp'
+              : ext === 'svg'
+                ? 'image/svg+xml'
+                : 'image/jpeg';
+
       const { error } = await supabase.storage
         .from(bucketName)
-        .upload(cleanName, file, { upsert: true, contentType: file.type });
+        .upload(cleanName, file, { upsert: true, contentType });
 
       if (error) {
         console.error('Asset upload error:', error.message);
