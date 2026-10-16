@@ -1,5 +1,6 @@
 import { supabase, isSupabaseConfigured } from './supabase';
 import { User, Lead, Project, Assignment, Certificate, Announcement, SiteContent, SecurityAuditLog, Payout, Applicant, GlobalAdminSettings, GroupId, PipelineStage, UserRole, UserRoleTier } from '../types';
+import { notificationService } from './notificationService';
 
 export const dbService = {
   // ── 1. Fetch All Initial Application State ──
@@ -757,57 +758,85 @@ export const dbService = {
       return { success: false, error: 'Please enter a valid email address.' };
     }
 
-    if (!isSupabaseConfigured || !supabase) {
-      try {
-        const local = JSON.parse(localStorage.getItem('digihust_newsletter_subscribers') || '[]');
-        if (!local.some((s: any) => s.email === cleanEmail)) {
-          local.unshift({ id: `local-${Date.now()}`, email: cleanEmail, created_at: new Date().toISOString() });
-          localStorage.setItem('digihust_newsletter_subscribers', JSON.stringify(local));
-        }
-        return { success: true };
-      } catch {
-        return { success: true };
-      }
-    }
+    const leadId = `lead-nl-${Date.now()}`;
+    const timestamp = new Date().toISOString();
 
+    // 1. Immediate local cache fallback
     try {
-      const { error } = await supabase.from('newsletter_subscribers').insert({
-        email: cleanEmail,
-        created_at: new Date().toISOString(),
-      });
+      const local = JSON.parse(localStorage.getItem('digihust_newsletter_subscribers') || '[]');
+      if (!local.some((s: any) => s.email === cleanEmail)) {
+        local.unshift({ id: leadId, email: cleanEmail, created_at: timestamp });
+        localStorage.setItem('digihust_newsletter_subscribers', JSON.stringify(local));
+      }
+      localStorage.setItem('digihust_newsletter_subscribed', cleanEmail);
+    } catch {}
 
-      if (error) {
-        if (error.code === '23505' || error.message?.includes('duplicate') || error.message?.includes('unique')) {
-          return { success: true };
+    // 2. Persist to Supabase leads table (powers Portal Inbound Leads console)
+    if (isSupabaseConfigured && supabase) {
+      try {
+        const leadPayload = {
+          id: leadId,
+          client_name: 'Newsletter Subscriber',
+          email: cleanEmail,
+          company_name: 'Newsletter (Website Footer)',
+          scope_description: `Subscribed to DigiHust Engineering Playbooks & Insights newsletter via website footer.\nSubscriber Email: ${cleanEmail}\nTimestamp: ${new Date().toLocaleString()}`,
+          target_group_id: 'growth',
+          budget_range: 'Newsletter',
+          timeline: 'Ongoing',
+          referral_source: 'Website Footer Newsletter',
+          status: 'new',
+          created_at: timestamp
+        };
+
+        const { error: leadErr } = await supabase.from('leads').upsert(leadPayload);
+        if (leadErr) {
+          console.warn('Supabase lead record note:', leadErr.message);
         }
-        console.warn('Newsletter subscribe note:', error.message);
-        // Fallback store locally as safeguard
-        try {
-          const local = JSON.parse(localStorage.getItem('digihust_newsletter_subscribers') || '[]');
-          if (!local.some((s: any) => s.email === cleanEmail)) {
-            local.unshift({ id: `local-${Date.now()}`, email: cleanEmail, created_at: new Date().toISOString() });
-            localStorage.setItem('digihust_newsletter_subscribers', JSON.stringify(local));
-          }
-        } catch {}
+      } catch (err) {
+        console.warn('Supabase lead sync note:', err);
       }
 
-      return { success: true };
-    } catch (err: any) {
-      console.error('Newsletter subscribe error:', err);
-      return { success: true };
+      // 3. Attempt inserting into dedicated newsletter_subscribers table if created
+      try {
+        await supabase.from('newsletter_subscribers').insert({
+          email: cleanEmail,
+          source: 'footer',
+          created_at: timestamp,
+        });
+      } catch {}
     }
+
+    // 4. Dispatch alert email to digihust@gmail.com
+    try {
+      await notificationService.dispatchNewsletterEmail(cleanEmail);
+    } catch (notifErr) {
+      console.warn('Newsletter notification dispatch note:', notifErr);
+    }
+
+    return { success: true };
   },
 
   async fetchNewsletterSubscribers(): Promise<Array<{ id: string; email: string; created_at: string }>> {
     let cloudList: Array<{ id: string; email: string; created_at: string }> = [];
     if (isSupabaseConfigured && supabase) {
       try {
+        // Query dedicated table first
         const { data, error } = await supabase
           .from('newsletter_subscribers')
           .select('*')
           .order('created_at', { ascending: false });
-        if (!error && data) {
+        if (!error && data && data.length > 0) {
           cloudList = data;
+        } else {
+          // Fallback: Query leads table for newsletter records
+          const { data: leadData } = await supabase
+            .from('leads')
+            .select('id, email, created_at')
+            .eq('budget_range', 'Newsletter')
+            .order('created_at', { ascending: false });
+          if (leadData) {
+            cloudList = leadData.map(l => ({ id: l.id, email: l.email, created_at: l.created_at }));
+          }
         }
       } catch (err) {
         console.warn('Failed to fetch newsletter subscribers from Supabase:', err);

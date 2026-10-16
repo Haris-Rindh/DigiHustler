@@ -87,8 +87,8 @@ export const Navbar: React.FC = () => {
               <Link
                 key={link.href}
                 to={link.href}
-                className={`relative group px-2.5 xl:px-4 py-2 rounded-xl text-xs xl:text-sm font-semibold transition-colors duration-200 whitespace-nowrap outline-none focus-visible:text-[#1F7A8C] ${
-                  active ? 'text-[#1F7A8C] font-bold' : 'text-[var(--text-body)] hover:text-[#1F7A8C]'
+                className={`relative group px-2.5 xl:px-4 py-2 rounded-xl text-xs xl:text-sm font-semibold transition-colors duration-200 whitespace-nowrap outline-none focus-visible:text-[var(--brand-teal)] ${
+                  active ? 'text-[var(--brand-teal)] dark:text-cyan-300 font-bold' : 'text-[var(--text-body)] hover:text-[var(--brand-teal)] dark:hover:text-cyan-300'
                 }`}
               >
                 {active && (
@@ -101,7 +101,7 @@ export const Navbar: React.FC = () => {
                 {!active && (
                   <span
                     aria-hidden="true"
-                    className="absolute left-1/2 -translate-x-1/2 bottom-0 w-3/4 h-[2px] bg-[#1F7A8C] origin-center scale-x-0 group-hover:scale-x-100 group-focus-visible:scale-x-100 transition-transform duration-200 ease-out motion-reduce:transition-none pointer-events-none rounded-full"
+                    className="absolute left-1/2 -translate-x-1/2 bottom-0 w-3/4 h-[2px] bg-[#1F7A8C] dark:bg-cyan-400 origin-center scale-x-0 group-hover:scale-x-100 group-focus-visible:scale-x-100 transition-transform duration-200 ease-out motion-reduce:transition-none pointer-events-none rounded-full"
                   />
                 )}
                 <span className="relative z-10">{link.label}</span>
@@ -117,7 +117,7 @@ export const Navbar: React.FC = () => {
           <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
             <Link
               to="/contact"
-              className="flex items-center space-x-2 px-5 py-2.5 rounded-xl bg-[#1F7A8C] hover:bg-[#14535F] active:bg-[#0F4049] text-white text-sm font-bold shadow-md transition-all border border-[#1F7A8C]/40"
+              className="flex items-center space-x-2 px-5 py-2.5 rounded-xl bg-[#1F7A8C] hover:bg-[#14535F] dark:bg-[var(--brand-teal)] dark:hover:bg-[#198090] active:bg-[#0F4049] text-white text-sm font-bold shadow-md transition-all border border-[#1F7A8C]/40 dark:border-cyan-400/40"
             >
               <span>{t('btn_get_quote')}</span>
               <ArrowRight className="w-4 h-4" />
@@ -173,7 +173,7 @@ export const Navbar: React.FC = () => {
             <Link
               to="/contact"
               onClick={() => setMobileOpen(false)}
-              className="flex items-center justify-center space-x-2 px-4 py-3.5 rounded-xl bg-[#1F7A8C] hover:bg-[#14535F] active:bg-[#0F4049] text-white text-sm font-bold mt-3 shadow-md border border-[#1F7A8C]/40"
+              className="flex items-center justify-center space-x-2 px-4 py-3.5 rounded-xl bg-[#1F7A8C] hover:bg-[#14535F] dark:bg-[var(--brand-teal)] dark:hover:bg-[#198090] active:bg-[#0F4049] text-white text-sm font-bold mt-3 shadow-md border border-[#1F7A8C]/40 dark:border-cyan-400/40"
             >
               <span>{t('btn_get_quote')}</span>
               <ArrowRight className="w-4 h-4" />

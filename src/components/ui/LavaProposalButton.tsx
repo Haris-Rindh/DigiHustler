@@ -91,7 +91,7 @@ export const LavaProposalButton: React.FC<LavaProposalButtonProps> = ({
       ref={buttonRef}
       to={to}
       onClick={onClick}
-      className={`group relative inline-flex items-center justify-center px-10 py-5 rounded-2xl bg-[#022B3A] text-white font-extrabold text-base sm:text-lg border border-[#1F7A8C]/50 dark:border-[#22A0B4]/60 shadow-xl shadow-[#022B3A]/25 hover:shadow-2xl hover:shadow-[#022B3A]/35 dark:shadow-[0_4px_24px_rgba(31,122,140,0.35)] dark:hover:shadow-[0_4px_32px_rgba(34,160,180,0.5)] overflow-hidden select-none cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#22A0B4] active:scale-[0.98] transition-all duration-200 ${className}`}
+      className={`group relative inline-flex items-center justify-center px-10 py-5 rounded-2xl bg-[#022B3A] dark:bg-[#084255] text-white font-extrabold text-base sm:text-lg border border-[#1F7A8C]/50 dark:border-[#22A0B4] shadow-xl shadow-[#022B3A]/25 hover:shadow-2xl hover:shadow-[#022B3A]/35 dark:shadow-[0_4px_30px_rgba(34,160,180,0.4)] dark:hover:shadow-[0_4px_40px_rgba(34,160,180,0.6)] overflow-hidden select-none cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#22A0B4] active:scale-[0.98] transition-all duration-200 ${className}`}
     >
       {/* ── LAVA CONTAINER (ORGANIC FLUID MORPHING WITH STATIC CSS BLUR) ── */}
       <div
@@ -104,7 +104,7 @@ export const LavaProposalButton: React.FC<LavaProposalButtonProps> = ({
       >
         {/* Blob 1: Brand Teal (Left-to-Center Surge) */}
         <div
-          className="absolute -top-8 -left-8 w-36 h-36 bg-[#1F7A8C] opacity-85"
+          className="absolute -top-8 -left-8 w-36 h-36 bg-[#1F7A8C] dark:bg-[#22A0B4] opacity-85 dark:opacity-90"
           style={{
             animation: prefersReducedMotion
               ? 'none'
@@ -113,9 +113,9 @@ export const LavaProposalButton: React.FC<LavaProposalButtonProps> = ({
           }}
         />
 
-        {/* Blob 2: Deep Ocean Teal (Right Reservoir) */}
+        {/* Blob 2: Deep Ocean Teal / Seafoam (Right Reservoir) */}
         <div
-          className="absolute -bottom-10 -right-8 w-40 h-40 bg-[#14535F] opacity-80"
+          className="absolute -bottom-10 -right-8 w-40 h-40 bg-[#14535F] dark:bg-[#2EB8A8] opacity-80 dark:opacity-85"
           style={{
             animation: prefersReducedMotion
               ? 'none'
@@ -124,9 +124,9 @@ export const LavaProposalButton: React.FC<LavaProposalButtonProps> = ({
           }}
         />
 
-        {/* Blob 3: Petrol Slate-Teal (Center Rising Fluid) */}
+        {/* Blob 3: Petrol Slate-Teal / Sky Teal (Center Rising Fluid) */}
         <div
-          className="absolute -top-6 left-[30%] w-32 h-32 bg-[#0E7490] opacity-80"
+          className="absolute -top-6 left-[30%] w-32 h-32 bg-[#0E7490] dark:bg-[#34A8BC] opacity-80 dark:opacity-85"
           style={{
             animation: prefersReducedMotion
               ? 'none'
@@ -135,9 +135,9 @@ export const LavaProposalButton: React.FC<LavaProposalButtonProps> = ({
           }}
         />
 
-        {/* Blob 4: Marine Deep Teal (Bottom-Center Surge) */}
+        {/* Blob 4: Marine Deep Teal / Ocean Aqua (Bottom-Center Surge) */}
         <div
-          className="absolute -bottom-8 left-[42%] w-32 h-32 bg-[#155E75] opacity-85"
+          className="absolute -bottom-8 left-[42%] w-32 h-32 bg-[#155E75] dark:bg-[#2098AA] opacity-85 dark:opacity-90"
           style={{
             animation: prefersReducedMotion
               ? 'none'
@@ -148,7 +148,7 @@ export const LavaProposalButton: React.FC<LavaProposalButtonProps> = ({
 
         {/* Blob 5: Brand Highlight Teal (Floating Morphing Droplet) */}
         <div
-          className="absolute top-1 left-[18%] w-28 h-28 bg-[#22A0B4] opacity-70"
+          className="absolute top-1 left-[18%] w-28 h-28 bg-[#22A0B4] dark:bg-[#45B8CA] opacity-70 dark:opacity-85"
           style={{
             animation: prefersReducedMotion
               ? 'none'
@@ -157,9 +157,9 @@ export const LavaProposalButton: React.FC<LavaProposalButtonProps> = ({
           }}
         />
 
-        {/* Blob 6: Midnight Cyan-Teal (Right-Floating Swirl) */}
+        {/* Blob 6: Midnight Ocean Teal / Medium Luminous Teal (Right-Floating Swirl) */}
         <div
-          className="absolute -bottom-4 right-[22%] w-30 h-30 bg-[#164E63] opacity-75"
+          className="absolute -bottom-4 right-[22%] w-30 h-30 bg-[#164E63] dark:bg-[#1E8E9F] opacity-75 dark:opacity-85"
           style={{
             animation: prefersReducedMotion
               ? 'none'
@@ -171,7 +171,7 @@ export const LavaProposalButton: React.FC<LavaProposalButtonProps> = ({
 
       {/* Subtle top glossy sheen rim for glass-capsule effect */}
       <div 
-        className="absolute inset-0 rounded-2xl pointer-events-none border border-white/15 dark:border-white/10 shadow-[inset_0_1px_1px_rgba(255,255,255,0.25)]" 
+        className="absolute inset-0 rounded-2xl pointer-events-none border border-white/15 dark:border-white/20 shadow-[inset_0_1px_1px_rgba(255,255,255,0.25)]" 
         aria-hidden="true"
       />
 

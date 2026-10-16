@@ -147,6 +147,89 @@ export const notificationService = {
   },
 
   /**
+   * Dispatches automated notification for a new newsletter subscriber directly to digihust@gmail.com
+   */
+  async dispatchNewsletterEmail(subscriberEmail: string): Promise<boolean> {
+    const cleanEmail = subscriberEmail.trim().toLowerCase();
+    const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID || 'service_kk1oyko';
+    const templateId = import.meta.env.VITE_EMAILJS_CONTACT_TEMPLATE_ID || import.meta.env.VITE_EMAILJS_TEMPLATE_ID || 'template_xcxoq8x';
+    const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY || 'hvCezH1wrH-95AZDc';
+
+    let dispatched = false;
+
+    // 1. Primary: EmailJS SDK (Dispatches alert to digihust@gmail.com)
+    if (serviceId && templateId && publicKey) {
+      try {
+        const emailParams = {
+          to_email: 'digihust@gmail.com',
+          admin_email: 'digihust@gmail.com',
+          recipient: 'digihust@gmail.com',
+          reply_to: cleanEmail,
+          from_email: cleanEmail,
+          email: cleanEmail,
+          client_email: cleanEmail,
+          client_name: 'Newsletter Subscriber',
+          name: 'Newsletter Subscriber',
+          from_name: 'DigiHust Footer Newsletter',
+          phone: 'N/A',
+          client_phone: 'N/A',
+          company: 'Newsletter Subscriber',
+          services: 'Engineering Playbooks & Digital Insights Newsletter',
+          currency: 'USD',
+          budget: 'Newsletter',
+          timeline: 'Ongoing',
+          attachment: 'None',
+          attachment_url: '',
+          attachment_name: '',
+          project_description: `New newsletter subscription received via the website footer.\n\nSubscriber Email: ${cleanEmail}\nTimestamp: ${new Date().toLocaleString()}`,
+          message: `A new reader has subscribed to the DigiHust Newsletter from the website footer.\n\nSubscriber Email: ${cleanEmail}\nTimestamp: ${new Date().toLocaleString()}`,
+          submitted_at: new Date().toLocaleString()
+        };
+
+        const res = await emailjs.send(serviceId, templateId, emailParams, publicKey);
+        if (res.status === 200) {
+          dispatched = true;
+          if (import.meta.env.DEV) {
+            console.log('✓ EmailJS Newsletter Alert Dispatched Successfully');
+          }
+        }
+      } catch (err) {
+        console.warn('EmailJS newsletter dispatch warning:', err);
+      }
+    }
+
+    // 2. Secondary Fallback: FormSubmit AJAX Dispatcher (Guaranteed delivery to digihust@gmail.com)
+    try {
+      const formData = new FormData();
+      formData.append('_subject', `📬 New DigiHust Newsletter Subscriber: ${cleanEmail}`);
+      formData.append('_replyto', cleanEmail);
+      formData.append('_captcha', 'false');
+      formData.append('_template', 'table');
+      formData.append('Subscriber Email', cleanEmail);
+      formData.append('Subscription Topic', 'Engineering Playbooks, Case Studies & Insights');
+      formData.append('Source', 'DigiHust Website Footer');
+      formData.append('Subscribed At', new Date().toLocaleString());
+
+      const res = await fetch('https://formsubmit.co/ajax/digihust@gmail.com', {
+        method: 'POST',
+        headers: { 'Accept': 'application/json' },
+        body: formData
+      });
+
+      if (res.ok) {
+        const data = await res.json().catch(() => ({}));
+        if (data?.success === 'true' || data?.success === true) {
+          dispatched = true;
+        }
+      }
+    } catch (err) {
+      console.warn('FormSubmit newsletter fallback warning:', err);
+    }
+
+    return dispatched;
+  },
+
+  /**
    * Dispatches automated confirmation receipt email directly to the CLIENT's inbox
    */
   async dispatchClientConfirmationEmail(leadData: LeadNotificationPayload): Promise<boolean> {

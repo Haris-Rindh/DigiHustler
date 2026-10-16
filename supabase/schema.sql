@@ -151,6 +151,14 @@ CREATE TABLE IF NOT EXISTS public.audit_logs (
   details TEXT NOT NULL
 );
 
+-- 9. NEWSLETTER SUBSCRIBERS TABLE
+CREATE TABLE IF NOT EXISTS public.newsletter_subscribers (
+  id TEXT PRIMARY KEY DEFAULT ('nl_' || substr(md5(random()::text || clock_timestamp()::text), 1, 16)),
+  email TEXT UNIQUE NOT NULL,
+  source TEXT DEFAULT 'footer',
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
 -- ==============================================================================
 -- ENABLE ROW LEVEL SECURITY (RLS) & PUBLIC READ FOR VERIFICATION
 -- ==============================================================================
@@ -163,6 +171,7 @@ ALTER TABLE public.certificates ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.announcements ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.site_content ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.audit_logs ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.newsletter_subscribers ENABLE ROW LEVEL SECURITY;
 
 -- 1. Certificates Public Verification Policy
 DROP POLICY IF EXISTS "Allow public read certificates" ON public.certificates;
@@ -200,6 +209,14 @@ CREATE POLICY "Allow full access site_content" ON public.site_content FOR ALL US
 
 DROP POLICY IF EXISTS "Allow full access audit_logs" ON public.audit_logs;
 CREATE POLICY "Allow full access audit_logs" ON public.audit_logs FOR ALL USING (true) WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Allow public insert newsletter_subscribers" ON public.newsletter_subscribers;
+CREATE POLICY "Allow public insert newsletter_subscribers" ON public.newsletter_subscribers FOR INSERT WITH CHECK (
+  char_length(email) BETWEEN 5 AND 254 AND email ~* '^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$'
+);
+
+DROP POLICY IF EXISTS "Allow full access newsletter_subscribers" ON public.newsletter_subscribers;
+CREATE POLICY "Allow full access newsletter_subscribers" ON public.newsletter_subscribers FOR ALL USING (true) WITH CHECK (true);
 
 -- ==============================================================================
 -- INITIAL SEED: CEO ROOT MASTER CONTROLLER & PRIMARY CMS

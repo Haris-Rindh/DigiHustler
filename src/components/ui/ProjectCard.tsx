@@ -35,7 +35,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
     >
       <div>
         {/* ── 16:9 FLUSH IMAGE (No crop, object-fit: contain on surface color, zero overlays) ── */}
-        <div className="w-full aspect-[16/9] overflow-hidden bg-[var(--bg-page)] dark:bg-[#022B3A] flex items-center justify-center">
+        <div className="w-full aspect-[16/9] overflow-hidden bg-[var(--bg-page)] dark:bg-[#073547] flex items-center justify-center">
           <img
             src={resolvedImg}
             alt={project.title}

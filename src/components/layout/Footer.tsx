@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ShieldCheck, Linkedin, Github, Facebook, Instagram, Twitter, Mail, AtSign, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { ShieldCheck, Linkedin, Github, Facebook, Instagram, Twitter, Mail, AtSign, ArrowRight, CheckCircle2, Loader2 } from 'lucide-react';
 import { SiGmail } from 'react-icons/si';
 import logoImg from '../../assets/logo.png';
 import { LAST_UPDATED, LAST_UPDATED_DISPLAY } from '../../config/siteConfig';
@@ -75,7 +75,8 @@ const NewsletterForm: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (honeypot) return;
-    if (!email || !email.includes('@')) {
+    const clean = email.trim().toLowerCase();
+    if (!clean || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(clean)) {
       setStatus('error');
       setErrorMessage('Please enter a valid email address.');
       return;
@@ -85,7 +86,7 @@ const NewsletterForm: React.FC = () => {
     setErrorMessage('');
 
     try {
-      const res = await dbService.subscribeNewsletter(email);
+      const res = await dbService.subscribeNewsletter(clean);
       if (res.success) {
         setStatus('success');
         setEmail('');
@@ -95,7 +96,7 @@ const NewsletterForm: React.FC = () => {
       }
     } catch {
       setStatus('error');
-      setErrorMessage('An unexpected error occurred.');
+      setErrorMessage('An unexpected error occurred. Please try again.');
     }
   };
 
@@ -108,9 +109,21 @@ const NewsletterForm: React.FC = () => {
         Engineering playbooks, case studies, and digital insights. Zero spam.
       </p>
       {status === 'success' ? (
-        <div className="flex items-center space-x-2 text-xs text-emerald-600 dark:text-emerald-400 font-semibold py-2">
-          <CheckCircle2 className="w-4 h-4 flex-shrink-0" />
-          <span>You're subscribed! Thank you.</span>
+        <div className="space-y-1.5 py-1">
+          <div className="flex items-center space-x-2 text-xs text-emerald-600 dark:text-emerald-400 font-semibold">
+            <CheckCircle2 className="w-4 h-4 flex-shrink-0 text-emerald-500" />
+            <span>You're subscribed! Thank you.</span>
+          </div>
+          <p className="text-[11px] text-[var(--text-muted)] leading-tight">
+            Welcome to DigiHust engineering playbooks & insights.
+          </p>
+          <button
+            type="button"
+            onClick={() => setStatus('idle')}
+            className="text-[10px] text-[var(--brand-teal)] hover:underline font-semibold cursor-pointer inline-block"
+          >
+            Subscribe another email
+          </button>
         </div>
       ) : (
         <form onSubmit={handleSubmit} className="space-y-2 pt-1">
@@ -135,15 +148,18 @@ const NewsletterForm: React.FC = () => {
               placeholder="Enter your email"
               required
               aria-label="Email address for newsletter"
-              className="flex-1 px-3 py-2 text-xs rounded-xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] text-[var(--text-heading)] placeholder-[var(--text-dim)] focus:outline-none focus:border-[#1F7A8C]"
+              className="flex-1 px-3 py-2 text-xs rounded-xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] text-[var(--text-heading)] placeholder-[var(--text-dim)] focus:outline-none focus:border-[#1F7A8C] dark:focus:border-[#22A0B4]"
             />
             <button
               type="submit"
               disabled={status === 'loading'}
-              className="px-4 py-2 text-xs font-bold rounded-xl bg-[#1F7A8C] hover:bg-[#186473] text-white transition-colors duration-180 flex items-center justify-center space-x-1.5 shadow-sm disabled:opacity-50 cursor-pointer"
+              className="px-4 py-2 text-xs font-bold rounded-xl bg-[#1F7A8C] hover:bg-[#186473] dark:bg-[var(--brand-teal)] dark:hover:bg-[#198090] text-white transition-colors duration-180 flex items-center justify-center space-x-1.5 shadow-sm disabled:opacity-50 cursor-pointer"
             >
               {status === 'loading' ? (
-                <span>Subscribing...</span>
+                <>
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  <span>Subscribing...</span>
+                </>
               ) : (
                 <>
                   <span>Subscribe</span>

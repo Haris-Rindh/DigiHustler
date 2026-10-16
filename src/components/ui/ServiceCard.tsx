@@ -91,7 +91,7 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
 
         {/* ── CARD BODY (20-24px padding) ── */}
         <div className="px-5 sm:px-6 pt-5 pb-2">
-          <h3 className="font-display font-bold text-lg sm:text-xl text-[var(--text-heading)] leading-snug mb-2 group-hover:text-[#1F7A8C] transition-colors">
+          <h3 className="font-display font-bold text-lg sm:text-xl text-[var(--text-heading)] leading-snug mb-2 group-hover:text-[var(--brand-teal)] dark:group-hover:text-cyan-300 transition-colors">
             {service.title}
           </h3>
 
@@ -117,7 +117,7 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
       <div className="px-5 sm:px-6 pb-5 pt-3 mt-auto border-t border-[var(--border-subtle)] flex items-center justify-between">
         <Link
           to={targetLink}
-          className="inline-flex items-center space-x-1 text-xs font-bold text-[#1F7A8C] hover:underline transition-colors"
+          className="inline-flex items-center space-x-1 text-xs font-bold text-[var(--brand-teal)] dark:text-cyan-400 hover:underline transition-colors"
         >
           <span>Explore Service</span>
           <ChevronRight className="w-3.5 h-3.5" />

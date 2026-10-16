@@ -14,7 +14,7 @@ export const LogoBadge: React.FC<LogoBadgeProps> = ({
 }) => {
   return (
     <div
-      className={`bg-white rounded-xl px-3 py-1.5 border border-black/10 shadow-sm inline-flex items-center space-x-2.5 select-none transition-shadow hover:shadow-md ${className}`}
+      className={`bg-white dark:bg-[#073547] rounded-xl px-3 py-1.5 border border-black/10 dark:border-[var(--border-subtle)] shadow-sm inline-flex items-center space-x-2.5 select-none transition-shadow hover:shadow-md ${className}`}
     >
       <img
         src={logoImg}
@@ -24,7 +24,7 @@ export const LogoBadge: React.FC<LogoBadgeProps> = ({
         className={`object-contain shrink-0 ${imgClassName}`}
       />
       <span
-        className={`font-display font-extrabold tracking-tight text-[#022B3A] leading-none ${textClassName}`}
+        className={`font-display font-extrabold tracking-tight text-[#022B3A] dark:text-white leading-none ${textClassName}`}
       >
         DigiHust
       </span>
