@@ -163,17 +163,17 @@ const NewsletterForm: React.FC = () => {
 
 export const Footer: React.FC = () => {
   return (
-    <footer className="bg-[var(--bg-page)] border-t border-[var(--border-subtle)] pt-16 pb-12 px-6 lg:px-8 relative overflow-hidden" aria-label="Site Footer">
+    <footer className="bg-[var(--bg-page)] border-t border-[var(--border-subtle)] pt-10 sm:pt-12 pb-6 sm:pb-8 px-6 lg:px-8 relative overflow-hidden" aria-label="Site Footer">
       {/* Subtle top ambient border */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-4xl h-px bg-gradient-to-r from-transparent via-[var(--border-subtle)] to-transparent pointer-events-none" />
 
       <div className="max-w-7xl mx-auto">
 
-        {/* Top Grid (Responsive 4-column layout with generous breathing room) */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10 xl:gap-14 pb-12 border-b border-[var(--border-subtle)]">
+        {/* Top Grid (Responsive 4-column layout with compact breathing room) */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8 xl:gap-10 pb-8 border-b border-[var(--border-subtle)]">
 
           {/* Brand Column */}
-          <div className="lg:col-span-4 space-y-4">
+          <div className="lg:col-span-4 space-y-3">
             <div className="flex items-center gap-3 flex-wrap">
               <Link to="/" className="inline-flex items-center space-x-2.5 group">
                 <img 
@@ -229,9 +229,9 @@ export const Footer: React.FC = () => {
           </div>
 
           {/* Capabilities */}
-          <div className="lg:col-span-2 space-y-3.5">
+          <div className="lg:col-span-2 space-y-3">
             <h3 className="text-[11px] font-extrabold text-[var(--text-heading)] uppercase tracking-widest">Capabilities</h3>
-            <ul className="grid grid-cols-2 md:grid-cols-1 gap-x-4 gap-y-2.5 text-xs text-[var(--text-muted)]">
+            <ul className="grid grid-cols-2 md:grid-cols-1 gap-x-4 gap-y-2 text-xs text-[var(--text-muted)]">
               {[
                 { name: 'Web Development', href: '/services/saas-mvp-development' },
                 { name: 'Creative & UI/UX', href: '/services/brand-identity-design-system' },
@@ -253,9 +253,9 @@ export const Footer: React.FC = () => {
           </div>
 
           {/* Navigation */}
-          <div className="lg:col-span-2 space-y-3.5">
+          <div className="lg:col-span-2 space-y-3">
             <h3 className="text-[11px] font-extrabold text-[var(--text-heading)] uppercase tracking-widest">Company</h3>
-            <ul className="grid grid-cols-2 md:grid-cols-1 gap-x-4 gap-y-2.5 text-xs text-[var(--text-muted)]">
+            <ul className="grid grid-cols-2 md:grid-cols-1 gap-x-4 gap-y-2 text-xs text-[var(--text-muted)]">
               {[
                 { label: 'Selected Work', href: '/portfolio' },
                 { label: 'How We Work', href: '/how-it-works' },
@@ -279,14 +279,14 @@ export const Footer: React.FC = () => {
           </div>
 
           {/* Newsletter Column */}
-          <div className="lg:col-span-4 space-y-3.5">
+          <div className="lg:col-span-4 space-y-3">
             <NewsletterForm />
           </div>
 
         </div>
 
         {/* Bottom Row */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-8 pb-2 text-[11px] text-[var(--text-dim)]">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-5 pb-1 text-[11px] text-[var(--text-dim)]">
           <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-3 text-center sm:text-left">
             <div className="flex items-center space-x-1.5">
               <ShieldCheck className="w-3.5 h-3.5 text-[var(--brand-teal)]" />
