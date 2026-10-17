@@ -222,7 +222,7 @@ export const Home: React.FC = () => {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
 
   const modelDiagramRef = useRef<HTMLDivElement>(null);
-  const isModelInView = useInView(modelDiagramRef, { once: true, amount: 0.2 });
+  const isModelInView = useInView(modelDiagramRef, { once: true, amount: 0.05, margin: '0px 0px -40px 0px' });
   const shouldReduceMotion = useReducedMotion();
 
   const diagramContainerVariants: Variants = {
@@ -230,7 +230,7 @@ export const Home: React.FC = () => {
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: shouldReduceMotion ? 0 : 0.06,
+        staggerChildren: shouldReduceMotion ? 0 : 0.025,
         delayChildren: 0,
       },
     },
@@ -239,13 +239,13 @@ export const Home: React.FC = () => {
   const diagramNodeVariants: Variants = {
     hidden: {
       opacity: shouldReduceMotion ? 1 : 0,
-      y: shouldReduceMotion ? 0 : 12,
+      y: shouldReduceMotion ? 0 : 6,
     },
     visible: {
       opacity: 1,
       y: 0,
       transition: {
-        duration: shouldReduceMotion ? 0 : 0.35,
+        duration: shouldReduceMotion ? 0 : 0.22,
         ease: 'easeOut',
       },
     },
@@ -256,7 +256,7 @@ export const Home: React.FC = () => {
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: shouldReduceMotion ? 0 : 0.05,
+        staggerChildren: shouldReduceMotion ? 0 : 0.02,
       },
     },
   };

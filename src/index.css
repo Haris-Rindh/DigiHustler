@@ -206,8 +206,18 @@ h1, h2, h3, h4, h5, h6 {
 .dark .btn-brand-futuristic,
 [data-theme="dark"] .btn-brand-primary,
 [data-theme="dark"] .btn-brand-futuristic {
-  border-color: rgba(34, 160, 180, 0.55);
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+  background-color: #1F7A8C;
+  border-color: rgba(45, 212, 238, 0.65);
+  box-shadow: 0 4px 18px rgba(34, 160, 180, 0.4);
+}
+
+.dark .btn-brand-primary:hover,
+.dark .btn-brand-futuristic:hover,
+[data-theme="dark"] .btn-brand-primary:hover,
+[data-theme="dark"] .btn-brand-futuristic:hover {
+  background-color: #22A0B4;
+  border-color: rgba(45, 212, 238, 0.9);
+  box-shadow: 0 6px 24px rgba(34, 160, 180, 0.55);
 }
 
 .btn-brand-primary:hover,

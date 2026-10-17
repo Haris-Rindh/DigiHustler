@@ -345,8 +345,8 @@ export const Team: React.FC = () => {
                     }`}
                   >
                     <div>
-                      {/* 50-55% Photo Fading into Surface Color (#073547) */}
-                      <div className="relative w-full aspect-[4/3] sm:h-52 overflow-hidden bg-[#022B3A]">
+                      {/* Photo with generous space and smooth bottom fade into surface color (#073547) */}
+                      <div className="relative w-full h-60 sm:h-64 overflow-hidden bg-[#022B3A]">
                         <img
                           src={member.img}
                           alt={member.name}
@@ -361,7 +361,7 @@ export const Team: React.FC = () => {
                           className="w-full h-full object-cover pointer-events-none"
                         />
                         {/* Smooth bottom fade into card surface */}
-                        <div className="absolute inset-0 bg-gradient-to-t from-[#073547] via-[#073547]/30 to-transparent pointer-events-none" />
+                        <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[#073547] via-[#073547]/50 to-transparent pointer-events-none" />
 
                         {/* Pinned Member Badge */}
                         {isPinned && (
@@ -370,12 +370,20 @@ export const Team: React.FC = () => {
                             <span>Pinned</span>
                           </div>
                         )}
+
+                        {/* Specialist Role on Image Lower Left Side */}
+                        <div className="absolute bottom-3 left-3.5 sm:left-4 z-10 max-w-[85%]">
+                          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#022B3A]/85 backdrop-blur-md border border-cyan-400/30 text-xs font-sans font-semibold text-cyan-300 shadow-md">
+                            <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 shrink-0" />
+                            <span className="truncate">{member.role}</span>
+                          </span>
+                        </div>
                       </div>
 
                       {/* Card Body */}
-                      <div className="p-5 sm:p-6 pb-4">
+                      <div className="p-4 sm:p-5 pt-3.5 pb-2">
                         {/* Translucent Chips on Dark Surface */}
-                        <div className="flex flex-wrap items-center gap-1.5 mb-3">
+                        <div className="flex flex-wrap items-center gap-1.5 mb-2">
                           <span className="text-[11px] font-sans font-bold px-2.5 py-0.5 rounded-full bg-[#1F7A8C]/30 text-cyan-300 border border-cyan-400/20">
                             {member.category}
                           </span>
@@ -393,16 +401,11 @@ export const Team: React.FC = () => {
                         <h4 className="font-display font-semibold text-[18px] text-white leading-snug group-hover:text-cyan-300 transition-colors">
                           {member.name}
                         </h4>
-
-                        {/* Designation / Role */}
-                        <p className="text-xs font-medium text-cyan-300/90 mt-1 mb-1">
-                          {member.role}
-                        </p>
                       </div>
                     </div>
 
                     {/* Card Footer: Solid White Pill Button */}
-                    <div className="p-5 sm:p-6 pt-3 mt-auto border-t border-white/10 flex items-center justify-between">
+                    <div className="p-4 sm:p-5 pt-3 mt-auto border-t border-white/10 flex items-center justify-between">
                       <span className="text-[11px] text-white/60 font-sans">
                         {member.digiskillBatch}
                       </span>

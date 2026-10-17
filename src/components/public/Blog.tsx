@@ -174,6 +174,62 @@ export const Blog: React.FC = () => {
           </div>
         </div>
       </section>
+
+      {/* ── MORE COMING SOON / EDITORIAL PIPELINE SECTION ── */}
+      <section className="pb-24 px-6 lg:px-8 bg-[var(--bg-page)]">
+        <div className="max-w-7xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.4 }}
+            className="rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] p-8 sm:p-12 relative overflow-hidden shadow-lg text-center flex flex-col items-center justify-center"
+          >
+            {/* Ambient Background Glow */}
+            <div 
+              className="absolute -top-24 left-1/2 -translate-x-1/2 w-96 h-96 bg-[var(--brand-teal)]/10 rounded-full blur-3xl pointer-events-none" 
+              aria-hidden="true" 
+            />
+
+            {/* Live Status Pill */}
+            <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-[var(--brand-teal-subtle)] border border-[var(--brand-teal)]/30 text-[11px] font-bold text-[var(--brand-teal)] uppercase tracking-wider mb-4 relative z-10">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[var(--brand-teal)] opacity-75" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-[var(--brand-teal)]" />
+              </span>
+              <span>Editorial Pipeline</span>
+            </div>
+
+            {/* Heading */}
+            <h2 className="font-display font-extrabold text-2xl sm:text-3xl lg:text-4xl text-[var(--text-heading)] mb-3 relative z-10 tracking-tight">
+              More Insights & Technical Teardowns Coming Soon
+            </h2>
+
+            {/* Subtitle */}
+            <p className="text-sm sm:text-base text-[var(--text-body)] max-w-xl mx-auto leading-relaxed mb-6 relative z-10">
+              Our engineering squads and solutions architects are actively drafting new deep-dives on real-world system architecture, autonomous AI agents, and production benchmarks.
+            </p>
+
+            {/* Upcoming Topics Badges */}
+            <div className="flex flex-wrap items-center justify-center gap-2 relative z-10 max-w-2xl">
+              {[
+                'Autonomous LLM Agent RAG Systems',
+                'Micro-Frontend State Hydration',
+                'Zero-Trust Cloud IAM Policies',
+                'High-Conversion Design Token Systems',
+                'PostgreSQL Spatial Indexing at Scale',
+              ].map((topic) => (
+                <span
+                  key={topic}
+                  className="px-3 py-1 rounded-lg bg-[var(--bg-page)] border border-[var(--border-subtle)] text-[11px] sm:text-xs font-semibold text-[var(--text-muted)]"
+                >
+                  ⏳ {topic}
+                </span>
+              ))}
+            </div>
+          </motion.div>
+        </div>
+      </section>
     </div>
   );
 };

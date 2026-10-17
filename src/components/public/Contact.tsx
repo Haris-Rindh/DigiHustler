@@ -1574,8 +1574,8 @@ export const Contact: React.FC = () => {
 
             {/* 4. Direct Inquiries */}
             <div className="space-y-1.5 sm:border-t-0 border-t border-[#E2ECEF] dark:border-slate-800 pt-4 sm:pt-0">
-              <div className="w-9 h-9 rounded-full bg-[#E0F2F5] dark:bg-cyan-950/80 text-[#1F7A8C] dark:text-cyan-400 flex items-center justify-center shrink-0 mb-2">
-                <Mail className="w-4 h-4" />
+              <div className="w-9 h-9 rounded-full bg-[#FCE8E6] dark:bg-rose-950/70 border border-[#F9D2CE] dark:border-rose-900/50 text-[#EA4335] dark:text-[#FF7B72] flex items-center justify-center shrink-0 mb-2">
+                <SiGmail className="w-4 h-4" />
               </div>
               <h3 className="text-xs sm:text-sm font-bold text-[#022B3A] dark:text-white">
                 Direct Inquiries
@@ -1595,9 +1595,9 @@ export const Contact: React.FC = () => {
                         navigator.clipboard.writeText('digihust@gmail.com').catch(() => {});
                       }
                     }}
-                    className="flex items-center gap-1.5 text-[#1F7A8C] hover:underline font-medium group"
+                    className="flex items-center gap-1.5 text-[#EA4335] dark:text-[#FF7B72] hover:text-[#D93025] dark:hover:text-[#FFA39E] font-semibold hover:underline group"
                   >
-                    <SiGmail className="w-3.5 h-3.5 shrink-0 text-[#EA4335]" />
+                    <SiGmail className="w-3.5 h-3.5 shrink-0 text-[#EA4335] dark:text-[#FF7B72]" />
                     <span>digihust@gmail.com</span>
                   </a>
                   <button
@@ -1611,7 +1611,7 @@ export const Contact: React.FC = () => {
                       }
                     }}
                     title="Copy email address"
-                    className="p-1 rounded text-[#94A3B8] hover:text-[#1F7A8C] hover:bg-[#E0F2F5] dark:hover:bg-cyan-950/60 transition-colors inline-flex items-center gap-1"
+                    className="p-1 rounded text-[#94A3B8] hover:text-[#EA4335] hover:bg-[#FCE8E6] dark:hover:bg-rose-950/60 transition-colors inline-flex items-center gap-1"
                   >
                     {copiedEmail ? (
                       <>
