@@ -6,7 +6,7 @@
 export const FALLBACK_IMAGES = {
   development: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=1200&q=80',
   creative: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1200&q=80',
-  data: 'https://images.unsplash.com/photo-1677442136019-21780efad99a?auto=format&fit=crop&w=1200&q=80',
+  data: 'https://images.unsplash.com/photo-1677442135703-1787eea5ce01?auto=format&fit=crop&w=1200&q=80',
   cybersecurity: 'https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=1200&q=80',
   default: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1200&q=80',
 };
@@ -45,6 +45,18 @@ export function formatImageUrl(rawUrl?: string | null, fallbackCategory?: string
   }
 
   let url = rawUrl.trim();
+  if (!url || url === 'null' || url === 'undefined' || url === '[object Object]') {
+    return getFallbackImage(fallbackCategory);
+  }
+
+  // Strip Markdown image or link wrappers: ![alt](url) or [text](url)
+  const mdMatch = url.match(/!\[.*?\]\((.*?)\)/) || url.match(/\[.*?\]\((.*?)\)/);
+  if (mdMatch && mdMatch[1]) {
+    url = mdMatch[1].trim();
+  }
+
+  // Strip surrounding quotes, angle brackets, parentheses
+  url = url.replace(/^["'<\(]+|["'>\)]+$/g, '').trim();
   if (!url) {
     return getFallbackImage(fallbackCategory);
   }
@@ -69,7 +81,19 @@ export function formatImageUrl(rawUrl?: string | null, fallbackCategory?: string
     url = `https://${url}`;
   }
 
-  // 5. Google Drive Share Links:
+  // 5. Unsplash Web Page URLs -> Direct High-Res Image CDN
+  // e.g. https://unsplash.com/photos/a-computer-screen-with-code-on-it-8q3wdq4
+  // or https://unsplash.com/photos/8q3wdq4
+  // or https://unsplash.com/photos/photo-1555066931-4365d14bab8c
+  if (url.includes('unsplash.com/photos/')) {
+    const photoIdMatch = url.match(/photo-([a-zA-Z0-9_-]+)/) || url.match(/\/photos\/(?:.*-)?([a-zA-Z0-9_-]+)/);
+    if (photoIdMatch && photoIdMatch[1]) {
+      const pid = photoIdMatch[1].startsWith('photo-') ? photoIdMatch[1] : `photo-${photoIdMatch[1]}`;
+      return `https://images.unsplash.com/${pid}?auto=format&fit=crop&w=1200&q=80`;
+    }
+  }
+
+  // 6. Google Drive Share Links:
   // Examples:
   // https://drive.google.com/file/d/1X2Y3Z.../view?usp=sharing
   // https://drive.google.com/open?id=1X2Y3Z...
@@ -83,7 +107,7 @@ export function formatImageUrl(rawUrl?: string | null, fallbackCategory?: string
     }
   }
 
-  // 6. Dropbox Links:
+  // 7. Dropbox Links:
   // e.g. https://www.dropbox.com/s/xyz/photo.png?dl=0 -> ?raw=1
   if (url.includes('dropbox.com')) {
     if (url.includes('dl=0')) {
@@ -94,14 +118,32 @@ export function formatImageUrl(rawUrl?: string | null, fallbackCategory?: string
     }
   }
 
-  // 7. Imgur Page Links:
+  // 8. Imgur Page Links:
   // e.g. https://imgur.com/aBcDeFg -> https://i.imgur.com/aBcDeFg.jpg
   const imgurMatch = url.match(/^https?:\/\/(?:www\.)?imgur\.com\/([a-zA-Z0-9]+)$/);
   if (imgurMatch && imgurMatch[1]) {
     return `https://i.imgur.com/${imgurMatch[1]}.jpg`;
   }
 
-  // 8. GitHub Blob Links:
+  // 9. Postimages / Postimg Page Links:
+  // e.g. https://postimg.cc/mR0kXfQz -> https://i.postimg.cc/mR0kXfQz.jpg
+  if (url.includes('postimg.cc/') || url.includes('postimages.org/')) {
+    if (!url.includes('i.postimg.cc') && !url.includes('/raw/')) {
+      const postMatch = url.match(/(?:postimg\.cc|postimages\.org)\/([a-zA-Z0-9_-]+)/);
+      if (postMatch && postMatch[1] && postMatch[1] !== 'raw' && postMatch[1] !== 'gallery') {
+        return `https://i.postimg.cc/${postMatch[1]}/image.jpg`;
+      }
+    }
+  }
+
+  // 10. Gyazo Links:
+  // e.g. https://gyazo.com/4bfa1e99d3ad93f1c1f54452dfba9b71 -> https://i.gyazo.com/4bfa1e99d3ad93f1c1f54452dfba9b71.png
+  const gyazoMatch = url.match(/^https?:\/\/gyazo\.com\/([a-f0-9]{32})$/);
+  if (gyazoMatch && gyazoMatch[1]) {
+    return `https://i.gyazo.com/${gyazoMatch[1]}.png`;
+  }
+
+  // 11. GitHub Blob Links:
   // e.g. https://github.com/user/repo/blob/main/img.png -> https://raw.githubusercontent.com/user/repo/main/img.png
   if (url.includes('github.com') && url.includes('/blob/')) {
     return url.replace('github.com', 'raw.githubusercontent.com').replace('/blob/', '/');

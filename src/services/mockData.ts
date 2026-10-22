@@ -925,7 +925,7 @@ export const DEFAULT_SITE_CONTENT: SiteContent = {
       features: ['Autonomous LLM Agents', 'n8n & Make.com Automation', 'Custom AI Chatbots', 'Intelligent ETL Pipelines', 'API Integration Workflows', 'Enterprise Process Automation'],
       color: '#1F7A8C',
       icon: 'cpu',
-      imageUrl: 'https://images.unsplash.com/photo-1677442136019-21780efad99a?auto=format&fit=crop&w=1200&q=80',
+      imageUrl: 'https://images.unsplash.com/photo-1677442135703-1787eea5ce01?auto=format&fit=crop&w=1200&q=80',
       size: 'small',
       patternVariant: 'mesh-gradient',
       linkTarget: '/services/ai-workflow-automation'

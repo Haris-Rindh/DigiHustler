@@ -318,7 +318,7 @@ export const Work: React.FC = () => {
                 </h3>
               </div>
 
-              <div className="aspect-video rounded-2xl overflow-hidden mb-6 border border-[var(--border-subtle)]">
+              <div className="aspect-video rounded-2xl overflow-hidden mb-6 border border-[var(--border-subtle)] bg-slate-100 dark:bg-slate-800">
                 <img
                   src={formatImageUrl(selectedProject.img, selectedProject.category)}
                   alt={selectedProject.title}

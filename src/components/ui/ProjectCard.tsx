@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { ArrowRight, ExternalLink } from 'lucide-react';
 import { formatImageUrl, handleImageError } from '../../lib/imageUrlHelper';
 
@@ -26,25 +26,40 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
   className = '',
   showDescription = false,
 }) => {
+  const [imageLoaded, setImageLoaded] = useState(false);
   const liveUrl = project.projectUrl || 'https://github.com/DigiHust-Official';
   const resolvedImg = formatImageUrl(project.img, project.category);
 
   return (
     <div
-      className={`group relative rounded-[24px] overflow-hidden bg-[var(--bg-surface)] text-[var(--text-heading)] border border-[var(--border-subtle)] hover:border-[var(--brand-teal)]/50 flex flex-col justify-between h-full transition-all duration-200 ease-out hover:-translate-y-1 shadow-md hover:shadow-xl select-none ${className}`}
+      className={`group relative rounded-[24px] overflow-hidden bg-[var(--bg-surface)] text-[var(--text-heading)] border border-[var(--border-subtle)] hover:border-[var(--brand-teal)]/50 flex flex-col justify-between h-full transition-all duration-300 ease-out hover:-translate-y-1.5 shadow-md hover:shadow-2xl select-none ${className}`}
     >
       <div>
-        {/* ── 16:9 FLUSH IMAGE (No crop, object-fit: contain on surface color, zero overlays) ── */}
-        <div className="w-full aspect-[16/9] overflow-hidden bg-[var(--bg-page)] dark:bg-[#073547] flex items-center justify-center">
+        {/* ── 16:9 MEDIA CONTAINER WITH SMOOTH SKELETON & HOVER ZOOM ── */}
+        <div className="w-full aspect-[16/9] overflow-hidden bg-slate-100 dark:bg-slate-800/80 relative flex items-center justify-center">
+          {/* Subtle Skeleton Shimmer while loading */}
+          {!imageLoaded && (
+            <div className="absolute inset-0 bg-slate-200/80 dark:bg-slate-700/60 animate-pulse pointer-events-none" />
+          )}
+
           <img
             src={resolvedImg}
             alt={project.title}
             loading="lazy"
             decoding="async"
             referrerPolicy="no-referrer"
-            onError={(e) => handleImageError(e, undefined, project.category)}
-            className="w-full h-full object-contain pointer-events-none"
+            onLoad={() => setImageLoaded(true)}
+            onError={(e) => {
+              handleImageError(e, undefined, project.category);
+              setImageLoaded(true);
+            }}
+            className={`w-full h-full object-cover object-center transition-all duration-500 ease-out group-hover:scale-105 pointer-events-none ${
+              imageLoaded ? 'opacity-100' : 'opacity-0'
+            }`}
           />
+
+          {/* Atmospheric hover gradient overlay */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
         </div>
 
         {/* ── CARD BODY (Category + essential tech chips, title) ── */}
