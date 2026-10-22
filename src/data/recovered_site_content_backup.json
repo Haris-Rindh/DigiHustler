@@ -1,0 +1,600 @@
+{
+  "faqs": [
+    {
+      "id": "faq-1",
+      "answer": "On freelance marketplaces, you have to manage disconnected freelancers yourself, risking missed deadlines and mismatched code. At DigiHust, you get a single managed contract with a dedicated Project Director who oversees vetted specialized squads with guaranteed QA deliverables.",
+      "category": "General",
+      "question": "How is DigiHust different from Upwork or Fiverr?"
+    },
+    {
+      "id": "faq-2",
+      "answer": "All DigiHust specialists undergo multi-stage technical assessments, code quality reviews, and proven delivery track records before being allocated to client projects.",
+      "category": "Quality",
+      "question": "How do you vet and verify specialists?"
+    },
+    {
+      "id": "faq-3",
+      "answer": "You pay milestone-by-milestone based on approved deliverables. Upon project completion and final release, 100% of intellectual property, source code, and design assets belong to you.",
+      "category": "Billing",
+      "question": "How do payments, milestones, and IP ownership work?"
+    }
+  ],
+  "hero": {
+    "badgeText": "Verified Sourced Talent · Single Managed Contract",
+    "heroImage": "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=800&q=80",
+    "subheadline": "One company. Coordinated specialized talent. DigiHust delivers end-to-end web engineering, brand identity, AI workflows, and cybersecurity under one managed roof.",
+    "headlineLine1": "Your Digital Work.",
+    "headlineLine2": "Delivered as One.",
+    "ctaPrimaryText": "Start a Project",
+    "ctaSecondaryText": "Explore Squads",
+    "headlineHighlight": "Handled by Skilled People.",
+    "metricsBadgeLabel": "Average Client Conversion Boost",
+    "metricsBadgeValue": "+140%"
+  },
+  "about": {
+    "story": "DigiHust was founded to solve a fundamental problem in digital services: managing multiple independent freelancers is chaotic, and traditional big-name agencies are slow and exorbitantly expensive. By combining verified talent with rigorous leadership oversight, we deliver top-tier speed and precision.",
+    "values": [
+      {
+        "id": "v-1",
+        "desc": "We take 100% ownership of project scope, timelines, and final quality.",
+        "title": "Single Point Accountability"
+      },
+      {
+        "id": "v-2",
+        "desc": "Zero guesswork. Every squad member is proven in their specific domain.",
+        "title": "Verified Mastery"
+      },
+      {
+        "id": "v-3",
+        "desc": "Clear fixed scopes, live project tracking, and fair talent split economics.",
+        "title": "Radical Transparency"
+      },
+      {
+        "id": "v-4",
+        "desc": "Rapid sprint cycles without cutting corners on architectural security or visual polish.",
+        "title": "Speed & Craftsmanship"
+      }
+    ],
+    "vision": "Becoming the world’s most trusted managed digital delivery agency, empowering skilled talent while providing clients zero-headache execution.",
+    "mission": "To unify elite specialized digital talent under a single accountable management roof, delivering world-class engineering and creative design to global clients."
+  },
+  "contact": {
+    "email": "digihust@gmail.com",
+    "phone": "+92 320 6806396",
+    "github": "https://github.com/digihust",
+    "address": "Islamabad, Pakistan",
+    "twitter": "https://twitter.com/digihust",
+    "facebook": "https://www.facebook.com/share/p/1EubKwa3Ce/",
+    "linkedin": "https://www.linkedin.com/company/digihust/",
+    "whatsapp": "+92 320 6806396",
+    "calendlyUrl": "https://calendly.com/digihust/discovery",
+    "formImageUrl": "/contact-illustration.png",
+    "illustrationUrl": "/contact-illustration.png"
+  },
+  "packages": [
+    {
+      "id": "pkg-1",
+      "desc": "Ideal for rapid MVP feature rollouts, brand visual overhauls, or focused landing page conversion sprints.",
+      "name": "Sprint Starter",
+      "price": "$1,200",
+      "ctaText": "Select Starter Sprint",
+      "popular": false,
+      "features": [
+        "Dedicated Specialist Engineer/Designer",
+        "1 Dedicated Squad Lead Reviewer",
+        "2-Week Sprint Delivery",
+        "Full Source Code & Figma Files",
+        "14-Day Post-Launch SLA Warranty"
+      ],
+      "turnaround": "2 Weeks"
+    },
+    {
+      "id": "pkg-2",
+      "desc": "Full-stack application build, comprehensive design system, or end-to-end AI automation infrastructure.",
+      "name": "Growth Architecture",
+      "price": "$3,500",
+      "ctaText": "Select Growth Sprint",
+      "popular": true,
+      "features": [
+        "Full Cross-Functional Squad (Dev + Design + QA)",
+        "Dedicated Operations Director Oversight",
+        "Custom Database & Cloud APIs",
+        "Weekly Video Sprint Demos",
+        "30-Day Enterprise SLA Support"
+      ],
+      "turnaround": "4 Weeks"
+    },
+    {
+      "id": "pkg-3",
+      "desc": "Ongoing fractional squad engineering, continuous product iterations, and proactive security maintenance.",
+      "name": "Dedicated Squad Retainer",
+      "price": "$6,500/mo",
+      "ctaText": "Hire Dedicated Squad",
+      "popular": false,
+      "features": [
+        "Continuous Sprint Execution",
+        "Priority SLA 24h Emergency Response",
+        "Architect-Level Code Reviews",
+        "Monthly Strategy Consultation",
+        "Flexible Resource Allocation"
+      ],
+      "turnaround": "Monthly Retainer"
+    }
+  ],
+  "services": [
+    {
+      "id": "s-web",
+      "icon": "terminal",
+      "size": "large",
+      "slug": "saas-mvp-development",
+      "color": "#1F7A8C",
+      "order": 1,
+      "title": "Web & Mobile Engineering",
+      "groupId": "tech",
+      "tagline": "Custom React · Next.js · Node.js · Scalable Backend",
+      "features": [
+        "React & Next.js Web Apps",
+        "Scalable Node.js APIs",
+        "Cross-Platform Mobile Apps",
+        "Cloud Infrastructure & DevOps",
+        "PostgreSQL & Redis Databases",
+        "High-Performance Architecture"
+      ],
+      "imageUrl": "https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=1200&q=80",
+      "linkTarget": "/services/saas-mvp-development",
+      "description": "Production-ready full-stack applications built with modern architectures, microservices, and extreme performance benchmarks.",
+      "patternVariant": "dotted-grid",
+      "shortDescription": "Production-ready full-stack applications built with modern architectures, microservices, and extreme performance benchmarks."
+    },
+    {
+      "id": "s-creative",
+      "icon": "layers",
+      "size": "medium",
+      "slug": "brand-identity-design-system",
+      "color": "#022B3A",
+      "order": 2,
+      "title": "UI/UX & Brand Systems",
+      "groupId": "creative",
+      "tagline": "Design Systems · 3D Motion · Commercial Visuals",
+      "features": [
+        "Design Systems & Figma Libraries",
+        "User Experience & Interfaces",
+        "Brand Identity Guidelines",
+        "Interactive 3D Visuals",
+        "Prototypes & Wireframes",
+        "High-Conversion Landing Pages"
+      ],
+      "imageUrl": "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1200&q=80",
+      "linkTarget": "/services/brand-identity-design-system",
+      "description": "Distinctive brand identities, Figma component libraries, and Cinema 4D animation suites that elevate digital perception.",
+      "patternVariant": "concentric-rings",
+      "shortDescription": "Distinctive brand identities, Figma component libraries, and Cinema 4D animation suites that elevate digital perception."
+    },
+    {
+      "id": "s-ai",
+      "icon": "cpu",
+      "size": "small",
+      "slug": "ai-workflow-automation",
+      "color": "#1F7A8C",
+      "order": 3,
+      "title": "AI & Workflow Automation",
+      "groupId": "data",
+      "tagline": "Autonomous Agents · n8n · Custom Chatbots",
+      "features": [
+        "Autonomous LLM Agents",
+        "n8n & Make.com Automation",
+        "Custom AI Chatbots",
+        "Intelligent ETL Pipelines",
+        "API Integration Workflows",
+        "Enterprise Process Automation"
+      ],
+      "imageUrl": "https://images.unsplash.com/photo-1677442136019-21780efad99a?auto=format&fit=crop&w=1200&q=80",
+      "linkTarget": "/services/ai-workflow-automation",
+      "description": "Intelligent automation pipelines, autonomous agent workflows, and executive analytics dashboards that drive operational speed.",
+      "patternVariant": "mesh-gradient",
+      "shortDescription": "Intelligent automation pipelines, autonomous agent workflows, and executive analytics dashboards that drive operational speed."
+    },
+    {
+      "id": "s-marketing",
+      "icon": "trending-up",
+      "size": "small",
+      "slug": "digital-marketing-seo",
+      "color": "#1F7A8C",
+      "order": 4,
+      "title": "Digital Marketing & SEO",
+      "groupId": "growth",
+      "tagline": "Search Optimization · Google/Meta Ads · B2B Outreach",
+      "features": [
+        "Technical SEO Audits",
+        "Google & Meta PPC Ads",
+        "B2B Lead Generation Funnels",
+        "Content & Keyword Strategy",
+        "Conversion Rate Optimization",
+        "Multi-Channel Campaign Analytics"
+      ],
+      "imageUrl": "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1200&q=80",
+      "linkTarget": "/services/digital-marketing-seo",
+      "description": "Data-driven marketing and technical search engine optimization that place your brand in front of high-intent buyers, drive organic conversions, and scale revenue funnels through targeted multichannel campaigns.",
+      "patternVariant": "isometric-grid",
+      "shortDescription": "Data-driven marketing and technical search engine optimization that place your brand in front of high-intent buyers and drive organic conversions."
+    },
+    {
+      "id": "s-cybersecurity",
+      "icon": "shield",
+      "size": "medium",
+      "slug": "cybersecurity-audit",
+      "color": "#E11D48",
+      "order": 5,
+      "title": "Cybersecurity & Auditing",
+      "groupId": "tech",
+      "tagline": "Penetration Testing · OWASP Hardening · Risk Audits",
+      "features": [
+        "Penetration Testing & Audits",
+        "OWASP Vulnerability Scans",
+        "Infrastructure Hardening",
+        "API Security Verification",
+        "Compliance & Risk Assessment",
+        "Zero-Day Defense Protocols"
+      ],
+      "imageUrl": "https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=1200&q=80",
+      "linkTarget": "/services/cybersecurity-audit",
+      "description": "Rigorous penetration testing, OWASP vulnerability assessments, and infrastructure hardening to secure your critical digital assets.",
+      "patternVariant": "concentric-rings",
+      "shortDescription": "Rigorous penetration testing, OWASP vulnerability assessments, and infrastructure hardening to secure your critical digital assets."
+    },
+    {
+      "id": "s-data-intelligence",
+      "icon": "bar-chart",
+      "size": "medium",
+      "slug": "data-intelligence-analytics",
+      "color": "#1F7A8C",
+      "order": 6,
+      "title": "Data Intelligence & Analytics",
+      "groupId": "data",
+      "tagline": "PowerBI Dashboards · SQL Optimization · BI Pipelines",
+      "features": [
+        "Executive PowerBI Dashboards",
+        "SQL Query Optimization",
+        "Automated Data Pipelines",
+        "Business Intelligence Metrics",
+        "Real-Time KPI Tracking",
+        "Predictive Analytics Suites"
+      ],
+      "imageUrl": "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1200&q=80",
+      "linkTarget": "/services/data-intelligence-analytics",
+      "description": "Converting raw enterprise data into executive dashboards, automated pipelines, and actionable predictive business intelligence.",
+      "patternVariant": "mesh-gradient",
+      "shortDescription": "Converting raw enterprise data into executive dashboards, automated pipelines, and actionable predictive business intelligence."
+    }
+  ],
+  "blogPosts": [
+    {
+      "id": "blog-1790438825604",
+      "slug": "how-to-architect-nextjs-for-ai-crawlers",
+      "title": "Architecting Modern Web Apps for AI Search Engines & LLM Crawlers",
+      "author": "Mahad Abbas",
+      "category": "Engineering & SEO",
+      "readTime": "6 min read",
+      "date": "Sep 26, 2026",
+      "imageUrl": "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1200&q=80",
+      "excerpt": "Why traditional client-side SPAs fail against non-JS AI search engines (GPTBot, ClaudeBot, Perplexity), and how static pre-rendering bridges the semantic discovery gap.",
+      "content": "In modern web development, visibility is no longer just about Googlebot. Emerging search interfaces—Perplexity, ChatGPT Search, Claude Artifacts, and Apple Intelligence—crawl and index websites using strict headless or static parsers that often ignore client-side JavaScript execution.\n\n### The Problem with Pure Client-Side Rendering\nWhen a crawler requests your SPA, it often receives an empty `<div id=\"root\"></div>` shell. While Googlebot eventually queues a Chromium renderer, LLM scrapers prioritize speed and often drop pages that don't serve meaningful HTML within 300ms.\n\n### The Hybrid Solution\n1. Static Pre-Rendering (SSG) for all public discovery routes (Home, Services, Case Studies, Blogs).\n2. Structured JSON-LD schema with rich entity graphs.\n3. Micro-caching via Cloudflare / Edge CDNs to deliver raw HTML in under 50ms.\n\nBy adopting these architectural patterns at DigiHust, our client platforms achieve instant indexing across both traditional and AI-driven search engines."
+    },
+    {
+      "id": "blog-1790437451297",
+      "slug": "automating-business-workflows-n8n-vs-python",
+      "title": "Automating Business Workflows: n8n vs. Custom Python LLM Microservices",
+      "author": "Abdul Raffy",
+      "category": "AI & Automation",
+      "readTime": "8 min read",
+      "date": "Sep 26, 2026",
+      "imageUrl": "https://images.unsplash.com/photo-1677442136019-21780efad99a?auto=format&fit=crop&w=1200&q=80",
+      "excerpt": "A practical engineering comparison for enterprise teams choosing between visual automation canvas tools and tailored Python microservices.",
+      "content": "Enterprise automation usually starts with a simple question: should we build on a visual workflow engine like n8n or develop custom Python microservices?\n\n### When to Choose n8n\n- Quick API orchestration (CRM to Slack, Email triggers to Webhooks).\n- Non-technical stakeholder visibility into the pipeline.\n- Self-hosted compliance without paying high SaaS fees.\n\n### When to Build Custom Python Microservices\n- Complex LLM agents with multi-turn memory and tool-calling validation.\n- Strict latency requirements (<100ms response times).\n- High-throughput asynchronous batch processing.\n\nAt DigiHust, our AI Squad uses a hybrid architecture: n8n for rapid integration plumbing, backed by containerized FastAPI endpoints for proprietary algorithms."
+    },
+    {
+      "id": "blog-1790432668071",
+      "slug": "the-essential-owasp-security-checklist",
+      "title": "The Essential OWASP Web Application Security & Hardening Checklist",
+      "author": "Muhammad Haris Asad Khan",
+      "category": "Cybersecurity",
+      "readTime": "7 min read",
+      "date": "Sep 26, 2026",
+      "imageUrl": "https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=1200&q=80",
+      "excerpt": "Actionable security measures to protect modern SaaS applications from injection attacks, broken access controls, and cloud privilege escalation.",
+      "content": "Security is not an afterthought; it is an architectural foundation. Here are the core controls we enforce across every production DigiHust application:\n\n1. **Row Level Security (RLS)**: Never rely solely on client-side role filtering. Every table in your database must have explicit PostgreSQL policies.\n2. **Cryptographic Salt Hashing**: Passwords and session secrets must use salted SHA-256 or Argon2.\n3. **Content Security Policy (CSP)**: Disallow untrusted inline scripts and lock down frame ancestors to prevent clickjacking.\n4. **Audit Telemetry**: Every privilege escalation, role modification, and sensitive data access must generate an immutable audit log.\n\nImplementing these 4 pillars prevents 95% of common web vulnerabilities before your product touches production."
+    },
+    {
+      "id": "blog-1790336025978",
+      "slug": "the-power-of-coordinated-squad-delivery",
+      "title": "The Power of Coordinated Squad Delivery: Why Freelancer Marketplaces Fail Growing Brands",
+      "author": "Mahad Abbas",
+      "category": "Company & Delivery Model",
+      "readTime": "5 min read",
+      "date": "Sep 25, 2026",
+      "imageUrl": "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1200&q=80",
+      "excerpt": "Why scaling businesses are moving away from managing five disconnected freelancers in favor of a single managed contract with coordinated specialized squads.",
+      "content": "Managing five separate freelancers means five different contracts, five misaligned schedules, finger-pointing when systems break, and zero shared quality standards.\n\nAt DigiHust, we built the Single Managed Contract model:\n- One Accountable Project Director.\n- Coordinated specialized squads (Engineering, Design, AI, Marketing, Cybersecurity).\n- Verified, trained, and tested talent under one clear Service Level Agreement (SLA).\n\nThis ensures you get the speed of top-tier talent without the administrative nightmare of contractor management."
+    }
+  ],
+  "valueProps": [
+    {
+      "id": "vp-1",
+      "badge": "Accountability",
+      "title": "Single Accountable Point of Contact",
+      "description": "Never juggle multiple disconnected freelancers again. You get one dedicated Project Director managing our specialized squads."
+    },
+    {
+      "id": "vp-2",
+      "badge": "Verified Talent",
+      "title": "Top 5% Vetted Trained & Tested by DigiHust Specialists",
+      "description": "Every engineer, designer, and automation specialist on your project is skill-verified with proven real-world delivery history."
+    },
+    {
+      "id": "vp-3",
+      "badge": "Fixed Pricing",
+      "title": "Fixed Scopes & Transparent Splits",
+      "description": "Guaranteed milestones and clear transparent pricing. Zero surprise invoices or runaway budget scope creep."
+    },
+    {
+      "id": "vp-4",
+      "badge": "SLA Speed",
+      "title": "Rapid Sprints & Enterprise QA",
+      "description": "Production-ready deliverables checked by senior solutions architects before client demonstration."
+    }
+  ],
+  "caseStudies": [
+    {
+      "id": "cs-mashaallah-bangles",
+      "slug": "mashaallah-bangles-cosmetics",
+      "title": "MashaAllah Bangles & Cosmetics | E-Commerce Website",
+      "client": "MashaAllah Bangles & Cosmetics",
+      "category": "Web Development",
+      "tags": [
+        "Web Development",
+        "MashaAllah Bangles & Cosmetics",
+        "React",
+        "TypeScript"
+      ],
+      "summary": "DigiHust designed and developed a modern e-commerce website for MashaAllah Bangles & Cosmetics, helping the brand scale its digital reach, showcase authentic traditional products, and streamline order processing.",
+      "impactMetric": "+185%",
+      "impactLabel": "Responsive Experience",
+      "imageUrl": "https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?auto=format&fit=crop&w=1200&q=80",
+      "projectUrl": "https://mashaallahbangles.com"
+    },
+    {
+      "id": "cs-alnawaz-industries",
+      "slug": "al-nawaz-industries-showcase",
+      "title": "Al Nawaz Industries | Aluminium Windows & Doors Showcase Website",
+      "client": "Muhammad Nawaz / Al Nawaz Industries",
+      "category": "Web Development",
+      "tags": [
+        "Web Development",
+        "Muhammad Nawaz",
+        "React",
+        "Showcase"
+      ],
+      "summary": "DigiHust designed and developed a professional digital storefront for Al Nawaz Industries, showcasing premium architectural aluminium window and door solutions with interactive product catalogs.",
+      "impactMetric": "+120%",
+      "impactLabel": "Responsive Layout",
+      "imageUrl": "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=1200&q=80",
+      "projectUrl": "https://alnawazindustries.com"
+    },
+    {
+      "id": "cs-rustic-spoon",
+      "slug": "the-rustic-spoon-dining",
+      "title": "The Rustic Spoon — Digital Dining Experience",
+      "client": "Marco Rossi / The Rustic Spoon",
+      "category": "Web Development",
+      "tags": [
+        "Web Development",
+        "Marco Rossi",
+        "React",
+        "TypeScript"
+      ],
+      "summary": "The Rustic Spoon is a modern, responsive restaurant website designed to showcase the culinary menu, dining ambience, and online reservation flow with seamless mobile performance.",
+      "impactMetric": "+75%",
+      "impactLabel": "Customer Growth",
+      "imageUrl": "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1200&q=80",
+      "projectUrl": "https://therusticspoon.demo"
+    },
+    {
+      "id": "cs-logixpress-ai",
+      "slug": "autonomous-logistics-support-ai",
+      "title": "Autonomous Logistics Customer Support AI",
+      "client": "LogiXpress Logistics",
+      "category": "AI & Data",
+      "tags": [
+        "OpenAI",
+        "Python",
+        "WhatsApp API",
+        "Automation",
+        "FastAPI"
+      ],
+      "summary": "Custom OpenAI & Python automation system resolving tracking inquiries over WhatsApp and email without human staff intervention.",
+      "impactMetric": "78%",
+      "impactLabel": "Instant Resolution Rate",
+      "imageUrl": "https://images.unsplash.com/photo-1677442135703-1787eea5ce01?auto=format&fit=crop&w=1200&q=80",
+      "projectUrl": "https://logixpress-ai.demo"
+    },
+    {
+      "id": "cs-fintech-trading",
+      "slug": "enterprise-fintech-trading-console",
+      "title": "Enterprise FinTech Trading Console",
+      "client": "Vanguard Capital Partners",
+      "category": "Web Development",
+      "tags": [
+        "React",
+        "WebSocket",
+        "Node.js",
+        "FinTech",
+        "High-Performance"
+      ],
+      "summary": "Ultra-low-latency financial dashboard delivering real-time execution analytics, multi-asset portfolio monitoring, and risk modeling.",
+      "impactMetric": "< 18ms",
+      "impactLabel": "Telemetry Latency",
+      "imageUrl": "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?auto=format&fit=crop&w=1200&q=80",
+      "projectUrl": "https://vanguard-fintech.demo"
+    },
+    {
+      "id": "cs-nexus-ecommerce",
+      "slug": "ecommerce-brand-mobile-kit",
+      "title": "E-Commerce Brand & Mobile UI Kit",
+      "client": "Nexus Global Goods",
+      "category": "Creative",
+      "tags": [
+        "UI/UX",
+        "Figma",
+        "Brand Identity",
+        "Shopify",
+        "Mobile Design"
+      ],
+      "summary": "Comprehensive branding system, responsive Shopify theme design, and iOS application UI mockups for a luxury lifestyle retail brand.",
+      "impactMetric": "$280K",
+      "impactLabel": "First 30-Day Launch GMV",
+      "imageUrl": "https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=1200&q=80",
+      "projectUrl": "https://nexus-goods.demo"
+    }
+  ],
+  "teamMembers": [
+    {
+      "id": "tm-1",
+      "bio": "Leading strategic direction, enterprise client partnerships, and company-wide delivery governance at DigiHust.",
+      "name": "Mahad Abbas",
+      "role": "Founder & CEO",
+      "tags": [
+        "Strategy",
+        "Enterprise Deals",
+        "Executive"
+      ],
+      "squad": "Executive Leadership",
+      "avatarUrl": "https://ptvchzbzokyumeizsuge.supabase.co/storage/v1/object/public/avatars/usr-ceo-1.png?t=1788198288702"
+    },
+    {
+      "id": "tm-2",
+      "bio": "Orchestrating operational excellence, client delivery pipelines, and production architecture across all DigiHust squads.",
+      "name": "Muhammad Haseeb",
+      "role": "Co-Founder & Director of Operations",
+      "tags": [
+        "Operations",
+        "Architecture",
+        "Executive"
+      ],
+      "squad": "Executive Leadership",
+      "avatarUrl": "https://ptvchzbzokyumeizsuge.supabase.co/storage/v1/object/public/avatars/usr-1788019490206.jpeg?t=1788310223059"
+    }
+  ],
+  "customImages": {
+    "heroImage": "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=800&q=80",
+    "aboutImage": "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=800&q=80",
+    "contactFormImage": "https://ptvchzbzokyumeizsuge.supabase.co/storage/v1/object/public/avatars/contact/1792184590334-yknmyu.png"
+  },
+  "testimonials": [
+    {
+      "id": "t-1790320645784",
+      "name": "Muhammad Moaz Qureshi",
+      "role": "Director",
+      "company": "MashaAllah Bangles Store",
+      "rating": 5,
+      "quote": "DigiHust delivered an exceptional e-commerce website that gave our brand a much stronger presence online. We truly appreciate their attention to detail and overall design.",
+      "avatarUrl": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80"
+    },
+    {
+      "id": "t-1790332202555",
+      "name": "Muhammad Nawaz",
+      "role": "Owner",
+      "company": "Al Nawaz Industries",
+      "rating": 5,
+      "quote": "DigiHust built a sleek and responsive website for our aluminium business, giving our brand the recognition he promised. We really appreciated their timely execution, attention to detail, and dedication towards satisfaction and quality of service.",
+      "avatarUrl": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=200&q=80"
+    },
+    {
+      "id": "t-1790334886104",
+      "name": "Marco Rossi",
+      "role": "Executive Chef",
+      "company": "The Rustic Spoon",
+      "rating": 5,
+      "quote": "DigiHust transformed our online presence with a modern, responsive, and user-friendly restaurant website. The design beautifully represents the rustic dynamics of our culinary experience, making it easy for customers to explore our menu and connect with us online. We are very pleased with their professionalism and expertise in modern web design.",
+      "avatarUrl": "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=200&q=80"
+    }
+  ],
+  "pinnedMemberIds": [
+    "usr-1787949460689",
+    "usr-1788088620952",
+    "usr-1788119130873"
+  ],
+  "certificateTemplates": [
+    {
+      "id": "tpl-offer",
+      "name": "Internship Offer Letter",
+      "type": "offer_letter",
+      "badgeText": "Official Verified Offer",
+      "createdAt": "2026-08-20",
+      "bulletPoints": [
+        "Quality of work",
+        "Meeting deadlines",
+        "Communication & teamwork",
+        "Problem-solving",
+        "Ability to follow client requirements"
+      ],
+      "contactEmail": "digihust@gmail.com",
+      "contactPhone": "+92 320 6806396",
+      "documentTitle": "Internship Offer Letter",
+      "revenueClause": "Successful interns may be selected for the DigiHust core team and assigned real client projects. Compensation will be project-based, with independent project contributors generally receiving 65–70% of the project budget, according to DigiHust's revenue-sharing policy.",
+      "signatoryName": "Mahad Abbas",
+      "watermarkText": "DigiHust",
+      "contactAddress": "Islamabad, Pakistan",
+      "introParagraph": "We are pleased to offer you a {{duration}} internship at DigiHust as a {{roleTitle}}. This period will serve as both a structured learning opportunity and a practical evaluation for potential inclusion in our core managed squads.",
+      "signatoryTitle": "Founder & CEO",
+      "defaultDuration": "45 Days (Remote)",
+      "closingParagraph": "This internship does not guarantee permanent placement. Continued collaboration will be based on performance, reliability, professionalism, and project requirements. We look forward to having you on board."
+    },
+    {
+      "id": "tpl-completion",
+      "name": "Certificate of Completion",
+      "type": "completion_certificate",
+      "badgeText": "Verified Completion",
+      "createdAt": "2026-08-20",
+      "bulletPoints": [
+        "Demonstrated high code quality and architectural integrity",
+        "Consistent on-time sprint deliverable submissions",
+        "Proactive team communication and cross-squad collaboration",
+        "Successful execution of real client trial milestones"
+      ],
+      "contactEmail": "digihust@gmail.com",
+      "contactPhone": "+92 320 6806396",
+      "documentTitle": "Certificate of Completion",
+      "revenueClause": "Having satisfied all evaluation criteria, the candidate is formally certified for milestone project eligibility under the DigiHust Delivery Network.",
+      "signatoryName": "Mahad Abbas",
+      "watermarkText": "DigiHust",
+      "contactAddress": "Islamabad, Pakistan",
+      "introParagraph": "This is to certify that {{memberName}} (Member ID: {{memberDghId}}) has successfully completed their tenure and trial milestones as a {{roleTitle}} with DigiHust.",
+      "signatoryTitle": "Founder & CEO",
+      "defaultDuration": "45 Days Internship Track",
+      "closingParagraph": "We commend their dedication, technical mastery, and professional ethics, and wish them continuous success in their career."
+    },
+    {
+      "id": "tpl-experience",
+      "name": "Professional Experience Certificate",
+      "type": "experience_certificate",
+      "badgeText": "Verified Experience",
+      "createdAt": "2026-08-20",
+      "bulletPoints": [
+        "Full-stack system architecture and frontend engineering",
+        "Client requirements scoping and agile delivery management",
+        "Automated CI/CD workflows and deployment guarantees"
+      ],
+      "contactEmail": "digihust@gmail.com",
+      "contactPhone": "+92 320 6806396",
+      "documentTitle": "Experience Certificate",
+      "signatoryName": "Mahad Abbas",
+      "watermarkText": "DigiHust",
+      "contactAddress": "Islamabad, Pakistan",
+      "introParagraph": "This official experience letter certifies that {{memberName}} (Member ID: {{memberDghId}}) has served as a {{roleTitle}} at DigiHust from {{startDate}} to {{endDate}}.",
+      "signatoryTitle": "Founder & CEO",
+      "defaultDuration": "8 Months (Full Retainer)",
+      "closingParagraph": "During their engagement, they exhibited exemplary professionalism, problem-solving skills, and adherence to enterprise SLA benchmarks. We recommend them with complete confidence."
+    }
+  ],
+  "contactIllustrationUrl": "https://ptvchzbzokyumeizsuge.supabase.co/storage/v1/object/public/avatars/contact/1792184590334-yknmyu.png"
+}

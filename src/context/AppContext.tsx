@@ -334,111 +334,74 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         const cloudData = await dbService.fetchInitialData();
         if (!cloudData) return;
 
-        // 1. USERS  Cloud is 100% authoritative. Replace local state with cloud.
-        //    Only seed cloud from local IF cloud is completely empty (first-time setup).
-        if (cloudData.users !== null) {
-          if (cloudData.users && cloudData.users.length > 0) {
-            // Cloud has data → use cloud as the truth, migrate any Base64 avatars
-            setUsers(cloudData.users);
-            syncIdCounter(cloudData.users);
-            // Migrate any Base64 avatars to Supabase Storage in background
-            cloudData.users.forEach((cloudUser) => {
-              if (cloudUser?.avatarUrl?.startsWith('data:image/')) {
-                dbService.migrateBase64Avatar(cloudUser.id, cloudUser.avatarUrl)
-                  .then((url) => {
-                    if (url && url !== cloudUser.avatarUrl) {
-                      dbService.upsertUser({ ...cloudUser, avatarUrl: url });
-                    }
-                  });
-              }
-            });
-          } else {
-            // Cloud is empty → this is first-time setup, seed from localStorage
-            // But only seed INITIAL_USERS-like data, not anything that looks stale
-            users.forEach((u) => dbService.upsertUser(u));
-          }
+        // 1. USERS — Cloud is authoritative. Update state from cloud.
+        if (cloudData.users && cloudData.users.length > 0) {
+          setUsers(cloudData.users);
+          syncIdCounter(cloudData.users);
+          // Migrate any Base64 avatars to Supabase Storage in background
+          cloudData.users.forEach((cloudUser) => {
+            if (cloudUser?.avatarUrl?.startsWith('data:image/')) {
+              dbService.migrateBase64Avatar(cloudUser.id, cloudUser.avatarUrl)
+                .then((url) => {
+                  if (url && url !== cloudUser.avatarUrl) {
+                    dbService.upsertUser({ ...cloudUser, avatarUrl: url });
+                  }
+                });
+            }
+          });
         }
 
-        // 2. LEADS  Cloud authoritative
-        if (cloudData.leads !== null) {
-          if (cloudData.leads.length > 0) {
-            setLeads(cloudData.leads);
-          } else if (leads.length > 0) {
-            leads.forEach((l) => dbService.insertLead(l));
-          }
+        // 2. LEADS — Cloud authoritative (READ-ONLY on mount)
+        if (cloudData.leads && cloudData.leads.length > 0) {
+          setLeads(cloudData.leads);
         }
 
-        // 3. PROJECTS  Cloud authoritative
-        if (cloudData.projects !== null) {
-          if (cloudData.projects.length > 0) {
-            setProjects(cloudData.projects);
-          } else if (projects.length > 0) {
-            projects.forEach((p) => dbService.upsertProject(p));
-          }
+        // 3. PROJECTS — Cloud authoritative (READ-ONLY on mount)
+        if (cloudData.projects && cloudData.projects.length > 0) {
+          setProjects(cloudData.projects);
         }
 
-        // 4. ASSIGNMENTS  Cloud authoritative
-        if (cloudData.assignments !== null) {
-          if (cloudData.assignments.length > 0) {
-            setAssignments(cloudData.assignments);
-          } else if (assignments.length > 0) {
-            assignments.forEach((a) => dbService.upsertAssignment(a));
-          }
+        // 4. ASSIGNMENTS — Cloud authoritative (READ-ONLY on mount)
+        if (cloudData.assignments && cloudData.assignments.length > 0) {
+          setAssignments(cloudData.assignments);
         }
 
-        // 5. CERTIFICATES  Cloud authoritative
-        if (cloudData.certificates !== null) {
-          if (cloudData.certificates.length > 0) {
-            setCertificates(cloudData.certificates);
-          } else if (certificates.length > 0) {
-            certificates.forEach((c) => dbService.upsertCertificate(c));
-          }
+        // 5. CERTIFICATES — Cloud authoritative (READ-ONLY on mount)
+        if (cloudData.certificates && cloudData.certificates.length > 0) {
+          setCertificates(cloudData.certificates);
         }
 
-        // 6. ANNOUNCEMENTS  Cloud authoritative
-        if (cloudData.announcements !== null) {
-          if (cloudData.announcements.length > 0) {
-            setAnnouncements(cloudData.announcements);
-          } else if (announcements.length > 0) {
-            announcements.forEach((a) => dbService.upsertAnnouncement(a));
-          }
+        // 6. ANNOUNCEMENTS — Cloud authoritative (READ-ONLY on mount)
+        if (cloudData.announcements && cloudData.announcements.length > 0) {
+          setAnnouncements(cloudData.announcements);
         }
 
-        // 7. SITE CONTENT CMS  Cloud authoritative
+        // 7. SITE CONTENT CMS — Cloud authoritative (STRICTLY READ-ONLY on mount)
+        // CRITICAL BUG FIX: NEVER push local or default content to the cloud on mount!
+        // An unauthenticated visitor, cold-start query timeout, or empty local cache
+        // must NEVER be allowed to overwrite production cloud CMS data with dummy templates.
         if (cloudData.siteContent) {
           setSiteContent(sanitizeSiteContent({ ...DEFAULT_SITE_CONTENT, ...cloudData.siteContent }));
-        } else {
-          dbService.saveSiteContent(siteContent || DEFAULT_SITE_CONTENT);
         }
 
-        // 8. AUDIT LOGS  Cloud authoritative
+        // 8. AUDIT LOGS — Cloud authoritative
         if (cloudData.auditLogs && cloudData.auditLogs.length > 0) {
           setAuditLogs(cloudData.auditLogs);
         }
 
-        // 9. PAYOUTS  Cloud authoritative
-        if (cloudData.payouts !== null && cloudData.payouts !== undefined) {
-          if (cloudData.payouts.length > 0) {
-            setPayouts(cloudData.payouts);
-          } else if (payouts.length > 0) {
-            payouts.forEach((p) => dbService.upsertPayout(p));
-          }
+        // 9. PAYOUTS — Cloud authoritative (READ-ONLY on mount)
+        if (cloudData.payouts && cloudData.payouts.length > 0) {
+          setPayouts(cloudData.payouts);
         }
 
-        // 10. APPLICANTS  Cloud authoritative
-        if (cloudData.applicants !== null && cloudData.applicants !== undefined) {
-          if (cloudData.applicants.length > 0) {
-            setApplicants(cloudData.applicants);
-          } else if (applicants.length > 0) {
-            applicants.forEach((a) => dbService.upsertApplicant(a));
-          }
+        // 10. APPLICANTS — Cloud authoritative (READ-ONLY on mount)
+        if (cloudData.applicants && cloudData.applicants.length > 0) {
+          setApplicants(cloudData.applicants);
         }
 
-        // 11. GLOBAL SETTINGS  Cloud authoritative
+        // 11. GLOBAL SETTINGS — Cloud authoritative (READ-ONLY on mount)
         if (cloudData.settings) {
           setSettings(cloudData.settings);
-        } else {
-          dbService.saveSettings(settings);
         }
       } catch (err) {
         console.warn('Cloud sync failed, using local cache fallback:', err);
@@ -2159,8 +2122,21 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const resetSiteContent = () => {
     if (!PERMISSIONS.canEditWebsiteContent(currentTier, currentUser)) return;
     setSiteContent(DEFAULT_SITE_CONTENT);
+    safeSetItem(`${LOCAL_STORAGE_KEY}_site_content`, JSON.stringify(DEFAULT_SITE_CONTENT));
     dbService.saveSiteContent(DEFAULT_SITE_CONTENT);
     realtimeSync.broadcast('CMS_UPDATED', DEFAULT_SITE_CONTENT);
+
+    const auditEntry: SecurityAuditLog = {
+      id: `audit-${Date.now()}`,
+      timestamp: new Date().toISOString(),
+      actorId: currentUser.id,
+      actorName: currentUser.name,
+      actorRole: currentTier,
+      action: 'CMS_UPDATED',
+      details: 'CEO performed manual reset of all website content back to default template.'
+    };
+    setAuditLogs(prev => [auditEntry, ...prev]);
+    dbService.insertAuditLog(auditEntry);
   };
 
   // ── PINNED MEMBERS  Persisted to Supabase for cross-device sync ─────────

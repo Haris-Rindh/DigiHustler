@@ -498,9 +498,23 @@ export const dbService = {
     }
   },
 
-  // ── 8. Site Content (CMS) ──
+  // ── 8. Site Content (CMS) with Safety Snapshot ──
   async saveSiteContent(content: SiteContent) {
-    if (!isSupabaseConfigured || !supabase) return;
+    if (!isSupabaseConfigured || !supabase || !content) return;
+
+    // Safety Snapshot: store snapshot locally before writing to prevent irrecoverable loss
+    try {
+      const existingSnapshotsRaw = localStorage.getItem('digihust_cms_snapshots');
+      const snapshots: Array<{ timestamp: string; data: SiteContent }> = existingSnapshotsRaw
+        ? JSON.parse(existingSnapshotsRaw)
+        : [];
+      snapshots.unshift({ timestamp: new Date().toISOString(), data: content });
+      // Keep last 10 snapshots
+      localStorage.setItem('digihust_cms_snapshots', JSON.stringify(snapshots.slice(0, 10)));
+    } catch {
+      // LocalStorage non-blocking
+    }
+
     try {
       await supabase.from('site_content').upsert({
         id: 'primary_cms',

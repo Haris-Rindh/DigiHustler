@@ -602,9 +602,14 @@ export const SiteContentManager: React.FC = () => {
 
           <button
             onClick={() => {
-              if (confirm('Reset entire website content back to default company branding?')) {
+              const confirmText = window.prompt(
+                'DANGER: This action replaces all live website content (services, blogs, case studies, images) with default placeholder templates.\n\nTo confirm, type "RESET" below:'
+              );
+              if (confirmText === 'RESET') {
                 resetSiteContent();
                 triggerSaved('Website restored to defaults!');
+              } else if (confirmText !== null) {
+                showToast('Reset cancelled: verification text did not match.', 'info');
               }
             }}
             className="flex items-center space-x-1 px-4 py-2.5 rounded-xl border border-rose-500/30 text-rose-400 hover:bg-rose-500/10 text-xs font-bold transition-all cursor-pointer"
